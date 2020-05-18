@@ -11,7 +11,7 @@ auto_setup(__file__)
 logger=get_logger("airtest")
 logger.setLevel(logging.INFO)
 
-connect_device("windows:////66066")
+#connect_device("windows:////66066")
 
 STATUS_PASS = 1
 STATUS_FAIL = 0
@@ -89,7 +89,7 @@ def boot_to_shell():
         keyevent("{ENTER}")
         
     wait(Template(r"tpl1588815378489.png", record_pos=(1.023, 0.001), resolution=(1042, 944)), 30)
-    print("[PASS] Boot to uefi shell successfully")
+    print("[Daily] Boot to uefi shell: PASS")
     return
     
 def password_setting():
@@ -116,11 +116,13 @@ def boot_to_bootmanager():
         keyevent("{VK_F11}")
         sleep(1)
     input_password()
+    sleep(3)
     
     if exists(Template(r"tpl1589178358928.png", record_pos=(-0.346, -0.188), resolution=(1031, 933))):
-        print("[PASS] Boot to Boot manager successfully")
+        print("[Daily] Boot to Boot manager by hotkey: PASS")
         return STATUS_PASS
     else:
+        print("[Daily] Boot to Boot manager by hotkey: FAIL")
         return STATUS_FAIL                  
 
 #boot_to_bootmanager()

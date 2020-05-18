@@ -26,6 +26,7 @@ BACKGROUND_INTENSITY = 0x80  # background color is intensified.
 
 STATUS_FAIL = 0
 STATUS_PASS = 1
+STATUS_SKIP = 2
 
 class PrintColor:
     ''''' See http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winprog/winprog/windows_api_reference.asp
@@ -72,6 +73,11 @@ def get_test_image(path):
         versions = os.listdir(path)
         versions.sort(reverse=True)
         latest_version = versions[1]
+        if os.path.exists(latest_version + ".tmp"):
+            print("%s has been tested" %(latest_version))
+            return STATUS_SKIP
+        else:
+            os.system("echo >" + latest_version + ".tmp")
         print("Latest Version is: %s" % (latest_version))
     else:
         print("BIOS image directroy can't be accessed, please check VPN conection. ")

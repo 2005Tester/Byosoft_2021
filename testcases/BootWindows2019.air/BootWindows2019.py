@@ -22,4 +22,4 @@ wait(Template(r"tpl1589280594583.png", record_pos=(0.141, 0.03), resolution=(103
 
 sleep(2)
 
-print("[PASS] Boot to Windows Server 2019 Successfully.")
+print("[Daily Test] Boot to Windows Server 2019: PASS.")

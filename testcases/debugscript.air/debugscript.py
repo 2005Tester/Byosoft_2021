@@ -13,7 +13,7 @@ auto_setup(__file__)
 logger=get_logger("airtest")
 logger.setLevel(logging.INFO) 
 
-connect_device("windows:////66066")
+#connect_device("windows:////66066")
 #wait(Template(r"tpl1588734826875.png", record_pos=(1.024, -0.153), resolution=(1042, 940)), 90, interval=2) #wait for hotkey prpomption
 #touch(Template(r"tpl1588734826875.png", record_pos=(1.024, -0.153), resolution=(1042, 940)))
 #keyevent("{VK_DELETE}")
