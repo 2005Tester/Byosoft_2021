@@ -29,8 +29,16 @@ def VerifyMEAddedItem():
     wait(Template(r"tpl1589770830614.png", record_pos=(-0.315, -0.217), resolution=(1031, 933)))
     snapshot(msg="Please check whether option ServerMEDebug - General - Region_Select Message[Disable,Enable] is added.")
 
-    def VerifyMemoryAddedItem():
-        
+def VerifyMemoryAddedItem():
+    pass
+      
+def update_hom():
+    touch(Template(r"tpl1589785821110.png", record_pos=(0.098, -0.316), resolution=(1031, 933)))
+    sleep(2)
+    touch(Template(r"tpl1589785850473.png", record_pos=(-0.427, -0.103), resolution=(1031, 933)))
+    sleep(2)
+    touch
+    
     
 NavigateToMeDebug()
     

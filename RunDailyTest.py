@@ -49,28 +49,29 @@ def update_bios():
     else:
         return STATUS_FAIL                        
 
-def run_airtest(testcase, device, log):
+def run_airtest(testcase, device, log, overall):
     
     cmd = "airtest run " + testcase + " --device " + device + " --log " + log
     print(cmd)
-    with open('log.txt', 'w') as f:
-        subprocess.call(cmd, stdout=f, stderr=f, shell=True)
+    with open(overall, 'w') as f:
+        subprocess.call(cmd, stderr=f, stdout=f)
 
 def loop_test(tc):
     
     while True:
         status = update_bios()
         if status == STATUS_PASS:
-            log_dir = common.create_log_dir()
+            log_dir = common.create_log_dir()       
             for tc in testcases: 
                 if tc['exec'] == 1:
+                    overall_log = tc['name']+'.txt'
                     log = "\"" + log_dir + "\\" + tc['name'] + "\""
                     print(log)
-                    run_airtest(tc['script'], device, log)
+                    run_airtest(tc['script'], device, log, overall_log)
                     print("-"*50)
-            shutil.copy('log.txt',log_dir)
+            os.sytem('copy *.txt ' + log_dir)
         else:
-            print("This version hase been tesed, check code update after 60 minutes")
+            print("Will check update in 60 minutes")
             time.sleep(3600)
 
 def run_latest(tc):
