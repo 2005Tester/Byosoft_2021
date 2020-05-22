@@ -123,12 +123,39 @@ def boot_to_bootmanager():
         return STATUS_PASS
     else:
         print("[Daily] Boot to Boot manager by hotkey: FAIL")
-        return STATUS_FAIL                  
+        return STATUS_FAIL 
+    
+def sp_boot():
+
+    print("SP Boot using hot key: F6")
+
+
+    force_reset()
+    wait_for_hotkey_prompt()
+    for i in range(5):
+        keyevent("{VK_F6}")
+        sleep(1)
+    input_password()
+    sleep(3) 
+    
+    wait(Template(r"tpl1590055080651.png", record_pos=(0.003, 0.038), resolution=(1043, 946)),30, interval=2)
+    wait(Template(r"tpl1590055647233.png", record_pos=(0.005, 0.071), resolution=(1043, 946)),90, interval=2)
+    touch(Template(r"tpl1590055647233.png", record_pos=(0.005, 0.071), resolution=(1043, 946)))
+    sleep(5)
+    
+    if exists(Template(r"tpl1590055358605.png", record_pos=(-0.32, -0.052), resolution=(1043, 946))):
+    
+        print("[Daily] SP Boot by hotkey: PASS")
+        return STATUS_PASS
+    else:
+        print("[Daily] SP Boot by hotkey: FAIL")
+        return STATUS_FAIL   
 
 #boot_to_bootmanager()
 #input_password()
 #boot_to_setup()
 #password_setting()
+#sp_boot()
     
 
         

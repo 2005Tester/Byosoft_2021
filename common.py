@@ -74,7 +74,7 @@ def get_test_image(path):
         versions.sort(reverse=True)
         latest_version = versions[1]
         print("Latest Version is: %s" % (latest_version))
-        if os.path.exists(latest_version + ".tmp"):
+        if os.path.exists("tmp\\" + latest_version + ".tmp"):
             print("%s has been tested" %(latest_version))
             return STATUS_SKIP      
     else:
@@ -96,7 +96,7 @@ def get_test_image(path):
         print("Copying bios image to test directory...")
         shutil.copyfile(rp001_image[0],dst)
         if os.path.exists(dst):
-            os.system("echo >" + latest_version + ".tmp")
+            os.system("echo >" + "tmp\\" + latest_version + ".tmp")
             return STATUS_PASS
         else:
             print("Failed to copy BIOS image.")

@@ -1,3 +1,13 @@
+"""
+HPM 测试步骤：
+1. 旧版本的bin和hpm文件放在hpm/V1目录下面
+2. 新版本的bin和hpm放在hpm/V2目录下面
+3. cd c:\auttest
+4. python hpmupdate.py
+
+测试流程： 更新版本V1 binary -> 更新HPM -> scu dump xml
+"""
+
 # -*- encoding=utf8 -*-
 import os
 import shutil
@@ -16,10 +26,10 @@ STATUS_SKIP = 2
 HPM_TEST_PATH = 'hpm'
 IMAGE_V1 = os.path.join(HPM_TEST_PATH,'V1') + '\HY5V007.BIN'
 HPM_V1 = os.path.join(HPM_TEST_PATH,'V1') + '\\biosimage.hpm'
-SUT = "192.168.100.155"
-USERNAME = "byosoft"
+SUT = '192.168.100.166'
+USERNAME = 'byosoft'
 PW = "byosoft@123"
-SCU_DIR = '~/Scu_tool/Linux_17.10/App'    #Scu tool directory on SUT 
+SCU_DIR = '/home/byosoft/Scu_tool/Linux_17.10/App'    #Scu tool directory on SUT 
 # Test environment settings
 
 prt = common.PrintColor()
@@ -64,17 +74,27 @@ def update_bios():
         return STATUS_FAIL   
 
 def fetch_log(src, dst):
+    if os.path.exists(dst):
+        print("Deleting existing log...")
+        os.system('del /f /s '+ dst)
     transport = paramiko.Transport((SUT, 22))
     transport.connect(username = USERNAME, password = PW)
     sftp = paramiko.SFTPClient.from_transport(transport)
-    sftp.get(src, dst)
-    transport.close()
+    try:
+        print("Fetching dump file...")
+        sftp.get(src, dst)
+        transport.close()
+    except IOError:
+        print("Can't fetch dump file, please check whether the file exists.")
+        transport.close()
 
 def dump_setup():
-    
+    cmd_su_root = 'su root\n'
+    cmd_input_pw = 'byosoft@123\n'
     cmd_enter_scu_dir = 'cd ' + SCU_DIR + '\n'
-    cmd_dump_setup = "./scu -d"
+    cmd_dump_setup = './scu -d\n'
     cmd_confirm = 'Y\n'
+    cmd_insmod = 'insmod scudev.ko\n'
 
     s = paramiko.SSHClient()
     s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -85,12 +105,15 @@ def dump_setup():
         op.send(cmd)
         time.sleep(5)
         res=op.recv(1024)
+        print(res.decode('utf-8'))
         return(res)
 
-    res = send_cmd(cmd_enter_scu_dir)  #shutdown SUT
-    print(res.decode('utf-8'))
-    res = send_cmd(cmd_dump_setup)
-    print(res.decode('utf-8'))
+    send_cmd(cmd_su_root) 
+    send_cmd(cmd_input_pw) 
+    send_cmd(cmd_enter_scu_dir)  
+    send_cmd(cmd_insmod)
+    send_cmd(cmd_dump_setup)
+    time.sleep(10)
 
     
     op.close()
@@ -98,4 +121,8 @@ def dump_setup():
 
 
 if __name__ =='__main__':
-    dump_setup()
+    src = SCU_DIR + '/scu.xml'
+    dst = 'hpm\scu.xml'
+    #dump_setup()
+    #fetch_log(src,dst)
+    updatebios.upload_bios2('hpm\\V1\\biosimage.hpm')
