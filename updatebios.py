@@ -11,30 +11,14 @@ SUT = "192.168.2.100"
 USERNAME = "Administrator"
 PW = "Admin@9000"
 
+
 def print_rawmsg(msg):
-    prt = common.PrintColor()
-    prt.print_red_text('*'*50)
-    prt.print_red_text(msg)
-    prt.print_red_text('*'*50)
+    common.prt.print_red_text('*'*50)
+    common.prt.print_red_text(msg)
+    common.prt.print_red_text('*'*50)
 
-def upload_bios_2():
-     # Upload BIOS image to SUT
-    transport = paramiko.Transport(SUT, 22)
-    transport.banner_timeout = 30  # Increase timeout value to fix connection issue
-    transport.connect(username=USERNAME, password=PW)
-    sftp = paramiko.SFTPClient.from_transport(transport)
-    res = sftp.put('bios\RP001.bin', 'rp001.bin')
-    if re.search("67108864", str(res)):
-        print("BIOS image uploaded to iBMC SFTP.")
-        transport.close()
-        return STATUS_PASS
-    else:
-        print("Failed to upload BIOS image to iBMC SFTP.")
-        print_rawmsg(res)
-        transport.close()
-        return STATUS_FAIL
 
-def upload_bios(src):
+def upload_bios(src): #src: temp image directory, tmp/rp001.bin or tmp/bios.hpm 
      # Upload BIOS image (.bin. .hpm) to SUT
     bin_file = 'rp001.bin'
     hpm_file = 'bios.hpm'
@@ -43,7 +27,7 @@ def upload_bios(src):
     transport.connect(username=USERNAME, password=PW)
     sftp = paramiko.SFTPClient.from_transport(transport)
     res = sftp.listdir()
-    print(res)
+    #print(res)  
     for item in res:
         if re.search(".bin",item):
             print("Deleting old .bin image...")
@@ -52,10 +36,15 @@ def upload_bios(src):
             print("Deleting old .hpm image...")
             sftp.remove(item)
     if re.search('.bin', src):
-        res = sftp.put(src, bin_file)
+        try:
+            res = sftp.put(src, bin_file)
+        except OSError:
+            print("Skip due to SSH connection error.")
+            return STATUS_FAIL
         if re.search("67108864", str(res)):
             print("BIOS image (bin) uploaded to iBMC SFTP.")
             transport.close()
+            common.prt.print_green_text("Upload bios to iBMC: PASS")
             return STATUS_PASS
         else:
             print("Failed to upload BIOS image to iBMC SFTP.")
@@ -63,10 +52,15 @@ def upload_bios(src):
             transport.close()
             return STATUS_FAIL
     elif re.search('.hpm', src):
-        res = sftp.put(src, hpm_file)
+        try:
+            res = sftp.put(src, hpm_file)
+        except OSError:
+            print("Skip due to SSH connection error.")
+            return STATUS_FAIL
         if re.search("rw", str(res)):
             print("HPM image uploaded to iBMC SFTP.")
             transport.close()
+            common.prt.print_green_text("Upload bios to iBMC: PASS")
             return STATUS_PASS
         else:
             print("Failed to upload hpm image to iBMC SFTP.")
@@ -83,16 +77,18 @@ def hpm_update():
     s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     s.connect(SUT,22,USERNAME, PW)
     op=s.invoke_shell()
-    op.send_cmd(cmd_hpmupdate)
+    op.send(cmd_hpmupdate)
     time.sleep(5)
     res=op.recv(1024)
     if re.search('successfully',res.decode('utf-8')):
+        print_rawmsg(res)
         print("HPM Uploaded successfully, will perform upgrade on next reset")
         op.close()
         s.close()
         return STATUS_PASS  
     else:
         print("Failed to perform HPM upgrade")
+        print_rawmsg(res)
         op.close()
         s.close()
         return STATUS_FAIL  
@@ -111,7 +107,12 @@ def program_flash():
 
     s = paramiko.SSHClient()
     s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    s.connect(SUT,22,USERNAME, PW)
+    try:
+        s.connect(SUT,22,USERNAME, PW)
+    except Exception as e:
+        print("Error in connecting SUT...")
+        return STATUS_FAIL
+
     op=s.invoke_shell()
     
     def send_cmd(cmd):
@@ -134,7 +135,7 @@ def program_flash():
                     print("iBMC attach upgrade successfullly")
                     start_time = time.time()
                     res = send_cmd(cmd_load) #Load bios to SUT   
-                    print(res.decode('utf-8'))               
+                    #print(res.decode('utf-8'))               
                     while (re.search("load bios succefully",res.decode('utf-8'))==None):
                         print("Checking Status...")
                         res=op.recv(1024)
@@ -148,6 +149,7 @@ def program_flash():
                     if re.search("load bios succefully",res.decode('utf-8')):
                             op.close()
                             s.close()
+                            common.prt.print_green_text("Load bios to iBMC: PASS")
                             return STATUS_PASS         
                 else:
                     print("iBMC Failed to attach upgrade")
@@ -198,6 +200,7 @@ def poweron_sut():
             print("Power on successfully.")
             send_cmd(cmd_fan_manual_mode) #tune fan speed
             send_cmd(cmd_fan_40)
+            common.prt.print_green_text("Power On SUT: PASS")
             return STATUS_PASS
         else:
             print("Failed to power on SUT.")

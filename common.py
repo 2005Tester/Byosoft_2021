@@ -6,75 +6,44 @@ import updatebios
 import os
 from pathlib import Path
 import shutil
-import ctypes
-
-STD_INPUT_HANDLE = -10
-STD_OUTPUT_HANDLE = -11
-STD_ERROR_HANDLE = -12
- 
-FOREGROUND_BLACK = 0x0
-FOREGROUND_BLUE = 0x01  # text color contains blue.
-FOREGROUND_GREEN = 0x02  # text color contains green.
-FOREGROUND_RED = 0x04  # text color contains red.
-FOREGROUND_INTENSITY = 0x08  # text color is intensified.
- 
-BACKGROUND_BLUE = 0x10  # background color contains blue.
-BACKGROUND_GREEN = 0x20  # background color contains green.
-BACKGROUND_RED = 0x40  # background color contains red.
-BACKGROUND_INTENSITY = 0x80  # background color is intensified.
-
+import json
+import printcolor
 
 STATUS_FAIL = 0
 STATUS_PASS = 1
 STATUS_SKIP = 2
 
-class PrintColor:
-    ''''' See http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winprog/winprog/windows_api_reference.asp
-    for information on Windows APIs.'''
-    std_out_handle = ctypes.windll.kernel32.GetStdHandle(STD_OUTPUT_HANDLE)
- 
-    def set_cmd_color(self, color, handle=std_out_handle):
-        """(color) -> bit
-        Example: set_cmd_color(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY)
-        """
-        bool = ctypes.windll.kernel32.SetConsoleTextAttribute(handle, color)
-        return bool
- 
-    def reset_color(self):
-        self.set_cmd_color(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE)
- 
-    def print_red_text(self, print_text):
-        self.set_cmd_color(FOREGROUND_RED | FOREGROUND_INTENSITY)
-        print(print_text)
-        self.reset_color()
- 
-    def print_green_text(self, print_text):
-        self.set_cmd_color(FOREGROUND_GREEN | FOREGROUND_INTENSITY)
-        print(print_text)
-        self.reset_color()
- 
-    def print_blue_text(self, print_text):
-        self.set_cmd_color(FOREGROUND_BLUE | FOREGROUND_INTENSITY)
-        print(print_text)
-        self.reset_color()
- 
-    def print_red_text_with_blue_bg(self, print_text):
-        self.set_cmd_color(FOREGROUND_RED | FOREGROUND_INTENSITY | BACKGROUND_BLUE | BACKGROUND_INTENSITY)
-        print(print_text)
-        self.reset_color()
+VER_TESTED = []
+
+TestRunInfo = {"testPass":1,
+    "testResult":[
+	    {"className":"Boot to Ubuntu","methodName":"TC0","description":"Boot to Ubuntu 18.0 LTS Desktop","spendTime":"0ms","status":"","log":[]},
+	    {"className":"Boot to UEFI Shell","methodName":"TC1","description":"Test Boot to UEFI Shell","spendTime":"0ms","status":"","log":[]},
+	    {"className":"Boot to Setup","methodName":"TC2","description":"Boot to setu using hotkey: Del","spendTime":"0ms","status":"","log":[]},
+	    {"className":"Boot to Boot Manager","methodName":"TC3","description":"Boot to boot manager using hotkey: F11","spendTime":"0ms","status":"","log":[]},
+	    {"className":"SP Boot","methodName":"TC4","description":"SP Boot using hotkey: F6","spendTime":"0ms","status":"","log":[]},
+	    {"className":"Boot to UEFI Win 2019 ","methodName":"TC5","description":"Boot to UEFI windows server 2019","spendTime":"0ms","status":"","log":[]}
+	],
+    "testName" :'',
+    "testAll"  :'',
+	"testPass" :'',
+    "testFail" :'',
+    "testSkip" :'',
+    "beginTime":'',
+    "totalTime":''}
 
 
-def call_cmd(cmd):
-    res = os.popen(cmd)
-    print(cmd + '\n'+ res.read()) 
+prt = printcolor.PrintColor()
 
 def get_test_image(path):
+    # Check and download image from automation build
     if os.path.exists(path):
         versions = os.listdir(path)
         versions.sort(reverse=True)
         latest_version = versions[1]
         print("Latest Version is: %s" % (latest_version))
-        if os.path.exists("tmp\\" + latest_version + ".tmp"):
+        if latest_version in VER_TESTED:
+        #if os.path.exists("tmp\\" + latest_version + ".tmp"):
             print("%s has been tested" %(latest_version))
             return STATUS_SKIP      
     else:
@@ -96,18 +65,12 @@ def get_test_image(path):
         print("Copying bios image to test directory...")
         shutil.copyfile(rp001_image[0],dst)
         if os.path.exists(dst):
-            os.system("echo >" + "tmp\\" + latest_version + ".tmp")
+            VER_TESTED.append(latest_version)
+            prt.print_green_text("Check Wheter Image is copied to local HDD: PASS")
             return STATUS_PASS
         else:
             print("Failed to copy BIOS image.")
             return STATUS_FAIL
-
-# cleanup test binary and log
-def clean_up():
-    pass
-
-def run_airtest(testcase,device,log_dir):
-    print(testcase)
 
 def create_log_dir():
     timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')

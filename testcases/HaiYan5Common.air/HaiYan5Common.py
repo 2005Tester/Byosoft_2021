@@ -70,9 +70,18 @@ def boot_to_setup():
             sleep(1)
         print("Waiting for password prompt")
         input_password()
-           
+        snapshot(msg="Should be in setup frontpage.")     
         return
-     
+    
+def boot_to_bios_configuration():
+
+    boot_to_setup()
+    sleep(3.0)
+    touch(Template(r"tpl1589006439594.png", record_pos=(0.278, 0.147), resolution=(1031, 936)))
+    sleep(2.0)
+    snapshot(msg="Should be in BIOS configuration page now.")
+
+    
 def boot_to_shell():
     if exists(Template(r"tpl1588815378489.png", record_pos=(1.023, 0.001), resolution=(1042, 944))):
         touch(Template(r"tpl1588815378489.png", record_pos=(1.023, 0.001), resolution=(1042, 944)))
@@ -150,12 +159,27 @@ def sp_boot():
     else:
         print("[Daily] SP Boot by hotkey: FAIL")
         return STATUS_FAIL   
+    
+def switch_to_legacy():
+    boot_to_bios_configuration()
+    keyevent("{ENTER}")
+    wait(Template(r"tpl1589006859333.png", record_pos=(-0.296, -0.17), resolution=(1031, 936)))
+    touch(Template(r"tpl1590143311059.png", record_pos=(-0.205, -0.264), resolution=(1043, 946)))
+    touch(Template(r"tpl1590143311059.png", record_pos=(-0.205, -0.264), resolution=(1043, 946)))
+    wait(Template(r"tpl1590143370584.png", record_pos=(-0.174, -0.247), resolution=(1043, 946)))
+    keyevent("{ENTER}")
+    sleep(2)
+    touch(Template(r"tpl1590143446657.png", record_pos=(-0.012, 0.063), resolution=(1043, 946)))
+    keyevent("{ENTER}")
+    sleep(2)
+    keyevent("{F10}")
+    sleep(2)
+    text("Y")
+    
+    
+    
 
-#boot_to_bootmanager()
-#input_password()
-#boot_to_setup()
-#password_setting()
-#sp_boot()
+
     
 
         

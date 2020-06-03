@@ -5,7 +5,11 @@ HPM 测试步骤：
 3. cd c:\auttest
 4. python hpmupdate.py
 
-测试流程： 更新版本V1 binary -> 更新HPM -> scu dump xml
+测试流程： 更新版本V1 binary -> 更新HPM case 1 -> upload customized scu.xml, change logo, change pw, add option->boot ->scu dump xml () -> Verify
+          更新版本V1 binary -> 更新HPM case 2 -> upload customized scu.xml, change logo, change pw, add option->boot ->scu dump xml () -> Verify
+          更新版本V1 binary -> 更新HPM case 3 -> upload customized scu.xml, change logo, change pw, add option->boot ->scu dump xml () -> Verify
+          更新版本V1 binary -> 更新HPM case 4 -> upload customized scu.xml, change logo, change pw, add option->boot ->scu dump xml () -> Verify
+
 """
 
 # -*- encoding=utf8 -*-
@@ -17,6 +21,7 @@ import paramiko
 import time
 import common
 import updatebios
+import RunDailyTest
 
 STATUS_FAIL = 0
 STATUS_PASS = 1
@@ -37,34 +42,40 @@ prt = common.PrintColor()
 def check_env():
     pass
 
-def get_test_image():
-
+def get_test_image(image):
     test_dir = os.getcwd()
-    dst = os.path.join(test_dir,'bios\RP001.bin')
+    dst = os.path.join(test_dir,'bios\\RP001.bin')    #default buios image, if hpm image, change dst to hpm
+    if re.search('.hpm', image):
+        dst = os.path.join(test_dir,'bios\\bios.hpm')
     if os.path.exists(dst):
         os.remove(dst)
-    shutil.copyfile(IMAGE_V1,dst)
+    shutil.copyfile(image,dst)
     if os.path.exists(dst):
         return STATUS_PASS
     else:
         print("Failed to copy BIOS image.")
         return STATUS_FAIL
 
-def update_bios():
-    status = get_test_image()
+def update_bios(image_src, image_dst): 
+    status = get_test_image(image_src)
     if status == STATUS_PASS:
         prt.print_green_text("Check Wheter Image is copied to local HDD: PASS")
-        if updatebios.upload_bios():
+        if updatebios.upload_bios(image_dst):
             prt.print_green_text("Upload bios to iBMC: PASS")
-            if updatebios.program_flash():
-                prt.print_green_text("Load bios to iBMC: PASS")
-                if updatebios.poweron_sut():
-                    prt.print_green_text("Power On SUT: PASS")
-                    return STATUS_PASS
+            if re.search('.bin', image_dst):
+                if updatebios.program_flash():
+                    prt.print_green_text("Load bios to iBMC: PASS")
+                    if updatebios.poweron_sut():
+                        prt.print_green_text("Power On SUT: PASS")
+                        return STATUS_PASS
+                    else:
+                        return STATUS_FAIL
                 else:
                     return STATUS_FAIL
+
             else:
-                return STATUS_FAIL
+                updatebios.hpm_update()
+                #update hpm
         else:
             return STATUS_FAIL
     elif status == STATUS_SKIP:
@@ -119,10 +130,35 @@ def dump_setup():
     op.close()
     s.close()
 
+def verify(testcases):
+    log_dir = common.create_log_dir()
+    for tc in testcases: 
+        if tc['exec'] == 1:
+            log = "\"" + log_dir + "\\" + tc['name'] + "\""
+            print(log)
+            RunDailyTest.run_airtest(tc['script'], RunDailyTest.device, log, 'hpm\\log.txt')
+            print("-"*50)
 
 if __name__ =='__main__':
     src = SCU_DIR + '/scu.xml'
     dst = 'hpm\scu.xml'
+    TC0 = {'id': 0, 'name':'HpmUpdate',     'script': "\"C:\\autotest\\testcases\\HpmUpdate.air\"",         'exec':1}
+    tc_list = [RunDailyTest.TC0]
+    tc_list2 = [TC0]
     #dump_setup()
     #fetch_log(src,dst)
-    updatebios.upload_bios2('hpm\\V1\\biosimage.hpm')
+    #prt.print_green_text("Updateing BIOS image for V1")
+    #update_bios(IMAGE_V1,'bios\\RP001.bin')
+
+    #prt.print_green_text("Booting to Ubuntu with V1...")
+    #verify(tc_list)
+
+    prt.print_green_text("Updateing HPM image for V1")
+    update_bios(HPM_V1,'bios\\bios.hpm')
+    verify(tc_list2)
+
+    prt.print_green_text("Dump setup data using scu tool...")
+    dump_setup()
+
+    prt.print_green_text("Downloading scu dump to %s" %(dst))
+    fetch_log(src,dst)
