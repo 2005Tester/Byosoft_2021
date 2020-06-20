@@ -19,6 +19,7 @@ def update_result(data, id, log):  #data = TestRunInfo, id: test case id, result
 
 
     data["testResult"][id]["status"] = result
+    data["testResult"][id]["log"].clear()
     data["testResult"][id]["log"].append(log)
     data["testResult"][id]["spendTime"] = spend_time
 
@@ -30,16 +31,22 @@ def update_overview(data):
     test_pass = 0
     test_fail = 0
     test_skip = 0
-    total_time = 0
     test_name = common.VER_TESTED[-1]
+    data["totalTime"] = 0
 
-    for testrun in data["testResult"]:
-        if testrun["status"] == "Pass":
+    # update overall pass/fail number
+    for tc in data["testResult"]:
+        if tc["status"] == "Pass":
             test_pass+=1
-        elif testrun["status"] == "Fail":  
+        elif tc["status"] == "Fail":  
             test_fail+=1
-        elif testrun["status"] == "Skip":
+        elif tc["status"] == "Skip":
             test_skip+=1     
+
+    # update total_time
+    for tc in data["testResult"]:
+        t = float(tc['spendTime'][:-1])
+        data["totalTime"] = data["totalTime"] + t
 
     data["testAll"] = test_all
     data["testFail"] = test_fail

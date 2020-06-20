@@ -13,7 +13,7 @@ using("HaiYan5Common.air")
 import HaiYan5Common
 
 HaiYan5Common.boot_to_shell()
-text("FS0:\\EFI\\Microsoft\\boot\\bootmgfw.efi")
+text("FS1:\\EFI\\Microsoft\\boot\\bootmgfw.efi")
 sleep(2)
 keyevent("{ENTER}")
 sleep(30)

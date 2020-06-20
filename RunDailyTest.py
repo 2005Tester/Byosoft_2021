@@ -18,7 +18,7 @@ BINARY_DIR='\\\\172.16.0.73\\HY5_Binary'
 
 
 # define parametres for airtest
-device = "\"Windows:///328182\""
+device = "\"Windows:///262724\""
 TC0 = {'id': 0, 'name':'boot_ubuntu',     'script': "\"C:\\autotest\\testcases\\BootUbuntu.air\"",         'exec':1}
 TC1 = {'id': 1, 'name':'boot_to_shell',   'script': "\"C:\\autotest\\testcases\\BootoShell.air\"",         'exec':1}
 TC2 = {'id': 2, 'name':'boot_to_setup',   'script': "\"C:\\autotest\\testcases\\BootToSetup.air\"",        'exec':1}
@@ -29,44 +29,26 @@ TC5 = {'id': 5, 'name':'boot_to_win2019', 'script': "\"C:\\autotest\\testcases\\
 
 def update_bios():
     if argv[1] == "RUNONCE":
-        status == STATUS_PASS #force get_test_image() success to test local image
+        status = STATUS_PASS #force get_test_image() success to test local image
     else:
         status = common.get_test_image(BINARY_DIR)
-        if status == STATUS_PASS:
-            if not updatebios.upload_bios('bios\RP001.bin'):
-                return STATUS_FAIL
 
-            if not updatebios.program_flash():
-                return STATUS_FAIL
-       
-            if not updatebios.poweron_sut():
-                return STATUS_FAIL
-
-            return status
-
-        elif status == STATUS_SKIP:
-            return status
-
-"""        
-        status = common.get_test_image(BINARY_DIR)
-    
     if status == STATUS_PASS:
-        if updatebios.upload_bios('bios\RP001.bin'):
-            if updatebios.program_flash():
-                if updatebios.poweron_sut():
-                      return STATUS_PASS
-                else:
-                    return STATUS_FAIL
-            else:
-                return STATUS_FAIL
-        else:
+        if not updatebios.upload_bios('bios\RP001.bin'):
             return STATUS_FAIL
+
+        if not updatebios.program_flash():
+            return STATUS_FAIL
+       
+        if not updatebios.poweron_sut():
+            return STATUS_FAIL
+
+        return status
+
     elif status == STATUS_SKIP:
-        return STATUS_SKIP
-   
-    else:
-        return STATUS_FAIL                        
-"""
+        return status
+
+
 def run_airtest(script, device, log, overall):
     
     cmd = "airtest run " + script + " --device " + device + " --log " + log

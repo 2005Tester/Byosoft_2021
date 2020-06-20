@@ -17,12 +17,12 @@ VER_TESTED = []
 
 TestRunInfo = {"testPass":1,
     "testResult":[
-	    {"className":"Boot to Ubuntu","methodName":"TC0","description":"Boot to Ubuntu 18.0 LTS Desktop","spendTime":"0ms","status":"","log":[]},
-	    {"className":"Boot to UEFI Shell","methodName":"TC1","description":"Test Boot to UEFI Shell","spendTime":"0ms","status":"","log":[]},
-	    {"className":"Boot to Setup","methodName":"TC2","description":"Boot to setu using hotkey: Del","spendTime":"0ms","status":"","log":[]},
-	    {"className":"Boot to Boot Manager","methodName":"TC3","description":"Boot to boot manager using hotkey: F11","spendTime":"0ms","status":"","log":[]},
-	    {"className":"SP Boot","methodName":"TC4","description":"SP Boot using hotkey: F6","spendTime":"0ms","status":"","log":[]},
-	    {"className":"Boot to UEFI Win 2019 ","methodName":"TC5","description":"Boot to UEFI windows server 2019","spendTime":"0ms","status":"","log":[]}
+	    {"className":"Boot to Ubuntu","methodName":"TC0","description":"Boot to Ubuntu 18.0 LTS Desktop","spendTime":"0s","status":"","log":[]},
+	    {"className":"Boot to UEFI Shell","methodName":"TC1","description":"Test Boot to UEFI Shell","spendTime":"0s","status":"","log":[]},
+	    {"className":"Boot to Setup","methodName":"TC2","description":"Boot to setu using hotkey: Del","spendTime":"0s","status":"","log":[]},
+	    {"className":"Boot to Boot Manager","methodName":"TC3","description":"Boot to boot manager using hotkey: F11","spendTime":"0s","status":"","log":[]},
+	    {"className":"SP Boot","methodName":"TC4","description":"SP Boot using hotkey: F6","spendTime":"0s","status":"","log":[]},
+	    {"className":"Boot to UEFI Win 2019 ","methodName":"TC5","description":"Boot to UEFI windows server 2019","spendTime":"0s","status":"","log":[]}
 	],
     "testName" :'',
     "testAll"  :'',
@@ -30,7 +30,7 @@ TestRunInfo = {"testPass":1,
     "testFail" :'',
     "testSkip" :'',
     "beginTime":'',
-    "totalTime":''}
+    "totalTime":0}
 
 
 prt = printcolor.PrintColor()
@@ -74,6 +74,7 @@ def get_test_image(path):
 
 def create_log_dir():
     timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    TestRunInfo['beginTime'] = timestamp
     test_dir = os.getcwd()
     log_dir = os.path.join(test_dir,'log\\'+ str(timestamp))
     try:
