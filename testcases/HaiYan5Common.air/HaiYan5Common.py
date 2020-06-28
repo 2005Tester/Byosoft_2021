@@ -4,17 +4,18 @@ import logging
 from airtest.core.api import *
 from pywinauto import keyboard
 from airtest.utils.logger import get_logger
+from airtest.cli.parser import cli_setup
 
-
-auto_setup(__file__)
+if not cli_setup():
+    auto_setup(__file__, logdir=True, devices=[
+            "Windows:///?title_re=iBMC*",
+    ], project_root="./testcases")
 
 logger=get_logger("airtest")
 logger.setLevel(logging.INFO)
 
 #connect_device("windows:////66066")
 
-STATUS_PASS = 1
-STATUS_FAIL = 0
 
 def force_reset():
     touch(Template(r"tpl1588732575954.png", record_pos=(1.189, -0.241), resolution=(1042, 940)))
@@ -29,7 +30,7 @@ def force_reset():
 
 def input_password():
     password = "Admin@9000"
-    wait(Template(r"tpl1588735622040.png", record_pos=(1.421, 0.129), resolution=(1042, 940)), 60, interval=3) #waiting for password promption 
+    wait(Template(r"tpl1588735622040.png", record_pos=(1.421, 0.129), resolution=(1042, 940)), 90, interval=3) #waiting for password promption 
         
     touch(Template(r"tpl1588735622040.png", record_pos=(1.421, 0.129), resolution=(1042, 940)))
     sleep(1.0)
@@ -98,7 +99,7 @@ def boot_to_shell():
         keyevent("{ENTER}")
         
     wait(Template(r"tpl1588815378489.png", record_pos=(1.023, 0.001), resolution=(1042, 944)), 30)
-    print("[Daily] Boot to uefi shell: PASS")
+    print("Boot to uefi shell: PASS")
     return
     
 def password_setting():
@@ -128,11 +129,11 @@ def boot_to_bootmanager():
     sleep(3)
     
     if exists(Template(r"tpl1589178358928.png", record_pos=(-0.346, -0.188), resolution=(1031, 933))):
-        print("[Daily] Boot to Boot manager by hotkey: PASS")
-        return STATUS_PASS
+        print("Boot to Boot manager by hotkey: PASS")
+        return True
     else:
-        print("[Daily] Boot to Boot manager by hotkey: FAIL")
-        return STATUS_FAIL 
+        print("Boot to Boot manager by hotkey: FAIL")
+        return False 
     
 def sp_boot():
 
@@ -154,27 +155,51 @@ def sp_boot():
     
     if exists(Template(r"tpl1590055358605.png", record_pos=(-0.32, -0.052), resolution=(1043, 946))):
     
-        print("[Daily] SP Boot by hotkey: PASS")
-        return STATUS_PASS
+        print("SP Boot by hotkey: PASS")
+        return True
     else:
-        print("[Daily] SP Boot by hotkey: FAIL")
-        return STATUS_FAIL   
+        print("SP Boot by hotkey: FAIL")
+        return False   
     
 def switch_to_legacy():
+    boot_to_setup()
+    if exists(Template(r"tpl1592906251630.png", record_pos=(-0.152, 0.182), resolution=(1031, 935))):
+        print("Already in legacy mode")
+        touch(Template(r"tpl1592907179693.png", record_pos=(-0.305, -0.153), resolution=(1031, 935)))
+        keyevent("{ENTER}")
+        return
+    else:
+        sleep(3.0)
+        touch(Template(r"tpl1589006439594.png", record_pos=(0.278, 0.147), resolution=(1031, 936)))
+        sleep(2.0)
+        snapshot(msg="Should be in BIOS configuration page now.")
+
+        keyevent("{ENTER}")
+        wait(Template(r"tpl1589006859333.png", record_pos=(-0.296, -0.17), resolution=(1031, 936)))
+        touch(Template(r"tpl1590143311059.png", record_pos=(-0.205, -0.264), resolution=(1043, 946)))
+        touch(Template(r"tpl1590143311059.png", record_pos=(-0.205, -0.264), resolution=(1043, 946)))
+        wait(Template(r"tpl1590143370584.png", record_pos=(-0.174, -0.247), resolution=(1043, 946)))
+        keyevent("{ENTER}")
+        sleep(2)
+        touch(Template(r"tpl1590143446657.png", record_pos=(-0.012, 0.063), resolution=(1043, 946)))
+        keyevent("{ENTER}")
+        sleep(2)
+        keyevent("{F10}")
+        sleep(2)
+        text("Y")
+        return
+
+def reset_default():
     boot_to_bios_configuration()
-    keyevent("{ENTER}")
-    wait(Template(r"tpl1589006859333.png", record_pos=(-0.296, -0.17), resolution=(1031, 936)))
-    touch(Template(r"tpl1590143311059.png", record_pos=(-0.205, -0.264), resolution=(1043, 946)))
-    touch(Template(r"tpl1590143311059.png", record_pos=(-0.205, -0.264), resolution=(1043, 946)))
-    wait(Template(r"tpl1590143370584.png", record_pos=(-0.174, -0.247), resolution=(1043, 946)))
-    keyevent("{ENTER}")
-    sleep(2)
-    touch(Template(r"tpl1590143446657.png", record_pos=(-0.012, 0.063), resolution=(1043, 946)))
-    keyevent("{ENTER}")
-    sleep(2)
+    keyevent("{F9}")
+    touch(Template(r"tpl1592905427091.png", record_pos=(-0.071, 0.067), resolution=(1031, 935)))
+    sleep(20.0)
     keyevent("{F10}")
-    sleep(2)
-    text("Y")
+    touch(Template(r"tpl1592905427091.png", record_pos=(-0.071, 0.067), resolution=(1031, 935)))
+    keyevent("{Y}")
+
+    return
+    
     
     
     

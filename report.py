@@ -5,7 +5,7 @@ import common
 
 def update_result(data, id, log):  #data = TestRunInfo, id: test case id, result: pass/fail/skip, read from log, time: test execution time, read from log, log: path of overall log
     result = 'Skip'
-    spend_time = '0ms'
+    spend_time = '0s'
 
     with open (log,'r', encoding = 'utf-8') as f:
         for line in f.readlines():
@@ -27,11 +27,14 @@ def update_result(data, id, log):  #data = TestRunInfo, id: test case id, result
 
 
 def update_overview(data):
-    test_all = 6
+#    test_all = 7
     test_pass = 0
     test_fail = 0
     test_skip = 0
-    test_name = common.VER_TESTED[-1]
+    if not common.VER_TESTED:
+        test_name = "NA"
+    else:
+        test_name = common.VER_TESTED[-1]
     data["totalTime"] = 0
 
     # update overall pass/fail number
@@ -48,7 +51,7 @@ def update_overview(data):
         t = float(tc['spendTime'][:-1])
         data["totalTime"] = data["totalTime"] + t
 
-    data["testAll"] = test_all
+#    data["testAll"] = test_all
     data["testFail"] = test_fail
     data["testSkip"] = test_skip
     data["testPass"] = test_pass

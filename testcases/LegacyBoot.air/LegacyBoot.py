@@ -12,5 +12,16 @@ auto_setup(__file__)
 logger=get_logger("airtest")
 logger.setLevel(logging.INFO) 
 
-HaiYan5Common.switch_to_legacy()
+def test_case():
+    
+    
+    HaiYan5Common.switch_to_legacy()
+    sleep(60)
+    wait(Template(r"tpl1592904562708.png", record_pos=(-0.164, -0.214), resolution=(1031, 935)),timeout=120,interval=10)
+    print("Legacy boot pass")
+    HaiYan5Common.reset_default()
+    
+
+    
+test_case()
 

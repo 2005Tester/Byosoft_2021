@@ -81,8 +81,8 @@ def hpm_update():
     time.sleep(5)
     res=op.recv(1024)
     if re.search('successfully',res.decode('utf-8')):
-        print_rawmsg(res)
-        print("HPM Uploaded successfully, will perform upgrade on next reset")
+#        print_rawmsg(res)
+        print("HPM Uploaded successfully, upgrade on next reboot")
         op.close()
         s.close()
         return STATUS_PASS  
