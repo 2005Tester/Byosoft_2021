@@ -140,7 +140,7 @@ def gen_nondep_tc(testcase_file):
             allcase["Attributes"].pop(key)
             print("remove: " + key)
 
-    with open ("remove_dep.json","w") as fp:
+    with open (".\\gen_case\\remove_dep.json","w") as fp:
         json.dump(allcase, fp, indent=1)
 
 
@@ -394,9 +394,9 @@ if __name__ == "__main__":
 #    res = patch("tc_debug.json",PATCH_URL).decode('utf-8')
 #    print(res)
 #    run_test(".\\hang1\\1sthalf.json")
-    auto_test(".\\hang1\\1sthalf.json")
+    auto_test(".\\7960.json")
 #    ping_sut()
-
+#    change_value(".\\gen_case\\remove_dep.json")
 
 #    gen_dep_tc()
 #    get_dep_options()

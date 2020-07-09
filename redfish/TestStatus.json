@@ -1,5 +1,5 @@
 {
-    "Completed": ["PciePortDisable[5]", "PciePortDisable[6]", "PciePortDisable[7]", "PciePortDisable[8]", "PciePortDisable[9]", "PciePortDisable[10]", "PciePortDisable[11]", "PciePortDisable[12]", "PciePortDisable[13]", "PciePortDisable[14]", "PciePortDisable[15]", "PciePortDisable[16]", "PciePortDisable[17]", "PciePortDisable[18]", "PciePortDisable[19]", "PciePortDisable[20]"],
+    "Completed":[],
     "Passed":[],
     "Error":[],
     "Failed":[]
