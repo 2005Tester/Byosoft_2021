@@ -299,6 +299,7 @@ def rebootsut():
     except Exception as e:
         print("Error in connecting SUT...")
         time.sleep(300)
+        rebootsut()
         return
 
     op=s.invoke_shell()
@@ -353,8 +354,14 @@ def run_test(test_Case_file):
 def run_test_one_by_one(payload):
     current_all = json.loads(get(GET_URL))
     test_item = json.loads(payload)
-    for key in test_item["Attributes"]:
-        print(key + " default value: " + current_all["Attributes"][key])
+    try:
+        for key in test_item["Attributes"]:
+            print(key + " default value: " + current_all["Attributes"][key])
+            print("Path: " + get_setup_path(key))
+    except Exception as e:
+        print(e)
+        tc_result = "Error"
+        return tc_result
 
     res = patch_one_option(payload,PATCH_URL).decode('utf-8')
     res = json.loads(res)
@@ -394,7 +401,8 @@ if __name__ == "__main__":
 #    res = patch("tc_debug.json",PATCH_URL).decode('utf-8')
 #    print(res)
 #    run_test(".\\hang1\\1sthalf.json")
-    auto_test(".\\7960.json")
+    #auto_test(".\\7960.json")
+    test_registry_file("baseline1837.txt")
 #    ping_sut()
 #    change_value(".\\gen_case\\remove_dep.json")
 

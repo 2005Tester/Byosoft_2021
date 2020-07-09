@@ -1,6 +1,1 @@
-{
-    "Completed":[],
-    "Passed":[],
-    "Error":[],
-    "Failed":[]
-}
+{"Completed": ["CdnSupport", "AcpiHpet", "AcpiApicPolicy", "PatrolScrub", "DdrFreqLimit", "TStateEnable", "QpiLinkSpeed", "Use1GPageTable", "ResetOnMemMapChange", "COMBaseAddress", "FrontPanelLock", "serialDebugMsgLvl", "VideoSelect", "EnableClockSpreadSpec", "WakeOnLanSupport"], "Passed": ["CdnSupport", "AcpiHpet", "AcpiApicPolicy", "PatrolScrub", "DdrFreqLimit", "TStateEnable", "QpiLinkSpeed", "Use1GPageTable", "ResetOnMemMapChange", "COMBaseAddress", "FrontPanelLock", "serialDebugMsgLvl", "VideoSelect", "EnableClockSpreadSpec", "WakeOnLanSupport"], "Error": [], "Failed": []}

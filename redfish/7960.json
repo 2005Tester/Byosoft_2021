@@ -11,7 +11,7 @@
   "ResetOnMemMapChange": "Enable",
   "COMBaseAddress": "2F8",
   "FrontPanelLock": "Enable",
-  "serialDebugMsgLvl": "Enabled",
+  "serialDebugMsgLvl": "Disabled",
   "VideoSelect": "Plug-in Graphics",
   "EnableClockSpreadSpec": "Enable",
   "WakeOnLanSupport": "Enable",
