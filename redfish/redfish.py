@@ -8,6 +8,7 @@ import copy
 import subprocess
 import updatebios
 import datetime
+import random
 
 sut = '192.168.2.100'
 port = '22'
@@ -19,16 +20,22 @@ PATCH_URL = "https://192.168.2.100/redfish/v1/Systems/1/Bios/Settings/"
 
 requests.packages.urllib3.disable_warnings()
 
+def load_testcase(testcase_file):
+    with open (testcase_file, 'r') as f:
+        payloads = json.load(f)
+        if not isinstance(payloads,dict):
+            payloads = json.loads(payloads)
+        return(payloads)
+
+
 def load_test_status():
     with open('TestStatus.json','r') as f:
         status = json.load(f)
     return status
 
-def update_test_status(completed):
-    status = {}
-    status["Completed"] = completed
+def update_test_status(test_status):
     with open('TestStatus.json','w') as f:
-        json.dump(status, f)
+        json.dump(test_status, f)
 
 
 def ping_sut():
@@ -146,7 +153,8 @@ def change_value(testcase_file):
             pass
         else:
             values.remove(testscope["Attributes"][key])
-            testscope["Attributes"][key] = values[0]
+            desired_value = random.choice(values)
+            testscope["Attributes"][key] = desired_value
         with open ("changes.json", 'w') as fp:
             json.dump(testscope, fp, indent=1)
    
@@ -271,12 +279,12 @@ def compare_one(payload, result):
     for key in tc["Attributes"]:
         if not tc["Attributes"][key] == result["Attributes"][key]:
             print(key + " : Failed")
-            #print(get_setup_path(key))
+            tc_result = "Failed"
         else:
             print(key + " : Pass")
-            #print(get_setup_path(key))
-
+            tc_result = "Passed"
     print('-'*60)
+    return tc_result
 
 def rebootsut():
     cmd_shutdown = 'ipmcset -d powerstate -v 2\n'
@@ -350,25 +358,34 @@ def run_test_one_by_one(payload):
     res = json.loads(res)
     if 'error' in res:
         print(res['error'])
+        tc_result = "Error"
     else:
         print("Patch Successfully")
         rebootsut()
         result = json.loads(get(GET_URL))
-        compare_one(payload,result)
+        tc_result = compare_one(payload,result)
+    return tc_result
 
 def auto_test(testcase_file):
     test_status = load_test_status()
-    with open(testcase_file,'r') as fp:
-        payloads = json.loads(json.load(fp))
+    payloads = load_testcase(testcase_file)
+    #with open(testcase_file,'r') as fp:
+    #    payloads = json.loads(json.load(fp))
     for key in payloads["Attributes"]:
         if not key in test_status["Completed"]:
             timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%s\" \r\n    }\r\n}" %(key, payloads["Attributes"][key])
             print(timestamp)
             print(key + " Value to set: " +payloads["Attributes"][key])
-            run_test_one_by_one(payload)
+            tc_result = run_test_one_by_one(payload)
             test_status["Completed"].append(key)
-            update_test_status(test_status["Completed"])
+            if tc_result == "Error":
+                test_status["Error"].append(key)
+            if tc_result == "Passed":
+                test_status["Passed"].append(key)
+            if tc_result == "Failed":
+                test_status["Failed"].append(key)
+            update_test_status(test_status)
 
 if __name__ == "__main__":
 #    verify_testcase("V15_Default_all.json")
