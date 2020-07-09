@@ -17,7 +17,8 @@ def test_case():
     try:
         HaiYan5Common.boot_to_bootmanager()
         return True
-    except:
+    except Exception as e:
+        print(e)
         print("Boot to Boot manager fail.") 
         return False
 
@@ -27,10 +28,10 @@ if __name__ == '__main__':
     print('-'*80)
     start_time = datetime.datetime.now()
     print("Test started at %s" %(start_time))
-    if not test_case():
-        print("FAILED")
-    else:
+    if test_case():
         print("OK")
+    else:
+        print("FAILED")
     end_time = datetime.datetime.now()
     print("Test finished at %s" %(end_time))
     time_spent = (end_time-start_time).seconds

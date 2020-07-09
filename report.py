@@ -7,20 +7,21 @@ def update_result(data, id, log):  #data = TestRunInfo, id: test case id, result
     result = 'Skip'
     spend_time = '0s'
 
+    data["testResult"][id]["log"].clear()
     with open (log,'r', encoding = 'utf-8') as f:
         for line in f.readlines():
+            data["testResult"][id]["log"].append(line)
             s = re.findall('[0-9]+\.[0-9]+s', line)
             if s:
                 spend_time = s[0]
+            else:
+                spend_time = '0s'   
             if re.search('OK', line):
                 result = 'Pass'
             elif re.search('FAILED', line):
                 result = 'Fail' 
 
-
     data["testResult"][id]["status"] = result
-    data["testResult"][id]["log"].clear()
-    data["testResult"][id]["log"].append(log)
     data["testResult"][id]["spendTime"] = spend_time
 
 

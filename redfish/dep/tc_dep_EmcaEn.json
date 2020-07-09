@@ -1,0 +1,10 @@
+{
+ "Attributes": {
+  "EmcaEn": "",
+  "EMCACSMIEn": "",
+  "EmcaCsmiThreshold": "",
+  "CsmiDynamicDisable": "",
+  "EmcaSetFwUpdate": "",
+  "UboxErrorMask": ""
+ }
+}

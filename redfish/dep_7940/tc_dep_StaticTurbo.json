@@ -1,0 +1,13 @@
+{
+ "Attributes": {
+  "StaticTurbo": "",
+  "FreqSelect": "",
+  "ProcessorEppProfile": "",
+  "ProcessorHWPMEnable": "",
+  "ProcessorEPPEnable": "",
+  "C6Enable": "",
+  "ProcessorC1eEnable": "",
+  "PackageCState": "",
+  "MonitorMWait": ""
+ }
+}

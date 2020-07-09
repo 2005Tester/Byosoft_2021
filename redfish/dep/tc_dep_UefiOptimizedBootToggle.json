@@ -1,0 +1,9 @@
+{
+ "Attributes": {
+  "UefiOptimizedBootToggle": "",
+  "PxeBootToLan": "",
+  "Ipv4Pxe": "",
+  "Ipv6Pxe": "",
+  "NetworkProtocol": ""
+ }
+}

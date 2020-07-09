@@ -16,14 +16,15 @@ import HaiYan5Common
 
 
 
-
 def test_case():
     # Define the test senarior here
     try: 
         HaiYan5Common.sp_boot()
-        return True
-    except:
         print("SP Boot Successfully.")
+        return True
+    except Exception as e:
+        print(e)
+        print("SP Boot fail.")
         return False   
 
 

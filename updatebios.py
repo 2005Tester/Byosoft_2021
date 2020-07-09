@@ -141,7 +141,7 @@ def program_flash():
                         res=op.recv(1024)
                         print(res.decode('utf-8'))
                         now = time.time()
-                        if ((now - start_time)>300):
+                        if ((now - start_time)>600):
                             print("Porgraming Flash Device Timeout!!!")
                             op.close()
                             s.close()

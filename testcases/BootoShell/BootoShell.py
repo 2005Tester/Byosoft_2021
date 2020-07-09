@@ -22,7 +22,8 @@ def test_case():
     try: 
         HaiYan5Common.boot_to_shell()
         return True
-    except:
+    except Exception as e:
+        print(e)
         print("Boot to uefi shell fail.")
         return False   
 

@@ -1,0 +1,7 @@
+{
+ "Attributes": {
+  "AllowMixedPowerOnCpuRatio": "Enable",
+  "ProcessorFlexibleRatioOverrideEnable": "Enable",
+  "ProcessorFlexibleRatio": "20"
+ }
+}

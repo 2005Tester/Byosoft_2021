@@ -16,7 +16,8 @@ import HaiYan5Common
 def test_case():
     try:
         HaiYan5Common.boot_to_setup()
-    except:
+    except Exception as e:
+        print(e)
         print("[FAIL] Boot to setup fail.")     
     if exists(Template(r"tpl1589263493143.png", record_pos=(-0.306, -0.157), resolution=(1031, 932))):
         print("[PASS] Boot to setup successfully")

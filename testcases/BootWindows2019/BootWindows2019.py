@@ -21,13 +21,20 @@ logger=get_logger("airtest")
 logger.setLevel(logging.INFO)
 
 def test_case():
-    HaiYan5Common.boot_to_shell()
+    try:
+        HaiYan5Common.boot_to_shell()
+    except Exception as e:
+        print(e)
+        return False    
     text("FS1:\\EFI\\Microsoft\\boot\\bootmgfw.efi")
     sleep(2)
     keyevent("{ENTER}")
     sleep(30)
-
-    wait(Template(r"tpl1589280594583.png", record_pos=(0.141, 0.03), resolution=(1031, 951)),timeout=60,interval=10) #wait for loginscreen
+    try:
+        wait(Template(r"tpl1589280594583.png", record_pos=(0.141, 0.03), resolution=(1031, 951)),timeout=60,interval=10) #wait for loginscreen
+    except Exception as e:
+        print(e)
+        return False
 
     sleep(2)
 

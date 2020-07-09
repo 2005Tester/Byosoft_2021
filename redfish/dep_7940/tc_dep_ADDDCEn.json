@@ -1,0 +1,8 @@
+{
+ "Attributes": {
+  "ADDDCEn": "Enable",
+  "MirrorMode": "Partial Mirror Mode",
+  "partialmirrorsad0": "Enable",
+  "PartialMirrorUefi": "Enable"
+ }
+}

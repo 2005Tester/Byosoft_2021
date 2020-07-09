@@ -16,14 +16,15 @@ logger.setLevel(logging.INFO)
 
 def test_case():
     sleep(30)
-    wait(Template(r"tpl1589796050102.png", record_pos=(-0.005, 0.017), resolution=(1031, 933)),timeout=120,interval=10)
-    touch(Template(r"tpl1589796050102.png", record_pos=(-0.005, 0.017), resolution=(1031, 933)))
-    #wait(Template(r"tpl1589340787696.png", record_pos=(-0.406, -0.275), resolution=(1031, 951)),timeout=120,interval=10)
-    #touch(Template(r"tpl1589340787696.png", record_pos=(-0.406, -0.275), resolution=(1031, 951)))
+    try:
+        wait(Template(r"tpl1589796050102.png", record_pos=(-0.005, 0.017), resolution=(1031, 933)),timeout=120,interval=10)
+        touch(Template(r"tpl1589796050102.png", record_pos=(-0.005, 0.017), resolution=(1031, 933)))
+    except Exception as e:
+        print(e)
+        return False
+
     sleep(2)
-    #text("byosoft")
-    #keyevent("{ENTER}")
-    #sleep(2)
+
     text("byosoft@123")
     keyevent("{ENTER}")
     print("[Daily] Boot to Ubuntu: PASS.")

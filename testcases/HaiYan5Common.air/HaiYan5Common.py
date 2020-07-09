@@ -38,20 +38,17 @@ def input_password():
     sleep(1.0)
     keyevent("{ENTER}")
     sleep(1.0)
-    if exists(Template(r"tpl1589246727794.png", record_pos=(-0.002, 0.041), resolution=(1031, 933))):    #workaround for invalid password issue.
+    if exists(Template(r"tpl1593395950246.png", record_pos=(0.009, 0.045), resolution=(1031, 935))):    #workaround for invalid password issue.
         keyevent("{ENTER}")
         sleep(1.0)
         text(password)
         sleep(1.0)
         keyevent("{ENTER}")
     else:
-        pass
+        return
     
+    wait(Template(r"tpl1593396125644.png", record_pos=(0.003, 0.033), resolution=(1031, 935)),90)
     keyevent("{ENTER}")
-        
-        
-    #wait(Template(r"tpl1588735657059.png", record_pos=(1.417, 0.118), resolution=(1042, 940)),60)
-    #keyevent("{ENTER}")
     return
 
 def wait_for_hotkey_prompt():
@@ -148,7 +145,7 @@ def sp_boot():
     input_password()
     sleep(3) 
     
-    wait(Template(r"tpl1590055080651.png", record_pos=(0.003, 0.038), resolution=(1043, 946)),30, interval=2)
+    wait(Template(r"tpl1590055080651.png", record_pos=(0.003, 0.038), resolution=(1043, 946)),90, interval=2)
     wait(Template(r"tpl1590055647233.png", record_pos=(0.005, 0.071), resolution=(1043, 946)),90, interval=2)
     touch(Template(r"tpl1590055647233.png", record_pos=(0.005, 0.071), resolution=(1043, 946)))
     sleep(5)
@@ -208,4 +205,5 @@ def reset_default():
     
 
         
+
 
