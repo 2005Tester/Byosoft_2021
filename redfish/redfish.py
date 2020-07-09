@@ -295,7 +295,7 @@ def rebootsut():
     s = paramiko.SSHClient()
     s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     try:
-        s.connect(sut,port,username, password)
+        s.connect(sut,port,username, password, banner_timeout=90)
     except Exception as e:
         print("Error in connecting SUT...")
         time.sleep(300)
@@ -326,6 +326,8 @@ def rebootsut():
                     #os.system('pause')
                     time.sleep(30)
                     ping_sut()
+                    op.close()
+                    s.close
                     return
                     
 
