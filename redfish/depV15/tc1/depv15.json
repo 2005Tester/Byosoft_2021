@@ -1,0 +1,39 @@
+{
+ "Attributes": {
+  "PchsSata": "Disable",
+  "sSataInterfaceMode": "RAID", 
+  "PchsSata": "Enable",
+  "sSataInterfaceMode": "AHCI",
+  "SataPort[0]": "Disable",
+  "SataPort[1]": "Disable",
+  "SataPort[2]": "Disable",
+  "SataPort[3]": "Disable",
+  "SataHotPlug[0]": "Disable",
+  "thermalthrottlingsupport": "CLTT",
+  "OffPkgMemToThermTrip": "Enable",
+  "thermalthrottlingsupport": "CLTT",
+  "OffPkgMemToThermTrip": "Enable",
+  "thermalthrottlingsupport": "OLTT",
+  "OffPkgMemToThermTrip": "Enable",
+  "thermalthrottlingsupport": "CLTT with PECI",
+  "OffPkgMemToThermTrip": "Enable",
+  "thermalthrottlingsupport": "Disable", 
+  "OffPkgMemToThermTrip": "Enable",     
+  
+  "ConsoleRedirection": "Disable",
+  "TerminalType": "VT_100+",		
+  "BaudRate": "9600", 				
+  "DataBits": "7",					
+  "Parity": "Even",						
+  "StopBits": "2",						
+  "FlowControl": "RTS\\CTS",			
+  "CRAfterPost": "No",						
+  
+  "PchAdrEn": "Auto",                       
+  "EadrSupport": "Enable",
+  "PchAdrEn": "Auto",
+  "EadrSupport": "Auto",
+  "PchAdrEn": "Platform-POR"
+  
+}
+}

@@ -268,6 +268,6 @@ def perform_update(bios):
     if not upload_bios(bios):
         Print("Upload BIOS image failed")
     if not program_flash():
-        Print("Program flash failed")
+        print("Program flash failed")
     poweron_sut()
      

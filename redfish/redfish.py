@@ -9,7 +9,7 @@ import subprocess
 import updatebios
 import datetime
 import random
-
+from collections import OrderedDict
 sut = '192.168.2.100'
 port = '22'
 username = 'Administrator'
@@ -22,15 +22,19 @@ requests.packages.urllib3.disable_warnings()
 
 def load_testcase(testcase_file):
     with open (testcase_file, 'r') as f:
-        payloads = json.load(f)
+        payloads = json.load(f,object_pairs_hook=OrderedDict)
         if not isinstance(payloads,dict):
-            payloads = json.loads(payloads)
+            payloads = json.loads(payloads,object_pairs_hook=OrderedDict)
         return(payloads)
 
 
 def load_test_status():
     with open('TestStatus.json','r') as f:
         status = json.load(f)
+    print("Complted: " + str(len(status["Completed"]))
+    print("Error: " + str(len(status["Error"]))
+    print("Passed: " + str(len(status["Passed"]))
+    print("Failed: " + str(len(status["Failed"]))
     return status
 
 def update_test_status(test_status):
@@ -51,7 +55,7 @@ def ping_sut():
         if output.find("TTL=") >=0:
             print("SUT is online now")
             break
-        if time_spent >600:
+        if time_spent >900:
             print("Lost SUT for %s seconds, refresh BIOS image" %(time_spent))
             try:
                 updatebios.perform_update("HY5V015_candidate1.bin")
@@ -295,7 +299,7 @@ def rebootsut():
     s = paramiko.SSHClient()
     s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     try:
-        s.connect(sut,port,username, password, banner_timeout=90)
+        s.connect(sut,port,username, password, banner_timeout=150)
     except Exception as e:
         print("Error in connecting SUT...")
         time.sleep(300)
@@ -328,7 +332,7 @@ def rebootsut():
                     time.sleep(30)
                     ping_sut()
                     op.close()
-                    s.close
+                    s.close()
                     return
                     
 
@@ -356,7 +360,7 @@ def run_test_one_by_one(payload):
     test_item = json.loads(payload)
     try:
         for key in test_item["Attributes"]:
-            print(key + " default value: " + current_all["Attributes"][key])
+            print(key + " default value: " + str(current_all["Attributes"][key]))
             print("Path: " + get_setup_path(key))
     except Exception as e:
         print(e)
@@ -385,7 +389,7 @@ def auto_test(testcase_file):
             timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%s\" \r\n    }\r\n}" %(key, payloads["Attributes"][key])
             print(timestamp)
-            print(key + " Value to set: " +payloads["Attributes"][key])
+            print(key + " Value to set: " + str(payloads["Attributes"][key]))
             tc_result = run_test_one_by_one(payload)
             test_status["Completed"].append(key)
             if tc_result == "Error":
@@ -401,8 +405,8 @@ if __name__ == "__main__":
 #    res = patch("tc_debug.json",PATCH_URL).decode('utf-8')
 #    print(res)
 #    run_test(".\\hang1\\1sthalf.json")
-    #auto_test(".\\7960.json")
-    test_registry_file("baseline1837.txt")
+    auto_test(".\\7960.json")
+    #test_registry_file("baseline1837.txt")
 #    ping_sut()
 #    change_value(".\\gen_case\\remove_dep.json")
 

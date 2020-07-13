@@ -1,0 +1,39 @@
+{
+ "Attributes": {
+  "PchsSata": "Disable",
+  "sSataInterfaceMode": "RAID",   #Expect patch failure
+  "PchsSata": "Enable",
+  "sSataInterfaceMode": "AHCI",
+  "SataPort[0]": "Disable",
+  "SataPort[1]": "Disable",
+  "SataPort[2]": "Disable",
+  "SataPort[3]": "Disable",
+  "SataHotPlug[0]": "Disable",
+  "thermalthrottlingsupport": "CLTT",
+  "OffPkgMemToThermTrip": "Enable",
+  "thermalthrottlingsupport": "CLTT",
+  "OffPkgMemToThermTrip": "Enable",
+  "thermalthrottlingsupport": "OLTT",
+  "OffPkgMemToThermTrip": "Enable",
+  "thermalthrottlingsupport": "CLTT with PECI",
+  "OffPkgMemToThermTrip": "Enable",
+  "thermalthrottlingsupport": "Disable",      #Maybe fail, because OffPkgMemToThermTrip is enabled
+  "OffPkgMemToThermTrip": "Enable",           # Should be fail, depend on above
+  
+  "ConsoleRedirection": "Disable",
+  "TerminalType": "VT_100+",				#Expect patch fail
+  "BaudRate": "9600", 						#Expect patch fail
+  "DataBits": "7",							#Expect patch fail
+  "Parity": "Even",							#Expect patch fail
+  "StopBits": "2",							#Expect patch fail
+  "FlowControl": "RTS\\CTS",				#Expect patch fail
+  "CRAfterPost": "No",						#Expect patch fail
+  
+  "PchAdrEn": "Auto",                        #Expect fail, as EadrSupport is disabled by default
+  "EadrSupport": "Enable",
+  "PchAdrEn": "Auto",
+  "EadrSupport": "Auto",
+  "PchAdrEn": "Platform-POR"
+  
+}
+}

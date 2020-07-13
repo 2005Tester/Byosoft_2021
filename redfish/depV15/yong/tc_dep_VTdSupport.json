@@ -1,0 +1,10 @@
+{
+ "Attributes": {
+  "VTdSupport": "",
+  "ProcessorX2apic": "",
+  "InterruptRemap": "",
+  "ATS": "",
+  "PostedInterrupt": "",
+  "CoherencySupport": ""
+ }
+}
