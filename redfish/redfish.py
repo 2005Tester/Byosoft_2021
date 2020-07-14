@@ -6,10 +6,12 @@ import re
 import os
 import copy
 import subprocess
-import updatebios
 import datetime
 import random
 from collections import OrderedDict
+import logger
+import updatebios
+
 sut = '192.168.2.100'
 port = '22'
 username = 'Administrator'
@@ -17,6 +19,10 @@ password = 'Admin@9000'
 
 GET_URL = "https://192.168.2.100/redfish/v1/Systems/1/Bios/"
 PATCH_URL = "https://192.168.2.100/redfish/v1/Systems/1/Bios/Settings/"
+
+PING_CMD = 'ping 192.168.100.178'
+LOG_FILE = "testlog.txt"
+log = logger.Logger(LOG_FILE, level = "info")
 
 requests.packages.urllib3.disable_warnings()
 
@@ -31,23 +37,22 @@ def load_testcase(testcase_file):
 def load_test_status():
     with open('TestStatus.json','r') as f:
         status = json.load(f)
-    print("Complted: " + str(len(status["Completed"]))
-    print("Error: " + str(len(status["Error"]))
-    print("Passed: " + str(len(status["Passed"]))
-    print("Failed: " + str(len(status["Failed"]))
+    print("Complted: " + str(len(status["Completed"])))
+    print("Error: " + str(len(status["Error"])))
+    print("Passed: " + str(len(status["Passed"])))
+    print("Failed: " + str(len(status["Failed"])))
     return status
 
 def update_test_status(test_status):
     with open('TestStatus.json','w') as f:
-        json.dump(test_status, f)
+        json.dump(test_status, f, indent=1)
 
 
 def ping_sut():
     cmd_update_bios = r'python C:\UpdateTool\updatebios.py HY5V015_candidate1.bin'
-    cmd = 'ping 192.168.100.116'
     start_time = time.time()
     while True:        
-        p = subprocess.Popen(args=cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        p = subprocess.Popen(args=PING_CMD,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         (stdoutput,erroutput) = p.communicate() 
         output = stdoutput.decode()
         now = time.time()
@@ -59,6 +64,8 @@ def ping_sut():
             print("Lost SUT for %s seconds, refresh BIOS image" %(time_spent))
             try:
                 updatebios.perform_update("HY5V015_candidate1.bin")
+                time.sleep(300)
+                start_time = time.time()
             except Exception as e:
                 print(e)
 
@@ -331,9 +338,9 @@ def rebootsut():
                     #os.system('pause')
                     time.sleep(30)
                     ping_sut()
-                    op.close()
-                    s.close()
-                    return
+    op.close()
+    s.close()
+    return
                     
 
 def run_test(test_Case_file):
@@ -360,8 +367,8 @@ def run_test_one_by_one(payload):
     test_item = json.loads(payload)
     try:
         for key in test_item["Attributes"]:
-            print(key + " default value: " + str(current_all["Attributes"][key]))
-            print("Path: " + get_setup_path(key))
+            log.logger.info(key + " default value: " + str(current_all["Attributes"][key]))
+            log.logger.info("Path: " + get_setup_path(key))
     except Exception as e:
         print(e)
         tc_result = "Error"
@@ -370,26 +377,26 @@ def run_test_one_by_one(payload):
     res = patch_one_option(payload,PATCH_URL).decode('utf-8')
     res = json.loads(res)
     if 'error' in res:
-        print(res['error'])
+        log.logger.info(res['error'])
         tc_result = "Error"
+        log.logger.info('-'*60)
     else:
-        print("Patch Successfully")
+        log.logger.info("Patch Successfully")
         rebootsut()
         result = json.loads(get(GET_URL))
         tc_result = compare_one(payload,result)
     return tc_result
 
 def auto_test(testcase_file):
+
     test_status = load_test_status()
     payloads = load_testcase(testcase_file)
-    #with open(testcase_file,'r') as fp:
-    #    payloads = json.loads(json.load(fp))
     for key in payloads["Attributes"]:
         if not key in test_status["Completed"]:
             timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            #print(timestamp)
             payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%s\" \r\n    }\r\n}" %(key, payloads["Attributes"][key])
-            print(timestamp)
-            print(key + " Value to set: " + str(payloads["Attributes"][key]))
+            log.logger.info(key + " Value to set: " + str(payloads["Attributes"][key]))
             tc_result = run_test_one_by_one(payload)
             test_status["Completed"].append(key)
             if tc_result == "Error":
