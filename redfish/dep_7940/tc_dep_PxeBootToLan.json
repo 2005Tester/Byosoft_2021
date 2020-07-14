@@ -1,8 +1,0 @@
-{
- "Attributes": {
-  "PxeBootToLan": "",
-  "Ipv4Pxe": "",
-  "Ipv6Pxe": "",
-  "NetworkProtocol": ""
- }
-}
