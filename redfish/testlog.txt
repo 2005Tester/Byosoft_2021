@@ -1,12 +1,24 @@
-2020-07-14 09:28:01,349 - INFO: MemChannelEnable[0] Value to set: Disable
-2020-07-14 09:28:01,443 - INFO: MemChannelEnable[0] default value: Enable
-2020-07-14 09:28:01,474 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration/MemoryChannelControl
-2020-07-14 09:28:02,377 - INFO: Patch Successfully
-2020-07-14 12:35:48,224 - INFO: MemChannelEnable[0] Value to set: Disable
-2020-07-14 12:35:48,349 - INFO: MemChannelEnable[0] default value: Enable
-2020-07-14 12:35:48,349 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration/MemoryChannelControl
-2020-07-14 12:35:49,334 - INFO: Patch Successfully
-2020-07-14 13:55:32,037 - INFO: MemChannelEnable[0] Value to set: Disable
-2020-07-14 13:55:32,131 - INFO: MemChannelEnable[0] default value: Enable
-2020-07-14 13:55:32,146 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration/MemoryChannelControl
-2020-07-14 13:55:33,163 - INFO: Patch Successfully
+
+2020-07-14 14:41:10,286 - INFO: Start test with .\7960.json
+2020-07-14 14:41:10,286 - INFO: MemChannelEnable[0] Value to set: Disable
+2020-07-14 14:41:10,381 - INFO: MemChannelEnable[0] default value: Enable
+2020-07-14 14:41:10,396 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration/MemoryChannelControl
+2020-07-14 14:41:11,412 - INFO: Patch Successfully
+2020-07-14 15:09:46,193 - INFO: MemChannelEnable[0] : Failed
+2020-07-14 15:09:46,193 - INFO: ------------------------------------------------------------
+2020-07-14 15:09:46,193 - INFO: MemChannelEnable[1] Value to set: Disable
+2020-07-14 15:09:46,271 - INFO: MemChannelEnable[1] default value: Enable
+2020-07-14 15:09:46,287 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration/MemoryChannelControl
+2020-07-14 15:09:47,178 - INFO: Patch Successfully
+2020-07-14 15:14:20,084 - INFO: MemChannelEnable[1] : Pass
+2020-07-14 15:14:20,084 - INFO: ------------------------------------------------------------
+2020-07-14 15:14:20,084 - INFO: MemChannelEnable[2] Value to set: Disable
+2020-07-14 15:14:20,178 - INFO: MemChannelEnable[2] default value: Enable
+2020-07-14 15:14:20,178 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration/MemoryChannelControl
+2020-07-14 15:14:21,116 - INFO: Patch Successfully
+2020-07-14 15:20:00,646 - INFO: MemChannelEnable[2] : Pass
+2020-07-14 15:20:00,646 - INFO: ------------------------------------------------------------
+2020-07-14 15:20:00,646 - INFO: MemChannelEnable[3] Value to set: Disable
+2020-07-14 15:20:00,725 - INFO: MemChannelEnable[3] default value: Enable
+2020-07-14 15:20:00,740 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration/MemoryChannelControl
+2020-07-14 15:20:01,678 - INFO: Patch Successfully

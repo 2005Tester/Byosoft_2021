@@ -277,7 +277,10 @@
   "PpinControl",
   "AesEnable",
   "RdtCatOpportunisticTuning",
-  "BootClassOrder"
+  "BootClassOrder",
+  "MemChannelEnable[0]",
+  "MemChannelEnable[1]",
+  "MemChannelEnable[2]"
  ],
  "Passed": [
   "CdnSupport",
@@ -535,7 +538,9 @@
   "ProcessorLtsxEnable",
   "PpinControl",
   "AesEnable",
-  "RdtCatOpportunisticTuning"
+  "RdtCatOpportunisticTuning",
+  "MemChannelEnable[1]",
+  "MemChannelEnable[2]"
  ],
  "Error": [
   "SpsAltitude",
@@ -561,13 +566,13 @@
   "spareErrTh",
   "ProchotResponseRatio",
   "TCCActivationOffset"
-
  ],
  "Failed": [
   "PowerOnPassword",
   "MsiEn[55]",
   "MsiEn[56]",
   "Pci64BitResourceAllocation",
-  "BootClassOrder"
+  "BootClassOrder",
+  "MemChannelEnable[0]"
  ]
 }

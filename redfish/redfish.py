@@ -37,10 +37,10 @@ def load_testcase(testcase_file):
 def load_test_status():
     with open('TestStatus.json','r') as f:
         status = json.load(f)
-    print("Complted: " + str(len(status["Completed"])))
-    print("Error: " + str(len(status["Error"])))
-    print("Passed: " + str(len(status["Passed"])))
-    print("Failed: " + str(len(status["Failed"])))
+    log.logger.info("Complted: " + str(len(status["Completed"])))
+    log.logger.info("Error: " + str(len(status["Error"])))
+    log.logger.info("Passed: " + str(len(status["Passed"])))
+    log.logger.info("Failed: " + str(len(status["Failed"])))
     return status
 
 def update_test_status(test_status):
@@ -226,8 +226,8 @@ def get(url):
     result = response.text
     response.close()
     #print(result)
-    with open ('result.json', 'w') as fp:
-        json.dump(result, fp)
+    #with open ('result.json', 'w') as fp:
+    #    json.dump(result, fp)
     return result
 
 # 发送PATCH request 设置 testcase里面的值 
@@ -289,12 +289,12 @@ def compare_one(payload, result):
     tc = json.loads(payload)
     for key in tc["Attributes"]:
         if not tc["Attributes"][key] == result["Attributes"][key]:
-            print(key + " : Failed")
+            log.logger.info(key + " : Failed")
             tc_result = "Failed"
         else:
-            print(key + " : Pass")
+            log.logger.info(key + " : Pass")
             tc_result = "Passed"
-    print('-'*60)
+    log.logger.info('-'*60)
     return tc_result
 
 def rebootsut():
@@ -370,7 +370,7 @@ def run_test_one_by_one(payload):
             log.logger.info(key + " default value: " + str(current_all["Attributes"][key]))
             log.logger.info("Path: " + get_setup_path(key))
     except Exception as e:
-        print(e)
+        log.logger.error(e)
         tc_result = "Error"
         return tc_result
 
@@ -388,7 +388,9 @@ def run_test_one_by_one(payload):
     return tc_result
 
 def auto_test(testcase_file):
-
+    log.logger.info("*"*60)
+    log.logger.info("Start test with %s" %(testcase_file))
+    log.logger.info("*"*60)
     test_status = load_test_status()
     payloads = load_testcase(testcase_file)
     for key in payloads["Attributes"]:
