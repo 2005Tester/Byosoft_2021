@@ -9,6 +9,7 @@ import subprocess
 import datetime
 import random
 from collections import OrderedDict
+from sys import argv
 import logger
 import updatebios
 
@@ -20,8 +21,18 @@ password = 'Admin@9000'
 GET_URL = "https://192.168.2.100/redfish/v1/Systems/1/Bios/"
 PATCH_URL = "https://192.168.2.100/redfish/v1/Systems/1/Bios/Settings/"
 
+INIT_STATUS = {"Completed": [],"Passed": [],"Error": [],"Failed": []}
+
 PING_CMD = 'ping 192.168.100.178'
 LOG_FILE = "testlog.txt"
+
+help_msg = """
+Usage: 
+python redfish.py xxx.json --Patch and verify all the setup options defined in xxx.json
+python redfish.py directory --Find all the json files in specified directory, and run all the tests in those json files
+python redfish.py init     --cleanup teststatus
+"""
+
 log = logger.Logger(LOG_FILE, level = "info")
 
 requests.packages.urllib3.disable_warnings()
@@ -34,17 +45,23 @@ def load_testcase(testcase_file):
         return(payloads)
 
 
-def load_test_status():
-    with open('TestStatus.json','r') as f:
+def load_test_status(testcase_file):
+    status_file = testcase_file + ".status"
+    if not os.path.exists(status_file):
+        with open(status_file,'w') as f:
+            json.dump(INIT_STATUS, f, indent=1)
+        
+    with open(status_file,'r') as f:
         status = json.load(f)
     log.logger.info("Complted: " + str(len(status["Completed"])))
     log.logger.info("Error: " + str(len(status["Error"])))
     log.logger.info("Passed: " + str(len(status["Passed"])))
     log.logger.info("Failed: " + str(len(status["Failed"])))
+    log.logger.info("Load test status from %s" %status_file)
     return status
 
 def update_test_status(test_status):
-    with open('TestStatus.json','w') as f:
+    with open(status_file,'w') as f:
         json.dump(test_status, f, indent=1)
 
 
@@ -391,7 +408,7 @@ def auto_test(testcase_file):
     log.logger.info("*"*60)
     log.logger.info("Start test with %s" %(testcase_file))
     log.logger.info("*"*60)
-    test_status = load_test_status()
+    test_status = load_test_status(testcase_file)
     payloads = load_testcase(testcase_file)
     for key in payloads["Attributes"]:
         if not key in test_status["Completed"]:
@@ -409,12 +426,39 @@ def auto_test(testcase_file):
                 test_status["Failed"].append(key)
             update_test_status(test_status)
 
+def auto_test_dir(dir):
+    tc_file_list = os.listdir(dir)
+    for tc_file in tc_file_list:
+        if tc_file.split(".")[-1] == 'json':
+            auto_test(os.path.join(dir,tc_file))
+            updatebios.perform_update("HY5V015_candidate1.bin")
+            time.sleep(500)
+        else:
+            print("%s is not a json file, skip test" %tc_file)
+
 if __name__ == "__main__":
+
+    if len(argv)==2:
+        if argv[1] == "clenup":
+            log.logger.info("Function Not ready yet, INTENTION IS TO clenup status and log file")
+        elif argv[1] == "init":
+            log.logger.info("generating test case")
+        elif os.path.isfile(argv[1]):
+            log.logger.info("Run test for %s" % argv[1])
+            auto_test(argv[1])
+        elif os.path.isdir(argv[1]):
+            log.logger.info("Run multiple files in directory %s" % argv[1])
+            auto_test_dir(argv[1])
+        else:
+            print(help_msg)
+    else:
+        print(help_msg)
+
 #    verify_testcase("V15_Default_all.json")
 #    res = patch("tc_debug.json",PATCH_URL).decode('utf-8')
 #    print(res)
 #    run_test(".\\hang1\\1sthalf.json")
-    auto_test(".\\7960.json")
+#    auto_test(".\\dep\\tc_dep_PciePortDisable_10.json")
     #test_registry_file("baseline1837.txt")
 #    ping_sut()
 #    change_value(".\\gen_case\\remove_dep.json")

@@ -170,9 +170,11 @@
  ],
  "Passed": [
   "PciePortDisable[1]",
+  "PciePortLinkSpeed[1]",
   "PciePortLinkSpeed[5]",
   "PciePortDisable[5]",
   "PciePortLinkSpeed[7]",
+  "PciePortDisable[7]",
   "PciePortLinkSpeed[13]",
   "PciePortDisable[13]",
   "PciePortLinkSpeed[22]",
@@ -188,17 +190,25 @@
   "PciePortLinkSpeed[43]",
   "PciePortDisable[43]",
   "PciePortDisable[55]",
+  "PciePortLinkSpeed[55]",
   "PciePortDisable[56]",
+  "PciePortLinkSpeed[56]",
   "PciePortDisable[57]",
+  "PciePortLinkSpeed[57]",
   "PciePortDisable[58]",
+  "PciePortLinkSpeed[58]",
   "PciePortDisable[64]",
+  "PciePortLinkSpeed[64]",
   "PciePortDisable[68]",
+  "PciePortLinkSpeed[68]",
   "PciePortDisable[69]",
+  "PciePortLinkSpeed[69]",
   "PciePortDisable[70]",
-  "PciePortDisable[71]"
+  "PciePortLinkSpeed[70]",
+  "PciePortDisable[71]",
+  "PciePortLinkSpeed[71]"
  ],
  "Error": [
-  "PciePortLinkSpeed[1]",
   "PciePortDisable[2]",
   "PciePortLinkSpeed[2]",
   "PciePortLinkSpeed[3]",
@@ -286,10 +296,6 @@
   "PciePortLinkSpeed[53]",
   "PciePortDisable[54]",
   "PciePortLinkSpeed[54]",
-  "PciePortLinkSpeed[55]",
-  "PciePortLinkSpeed[56]",
-  "PciePortLinkSpeed[57]",
-  "PciePortLinkSpeed[58]",
   "PciePortDisable[59]",
   "PciePortLinkSpeed[59]",
   "PciePortDisable[60]",
@@ -300,17 +306,12 @@
   "PciePortLinkSpeed[62]",
   "PciePortDisable[63]",
   "PciePortLinkSpeed[63]",
-  "PciePortLinkSpeed[64]",
   "PciePortDisable[65]",
   "PciePortLinkSpeed[65]",
   "PciePortDisable[66]",
   "PciePortLinkSpeed[66]",
   "PciePortDisable[67]",
   "PciePortLinkSpeed[67]",
-  "PciePortLinkSpeed[68]",
-  "PciePortLinkSpeed[69]",
-  "PciePortLinkSpeed[70]",
-  "PciePortLinkSpeed[71]",
   "PciePortDisable[72]",
   "PciePortLinkSpeed[72]",
   "PciePortDisable[73]",
@@ -338,7 +339,5 @@
   "PciePortDisable[84]",
   "PciePortLinkSpeed[84]"
  ],
- "Failed": [
-  "PciePortDisable[7]"
- ]
+ "Failed": []
 }

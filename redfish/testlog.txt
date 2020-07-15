@@ -22,3 +22,1465 @@
 2020-07-14 15:20:00,725 - INFO: MemChannelEnable[3] default value: Enable
 2020-07-14 15:20:00,740 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration/MemoryChannelControl
 2020-07-14 15:20:01,678 - INFO: Patch Successfully
+2020-07-14 15:22:06,287 - INFO: ************************************************************
+2020-07-14 15:22:06,287 - INFO: Start test with .\7960.json
+2020-07-14 15:22:06,287 - INFO: ************************************************************
+2020-07-14 15:22:06,302 - INFO: Complted: 281
+2020-07-14 15:22:06,302 - INFO: Error: 23
+2020-07-14 15:22:06,302 - INFO: Passed: 258
+2020-07-14 15:22:06,302 - INFO: Failed: 6
+2020-07-14 15:22:06,302 - INFO: MemChannelEnable[3] Value to set: Disable
+2020-07-14 15:22:06,396 - INFO: MemChannelEnable[3] default value: Enable
+2020-07-14 15:22:06,396 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration/MemoryChannelControl
+2020-07-14 15:22:07,319 - INFO: Patch Successfully
+2020-07-14 15:25:39,006 - INFO: MemChannelEnable[3] : Pass
+2020-07-14 15:25:39,006 - INFO: ------------------------------------------------------------
+2020-07-14 15:25:39,006 - INFO: MemChannelEnable[4] Value to set: Disable
+2020-07-14 15:25:39,084 - INFO: MemChannelEnable[4] default value: Enable
+2020-07-14 15:25:39,100 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration/MemoryChannelControl
+2020-07-14 15:25:40,006 - INFO: Patch Successfully
+2020-07-14 15:32:17,584 - INFO: MemChannelEnable[4] : Pass
+2020-07-14 15:32:17,584 - INFO: ------------------------------------------------------------
+2020-07-14 15:32:17,584 - INFO: MemChannelEnable[5] Value to set: Disable
+2020-07-14 15:32:17,662 - INFO: MemChannelEnable[5] default value: Enable
+2020-07-14 15:32:17,677 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration/MemoryChannelControl
+2020-07-14 15:32:18,553 - INFO: Patch Successfully
+2020-07-14 15:37:51,990 - INFO: MemChannelEnable[5] : Pass
+2020-07-14 15:37:51,990 - INFO: ------------------------------------------------------------
+2020-07-14 15:37:51,990 - INFO: MemChannelEnable[6] Value to set: Disable
+2020-07-14 15:37:52,068 - INFO: MemChannelEnable[6] default value: Enable
+2020-07-14 15:37:52,084 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration/MemoryChannelControl
+2020-07-14 15:37:52,991 - INFO: Patch Successfully
+2020-07-14 15:48:04,458 - INFO: ************************************************************
+2020-07-14 15:48:04,458 - INFO: Start test with .\7960.json
+2020-07-14 15:48:04,458 - INFO: ************************************************************
+2020-07-14 15:48:04,458 - INFO: Complted: 284
+2020-07-14 15:48:04,458 - INFO: Error: 23
+2020-07-14 15:48:04,458 - INFO: Passed: 261
+2020-07-14 15:48:04,458 - INFO: Failed: 6
+2020-07-14 15:48:04,458 - INFO: MemChannelEnable[6] Value to set: Disable
+2020-07-14 15:48:04,552 - INFO: MemChannelEnable[6] default value: Enable
+2020-07-14 15:48:04,552 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration/MemoryChannelControl
+2020-07-14 15:48:05,490 - INFO: Patch Successfully
+2020-07-14 17:09:07,537 - INFO: ************************************************************
+2020-07-14 17:09:07,537 - INFO: Start test with .\dep\tc_dep_PciePortDisable_00.json
+2020-07-14 17:09:07,537 - INFO: ************************************************************
+2020-07-14 17:09:07,537 - INFO: Complted: 284
+2020-07-14 17:09:07,537 - INFO: Error: 23
+2020-07-14 17:09:07,537 - INFO: Passed: 261
+2020-07-14 17:09:07,537 - INFO: Failed: 6
+2020-07-14 17:10:12,505 - INFO: ************************************************************
+2020-07-14 17:10:12,505 - INFO: Start test with .\dep\tc_dep_PciePortDisable_00.json
+2020-07-14 17:10:12,505 - INFO: ************************************************************
+2020-07-14 17:10:12,505 - INFO: Complted: 284
+2020-07-14 17:10:12,505 - INFO: Error: 23
+2020-07-14 17:10:12,505 - INFO: Passed: 261
+2020-07-14 17:10:12,505 - INFO: Failed: 6
+2020-07-14 17:10:12,505 - INFO: PciePortLinkSpeed[1] Value to set: Gen 3 (8 GT/s)
+2020-07-14 17:10:12,599 - INFO: PciePortLinkSpeed[1] default value: Auto
+2020-07-14 17:10:12,615 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port1A
+2020-07-14 17:10:13,537 - INFO: Patch Successfully
+2020-07-14 17:14:32,959 - INFO: PciePortLinkSpeed[1] : Pass
+2020-07-14 17:14:32,959 - INFO: ------------------------------------------------------------
+2020-07-14 17:14:32,959 - INFO: PciePortLinkSpeed[2] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:14:33,037 - ERROR: 'PciePortLinkSpeed[2]'
+2020-07-14 17:14:33,052 - INFO: PciePortLinkSpeed[3] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:14:33,131 - ERROR: 'PciePortLinkSpeed[3]'
+2020-07-14 17:14:33,131 - INFO: PciePortLinkSpeed[4] Value to set: Gen 3 (8 GT/s)
+2020-07-14 17:14:33,209 - ERROR: 'PciePortLinkSpeed[4]'
+2020-07-14 17:14:33,209 - INFO: PciePortLinkSpeed[5] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:14:33,287 - INFO: PciePortLinkSpeed[5] default value: Auto
+2020-07-14 17:14:33,302 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port2A
+2020-07-14 17:14:34,224 - INFO: Patch Successfully
+2020-07-14 17:19:07,021 - INFO: PciePortLinkSpeed[5] : Pass
+2020-07-14 17:19:07,021 - INFO: ------------------------------------------------------------
+2020-07-14 17:19:07,021 - INFO: PciePortLinkSpeed[6] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:19:07,100 - ERROR: 'PciePortLinkSpeed[6]'
+2020-07-14 17:19:07,100 - INFO: PciePortLinkSpeed[7] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:19:07,208 - INFO: PciePortLinkSpeed[7] default value: Auto
+2020-07-14 17:19:07,224 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port2C
+2020-07-14 17:19:08,240 - INFO: Patch Successfully
+2020-07-14 17:23:40,959 - INFO: PciePortLinkSpeed[7] : Pass
+2020-07-14 17:23:40,959 - INFO: ------------------------------------------------------------
+2020-07-14 17:23:40,974 - INFO: PciePortLinkSpeed[8] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:23:41,052 - ERROR: 'PciePortLinkSpeed[8]'
+2020-07-14 17:23:41,052 - INFO: PciePortLinkSpeed[9] Value to set: Gen 1 (2.5 GT/s)
+2020-07-14 17:23:41,146 - ERROR: 'PciePortLinkSpeed[9]'
+2020-07-14 17:23:41,146 - INFO: PciePortLinkSpeed[10] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:23:41,225 - ERROR: 'PciePortLinkSpeed[10]'
+2020-07-14 17:23:41,240 - INFO: PciePortLinkSpeed[11] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:23:41,319 - ERROR: 'PciePortLinkSpeed[11]'
+2020-07-14 17:23:41,319 - INFO: PciePortLinkSpeed[12] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:23:41,412 - ERROR: 'PciePortLinkSpeed[12]'
+2020-07-14 17:23:41,427 - INFO: PciePortLinkSpeed[13] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:23:41,506 - INFO: PciePortLinkSpeed[13] default value: Auto
+2020-07-14 17:23:41,521 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port4A
+2020-07-14 17:23:42,537 - INFO: Patch Successfully
+2020-07-14 17:28:15,005 - INFO: PciePortLinkSpeed[13] : Pass
+2020-07-14 17:28:15,005 - INFO: ------------------------------------------------------------
+2020-07-14 17:28:15,005 - INFO: PciePortLinkSpeed[14] Value to set: Gen 3 (8 GT/s)
+2020-07-14 17:28:15,084 - ERROR: 'PciePortLinkSpeed[14]'
+2020-07-14 17:28:15,084 - INFO: PciePortLinkSpeed[15] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:28:15,162 - ERROR: 'PciePortLinkSpeed[15]'
+2020-07-14 17:28:15,162 - INFO: PciePortLinkSpeed[16] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:28:15,240 - ERROR: 'PciePortLinkSpeed[16]'
+2020-07-14 17:28:15,240 - INFO: PciePortLinkSpeed[17] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:28:15,349 - ERROR: 'PciePortLinkSpeed[17]'
+2020-07-14 17:28:15,349 - INFO: PciePortLinkSpeed[18] Value to set: Gen 1 (2.5 GT/s)
+2020-07-14 17:28:15,427 - ERROR: 'PciePortLinkSpeed[18]'
+2020-07-14 17:28:15,427 - INFO: PciePortLinkSpeed[19] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:28:15,537 - ERROR: 'PciePortLinkSpeed[19]'
+2020-07-14 17:28:15,537 - INFO: PciePortLinkSpeed[20] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:28:15,615 - ERROR: 'PciePortLinkSpeed[20]'
+2020-07-14 17:28:15,615 - INFO: PciePortLinkSpeed[21] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:28:15,694 - ERROR: 'PciePortLinkSpeed[21]'
+2020-07-14 17:28:15,694 - INFO: PciePortLinkSpeed[22] Value to set: Gen 3 (8 GT/s)
+2020-07-14 17:28:15,771 - INFO: PciePortLinkSpeed[22] default value: Auto
+2020-07-14 17:28:15,787 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port1A
+2020-07-14 17:28:16,756 - INFO: Patch Successfully
+2020-07-14 17:32:49,490 - INFO: PciePortLinkSpeed[22] : Pass
+2020-07-14 17:32:49,490 - INFO: ------------------------------------------------------------
+2020-07-14 17:32:49,506 - INFO: PciePortLinkSpeed[23] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:32:49,599 - ERROR: 'PciePortLinkSpeed[23]'
+2020-07-14 17:32:49,599 - INFO: PciePortLinkSpeed[24] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:32:49,678 - INFO: PciePortLinkSpeed[24] default value: Auto
+2020-07-14 17:32:49,693 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port1C
+2020-07-14 17:32:50,662 - INFO: Patch Successfully
+2020-07-14 17:37:23,521 - INFO: PciePortLinkSpeed[24] : Pass
+2020-07-14 17:37:23,521 - INFO: ------------------------------------------------------------
+2020-07-14 17:37:23,521 - INFO: PciePortLinkSpeed[25] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:37:23,600 - ERROR: 'PciePortLinkSpeed[25]'
+2020-07-14 17:37:23,615 - INFO: PciePortLinkSpeed[26] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:37:23,693 - INFO: PciePortLinkSpeed[26] default value: Auto
+2020-07-14 17:37:23,708 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port2A
+2020-07-14 17:37:24,662 - INFO: Patch Successfully
+2020-07-14 17:41:57,490 - INFO: PciePortLinkSpeed[26] : Pass
+2020-07-14 17:41:57,490 - INFO: ------------------------------------------------------------
+2020-07-14 17:41:57,490 - INFO: PciePortLinkSpeed[27] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:41:57,584 - ERROR: 'PciePortLinkSpeed[27]'
+2020-07-14 17:41:57,584 - INFO: PciePortLinkSpeed[28] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:41:57,662 - ERROR: 'PciePortLinkSpeed[28]'
+2020-07-14 17:41:57,662 - INFO: PciePortLinkSpeed[29] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:41:57,740 - ERROR: 'PciePortLinkSpeed[29]'
+2020-07-14 17:41:57,740 - INFO: PciePortLinkSpeed[30] Value to set: Gen 3 (8 GT/s)
+2020-07-14 17:41:57,834 - ERROR: 'PciePortLinkSpeed[30]'
+2020-07-14 17:41:57,834 - INFO: PciePortLinkSpeed[31] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:41:57,912 - ERROR: 'PciePortLinkSpeed[31]'
+2020-07-14 17:41:57,928 - INFO: PciePortLinkSpeed[32] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:41:58,006 - ERROR: 'PciePortLinkSpeed[32]'
+2020-07-14 17:41:58,006 - INFO: PciePortLinkSpeed[33] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:41:58,084 - ERROR: 'PciePortLinkSpeed[33]'
+2020-07-14 17:41:58,084 - INFO: PciePortLinkSpeed[34] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:41:58,162 - INFO: PciePortLinkSpeed[34] default value: Auto
+2020-07-14 17:41:58,177 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port4A
+2020-07-14 17:41:59,131 - INFO: Patch Successfully
+2020-07-14 17:46:32,006 - INFO: PciePortLinkSpeed[34] : Pass
+2020-07-14 17:46:32,006 - INFO: ------------------------------------------------------------
+2020-07-14 17:46:32,006 - INFO: PciePortLinkSpeed[35] Value to set: Gen 1 (2.5 GT/s)
+2020-07-14 17:46:32,100 - ERROR: 'PciePortLinkSpeed[35]'
+2020-07-14 17:46:32,100 - INFO: PciePortLinkSpeed[36] Value to set: Gen 1 (2.5 GT/s)
+2020-07-14 17:46:32,178 - INFO: PciePortLinkSpeed[36] default value: Auto
+2020-07-14 17:46:32,193 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port4C
+2020-07-14 17:46:33,147 - INFO: Patch Successfully
+2020-07-14 17:51:06,052 - INFO: PciePortLinkSpeed[36] : Pass
+2020-07-14 17:51:06,052 - INFO: ------------------------------------------------------------
+2020-07-14 17:51:06,052 - INFO: PciePortLinkSpeed[37] Value to set: Gen 1 (2.5 GT/s)
+2020-07-14 17:51:06,131 - ERROR: 'PciePortLinkSpeed[37]'
+2020-07-14 17:51:06,131 - INFO: PciePortLinkSpeed[38] Value to set: Gen 1 (2.5 GT/s)
+2020-07-14 17:51:06,225 - ERROR: 'PciePortLinkSpeed[38]'
+2020-07-14 17:51:06,225 - INFO: PciePortLinkSpeed[39] Value to set: Gen 1 (2.5 GT/s)
+2020-07-14 17:51:06,303 - ERROR: 'PciePortLinkSpeed[39]'
+2020-07-14 17:51:06,303 - INFO: PciePortLinkSpeed[40] Value to set: Gen 1 (2.5 GT/s)
+2020-07-14 17:51:06,396 - ERROR: 'PciePortLinkSpeed[40]'
+2020-07-14 17:51:06,396 - INFO: PciePortLinkSpeed[41] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:51:06,475 - ERROR: 'PciePortLinkSpeed[41]'
+2020-07-14 17:51:06,475 - INFO: PciePortLinkSpeed[42] Value to set: Gen 3 (8 GT/s)
+2020-07-14 17:51:06,553 - ERROR: 'PciePortLinkSpeed[42]'
+2020-07-14 17:51:06,553 - INFO: PciePortLinkSpeed[43] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:51:06,646 - INFO: PciePortLinkSpeed[43] default value: Auto
+2020-07-14 17:51:06,646 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port1A
+2020-07-14 17:51:07,584 - INFO: Patch Successfully
+2020-07-14 17:55:40,506 - INFO: PciePortLinkSpeed[43] : Pass
+2020-07-14 17:55:40,506 - INFO: ------------------------------------------------------------
+2020-07-14 17:55:40,506 - INFO: PciePortLinkSpeed[44] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:55:40,584 - ERROR: 'PciePortLinkSpeed[44]'
+2020-07-14 17:55:40,584 - INFO: PciePortLinkSpeed[45] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:55:40,662 - ERROR: 'PciePortLinkSpeed[45]'
+2020-07-14 17:55:40,662 - INFO: PciePortLinkSpeed[46] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:55:40,755 - ERROR: 'PciePortLinkSpeed[46]'
+2020-07-14 17:55:40,755 - INFO: PciePortLinkSpeed[47] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:55:40,849 - ERROR: 'PciePortLinkSpeed[47]'
+2020-07-14 17:55:40,849 - INFO: PciePortLinkSpeed[48] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:55:40,943 - ERROR: 'PciePortLinkSpeed[48]'
+2020-07-14 17:55:40,943 - INFO: PciePortLinkSpeed[49] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:55:41,037 - ERROR: 'PciePortLinkSpeed[49]'
+2020-07-14 17:55:41,037 - INFO: PciePortLinkSpeed[50] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:55:41,131 - ERROR: 'PciePortLinkSpeed[50]'
+2020-07-14 17:55:41,131 - INFO: PciePortLinkSpeed[51] Value to set: Gen 1 (2.5 GT/s)
+2020-07-14 17:55:41,225 - ERROR: 'PciePortLinkSpeed[51]'
+2020-07-14 17:55:41,225 - INFO: PciePortLinkSpeed[52] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:55:41,303 - ERROR: 'PciePortLinkSpeed[52]'
+2020-07-14 17:55:41,318 - INFO: PciePortLinkSpeed[53] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:55:41,396 - ERROR: 'PciePortLinkSpeed[53]'
+2020-07-14 17:55:41,396 - INFO: PciePortLinkSpeed[54] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:55:41,490 - ERROR: 'PciePortLinkSpeed[54]'
+2020-07-14 17:55:41,490 - INFO: PciePortLinkSpeed[55] Value to set: Gen 2 (5 GT/s)
+2020-07-14 17:55:41,568 - INFO: PciePortLinkSpeed[55] default value: Auto
+2020-07-14 17:55:41,584 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port4A
+2020-07-14 17:55:42,537 - INFO: Patch Successfully
+2020-07-14 18:00:15,006 - INFO: PciePortLinkSpeed[55] : Pass
+2020-07-14 18:00:15,006 - INFO: ------------------------------------------------------------
+2020-07-14 18:00:15,006 - INFO: PciePortLinkSpeed[56] Value to set: Gen 2 (5 GT/s)
+2020-07-14 18:00:15,084 - INFO: PciePortLinkSpeed[56] default value: Auto
+2020-07-14 18:00:15,100 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port4B
+2020-07-14 18:00:16,037 - INFO: Patch Successfully
+2020-07-14 18:05:49,474 - INFO: PciePortLinkSpeed[56] : Pass
+2020-07-14 18:05:49,474 - INFO: ------------------------------------------------------------
+2020-07-14 18:05:49,474 - INFO: PciePortLinkSpeed[57] Value to set: Gen 2 (5 GT/s)
+2020-07-14 18:05:49,568 - INFO: PciePortLinkSpeed[57] default value: Auto
+2020-07-14 18:05:49,568 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port4C
+2020-07-14 18:05:50,537 - INFO: Patch Successfully
+2020-07-14 18:10:22,990 - INFO: PciePortLinkSpeed[57] : Pass
+2020-07-14 18:10:22,990 - INFO: ------------------------------------------------------------
+2020-07-14 18:10:23,006 - INFO: PciePortLinkSpeed[58] Value to set: Gen 2 (5 GT/s)
+2020-07-14 18:10:23,084 - INFO: PciePortLinkSpeed[58] default value: Auto
+2020-07-14 18:10:23,099 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port4D
+2020-07-14 18:10:24,053 - INFO: Patch Successfully
+2020-07-14 18:13:56,412 - INFO: PciePortLinkSpeed[58] : Pass
+2020-07-14 18:13:56,412 - INFO: ------------------------------------------------------------
+2020-07-14 18:13:56,412 - INFO: PciePortLinkSpeed[59] Value to set: Gen 3 (8 GT/s)
+2020-07-14 18:13:56,521 - ERROR: 'PciePortLinkSpeed[59]'
+2020-07-14 18:13:56,521 - INFO: PciePortLinkSpeed[60] Value to set: Gen 3 (8 GT/s)
+2020-07-14 18:13:56,615 - ERROR: 'PciePortLinkSpeed[60]'
+2020-07-14 18:13:56,615 - INFO: PciePortLinkSpeed[61] Value to set: Gen 3 (8 GT/s)
+2020-07-14 18:13:56,724 - ERROR: 'PciePortLinkSpeed[61]'
+2020-07-14 18:13:56,724 - INFO: PciePortLinkSpeed[62] Value to set: Gen 3 (8 GT/s)
+2020-07-14 18:13:56,818 - ERROR: 'PciePortLinkSpeed[62]'
+2020-07-14 18:13:56,818 - INFO: PciePortLinkSpeed[63] Value to set: Gen 3 (8 GT/s)
+2020-07-14 18:13:56,896 - ERROR: 'PciePortLinkSpeed[63]'
+2020-07-14 18:13:56,912 - INFO: PciePortLinkSpeed[64] Value to set: Gen 3 (8 GT/s)
+2020-07-14 18:13:56,990 - INFO: PciePortLinkSpeed[64] default value: Auto
+2020-07-14 18:13:57,006 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port1A
+2020-07-14 18:13:57,975 - INFO: Patch Successfully
+2020-07-14 18:17:30,021 - INFO: PciePortLinkSpeed[64] : Pass
+2020-07-14 18:17:30,021 - INFO: ------------------------------------------------------------
+2020-07-14 18:17:30,021 - INFO: PciePortLinkSpeed[65] Value to set: Gen 3 (8 GT/s)
+2020-07-14 18:17:30,100 - ERROR: 'PciePortLinkSpeed[65]'
+2020-07-14 18:17:30,115 - INFO: PciePortLinkSpeed[66] Value to set: Gen 3 (8 GT/s)
+2020-07-14 18:17:30,209 - ERROR: 'PciePortLinkSpeed[66]'
+2020-07-14 18:17:30,209 - INFO: PciePortLinkSpeed[67] Value to set: Gen 3 (8 GT/s)
+2020-07-14 18:17:30,287 - ERROR: 'PciePortLinkSpeed[67]'
+2020-07-14 18:17:30,287 - INFO: PciePortLinkSpeed[68] Value to set: Gen 2 (5 GT/s)
+2020-07-14 18:17:30,396 - INFO: PciePortLinkSpeed[68] default value: Auto
+2020-07-14 18:17:30,396 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port2A
+2020-07-14 18:17:31,365 - INFO: Patch Successfully
+2020-07-14 18:22:04,069 - INFO: PciePortLinkSpeed[68] : Pass
+2020-07-14 18:22:04,069 - INFO: ------------------------------------------------------------
+2020-07-14 18:22:04,069 - INFO: PciePortLinkSpeed[69] Value to set: Gen 2 (5 GT/s)
+2020-07-14 18:22:04,146 - INFO: PciePortLinkSpeed[69] default value: Auto
+2020-07-14 18:22:04,162 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port2B
+2020-07-14 18:22:05,131 - INFO: Patch Successfully
+2020-07-14 18:26:38,037 - INFO: PciePortLinkSpeed[69] : Pass
+2020-07-14 18:26:38,037 - INFO: ------------------------------------------------------------
+2020-07-14 18:26:38,037 - INFO: PciePortLinkSpeed[70] Value to set: Gen 2 (5 GT/s)
+2020-07-14 18:26:38,131 - INFO: PciePortLinkSpeed[70] default value: Auto
+2020-07-14 18:26:38,131 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port2C
+2020-07-14 18:26:39,116 - INFO: Patch Successfully
+2020-07-14 18:32:12,990 - INFO: PciePortLinkSpeed[70] : Pass
+2020-07-14 18:32:12,990 - INFO: ------------------------------------------------------------
+2020-07-14 18:32:12,990 - INFO: PciePortLinkSpeed[71] Value to set: Gen 2 (5 GT/s)
+2020-07-14 18:32:13,069 - INFO: PciePortLinkSpeed[71] default value: Auto
+2020-07-14 18:32:13,069 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port2D
+2020-07-14 18:32:14,053 - INFO: Patch Successfully
+2020-07-14 18:37:47,474 - INFO: PciePortLinkSpeed[71] : Pass
+2020-07-14 18:37:47,474 - INFO: ------------------------------------------------------------
+2020-07-14 18:37:47,474 - INFO: PciePortLinkSpeed[72] Value to set: Gen 2 (5 GT/s)
+2020-07-14 18:37:47,568 - ERROR: 'PciePortLinkSpeed[72]'
+2020-07-14 18:37:47,568 - INFO: PciePortLinkSpeed[73] Value to set: Gen 2 (5 GT/s)
+2020-07-14 18:37:47,646 - ERROR: 'PciePortLinkSpeed[73]'
+2020-07-14 18:37:47,646 - INFO: PciePortLinkSpeed[74] Value to set: Gen 2 (5 GT/s)
+2020-07-14 18:37:47,725 - ERROR: 'PciePortLinkSpeed[74]'
+2020-07-14 18:37:47,740 - INFO: PciePortLinkSpeed[75] Value to set: Gen 3 (8 GT/s)
+2020-07-14 18:37:47,818 - ERROR: 'PciePortLinkSpeed[75]'
+2020-07-14 18:37:47,818 - INFO: PciePortLinkSpeed[76] Value to set: Gen 2 (5 GT/s)
+2020-07-14 18:37:47,896 - ERROR: 'PciePortLinkSpeed[76]'
+2020-07-14 18:37:47,896 - INFO: PciePortLinkSpeed[77] Value to set: Gen 2 (5 GT/s)
+2020-07-14 18:37:47,975 - ERROR: 'PciePortLinkSpeed[77]'
+2020-07-14 18:37:47,975 - INFO: PciePortLinkSpeed[78] Value to set: Gen 2 (5 GT/s)
+2020-07-14 18:37:48,053 - ERROR: 'PciePortLinkSpeed[78]'
+2020-07-14 18:37:48,068 - INFO: PciePortLinkSpeed[79] Value to set: Gen 2 (5 GT/s)
+2020-07-14 18:37:48,146 - ERROR: 'PciePortLinkSpeed[79]'
+2020-07-14 18:37:48,146 - INFO: PciePortLinkSpeed[80] Value to set: Gen 1 (2.5 GT/s)
+2020-07-14 18:37:48,225 - ERROR: 'PciePortLinkSpeed[80]'
+2020-07-14 18:37:48,240 - INFO: PciePortLinkSpeed[81] Value to set: Gen 2 (5 GT/s)
+2020-07-14 18:37:48,318 - ERROR: 'PciePortLinkSpeed[81]'
+2020-07-14 18:37:48,334 - INFO: PciePortLinkSpeed[82] Value to set: Gen 2 (5 GT/s)
+2020-07-14 18:37:48,443 - ERROR: 'PciePortLinkSpeed[82]'
+2020-07-14 18:37:48,443 - INFO: PciePortLinkSpeed[83] Value to set: Gen 2 (5 GT/s)
+2020-07-14 18:37:48,537 - ERROR: 'PciePortLinkSpeed[83]'
+2020-07-14 18:37:48,537 - INFO: PciePortLinkSpeed[84] Value to set: Gen 2 (5 GT/s)
+2020-07-14 18:37:48,615 - ERROR: 'PciePortLinkSpeed[84]'
+2020-07-14 18:38:46,583 - INFO: ************************************************************
+2020-07-14 18:38:46,583 - INFO: Start test with .\dep\tc_dep_PciePortDisable_01.json
+2020-07-14 18:38:46,583 - INFO: ************************************************************
+2020-07-14 18:38:46,599 - INFO: Complted: 368
+2020-07-14 18:38:46,599 - INFO: Error: 88
+2020-07-14 18:38:46,599 - INFO: Passed: 280
+2020-07-14 18:38:46,599 - INFO: Failed: 6
+2020-07-14 18:38:46,599 - INFO: PciePortDisable[2] Value to set: Enable
+2020-07-14 18:38:46,693 - ERROR: 'PciePortDisable[2]'
+2020-07-14 18:38:46,693 - INFO: PciePortDisable[3] Value to set: Enable
+2020-07-14 18:38:46,787 - ERROR: 'PciePortDisable[3]'
+2020-07-14 18:38:46,787 - INFO: PciePortDisable[4] Value to set: Enable
+2020-07-14 18:38:46,881 - ERROR: 'PciePortDisable[4]'
+2020-07-14 18:38:46,881 - INFO: PciePortDisable[6] Value to set: Enable
+2020-07-14 18:38:46,990 - ERROR: 'PciePortDisable[6]'
+2020-07-14 18:38:46,990 - INFO: PciePortDisable[8] Value to set: Enable
+2020-07-14 18:38:47,069 - ERROR: 'PciePortDisable[8]'
+2020-07-14 18:38:47,069 - INFO: PciePortDisable[9] Value to set: Enable
+2020-07-14 18:38:47,162 - ERROR: 'PciePortDisable[9]'
+2020-07-14 18:38:47,162 - INFO: PciePortDisable[10] Value to set: Enable
+2020-07-14 18:38:47,240 - ERROR: 'PciePortDisable[10]'
+2020-07-14 18:38:47,240 - INFO: PciePortDisable[11] Value to set: Enable
+2020-07-14 18:38:47,334 - ERROR: 'PciePortDisable[11]'
+2020-07-14 18:38:47,334 - INFO: PciePortDisable[12] Value to set: Enable
+2020-07-14 18:38:47,412 - ERROR: 'PciePortDisable[12]'
+2020-07-14 18:38:47,412 - INFO: PciePortDisable[14] Value to set: Enable
+2020-07-14 18:38:47,506 - ERROR: 'PciePortDisable[14]'
+2020-07-14 18:38:47,506 - INFO: PciePortDisable[15] Value to set: Enable
+2020-07-14 18:38:47,584 - ERROR: 'PciePortDisable[15]'
+2020-07-14 18:38:47,599 - INFO: PciePortDisable[16] Value to set: Enable
+2020-07-14 18:38:47,662 - ERROR: 'PciePortDisable[16]'
+2020-07-14 18:38:47,677 - INFO: PciePortDisable[17] Value to set: Enable
+2020-07-14 18:38:47,756 - ERROR: 'PciePortDisable[17]'
+2020-07-14 18:38:47,756 - INFO: PciePortDisable[18] Value to set: Enable
+2020-07-14 18:38:47,849 - ERROR: 'PciePortDisable[18]'
+2020-07-14 18:38:47,849 - INFO: PciePortDisable[19] Value to set: Enable
+2020-07-14 18:38:47,927 - ERROR: 'PciePortDisable[19]'
+2020-07-14 18:38:47,927 - INFO: PciePortDisable[20] Value to set: Enable
+2020-07-14 18:38:48,006 - ERROR: 'PciePortDisable[20]'
+2020-07-14 18:38:48,006 - INFO: PciePortDisable[21] Value to set: Enable
+2020-07-14 18:38:48,100 - ERROR: 'PciePortDisable[21]'
+2020-07-14 18:38:48,100 - INFO: PciePortDisable[23] Value to set: Enable
+2020-07-14 18:38:48,194 - ERROR: 'PciePortDisable[23]'
+2020-07-14 18:38:48,194 - INFO: PciePortDisable[25] Value to set: Enable
+2020-07-14 18:38:48,271 - ERROR: 'PciePortDisable[25]'
+2020-07-14 18:38:48,271 - INFO: PciePortDisable[27] Value to set: Enable
+2020-07-14 18:38:48,350 - ERROR: 'PciePortDisable[27]'
+2020-07-14 18:38:48,350 - INFO: PciePortDisable[28] Value to set: Enable
+2020-07-14 18:38:48,428 - ERROR: 'PciePortDisable[28]'
+2020-07-14 18:38:48,428 - INFO: PciePortDisable[29] Value to set: Enable
+2020-07-14 18:38:48,506 - ERROR: 'PciePortDisable[29]'
+2020-07-14 18:38:48,521 - INFO: PciePortDisable[30] Value to set: Enable
+2020-07-14 18:38:48,600 - ERROR: 'PciePortDisable[30]'
+2020-07-14 18:38:48,600 - INFO: PciePortDisable[31] Value to set: Enable
+2020-07-14 18:38:48,678 - ERROR: 'PciePortDisable[31]'
+2020-07-14 18:38:48,678 - INFO: PciePortDisable[32] Value to set: Enable
+2020-07-14 18:38:48,771 - ERROR: 'PciePortDisable[32]'
+2020-07-14 18:38:48,771 - INFO: PciePortDisable[33] Value to set: Enable
+2020-07-14 18:38:48,850 - ERROR: 'PciePortDisable[33]'
+2020-07-14 18:38:48,865 - INFO: PciePortDisable[35] Value to set: Enable
+2020-07-14 18:38:48,943 - ERROR: 'PciePortDisable[35]'
+2020-07-14 18:38:48,943 - INFO: PciePortDisable[37] Value to set: Enable
+2020-07-14 18:38:49,037 - ERROR: 'PciePortDisable[37]'
+2020-07-14 18:38:49,037 - INFO: PciePortDisable[38] Value to set: Enable
+2020-07-14 18:38:49,131 - ERROR: 'PciePortDisable[38]'
+2020-07-14 18:38:49,131 - INFO: PciePortDisable[39] Value to set: Enable
+2020-07-14 18:38:49,224 - ERROR: 'PciePortDisable[39]'
+2020-07-14 18:38:49,224 - INFO: PciePortDisable[40] Value to set: Enable
+2020-07-14 18:38:49,318 - ERROR: 'PciePortDisable[40]'
+2020-07-14 18:38:49,318 - INFO: PciePortDisable[41] Value to set: Enable
+2020-07-14 18:38:49,412 - ERROR: 'PciePortDisable[41]'
+2020-07-14 18:38:49,412 - INFO: PciePortDisable[42] Value to set: Enable
+2020-07-14 18:38:49,490 - ERROR: 'PciePortDisable[42]'
+2020-07-14 18:38:49,490 - INFO: PciePortDisable[44] Value to set: Enable
+2020-07-14 18:38:49,584 - ERROR: 'PciePortDisable[44]'
+2020-07-14 18:38:49,584 - INFO: PciePortDisable[45] Value to set: Enable
+2020-07-14 18:38:49,662 - ERROR: 'PciePortDisable[45]'
+2020-07-14 18:38:49,662 - INFO: PciePortDisable[47] Value to set: Enable
+2020-07-14 18:38:49,756 - ERROR: 'PciePortDisable[47]'
+2020-07-14 18:38:49,756 - INFO: PciePortDisable[48] Value to set: Enable
+2020-07-14 18:38:49,834 - ERROR: 'PciePortDisable[48]'
+2020-07-14 18:38:49,834 - INFO: PciePortDisable[49] Value to set: Enable
+2020-07-14 18:38:49,912 - ERROR: 'PciePortDisable[49]'
+2020-07-14 18:38:49,927 - INFO: PciePortDisable[50] Value to set: Enable
+2020-07-14 18:38:50,006 - ERROR: 'PciePortDisable[50]'
+2020-07-14 18:38:50,006 - INFO: PciePortDisable[51] Value to set: Enable
+2020-07-14 18:38:50,084 - ERROR: 'PciePortDisable[51]'
+2020-07-14 18:38:50,100 - INFO: PciePortDisable[52] Value to set: Enable
+2020-07-14 18:38:50,193 - ERROR: 'PciePortDisable[52]'
+2020-07-14 18:38:50,193 - INFO: PciePortDisable[53] Value to set: Enable
+2020-07-14 18:38:50,271 - ERROR: 'PciePortDisable[53]'
+2020-07-14 18:38:50,271 - INFO: PciePortDisable[54] Value to set: Enable
+2020-07-14 18:38:50,349 - ERROR: 'PciePortDisable[54]'
+2020-07-14 18:38:50,349 - INFO: PciePortDisable[59] Value to set: Enable
+2020-07-14 18:38:50,428 - ERROR: 'PciePortDisable[59]'
+2020-07-14 18:38:50,428 - INFO: PciePortDisable[60] Value to set: Enable
+2020-07-14 18:38:50,506 - ERROR: 'PciePortDisable[60]'
+2020-07-14 18:38:50,506 - INFO: PciePortDisable[61] Value to set: Enable
+2020-07-14 18:38:50,600 - ERROR: 'PciePortDisable[61]'
+2020-07-14 18:38:50,600 - INFO: PciePortDisable[62] Value to set: Enable
+2020-07-14 18:38:50,678 - ERROR: 'PciePortDisable[62]'
+2020-07-14 18:38:50,678 - INFO: PciePortDisable[63] Value to set: Enable
+2020-07-14 18:38:50,771 - ERROR: 'PciePortDisable[63]'
+2020-07-14 18:38:50,771 - INFO: PciePortDisable[65] Value to set: Enable
+2020-07-14 18:38:50,834 - ERROR: 'PciePortDisable[65]'
+2020-07-14 18:38:50,849 - INFO: PciePortDisable[66] Value to set: Enable
+2020-07-14 18:38:50,927 - ERROR: 'PciePortDisable[66]'
+2020-07-14 18:38:50,927 - INFO: PciePortDisable[67] Value to set: Enable
+2020-07-14 18:38:51,021 - ERROR: 'PciePortDisable[67]'
+2020-07-14 18:38:51,021 - INFO: PciePortDisable[72] Value to set: Enable
+2020-07-14 18:38:51,115 - ERROR: 'PciePortDisable[72]'
+2020-07-14 18:38:51,115 - INFO: PciePortDisable[73] Value to set: Enable
+2020-07-14 18:38:51,193 - ERROR: 'PciePortDisable[73]'
+2020-07-14 18:38:51,193 - INFO: PciePortDisable[74] Value to set: Enable
+2020-07-14 18:38:51,271 - ERROR: 'PciePortDisable[74]'
+2020-07-14 18:38:51,287 - INFO: PciePortDisable[75] Value to set: Enable
+2020-07-14 18:38:51,365 - ERROR: 'PciePortDisable[75]'
+2020-07-14 18:38:51,365 - INFO: PciePortDisable[76] Value to set: Enable
+2020-07-14 18:38:51,443 - ERROR: 'PciePortDisable[76]'
+2020-07-14 18:38:51,459 - INFO: PciePortDisable[77] Value to set: Enable
+2020-07-14 18:38:51,537 - ERROR: 'PciePortDisable[77]'
+2020-07-14 18:38:51,537 - INFO: PciePortDisable[78] Value to set: Enable
+2020-07-14 18:38:51,631 - ERROR: 'PciePortDisable[78]'
+2020-07-14 18:38:51,631 - INFO: PciePortDisable[79] Value to set: Enable
+2020-07-14 18:38:51,709 - ERROR: 'PciePortDisable[79]'
+2020-07-14 18:38:51,709 - INFO: PciePortDisable[80] Value to set: Enable
+2020-07-14 18:38:51,802 - ERROR: 'PciePortDisable[80]'
+2020-07-14 18:38:51,802 - INFO: PciePortDisable[81] Value to set: Enable
+2020-07-14 18:38:51,881 - ERROR: 'PciePortDisable[81]'
+2020-07-14 18:38:51,881 - INFO: PciePortDisable[82] Value to set: Enable
+2020-07-14 18:38:51,959 - ERROR: 'PciePortDisable[82]'
+2020-07-14 18:38:51,974 - INFO: PciePortDisable[83] Value to set: Enable
+2020-07-14 18:38:52,052 - ERROR: 'PciePortDisable[83]'
+2020-07-14 18:38:52,052 - INFO: PciePortDisable[84] Value to set: Enable
+2020-07-14 18:38:52,131 - ERROR: 'PciePortDisable[84]'
+2020-07-14 19:06:28,935 - INFO: ************************************************************
+2020-07-14 19:06:28,935 - INFO: Start test with .\dep\tc_dep_PciePortDisable_01.json
+2020-07-14 19:06:28,935 - INFO: ************************************************************
+2020-07-14 19:06:28,951 - INFO: Complted: 0
+2020-07-14 19:06:28,951 - INFO: Error: 0
+2020-07-14 19:06:28,951 - INFO: Passed: 0
+2020-07-14 19:06:28,951 - INFO: Failed: 0
+2020-07-14 19:06:28,951 - INFO: PciePortDisable[1] Value to set: Enable
+2020-07-14 19:06:29,029 - INFO: PciePortDisable[1] default value: Auto
+2020-07-14 19:06:29,045 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port1A
+2020-07-14 19:06:30,061 - INFO: Patch Successfully
+2020-07-14 19:11:02,931 - INFO: PciePortDisable[1] : Pass
+2020-07-14 19:11:02,931 - INFO: ------------------------------------------------------------
+2020-07-14 19:11:02,931 - INFO: PciePortLinkSpeed[1] Value to set: Gen 3 (8 GT/s)
+2020-07-14 19:11:03,040 - INFO: PciePortLinkSpeed[1] default value: Gen 3 (8 GT/s)
+2020-07-14 19:11:03,055 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port1A
+2020-07-14 19:11:04,056 - INFO: Patch Successfully
+2020-07-14 19:13:35,001 - INFO: PciePortLinkSpeed[1] : Pass
+2020-07-14 19:13:35,001 - INFO: ------------------------------------------------------------
+2020-07-14 19:13:35,001 - INFO: PciePortDisable[2] Value to set: Enable
+2020-07-14 19:13:35,095 - ERROR: 'PciePortDisable[2]'
+2020-07-14 19:13:35,095 - INFO: PciePortLinkSpeed[2] Value to set: Gen 2 (5 GT/s)
+2020-07-14 19:13:35,173 - ERROR: 'PciePortLinkSpeed[2]'
+2020-07-14 19:13:35,189 - INFO: PciePortLinkSpeed[3] Value to set: Gen 2 (5 GT/s)
+2020-07-14 19:13:35,267 - ERROR: 'PciePortLinkSpeed[3]'
+2020-07-14 19:13:35,267 - INFO: PciePortDisable[3] Value to set: Enable
+2020-07-14 19:13:35,345 - ERROR: 'PciePortDisable[3]'
+2020-07-14 19:13:35,345 - INFO: PciePortLinkSpeed[4] Value to set: Gen 3 (8 GT/s)
+2020-07-14 19:13:35,423 - ERROR: 'PciePortLinkSpeed[4]'
+2020-07-14 19:13:35,439 - INFO: PciePortDisable[4] Value to set: Enable
+2020-07-14 19:13:35,517 - ERROR: 'PciePortDisable[4]'
+2020-07-14 19:13:35,517 - INFO: PciePortLinkSpeed[5] Value to set: Gen 2 (5 GT/s)
+2020-07-14 19:13:35,611 - INFO: PciePortLinkSpeed[5] default value: Gen 2 (5 GT/s)
+2020-07-14 19:13:35,626 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port2A
+2020-07-14 19:13:36,627 - INFO: Patch Successfully
+2020-07-14 19:16:11,490 - INFO: PciePortLinkSpeed[5] : Pass
+2020-07-14 19:16:11,490 - INFO: ------------------------------------------------------------
+2020-07-14 19:16:11,506 - INFO: PciePortDisable[5] Value to set: Enable
+2020-07-14 19:16:11,584 - INFO: PciePortDisable[5] default value: Auto
+2020-07-14 19:16:11,599 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port2A
+2020-07-14 19:16:12,617 - INFO: Patch Successfully
+2020-07-14 19:20:45,429 - INFO: PciePortDisable[5] : Pass
+2020-07-14 19:20:45,429 - INFO: ------------------------------------------------------------
+2020-07-14 19:20:45,429 - INFO: PciePortLinkSpeed[6] Value to set: Gen 2 (5 GT/s)
+2020-07-14 19:20:45,507 - ERROR: 'PciePortLinkSpeed[6]'
+2020-07-14 19:20:45,523 - INFO: PciePortDisable[6] Value to set: Enable
+2020-07-14 19:20:45,601 - ERROR: 'PciePortDisable[6]'
+2020-07-14 19:20:45,601 - INFO: PciePortLinkSpeed[7] Value to set: Gen 2 (5 GT/s)
+2020-07-14 19:20:45,695 - INFO: PciePortLinkSpeed[7] default value: Gen 2 (5 GT/s)
+2020-07-14 19:20:45,710 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port2C
+2020-07-14 19:20:46,711 - INFO: Patch Successfully
+2020-07-14 19:23:17,510 - INFO: PciePortLinkSpeed[7] : Pass
+2020-07-14 19:23:17,510 - INFO: ------------------------------------------------------------
+2020-07-14 19:23:17,525 - INFO: PciePortDisable[7] Value to set: Enable
+2020-07-14 19:23:17,604 - INFO: PciePortDisable[7] default value: Auto
+2020-07-14 19:23:17,619 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port2C
+2020-07-14 19:23:18,526 - INFO: Patch Successfully
+2020-07-14 19:27:50,933 - INFO: PciePortDisable[7] : Pass
+2020-07-14 19:27:50,933 - INFO: ------------------------------------------------------------
+2020-07-14 19:27:50,933 - INFO: PciePortLinkSpeed[8] Value to set: Gen 2 (5 GT/s)
+2020-07-14 19:27:51,011 - ERROR: 'PciePortLinkSpeed[8]'
+2020-07-14 19:27:51,011 - INFO: PciePortDisable[8] Value to set: Enable
+2020-07-14 19:27:51,089 - ERROR: 'PciePortDisable[8]'
+2020-07-14 19:27:51,089 - INFO: PciePortLinkSpeed[9] Value to set: Gen 1 (2.5 GT/s)
+2020-07-14 19:27:51,182 - ERROR: 'PciePortLinkSpeed[9]'
+2020-07-14 19:27:51,182 - INFO: PciePortDisable[9] Value to set: Enable
+2020-07-14 19:27:51,276 - ERROR: 'PciePortDisable[9]'
+2020-07-14 19:27:51,276 - INFO: PciePortLinkSpeed[10] Value to set: Gen 2 (5 GT/s)
+2020-07-14 19:27:51,354 - ERROR: 'PciePortLinkSpeed[10]'
+2020-07-14 19:27:51,354 - INFO: PciePortDisable[10] Value to set: Enable
+2020-07-14 19:27:51,432 - ERROR: 'PciePortDisable[10]'
+2020-07-14 19:27:51,432 - INFO: PciePortLinkSpeed[11] Value to set: Gen 3 (8 GT/s)
+2020-07-14 19:27:51,526 - ERROR: 'PciePortLinkSpeed[11]'
+2020-07-14 19:27:51,526 - INFO: PciePortDisable[11] Value to set: Enable
+2020-07-14 19:27:51,604 - ERROR: 'PciePortDisable[11]'
+2020-07-14 19:27:51,604 - INFO: PciePortLinkSpeed[12] Value to set: Gen 2 (5 GT/s)
+2020-07-14 19:27:51,698 - ERROR: 'PciePortLinkSpeed[12]'
+2020-07-14 19:27:51,698 - INFO: PciePortDisable[12] Value to set: Enable
+2020-07-14 19:27:51,776 - ERROR: 'PciePortDisable[12]'
+2020-07-14 19:27:51,792 - INFO: PciePortLinkSpeed[13] Value to set: Gen 2 (5 GT/s)
+2020-07-14 19:27:51,870 - INFO: PciePortLinkSpeed[13] default value: Gen 2 (5 GT/s)
+2020-07-14 19:27:51,885 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port4A
+2020-07-14 19:27:52,823 - INFO: Patch Successfully
+2020-07-14 19:30:23,513 - INFO: PciePortLinkSpeed[13] : Pass
+2020-07-14 19:30:23,513 - INFO: ------------------------------------------------------------
+2020-07-14 19:30:23,513 - INFO: PciePortDisable[13] Value to set: Enable
+2020-07-14 19:30:23,591 - INFO: PciePortDisable[13] default value: Auto
+2020-07-14 19:30:23,606 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port4A
+2020-07-14 19:30:24,561 - INFO: Patch Successfully
+2020-07-14 19:34:57,461 - INFO: PciePortDisable[13] : Pass
+2020-07-14 19:34:57,461 - INFO: ------------------------------------------------------------
+2020-07-14 19:34:57,461 - INFO: PciePortLinkSpeed[14] Value to set: Gen 3 (8 GT/s)
+2020-07-14 19:34:57,539 - ERROR: 'PciePortLinkSpeed[14]'
+2020-07-14 19:34:57,539 - INFO: PciePortDisable[14] Value to set: Enable
+2020-07-14 19:34:57,632 - ERROR: 'PciePortDisable[14]'
+2020-07-14 19:34:57,632 - INFO: PciePortLinkSpeed[15] Value to set: Gen 2 (5 GT/s)
+2020-07-14 19:34:57,726 - ERROR: 'PciePortLinkSpeed[15]'
+2020-07-14 19:34:57,726 - INFO: PciePortDisable[15] Value to set: Enable
+2020-07-14 19:34:57,804 - ERROR: 'PciePortDisable[15]'
+2020-07-14 19:34:57,804 - INFO: PciePortLinkSpeed[16] Value to set: Gen 2 (5 GT/s)
+2020-07-14 19:34:57,898 - ERROR: 'PciePortLinkSpeed[16]'
+2020-07-14 19:34:57,898 - INFO: PciePortDisable[16] Value to set: Enable
+2020-07-14 19:34:57,991 - ERROR: 'PciePortDisable[16]'
+2020-07-14 19:34:57,991 - INFO: PciePortLinkSpeed[17] Value to set: Gen 2 (5 GT/s)
+2020-07-14 19:34:58,069 - ERROR: 'PciePortLinkSpeed[17]'
+2020-07-14 19:34:58,069 - INFO: PciePortDisable[17] Value to set: Enable
+2020-07-14 19:34:58,163 - ERROR: 'PciePortDisable[17]'
+2020-07-14 19:34:58,163 - INFO: PciePortLinkSpeed[18] Value to set: Gen 1 (2.5 GT/s)
+2020-07-14 19:34:58,257 - ERROR: 'PciePortLinkSpeed[18]'
+2020-07-14 19:34:58,257 - INFO: PciePortDisable[18] Value to set: Enable
+2020-07-14 19:34:58,351 - ERROR: 'PciePortDisable[18]'
+2020-07-14 19:34:58,351 - INFO: PciePortLinkSpeed[19] Value to set: Gen 2 (5 GT/s)
+2020-07-14 19:34:58,429 - ERROR: 'PciePortLinkSpeed[19]'
+2020-07-14 19:34:58,444 - INFO: PciePortDisable[19] Value to set: Enable
+2020-07-14 19:34:58,523 - ERROR: 'PciePortDisable[19]'
+2020-07-14 19:34:58,523 - INFO: PciePortLinkSpeed[20] Value to set: Gen 2 (5 GT/s)
+2020-07-14 19:34:58,616 - ERROR: 'PciePortLinkSpeed[20]'
+2020-07-14 19:34:58,616 - INFO: PciePortDisable[20] Value to set: Enable
+2020-07-14 19:34:58,695 - ERROR: 'PciePortDisable[20]'
+2020-07-14 19:34:58,695 - INFO: PciePortLinkSpeed[21] Value to set: Gen 2 (5 GT/s)
+2020-07-14 19:34:58,788 - ERROR: 'PciePortLinkSpeed[21]'
+2020-07-14 19:34:58,788 - INFO: PciePortDisable[21] Value to set: Enable
+2020-07-14 19:34:58,866 - ERROR: 'PciePortDisable[21]'
+2020-07-14 19:34:58,882 - INFO: PciePortLinkSpeed[22] Value to set: Gen 3 (8 GT/s)
+2020-07-14 19:34:58,960 - INFO: PciePortLinkSpeed[22] default value: Gen 3 (8 GT/s)
+2020-07-14 19:34:58,960 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port1A
+2020-07-14 19:34:59,929 - INFO: Patch Successfully
+2020-07-14 19:37:30,481 - INFO: PciePortLinkSpeed[22] : Pass
+2020-07-14 19:37:30,496 - INFO: ------------------------------------------------------------
+2020-07-14 19:37:30,496 - INFO: PciePortDisable[22] Value to set: Enable
+2020-07-14 19:37:30,575 - INFO: PciePortDisable[22] default value: Auto
+2020-07-14 19:37:30,590 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port1A
+2020-07-14 19:37:31,559 - INFO: Patch Successfully
+2020-07-14 19:42:03,931 - INFO: PciePortDisable[22] : Pass
+2020-07-14 19:42:03,931 - INFO: ------------------------------------------------------------
+2020-07-14 19:42:03,931 - INFO: PciePortLinkSpeed[23] Value to set: Gen 2 (5 GT/s)
+2020-07-14 19:42:04,040 - ERROR: 'PciePortLinkSpeed[23]'
+2020-07-14 19:42:04,040 - INFO: PciePortDisable[23] Value to set: Enable
+2020-07-14 19:42:04,134 - ERROR: 'PciePortDisable[23]'
+2020-07-14 19:42:04,134 - INFO: PciePortLinkSpeed[24] Value to set: Gen 2 (5 GT/s)
+2020-07-14 19:42:04,212 - INFO: PciePortLinkSpeed[24] default value: Gen 2 (5 GT/s)
+2020-07-14 19:42:04,228 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port1C
+2020-07-14 19:42:05,229 - INFO: Patch Successfully
+2020-07-14 19:44:35,969 - INFO: PciePortLinkSpeed[24] : Pass
+2020-07-14 19:44:35,969 - INFO: ------------------------------------------------------------
+2020-07-14 19:44:35,985 - INFO: PciePortDisable[24] Value to set: Enable
+2020-07-14 19:44:36,047 - INFO: PciePortDisable[24] default value: Auto
+2020-07-14 19:44:36,078 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port1C
+2020-07-14 19:44:37,063 - INFO: Patch Successfully
+2020-07-14 19:49:09,945 - INFO: PciePortDisable[24] : Pass
+2020-07-14 19:49:09,945 - INFO: ------------------------------------------------------------
+2020-07-14 19:49:09,945 - INFO: PciePortLinkSpeed[25] Value to set: Gen 3 (8 GT/s)
+2020-07-14 19:49:10,023 - ERROR: 'PciePortLinkSpeed[25]'
+2020-07-14 19:49:10,038 - INFO: PciePortDisable[25] Value to set: Enable
+2020-07-14 19:49:10,101 - ERROR: 'PciePortDisable[25]'
+2020-07-14 19:49:10,101 - INFO: PciePortLinkSpeed[26] Value to set: Gen 2 (5 GT/s)
+2020-07-14 19:49:10,179 - INFO: PciePortLinkSpeed[26] default value: Gen 2 (5 GT/s)
+2020-07-14 19:49:10,194 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port2A
+2020-07-14 19:49:11,132 - INFO: Patch Successfully
+2020-07-14 19:52:42,939 - INFO: PciePortLinkSpeed[26] : Pass
+2020-07-14 19:52:42,939 - INFO: ------------------------------------------------------------
+2020-07-14 19:52:42,939 - INFO: PciePortDisable[26] Value to set: Enable
+2020-07-14 19:52:43,017 - INFO: PciePortDisable[26] default value: Auto
+2020-07-14 19:52:43,032 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port2A
+2020-07-14 19:52:44,017 - INFO: Patch Successfully
+2020-07-14 19:57:17,161 - INFO: PciePortDisable[26] : Pass
+2020-07-14 19:57:17,161 - INFO: ------------------------------------------------------------
+2020-07-14 19:57:17,161 - INFO: PciePortLinkSpeed[27] Value to set: Gen 3 (8 GT/s)
+2020-07-14 19:57:17,239 - ERROR: 'PciePortLinkSpeed[27]'
+2020-07-14 19:57:17,239 - INFO: PciePortDisable[27] Value to set: Enable
+2020-07-14 19:57:17,333 - ERROR: 'PciePortDisable[27]'
+2020-07-14 19:57:17,348 - INFO: PciePortLinkSpeed[28] Value to set: Gen 2 (5 GT/s)
+2020-07-14 19:57:17,442 - ERROR: 'PciePortLinkSpeed[28]'
+2020-07-14 19:57:17,442 - INFO: PciePortDisable[28] Value to set: Enable
+2020-07-14 19:57:17,520 - ERROR: 'PciePortDisable[28]'
+2020-07-14 19:57:17,520 - INFO: PciePortLinkSpeed[29] Value to set: Gen 2 (5 GT/s)
+2020-07-14 19:57:17,614 - ERROR: 'PciePortLinkSpeed[29]'
+2020-07-14 19:57:17,614 - INFO: PciePortDisable[29] Value to set: Enable
+2020-07-14 19:57:17,692 - ERROR: 'PciePortDisable[29]'
+2020-07-14 19:57:17,692 - INFO: PciePortLinkSpeed[30] Value to set: Gen 3 (8 GT/s)
+2020-07-14 19:57:17,786 - ERROR: 'PciePortLinkSpeed[30]'
+2020-07-14 19:57:17,786 - INFO: PciePortDisable[30] Value to set: Enable
+2020-07-14 19:57:17,864 - ERROR: 'PciePortDisable[30]'
+2020-07-14 19:57:17,864 - INFO: PciePortLinkSpeed[31] Value to set: Gen 2 (5 GT/s)
+2020-07-14 19:57:17,942 - ERROR: 'PciePortLinkSpeed[31]'
+2020-07-14 19:57:17,942 - INFO: PciePortDisable[31] Value to set: Enable
+2020-07-14 19:57:18,051 - ERROR: 'PciePortDisable[31]'
+2020-07-14 19:57:18,051 - INFO: PciePortLinkSpeed[32] Value to set: Gen 2 (5 GT/s)
+2020-07-14 19:57:18,145 - ERROR: 'PciePortLinkSpeed[32]'
+2020-07-14 19:57:18,145 - INFO: PciePortDisable[32] Value to set: Enable
+2020-07-14 19:57:18,223 - ERROR: 'PciePortDisable[32]'
+2020-07-14 19:57:18,223 - INFO: PciePortLinkSpeed[33] Value to set: Gen 2 (5 GT/s)
+2020-07-14 19:57:18,317 - ERROR: 'PciePortLinkSpeed[33]'
+2020-07-14 19:57:18,317 - INFO: PciePortDisable[33] Value to set: Enable
+2020-07-14 19:57:18,411 - ERROR: 'PciePortDisable[33]'
+2020-07-14 19:57:18,411 - INFO: PciePortLinkSpeed[34] Value to set: Gen 2 (5 GT/s)
+2020-07-14 19:57:18,505 - INFO: PciePortLinkSpeed[34] default value: Gen 2 (5 GT/s)
+2020-07-14 19:57:18,505 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port4A
+2020-07-14 19:57:19,475 - INFO: Patch Successfully
+2020-07-14 19:59:49,990 - INFO: PciePortLinkSpeed[34] : Pass
+2020-07-14 19:59:49,990 - INFO: ------------------------------------------------------------
+2020-07-14 19:59:50,006 - INFO: PciePortDisable[34] Value to set: Enable
+2020-07-14 19:59:50,084 - INFO: PciePortDisable[34] default value: Auto
+2020-07-14 19:59:50,100 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port4A
+2020-07-14 19:59:51,100 - INFO: Patch Successfully
+2020-07-14 20:04:23,942 - INFO: PciePortDisable[34] : Pass
+2020-07-14 20:04:23,942 - INFO: ------------------------------------------------------------
+2020-07-14 20:04:23,958 - INFO: PciePortLinkSpeed[35] Value to set: Gen 1 (2.5 GT/s)
+2020-07-14 20:04:24,036 - ERROR: 'PciePortLinkSpeed[35]'
+2020-07-14 20:04:24,036 - INFO: PciePortDisable[35] Value to set: Enable
+2020-07-14 20:04:24,114 - ERROR: 'PciePortDisable[35]'
+2020-07-14 20:04:24,114 - INFO: PciePortLinkSpeed[36] Value to set: Gen 1 (2.5 GT/s)
+2020-07-14 20:04:24,208 - INFO: PciePortLinkSpeed[36] default value: Gen 1 (2.5 GT/s)
+2020-07-14 20:04:24,208 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port4C
+2020-07-14 20:04:25,223 - INFO: Patch Successfully
+2020-07-14 20:06:55,994 - INFO: PciePortLinkSpeed[36] : Pass
+2020-07-14 20:06:55,994 - INFO: ------------------------------------------------------------
+2020-07-14 20:06:56,009 - INFO: PciePortDisable[36] Value to set: Enable
+2020-07-14 20:06:56,088 - INFO: PciePortDisable[36] default value: Auto
+2020-07-14 20:06:56,088 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port4C
+2020-07-14 20:06:57,057 - INFO: Patch Successfully
+2020-07-14 20:11:29,981 - INFO: PciePortDisable[36] : Pass
+2020-07-14 20:11:29,981 - INFO: ------------------------------------------------------------
+2020-07-14 20:11:29,981 - INFO: PciePortLinkSpeed[37] Value to set: Gen 1 (2.5 GT/s)
+2020-07-14 20:11:30,075 - ERROR: 'PciePortLinkSpeed[37]'
+2020-07-14 20:11:30,075 - INFO: PciePortDisable[37] Value to set: Enable
+2020-07-14 20:11:30,153 - ERROR: 'PciePortDisable[37]'
+2020-07-14 20:11:30,153 - INFO: PciePortLinkSpeed[38] Value to set: Gen 1 (2.5 GT/s)
+2020-07-14 20:11:30,231 - ERROR: 'PciePortLinkSpeed[38]'
+2020-07-14 20:11:30,231 - INFO: PciePortDisable[38] Value to set: Enable
+2020-07-14 20:11:30,324 - ERROR: 'PciePortDisable[38]'
+2020-07-14 20:11:30,324 - INFO: PciePortLinkSpeed[39] Value to set: Gen 1 (2.5 GT/s)
+2020-07-14 20:11:30,418 - ERROR: 'PciePortLinkSpeed[39]'
+2020-07-14 20:11:30,418 - INFO: PciePortDisable[39] Value to set: Enable
+2020-07-14 20:11:30,496 - ERROR: 'PciePortDisable[39]'
+2020-07-14 20:11:30,496 - INFO: PciePortLinkSpeed[40] Value to set: Gen 1 (2.5 GT/s)
+2020-07-14 20:11:30,574 - ERROR: 'PciePortLinkSpeed[40]'
+2020-07-14 20:11:30,574 - INFO: PciePortDisable[40] Value to set: Enable
+2020-07-14 20:11:30,668 - ERROR: 'PciePortDisable[40]'
+2020-07-14 20:11:30,668 - INFO: PciePortLinkSpeed[41] Value to set: Gen 2 (5 GT/s)
+2020-07-14 20:11:30,746 - ERROR: 'PciePortLinkSpeed[41]'
+2020-07-14 20:11:30,762 - INFO: PciePortDisable[41] Value to set: Enable
+2020-07-14 20:11:30,840 - ERROR: 'PciePortDisable[41]'
+2020-07-14 20:11:30,840 - INFO: PciePortLinkSpeed[42] Value to set: Gen 3 (8 GT/s)
+2020-07-14 20:11:30,918 - ERROR: 'PciePortLinkSpeed[42]'
+2020-07-14 20:11:30,918 - INFO: PciePortDisable[42] Value to set: Enable
+2020-07-14 20:11:30,996 - ERROR: 'PciePortDisable[42]'
+2020-07-14 20:11:30,996 - INFO: PciePortLinkSpeed[43] Value to set: Gen 2 (5 GT/s)
+2020-07-14 20:11:31,090 - INFO: PciePortLinkSpeed[43] default value: Gen 2 (5 GT/s)
+2020-07-14 20:11:31,105 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port1A
+2020-07-14 20:11:31,997 - INFO: Patch Successfully
+2020-07-14 20:14:02,969 - INFO: PciePortLinkSpeed[43] : Pass
+2020-07-14 20:14:02,969 - INFO: ------------------------------------------------------------
+2020-07-14 20:14:02,969 - INFO: PciePortDisable[43] Value to set: Enable
+2020-07-14 20:14:03,047 - INFO: PciePortDisable[43] default value: Auto
+2020-07-14 20:14:03,062 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port1A
+2020-07-14 20:14:04,031 - INFO: Patch Successfully
+2020-07-14 20:18:36,447 - INFO: PciePortDisable[43] : Pass
+2020-07-14 20:18:36,447 - INFO: ------------------------------------------------------------
+2020-07-14 20:18:36,463 - INFO: PciePortLinkSpeed[44] Value to set: Gen 2 (5 GT/s)
+2020-07-14 20:18:36,541 - ERROR: 'PciePortLinkSpeed[44]'
+2020-07-14 20:18:36,541 - INFO: PciePortDisable[44] Value to set: Enable
+2020-07-14 20:18:36,635 - ERROR: 'PciePortDisable[44]'
+2020-07-14 20:18:36,635 - INFO: PciePortLinkSpeed[45] Value to set: Gen 2 (5 GT/s)
+2020-07-14 20:18:36,728 - ERROR: 'PciePortLinkSpeed[45]'
+2020-07-14 20:18:36,728 - INFO: PciePortDisable[45] Value to set: Enable
+2020-07-14 20:18:36,807 - ERROR: 'PciePortDisable[45]'
+2020-07-14 20:18:36,807 - INFO: PciePortLinkSpeed[46] Value to set: Gen 3 (8 GT/s)
+2020-07-14 20:18:36,885 - ERROR: 'PciePortLinkSpeed[46]'
+2020-07-14 20:18:36,885 - INFO: PciePortDisable[47] Value to set: Enable
+2020-07-14 20:18:36,963 - ERROR: 'PciePortDisable[47]'
+2020-07-14 20:18:36,963 - INFO: PciePortLinkSpeed[47] Value to set: Gen 2 (5 GT/s)
+2020-07-14 20:18:37,056 - ERROR: 'PciePortLinkSpeed[47]'
+2020-07-14 20:18:37,056 - INFO: PciePortDisable[48] Value to set: Enable
+2020-07-14 20:18:37,135 - ERROR: 'PciePortDisable[48]'
+2020-07-14 20:18:37,135 - INFO: PciePortLinkSpeed[48] Value to set: Gen 3 (8 GT/s)
+2020-07-14 20:18:37,228 - ERROR: 'PciePortLinkSpeed[48]'
+2020-07-14 20:18:37,228 - INFO: PciePortDisable[49] Value to set: Enable
+2020-07-14 20:18:37,322 - ERROR: 'PciePortDisable[49]'
+2020-07-14 20:18:37,322 - INFO: PciePortLinkSpeed[49] Value to set: Gen 2 (5 GT/s)
+2020-07-14 20:18:37,416 - ERROR: 'PciePortLinkSpeed[49]'
+2020-07-14 20:18:37,416 - INFO: PciePortDisable[50] Value to set: Enable
+2020-07-14 20:18:37,509 - ERROR: 'PciePortDisable[50]'
+2020-07-14 20:18:37,509 - INFO: PciePortLinkSpeed[50] Value to set: Gen 3 (8 GT/s)
+2020-07-14 20:18:37,588 - ERROR: 'PciePortLinkSpeed[50]'
+2020-07-14 20:18:37,588 - INFO: PciePortDisable[51] Value to set: Enable
+2020-07-14 20:18:37,681 - ERROR: 'PciePortDisable[51]'
+2020-07-14 20:18:37,681 - INFO: PciePortLinkSpeed[51] Value to set: Gen 1 (2.5 GT/s)
+2020-07-14 20:18:37,775 - ERROR: 'PciePortLinkSpeed[51]'
+2020-07-14 20:18:37,775 - INFO: PciePortDisable[52] Value to set: Enable
+2020-07-14 20:18:37,869 - ERROR: 'PciePortDisable[52]'
+2020-07-14 20:18:37,869 - INFO: PciePortLinkSpeed[52] Value to set: Gen 2 (5 GT/s)
+2020-07-14 20:18:37,963 - ERROR: 'PciePortLinkSpeed[52]'
+2020-07-14 20:18:37,963 - INFO: PciePortDisable[53] Value to set: Enable
+2020-07-14 20:18:38,041 - ERROR: 'PciePortDisable[53]'
+2020-07-14 20:18:38,041 - INFO: PciePortLinkSpeed[53] Value to set: Gen 2 (5 GT/s)
+2020-07-14 20:18:38,134 - ERROR: 'PciePortLinkSpeed[53]'
+2020-07-14 20:18:38,134 - INFO: PciePortDisable[54] Value to set: Enable
+2020-07-14 20:18:38,213 - ERROR: 'PciePortDisable[54]'
+2020-07-14 20:18:38,213 - INFO: PciePortLinkSpeed[54] Value to set: Gen 2 (5 GT/s)
+2020-07-14 20:18:38,306 - ERROR: 'PciePortLinkSpeed[54]'
+2020-07-14 20:18:38,306 - INFO: PciePortDisable[55] Value to set: Enable
+2020-07-14 20:18:38,384 - INFO: PciePortDisable[55] default value: Auto
+2020-07-14 20:18:38,400 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port4A
+2020-07-14 20:18:39,276 - INFO: Patch Successfully
+2020-07-14 20:24:12,926 - INFO: PciePortDisable[55] : Pass
+2020-07-14 20:24:12,926 - INFO: ------------------------------------------------------------
+2020-07-14 20:24:12,926 - INFO: PciePortLinkSpeed[55] Value to set: Gen 2 (5 GT/s)
+2020-07-14 20:24:13,019 - INFO: PciePortLinkSpeed[55] default value: Gen 2 (5 GT/s)
+2020-07-14 20:24:13,035 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port4A
+2020-07-14 20:24:13,943 - INFO: Patch Successfully
+2020-07-14 20:26:44,482 - INFO: PciePortLinkSpeed[55] : Pass
+2020-07-14 20:26:44,482 - INFO: ------------------------------------------------------------
+2020-07-14 20:26:44,482 - INFO: PciePortDisable[56] Value to set: Enable
+2020-07-14 20:26:44,591 - INFO: PciePortDisable[56] default value: Auto
+2020-07-14 20:26:44,606 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port4B
+2020-07-14 20:26:45,544 - INFO: Patch Successfully
+2020-07-14 20:31:17,955 - INFO: PciePortDisable[56] : Pass
+2020-07-14 20:31:17,955 - INFO: ------------------------------------------------------------
+2020-07-14 20:31:17,955 - INFO: PciePortLinkSpeed[56] Value to set: Gen 2 (5 GT/s)
+2020-07-14 20:31:18,034 - INFO: PciePortLinkSpeed[56] default value: Gen 2 (5 GT/s)
+2020-07-14 20:31:18,049 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port4B
+2020-07-14 20:31:19,004 - INFO: Patch Successfully
+2020-07-14 20:33:49,510 - INFO: PciePortLinkSpeed[56] : Pass
+2020-07-14 20:33:49,510 - INFO: ------------------------------------------------------------
+2020-07-14 20:33:49,510 - INFO: PciePortDisable[57] Value to set: Enable
+2020-07-14 20:33:49,588 - INFO: PciePortDisable[57] default value: Auto
+2020-07-14 20:33:49,604 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port4C
+2020-07-14 20:33:50,557 - INFO: Patch Successfully
+2020-07-14 20:38:23,505 - INFO: PciePortDisable[57] : Pass
+2020-07-14 20:38:23,505 - INFO: ------------------------------------------------------------
+2020-07-14 20:38:23,521 - INFO: PciePortLinkSpeed[57] Value to set: Gen 2 (5 GT/s)
+2020-07-14 20:38:23,599 - INFO: PciePortLinkSpeed[57] default value: Gen 2 (5 GT/s)
+2020-07-14 20:38:23,615 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port4C
+2020-07-14 20:38:24,570 - INFO: Patch Successfully
+2020-07-14 20:41:56,464 - INFO: PciePortLinkSpeed[57] : Pass
+2020-07-14 20:41:56,464 - INFO: ------------------------------------------------------------
+2020-07-14 20:41:56,464 - INFO: PciePortDisable[58] Value to set: Enable
+2020-07-14 20:41:56,557 - INFO: PciePortDisable[58] default value: Auto
+2020-07-14 20:41:56,557 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port4D
+2020-07-14 20:41:57,449 - INFO: Patch Successfully
+2020-07-14 20:46:29,934 - INFO: PciePortDisable[58] : Pass
+2020-07-14 20:46:29,934 - INFO: ------------------------------------------------------------
+2020-07-14 20:46:29,934 - INFO: PciePortLinkSpeed[58] Value to set: Gen 2 (5 GT/s)
+2020-07-14 20:46:30,013 - INFO: PciePortLinkSpeed[58] default value: Gen 2 (5 GT/s)
+2020-07-14 20:46:30,028 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port4D
+2020-07-14 20:46:31,028 - INFO: Patch Successfully
+2020-07-14 20:49:01,456 - INFO: PciePortLinkSpeed[58] : Pass
+2020-07-14 20:49:01,456 - INFO: ------------------------------------------------------------
+2020-07-14 20:49:01,456 - INFO: PciePortDisable[59] Value to set: Enable
+2020-07-14 20:49:01,535 - ERROR: 'PciePortDisable[59]'
+2020-07-14 20:49:01,535 - INFO: PciePortLinkSpeed[59] Value to set: Gen 3 (8 GT/s)
+2020-07-14 20:49:01,628 - ERROR: 'PciePortLinkSpeed[59]'
+2020-07-14 20:49:01,628 - INFO: PciePortDisable[60] Value to set: Enable
+2020-07-14 20:49:01,706 - ERROR: 'PciePortDisable[60]'
+2020-07-14 20:49:01,706 - INFO: PciePortLinkSpeed[60] Value to set: Gen 3 (8 GT/s)
+2020-07-14 20:49:01,800 - ERROR: 'PciePortLinkSpeed[60]'
+2020-07-14 20:49:01,800 - INFO: PciePortDisable[61] Value to set: Enable
+2020-07-14 20:49:01,878 - ERROR: 'PciePortDisable[61]'
+2020-07-14 20:49:01,894 - INFO: PciePortLinkSpeed[61] Value to set: Gen 3 (8 GT/s)
+2020-07-14 20:49:01,972 - ERROR: 'PciePortLinkSpeed[61]'
+2020-07-14 20:49:01,972 - INFO: PciePortDisable[62] Value to set: Enable
+2020-07-14 20:49:02,050 - ERROR: 'PciePortDisable[62]'
+2020-07-14 20:49:02,050 - INFO: PciePortLinkSpeed[62] Value to set: Gen 3 (8 GT/s)
+2020-07-14 20:49:02,128 - ERROR: 'PciePortLinkSpeed[62]'
+2020-07-14 20:49:02,144 - INFO: PciePortDisable[63] Value to set: Enable
+2020-07-14 20:49:02,206 - ERROR: 'PciePortDisable[63]'
+2020-07-14 20:49:02,222 - INFO: PciePortLinkSpeed[63] Value to set: Gen 3 (8 GT/s)
+2020-07-14 20:49:02,300 - ERROR: 'PciePortLinkSpeed[63]'
+2020-07-14 20:49:02,300 - INFO: PciePortDisable[64] Value to set: Enable
+2020-07-14 20:49:02,378 - INFO: PciePortDisable[64] default value: Auto
+2020-07-14 20:49:02,394 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port1A
+2020-07-14 20:49:03,269 - INFO: Patch Successfully
+2020-07-14 20:54:36,956 - INFO: PciePortDisable[64] : Pass
+2020-07-14 20:54:36,956 - INFO: ------------------------------------------------------------
+2020-07-14 20:54:36,956 - INFO: PciePortLinkSpeed[64] Value to set: Gen 3 (8 GT/s)
+2020-07-14 20:54:37,035 - INFO: PciePortLinkSpeed[64] default value: Gen 3 (8 GT/s)
+2020-07-14 20:54:37,050 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port1A
+2020-07-14 20:54:38,004 - INFO: Patch Successfully
+2020-07-14 20:57:08,491 - INFO: PciePortLinkSpeed[64] : Pass
+2020-07-14 20:57:08,491 - INFO: ------------------------------------------------------------
+2020-07-14 20:57:08,506 - INFO: PciePortDisable[65] Value to set: Enable
+2020-07-14 20:57:08,585 - ERROR: 'PciePortDisable[65]'
+2020-07-14 20:57:08,585 - INFO: PciePortLinkSpeed[65] Value to set: Gen 3 (8 GT/s)
+2020-07-14 20:57:08,678 - ERROR: 'PciePortLinkSpeed[65]'
+2020-07-14 20:57:08,678 - INFO: PciePortDisable[66] Value to set: Enable
+2020-07-14 20:57:08,850 - ERROR: 'PciePortDisable[66]'
+2020-07-14 20:57:08,850 - INFO: PciePortLinkSpeed[66] Value to set: Gen 3 (8 GT/s)
+2020-07-14 20:57:08,944 - ERROR: 'PciePortLinkSpeed[66]'
+2020-07-14 20:57:08,944 - INFO: PciePortDisable[67] Value to set: Enable
+2020-07-14 20:57:09,022 - ERROR: 'PciePortDisable[67]'
+2020-07-14 20:57:09,022 - INFO: PciePortLinkSpeed[67] Value to set: Gen 3 (8 GT/s)
+2020-07-14 20:57:09,100 - ERROR: 'PciePortLinkSpeed[67]'
+2020-07-14 20:57:09,116 - INFO: PciePortDisable[68] Value to set: Enable
+2020-07-14 20:57:09,194 - INFO: PciePortDisable[68] default value: Auto
+2020-07-14 20:57:09,209 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port2A
+2020-07-14 20:57:10,132 - INFO: Patch Successfully
+2020-07-14 21:01:42,956 - INFO: PciePortDisable[68] : Pass
+2020-07-14 21:01:42,956 - INFO: ------------------------------------------------------------
+2020-07-14 21:01:42,956 - INFO: PciePortLinkSpeed[68] Value to set: Gen 2 (5 GT/s)
+2020-07-14 21:01:43,034 - INFO: PciePortLinkSpeed[68] default value: Gen 2 (5 GT/s)
+2020-07-14 21:01:43,050 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port2A
+2020-07-14 21:01:43,957 - INFO: Patch Successfully
+2020-07-14 21:04:14,463 - INFO: PciePortLinkSpeed[68] : Pass
+2020-07-14 21:04:14,463 - INFO: ------------------------------------------------------------
+2020-07-14 21:04:14,463 - INFO: PciePortDisable[69] Value to set: Enable
+2020-07-14 21:04:14,542 - INFO: PciePortDisable[69] default value: Auto
+2020-07-14 21:04:14,542 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port2B
+2020-07-14 21:04:15,495 - INFO: Patch Successfully
+2020-07-14 21:08:47,932 - INFO: PciePortDisable[69] : Pass
+2020-07-14 21:08:47,932 - INFO: ------------------------------------------------------------
+2020-07-14 21:08:47,947 - INFO: PciePortLinkSpeed[69] Value to set: Gen 2 (5 GT/s)
+2020-07-14 21:08:48,026 - INFO: PciePortLinkSpeed[69] default value: Gen 2 (5 GT/s)
+2020-07-14 21:08:48,041 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port2B
+2020-07-14 21:08:48,933 - INFO: Patch Successfully
+2020-07-14 21:11:19,487 - INFO: PciePortLinkSpeed[69] : Pass
+2020-07-14 21:11:19,487 - INFO: ------------------------------------------------------------
+2020-07-14 21:11:19,487 - INFO: PciePortDisable[70] Value to set: Enable
+2020-07-14 21:11:19,580 - INFO: PciePortDisable[70] default value: Auto
+2020-07-14 21:11:19,596 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port2C
+2020-07-14 21:11:20,472 - INFO: Patch Successfully
+2020-07-14 21:15:56,934 - INFO: PciePortDisable[70] : Pass
+2020-07-14 21:15:56,934 - INFO: ------------------------------------------------------------
+2020-07-14 21:15:56,934 - INFO: PciePortLinkSpeed[70] Value to set: Gen 3 (8 GT/s)
+2020-07-14 21:15:57,027 - INFO: PciePortLinkSpeed[70] default value: Gen 2 (5 GT/s)
+2020-07-14 21:15:57,043 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port2C
+2020-07-14 21:15:57,919 - INFO: Patch Successfully
+2020-07-14 21:20:30,436 - INFO: PciePortLinkSpeed[70] : Pass
+2020-07-14 21:20:30,436 - INFO: ------------------------------------------------------------
+2020-07-14 21:20:30,436 - INFO: PciePortDisable[71] Value to set: Enable
+2020-07-14 21:20:30,514 - INFO: PciePortDisable[71] default value: Auto
+2020-07-14 21:20:30,514 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port2D
+2020-07-14 21:20:31,374 - INFO: Patch Successfully
+2020-07-14 21:25:03,929 - INFO: PciePortDisable[71] : Pass
+2020-07-14 21:25:03,929 - INFO: ------------------------------------------------------------
+2020-07-14 21:25:03,945 - INFO: PciePortLinkSpeed[71] Value to set: Gen 2 (5 GT/s)
+2020-07-14 21:25:04,023 - INFO: PciePortLinkSpeed[71] default value: Gen 2 (5 GT/s)
+2020-07-14 21:25:04,023 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port2D
+2020-07-14 21:25:04,976 - INFO: Patch Successfully
+2020-07-14 21:27:35,506 - INFO: PciePortLinkSpeed[71] : Pass
+2020-07-14 21:27:35,506 - INFO: ------------------------------------------------------------
+2020-07-14 21:27:35,506 - INFO: PciePortDisable[72] Value to set: Enable
+2020-07-14 21:27:35,600 - ERROR: 'PciePortDisable[72]'
+2020-07-14 21:27:35,600 - INFO: PciePortLinkSpeed[72] Value to set: Gen 3 (8 GT/s)
+2020-07-14 21:27:35,678 - ERROR: 'PciePortLinkSpeed[72]'
+2020-07-14 21:27:35,678 - INFO: PciePortDisable[73] Value to set: Enable
+2020-07-14 21:27:35,757 - ERROR: 'PciePortDisable[73]'
+2020-07-14 21:27:35,757 - INFO: PciePortLinkSpeed[73] Value to set: Gen 2 (5 GT/s)
+2020-07-14 21:27:35,850 - ERROR: 'PciePortLinkSpeed[73]'
+2020-07-14 21:27:35,850 - INFO: PciePortDisable[74] Value to set: Enable
+2020-07-14 21:27:35,944 - ERROR: 'PciePortDisable[74]'
+2020-07-14 21:27:35,944 - INFO: PciePortLinkSpeed[74] Value to set: Gen 2 (5 GT/s)
+2020-07-14 21:27:36,038 - ERROR: 'PciePortLinkSpeed[74]'
+2020-07-14 21:27:36,038 - INFO: PciePortDisable[75] Value to set: Enable
+2020-07-14 21:27:36,116 - ERROR: 'PciePortDisable[75]'
+2020-07-14 21:27:36,116 - INFO: PciePortLinkSpeed[75] Value to set: Gen 3 (8 GT/s)
+2020-07-14 21:27:36,209 - ERROR: 'PciePortLinkSpeed[75]'
+2020-07-14 21:27:36,209 - INFO: PciePortDisable[76] Value to set: Enable
+2020-07-14 21:27:36,288 - ERROR: 'PciePortDisable[76]'
+2020-07-14 21:27:36,303 - INFO: PciePortLinkSpeed[76] Value to set: Gen 2 (5 GT/s)
+2020-07-14 21:27:36,397 - ERROR: 'PciePortLinkSpeed[76]'
+2020-07-14 21:27:36,397 - INFO: PciePortDisable[77] Value to set: Enable
+2020-07-14 21:27:36,491 - ERROR: 'PciePortDisable[77]'
+2020-07-14 21:27:36,491 - INFO: PciePortLinkSpeed[77] Value to set: Gen 2 (5 GT/s)
+2020-07-14 21:27:36,569 - ERROR: 'PciePortLinkSpeed[77]'
+2020-07-14 21:27:36,569 - INFO: PciePortDisable[78] Value to set: Enable
+2020-07-14 21:27:36,662 - ERROR: 'PciePortDisable[78]'
+2020-07-14 21:27:36,662 - INFO: PciePortLinkSpeed[78] Value to set: Gen 3 (8 GT/s)
+2020-07-14 21:27:36,756 - ERROR: 'PciePortLinkSpeed[78]'
+2020-07-14 21:27:36,756 - INFO: PciePortDisable[79] Value to set: Enable
+2020-07-14 21:27:36,850 - ERROR: 'PciePortDisable[79]'
+2020-07-14 21:27:36,850 - INFO: PciePortLinkSpeed[79] Value to set: Gen 2 (5 GT/s)
+2020-07-14 21:27:36,928 - ERROR: 'PciePortLinkSpeed[79]'
+2020-07-14 21:27:36,928 - INFO: PciePortDisable[80] Value to set: Enable
+2020-07-14 21:27:37,022 - ERROR: 'PciePortDisable[80]'
+2020-07-14 21:27:37,022 - INFO: PciePortLinkSpeed[80] Value to set: Gen 1 (2.5 GT/s)
+2020-07-14 21:27:37,100 - ERROR: 'PciePortLinkSpeed[80]'
+2020-07-14 21:27:37,115 - INFO: PciePortDisable[81] Value to set: Enable
+2020-07-14 21:27:37,193 - ERROR: 'PciePortDisable[81]'
+2020-07-14 21:27:37,193 - INFO: PciePortLinkSpeed[81] Value to set: Gen 2 (5 GT/s)
+2020-07-14 21:27:37,287 - ERROR: 'PciePortLinkSpeed[81]'
+2020-07-14 21:27:37,287 - INFO: PciePortDisable[82] Value to set: Enable
+2020-07-14 21:27:37,366 - ERROR: 'PciePortDisable[82]'
+2020-07-14 21:27:37,366 - INFO: PciePortLinkSpeed[82] Value to set: Gen 2 (5 GT/s)
+2020-07-14 21:27:37,459 - ERROR: 'PciePortLinkSpeed[82]'
+2020-07-14 21:27:37,459 - INFO: PciePortDisable[83] Value to set: Enable
+2020-07-14 21:27:37,537 - ERROR: 'PciePortDisable[83]'
+2020-07-14 21:27:37,537 - INFO: PciePortLinkSpeed[83] Value to set: Gen 2 (5 GT/s)
+2020-07-14 21:27:37,615 - ERROR: 'PciePortLinkSpeed[83]'
+2020-07-14 21:27:37,631 - INFO: PciePortDisable[84] Value to set: Enable
+2020-07-14 21:27:37,709 - ERROR: 'PciePortDisable[84]'
+2020-07-14 21:27:37,709 - INFO: PciePortLinkSpeed[84] Value to set: Gen 2 (5 GT/s)
+2020-07-14 21:27:37,787 - ERROR: 'PciePortLinkSpeed[84]'
+2020-07-15 09:00:31,872 - INFO: ************************************************************
+2020-07-15 09:00:31,872 - INFO: Start test with .\dep\tc_dep_PciePortDisable_10.json
+2020-07-15 09:00:31,872 - INFO: ************************************************************
+2020-07-15 09:00:31,872 - INFO: Complted: 0
+2020-07-15 09:00:31,872 - INFO: Error: 0
+2020-07-15 09:00:31,872 - INFO: Passed: 0
+2020-07-15 09:00:31,872 - INFO: Failed: 0
+2020-07-15 09:00:31,872 - INFO: PciePortDisable[1] Value to set: Disable
+2020-07-15 09:00:31,967 - INFO: PciePortDisable[1] default value: Auto
+2020-07-15 09:00:31,982 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port1A
+2020-07-15 09:00:32,983 - INFO: Patch Successfully
+2020-07-15 09:05:05,935 - INFO: PciePortDisable[1] : Pass
+2020-07-15 09:05:05,935 - INFO: ------------------------------------------------------------
+2020-07-15 09:05:05,935 - INFO: PciePortLinkSpeed[1] Value to set: Gen 3 (8 GT/s)
+2020-07-15 09:05:06,014 - INFO: PciePortLinkSpeed[1] default value: Auto
+2020-07-15 09:05:06,029 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port1A
+2020-07-15 09:05:06,998 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'iBMC.1.0.SettingPropertyFailed', 'RelatedProperties': ['#/Attributes/PciePortLinkSpeed[1]'], 'Message': 'The property Attributes/PciePortLinkSpeed[1] cannot be modified because the value for the property Attributes/ is null.', 'MessageArgs': ['Attributes/PciePortLinkSpeed[1]', 'Attributes/', 'null'], 'Severity': 'Warning', 'Resolution': 'This property cannot be changed.'}]}
+2020-07-15 09:05:06,998 - INFO: ------------------------------------------------------------
+2020-07-15 09:05:06,998 - INFO: PciePortDisable[2] Value to set: Disable
+2020-07-15 09:05:07,107 - ERROR: 'PciePortDisable[2]'
+2020-07-15 09:05:07,107 - INFO: PciePortLinkSpeed[2] Value to set: Gen 2 (5 GT/s)
+2020-07-15 09:05:07,201 - ERROR: 'PciePortLinkSpeed[2]'
+2020-07-15 09:05:07,201 - INFO: PciePortLinkSpeed[3] Value to set: Gen 2 (5 GT/s)
+2020-07-15 09:05:07,295 - ERROR: 'PciePortLinkSpeed[3]'
+2020-07-15 09:05:07,295 - INFO: PciePortDisable[3] Value to set: Disable
+2020-07-15 09:05:07,389 - ERROR: 'PciePortDisable[3]'
+2020-07-15 09:05:07,389 - INFO: PciePortLinkSpeed[4] Value to set: Gen 3 (8 GT/s)
+2020-07-15 09:05:07,466 - ERROR: 'PciePortLinkSpeed[4]'
+2020-07-15 09:05:07,466 - INFO: PciePortDisable[4] Value to set: Disable
+2020-07-15 09:05:07,560 - ERROR: 'PciePortDisable[4]'
+2020-07-15 09:05:07,560 - INFO: PciePortLinkSpeed[5] Value to set: Gen 2 (5 GT/s)
+2020-07-15 09:05:07,639 - INFO: PciePortLinkSpeed[5] default value: Auto
+2020-07-15 09:05:07,654 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port2A
+2020-07-15 09:05:08,513 - INFO: Patch Successfully
+2020-07-15 09:09:40,935 - INFO: PciePortLinkSpeed[5] : Pass
+2020-07-15 09:09:40,951 - INFO: ------------------------------------------------------------
+2020-07-15 09:09:40,951 - INFO: PciePortDisable[5] Value to set: Disable
+2020-07-15 09:09:41,045 - INFO: PciePortDisable[5] default value: Auto
+2020-07-15 09:09:41,076 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port2A
+2020-07-15 09:09:42,014 - INFO: Patch Successfully
+2020-07-15 09:14:14,435 - INFO: PciePortDisable[5] : Pass
+2020-07-15 09:14:14,435 - INFO: ------------------------------------------------------------
+2020-07-15 09:14:14,435 - INFO: PciePortLinkSpeed[6] Value to set: Gen 2 (5 GT/s)
+2020-07-15 09:14:14,529 - ERROR: 'PciePortLinkSpeed[6]'
+2020-07-15 09:14:14,529 - INFO: PciePortDisable[6] Value to set: Disable
+2020-07-15 09:14:14,623 - ERROR: 'PciePortDisable[6]'
+2020-07-15 09:14:14,623 - INFO: PciePortLinkSpeed[7] Value to set: Gen 2 (5 GT/s)
+2020-07-15 09:14:14,748 - INFO: PciePortLinkSpeed[7] default value: Auto
+2020-07-15 09:14:14,763 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port2C
+2020-07-15 09:14:15,717 - INFO: Patch Successfully
+2020-07-15 09:18:48,451 - INFO: PciePortLinkSpeed[7] : Pass
+2020-07-15 09:18:48,451 - INFO: ------------------------------------------------------------
+2020-07-15 09:18:48,466 - INFO: PciePortDisable[7] Value to set: Disable
+2020-07-15 09:18:48,545 - INFO: PciePortDisable[7] default value: Auto
+2020-07-15 09:18:48,560 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port2C
+2020-07-15 09:18:49,435 - INFO: Patch Successfully
+2020-07-15 09:45:12,451 - INFO: PciePortDisable[7] : Failed
+2020-07-15 09:45:12,451 - INFO: ------------------------------------------------------------
+2020-07-15 09:45:12,451 - INFO: PciePortLinkSpeed[8] Value to set: Gen 2 (5 GT/s)
+2020-07-15 09:45:12,529 - ERROR: 'PciePortLinkSpeed[8]'
+2020-07-15 09:45:12,529 - INFO: PciePortDisable[8] Value to set: Disable
+2020-07-15 09:45:12,623 - ERROR: 'PciePortDisable[8]'
+2020-07-15 09:45:12,623 - INFO: PciePortLinkSpeed[9] Value to set: Gen 1 (2.5 GT/s)
+2020-07-15 09:45:12,701 - ERROR: 'PciePortLinkSpeed[9]'
+2020-07-15 09:45:12,701 - INFO: PciePortDisable[9] Value to set: Disable
+2020-07-15 09:45:12,779 - ERROR: 'PciePortDisable[9]'
+2020-07-15 09:45:12,794 - INFO: PciePortLinkSpeed[10] Value to set: Gen 2 (5 GT/s)
+2020-07-15 09:45:12,873 - ERROR: 'PciePortLinkSpeed[10]'
+2020-07-15 09:45:12,873 - INFO: PciePortDisable[10] Value to set: Disable
+2020-07-15 09:45:12,967 - ERROR: 'PciePortDisable[10]'
+2020-07-15 09:45:12,967 - INFO: PciePortLinkSpeed[11] Value to set: Gen 3 (8 GT/s)
+2020-07-15 09:45:13,060 - ERROR: 'PciePortLinkSpeed[11]'
+2020-07-15 09:45:13,060 - INFO: PciePortDisable[11] Value to set: Disable
+2020-07-15 09:45:13,154 - ERROR: 'PciePortDisable[11]'
+2020-07-15 09:45:13,154 - INFO: PciePortLinkSpeed[12] Value to set: Gen 2 (5 GT/s)
+2020-07-15 09:45:13,233 - ERROR: 'PciePortLinkSpeed[12]'
+2020-07-15 09:45:13,233 - INFO: PciePortDisable[12] Value to set: Disable
+2020-07-15 09:45:13,326 - ERROR: 'PciePortDisable[12]'
+2020-07-15 09:45:13,326 - INFO: PciePortLinkSpeed[13] Value to set: Gen 2 (5 GT/s)
+2020-07-15 09:45:13,420 - INFO: PciePortLinkSpeed[13] default value: Auto
+2020-07-15 09:45:13,451 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port4A
+2020-07-15 09:45:14,342 - INFO: Patch Successfully
+2020-07-15 09:49:46,951 - INFO: PciePortLinkSpeed[13] : Pass
+2020-07-15 09:49:46,951 - INFO: ------------------------------------------------------------
+2020-07-15 09:49:46,951 - INFO: PciePortDisable[13] Value to set: Disable
+2020-07-15 09:49:47,029 - INFO: PciePortDisable[13] default value: Auto
+2020-07-15 09:49:47,045 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port4A
+2020-07-15 09:49:47,920 - INFO: Patch Successfully
+2020-07-15 09:54:20,435 - INFO: PciePortDisable[13] : Pass
+2020-07-15 09:54:20,435 - INFO: ------------------------------------------------------------
+2020-07-15 09:54:20,451 - INFO: PciePortLinkSpeed[14] Value to set: Gen 3 (8 GT/s)
+2020-07-15 09:54:20,529 - ERROR: 'PciePortLinkSpeed[14]'
+2020-07-15 09:54:20,529 - INFO: PciePortDisable[14] Value to set: Disable
+2020-07-15 09:54:20,622 - ERROR: 'PciePortDisable[14]'
+2020-07-15 09:54:20,622 - INFO: PciePortLinkSpeed[15] Value to set: Gen 2 (5 GT/s)
+2020-07-15 09:54:20,701 - ERROR: 'PciePortLinkSpeed[15]'
+2020-07-15 09:54:20,701 - INFO: PciePortDisable[15] Value to set: Disable
+2020-07-15 09:54:20,795 - ERROR: 'PciePortDisable[15]'
+2020-07-15 09:54:20,795 - INFO: PciePortLinkSpeed[16] Value to set: Gen 2 (5 GT/s)
+2020-07-15 09:54:20,920 - ERROR: 'PciePortLinkSpeed[16]'
+2020-07-15 09:54:20,920 - INFO: PciePortDisable[16] Value to set: Disable
+2020-07-15 09:54:20,998 - ERROR: 'PciePortDisable[16]'
+2020-07-15 09:54:20,998 - INFO: PciePortLinkSpeed[17] Value to set: Gen 2 (5 GT/s)
+2020-07-15 09:54:21,091 - ERROR: 'PciePortLinkSpeed[17]'
+2020-07-15 09:54:21,091 - INFO: PciePortDisable[17] Value to set: Disable
+2020-07-15 09:54:21,170 - ERROR: 'PciePortDisable[17]'
+2020-07-15 09:54:21,170 - INFO: PciePortLinkSpeed[18] Value to set: Gen 1 (2.5 GT/s)
+2020-07-15 09:54:21,264 - ERROR: 'PciePortLinkSpeed[18]'
+2020-07-15 09:54:21,264 - INFO: PciePortDisable[18] Value to set: Disable
+2020-07-15 09:54:21,341 - ERROR: 'PciePortDisable[18]'
+2020-07-15 09:54:21,341 - INFO: PciePortLinkSpeed[19] Value to set: Gen 2 (5 GT/s)
+2020-07-15 09:54:21,435 - ERROR: 'PciePortLinkSpeed[19]'
+2020-07-15 09:54:21,435 - INFO: PciePortDisable[19] Value to set: Disable
+2020-07-15 09:54:21,514 - ERROR: 'PciePortDisable[19]'
+2020-07-15 09:54:21,514 - INFO: PciePortLinkSpeed[20] Value to set: Gen 2 (5 GT/s)
+2020-07-15 09:54:21,607 - ERROR: 'PciePortLinkSpeed[20]'
+2020-07-15 09:54:21,622 - INFO: PciePortDisable[20] Value to set: Disable
+2020-07-15 09:54:21,701 - ERROR: 'PciePortDisable[20]'
+2020-07-15 09:54:21,701 - INFO: PciePortLinkSpeed[21] Value to set: Gen 2 (5 GT/s)
+2020-07-15 09:54:21,810 - ERROR: 'PciePortLinkSpeed[21]'
+2020-07-15 09:54:21,810 - INFO: PciePortDisable[21] Value to set: Disable
+2020-07-15 09:54:21,889 - ERROR: 'PciePortDisable[21]'
+2020-07-15 09:54:21,889 - INFO: PciePortLinkSpeed[22] Value to set: Gen 3 (8 GT/s)
+2020-07-15 09:54:21,998 - INFO: PciePortLinkSpeed[22] default value: Auto
+2020-07-15 09:54:22,013 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port1A
+2020-07-15 09:54:22,889 - INFO: Patch Successfully
+2020-07-15 09:58:55,451 - INFO: PciePortLinkSpeed[22] : Pass
+2020-07-15 09:58:55,451 - INFO: ------------------------------------------------------------
+2020-07-15 09:58:55,451 - INFO: PciePortDisable[22] Value to set: Disable
+2020-07-15 09:58:55,560 - INFO: PciePortDisable[22] default value: Auto
+2020-07-15 09:58:55,576 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port1A
+2020-07-15 09:58:56,451 - INFO: Patch Successfully
+2020-07-15 10:03:28,967 - INFO: PciePortDisable[22] : Pass
+2020-07-15 10:03:28,967 - INFO: ------------------------------------------------------------
+2020-07-15 10:03:28,982 - INFO: PciePortLinkSpeed[23] Value to set: Gen 2 (5 GT/s)
+2020-07-15 10:03:29,060 - ERROR: 'PciePortLinkSpeed[23]'
+2020-07-15 10:03:29,060 - INFO: PciePortDisable[23] Value to set: Disable
+2020-07-15 10:03:29,138 - ERROR: 'PciePortDisable[23]'
+2020-07-15 10:03:29,154 - INFO: PciePortLinkSpeed[24] Value to set: Gen 2 (5 GT/s)
+2020-07-15 10:03:29,248 - INFO: PciePortLinkSpeed[24] default value: Auto
+2020-07-15 10:03:29,248 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port1C
+2020-07-15 10:03:30,233 - INFO: Patch Successfully
+2020-07-15 10:08:02,967 - INFO: PciePortLinkSpeed[24] : Pass
+2020-07-15 10:08:02,967 - INFO: ------------------------------------------------------------
+2020-07-15 10:08:02,967 - INFO: PciePortDisable[24] Value to set: Disable
+2020-07-15 10:08:03,045 - INFO: PciePortDisable[24] default value: Auto
+2020-07-15 10:08:03,060 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port1C
+2020-07-15 10:08:04,123 - INFO: Patch Successfully
+2020-07-15 10:12:36,951 - INFO: PciePortDisable[24] : Pass
+2020-07-15 10:12:36,951 - INFO: ------------------------------------------------------------
+2020-07-15 10:12:36,951 - INFO: PciePortLinkSpeed[25] Value to set: Gen 3 (8 GT/s)
+2020-07-15 10:12:37,029 - ERROR: 'PciePortLinkSpeed[25]'
+2020-07-15 10:12:37,029 - INFO: PciePortDisable[25] Value to set: Disable
+2020-07-15 10:12:37,123 - ERROR: 'PciePortDisable[25]'
+2020-07-15 10:12:37,123 - INFO: PciePortLinkSpeed[26] Value to set: Gen 2 (5 GT/s)
+2020-07-15 10:12:37,201 - INFO: PciePortLinkSpeed[26] default value: Auto
+2020-07-15 10:12:37,216 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port2A
+2020-07-15 10:12:38,185 - INFO: Patch Successfully
+2020-07-15 10:17:10,951 - INFO: PciePortLinkSpeed[26] : Pass
+2020-07-15 10:17:10,951 - INFO: ------------------------------------------------------------
+2020-07-15 10:17:10,951 - INFO: PciePortDisable[26] Value to set: Disable
+2020-07-15 10:17:11,029 - INFO: PciePortDisable[26] default value: Auto
+2020-07-15 10:17:11,045 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port2A
+2020-07-15 10:17:12,014 - INFO: Patch Successfully
+2020-07-15 10:21:44,951 - INFO: PciePortDisable[26] : Pass
+2020-07-15 10:21:44,967 - INFO: ------------------------------------------------------------
+2020-07-15 10:21:44,967 - INFO: PciePortLinkSpeed[27] Value to set: Gen 3 (8 GT/s)
+2020-07-15 10:21:45,045 - ERROR: 'PciePortLinkSpeed[27]'
+2020-07-15 10:21:45,045 - INFO: PciePortDisable[27] Value to set: Disable
+2020-07-15 10:21:45,139 - ERROR: 'PciePortDisable[27]'
+2020-07-15 10:21:45,139 - INFO: PciePortLinkSpeed[28] Value to set: Gen 2 (5 GT/s)
+2020-07-15 10:21:45,232 - ERROR: 'PciePortLinkSpeed[28]'
+2020-07-15 10:21:45,232 - INFO: PciePortDisable[28] Value to set: Disable
+2020-07-15 10:21:45,326 - ERROR: 'PciePortDisable[28]'
+2020-07-15 10:21:45,326 - INFO: PciePortLinkSpeed[29] Value to set: Gen 2 (5 GT/s)
+2020-07-15 10:21:45,420 - ERROR: 'PciePortLinkSpeed[29]'
+2020-07-15 10:21:45,420 - INFO: PciePortDisable[29] Value to set: Disable
+2020-07-15 10:21:45,529 - ERROR: 'PciePortDisable[29]'
+2020-07-15 10:21:45,529 - INFO: PciePortLinkSpeed[30] Value to set: Gen 3 (8 GT/s)
+2020-07-15 10:21:45,608 - ERROR: 'PciePortLinkSpeed[30]'
+2020-07-15 10:21:45,608 - INFO: PciePortDisable[30] Value to set: Disable
+2020-07-15 10:21:45,701 - ERROR: 'PciePortDisable[30]'
+2020-07-15 10:21:45,701 - INFO: PciePortLinkSpeed[31] Value to set: Gen 2 (5 GT/s)
+2020-07-15 10:21:45,795 - ERROR: 'PciePortLinkSpeed[31]'
+2020-07-15 10:21:45,795 - INFO: PciePortDisable[31] Value to set: Disable
+2020-07-15 10:21:45,904 - ERROR: 'PciePortDisable[31]'
+2020-07-15 10:21:45,904 - INFO: PciePortLinkSpeed[32] Value to set: Gen 2 (5 GT/s)
+2020-07-15 10:21:45,982 - ERROR: 'PciePortLinkSpeed[32]'
+2020-07-15 10:21:45,982 - INFO: PciePortDisable[32] Value to set: Disable
+2020-07-15 10:21:46,061 - ERROR: 'PciePortDisable[32]'
+2020-07-15 10:21:46,061 - INFO: PciePortLinkSpeed[33] Value to set: Gen 2 (5 GT/s)
+2020-07-15 10:21:46,139 - ERROR: 'PciePortLinkSpeed[33]'
+2020-07-15 10:21:46,154 - INFO: PciePortDisable[33] Value to set: Disable
+2020-07-15 10:21:46,232 - ERROR: 'PciePortDisable[33]'
+2020-07-15 10:21:46,232 - INFO: PciePortLinkSpeed[34] Value to set: Gen 2 (5 GT/s)
+2020-07-15 10:21:46,341 - INFO: PciePortLinkSpeed[34] default value: Auto
+2020-07-15 10:21:46,357 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port4A
+2020-07-15 10:21:47,248 - INFO: Patch Successfully
+2020-07-15 10:26:19,951 - INFO: PciePortLinkSpeed[34] : Pass
+2020-07-15 10:26:19,951 - INFO: ------------------------------------------------------------
+2020-07-15 10:26:19,951 - INFO: PciePortDisable[34] Value to set: Disable
+2020-07-15 10:26:20,029 - INFO: PciePortDisable[34] default value: Auto
+2020-07-15 10:26:20,029 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port4A
+2020-07-15 10:26:20,966 - INFO: Patch Successfully
+2020-07-15 10:30:53,466 - INFO: PciePortDisable[34] : Pass
+2020-07-15 10:30:53,466 - INFO: ------------------------------------------------------------
+2020-07-15 10:30:53,466 - INFO: PciePortLinkSpeed[35] Value to set: Gen 1 (2.5 GT/s)
+2020-07-15 10:30:53,545 - ERROR: 'PciePortLinkSpeed[35]'
+2020-07-15 10:30:53,545 - INFO: PciePortDisable[35] Value to set: Disable
+2020-07-15 10:30:53,638 - ERROR: 'PciePortDisable[35]'
+2020-07-15 10:30:53,638 - INFO: PciePortLinkSpeed[36] Value to set: Gen 1 (2.5 GT/s)
+2020-07-15 10:30:53,732 - INFO: PciePortLinkSpeed[36] default value: Auto
+2020-07-15 10:30:53,748 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port4C
+2020-07-15 10:30:54,686 - INFO: Patch Successfully
+2020-07-15 10:35:27,451 - INFO: PciePortLinkSpeed[36] : Pass
+2020-07-15 10:35:27,451 - INFO: ------------------------------------------------------------
+2020-07-15 10:35:27,466 - INFO: PciePortDisable[36] Value to set: Disable
+2020-07-15 10:35:27,545 - INFO: PciePortDisable[36] default value: Auto
+2020-07-15 10:35:27,576 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port4C
+2020-07-15 10:35:28,591 - INFO: Patch Successfully
+2020-07-15 10:40:01,483 - INFO: PciePortDisable[36] : Pass
+2020-07-15 10:40:01,483 - INFO: ------------------------------------------------------------
+2020-07-15 10:40:01,483 - INFO: PciePortLinkSpeed[37] Value to set: Gen 1 (2.5 GT/s)
+2020-07-15 10:40:01,576 - ERROR: 'PciePortLinkSpeed[37]'
+2020-07-15 10:40:01,576 - INFO: PciePortDisable[37] Value to set: Disable
+2020-07-15 10:40:01,670 - ERROR: 'PciePortDisable[37]'
+2020-07-15 10:40:01,670 - INFO: PciePortLinkSpeed[38] Value to set: Gen 1 (2.5 GT/s)
+2020-07-15 10:40:01,764 - ERROR: 'PciePortLinkSpeed[38]'
+2020-07-15 10:40:01,764 - INFO: PciePortDisable[38] Value to set: Disable
+2020-07-15 10:40:01,857 - ERROR: 'PciePortDisable[38]'
+2020-07-15 10:40:01,857 - INFO: PciePortLinkSpeed[39] Value to set: Gen 1 (2.5 GT/s)
+2020-07-15 10:40:01,935 - ERROR: 'PciePortLinkSpeed[39]'
+2020-07-15 10:40:01,951 - INFO: PciePortDisable[39] Value to set: Disable
+2020-07-15 10:40:02,045 - ERROR: 'PciePortDisable[39]'
+2020-07-15 10:40:02,045 - INFO: PciePortLinkSpeed[40] Value to set: Gen 1 (2.5 GT/s)
+2020-07-15 10:40:02,139 - ERROR: 'PciePortLinkSpeed[40]'
+2020-07-15 10:40:02,139 - INFO: PciePortDisable[40] Value to set: Disable
+2020-07-15 10:40:02,232 - ERROR: 'PciePortDisable[40]'
+2020-07-15 10:40:02,232 - INFO: PciePortLinkSpeed[41] Value to set: Gen 2 (5 GT/s)
+2020-07-15 10:40:02,310 - ERROR: 'PciePortLinkSpeed[41]'
+2020-07-15 10:40:02,310 - INFO: PciePortDisable[41] Value to set: Disable
+2020-07-15 10:40:02,404 - ERROR: 'PciePortDisable[41]'
+2020-07-15 10:40:02,404 - INFO: PciePortLinkSpeed[42] Value to set: Gen 3 (8 GT/s)
+2020-07-15 10:40:02,497 - ERROR: 'PciePortLinkSpeed[42]'
+2020-07-15 10:40:02,497 - INFO: PciePortDisable[42] Value to set: Disable
+2020-07-15 10:40:02,592 - ERROR: 'PciePortDisable[42]'
+2020-07-15 10:40:02,592 - INFO: PciePortLinkSpeed[43] Value to set: Gen 2 (5 GT/s)
+2020-07-15 10:40:02,685 - INFO: PciePortLinkSpeed[43] default value: Auto
+2020-07-15 10:40:02,701 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port1A
+2020-07-15 10:40:03,623 - INFO: Patch Successfully
+2020-07-15 10:44:36,451 - INFO: PciePortLinkSpeed[43] : Pass
+2020-07-15 10:44:36,451 - INFO: ------------------------------------------------------------
+2020-07-15 10:44:36,451 - INFO: PciePortDisable[43] Value to set: Disable
+2020-07-15 10:44:36,545 - INFO: PciePortDisable[43] default value: Auto
+2020-07-15 10:44:36,545 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port1A
+2020-07-15 10:44:37,654 - INFO: Patch Successfully
+2020-07-15 10:49:10,451 - INFO: PciePortDisable[43] : Pass
+2020-07-15 10:49:10,451 - INFO: ------------------------------------------------------------
+2020-07-15 10:49:10,451 - INFO: PciePortLinkSpeed[44] Value to set: Gen 2 (5 GT/s)
+2020-07-15 10:49:10,545 - ERROR: 'PciePortLinkSpeed[44]'
+2020-07-15 10:49:10,545 - INFO: PciePortDisable[44] Value to set: Disable
+2020-07-15 10:49:10,623 - ERROR: 'PciePortDisable[44]'
+2020-07-15 10:49:10,623 - INFO: PciePortLinkSpeed[45] Value to set: Gen 2 (5 GT/s)
+2020-07-15 10:49:10,717 - ERROR: 'PciePortLinkSpeed[45]'
+2020-07-15 10:49:10,717 - INFO: PciePortDisable[45] Value to set: Disable
+2020-07-15 10:49:10,795 - ERROR: 'PciePortDisable[45]'
+2020-07-15 10:49:10,795 - INFO: PciePortLinkSpeed[46] Value to set: Gen 3 (8 GT/s)
+2020-07-15 10:49:10,889 - ERROR: 'PciePortLinkSpeed[46]'
+2020-07-15 10:49:10,889 - INFO: PciePortDisable[47] Value to set: Disable
+2020-07-15 10:49:10,998 - ERROR: 'PciePortDisable[47]'
+2020-07-15 10:49:10,998 - INFO: PciePortLinkSpeed[47] Value to set: Gen 2 (5 GT/s)
+2020-07-15 10:49:11,076 - ERROR: 'PciePortLinkSpeed[47]'
+2020-07-15 10:49:11,076 - INFO: PciePortDisable[48] Value to set: Disable
+2020-07-15 10:49:11,154 - ERROR: 'PciePortDisable[48]'
+2020-07-15 10:49:11,154 - INFO: PciePortLinkSpeed[48] Value to set: Gen 3 (8 GT/s)
+2020-07-15 10:49:11,248 - ERROR: 'PciePortLinkSpeed[48]'
+2020-07-15 10:49:11,248 - INFO: PciePortDisable[49] Value to set: Disable
+2020-07-15 10:49:11,326 - ERROR: 'PciePortDisable[49]'
+2020-07-15 10:49:11,326 - INFO: PciePortLinkSpeed[49] Value to set: Gen 2 (5 GT/s)
+2020-07-15 10:49:11,435 - ERROR: 'PciePortLinkSpeed[49]'
+2020-07-15 10:49:11,435 - INFO: PciePortDisable[50] Value to set: Disable
+2020-07-15 10:49:11,514 - ERROR: 'PciePortDisable[50]'
+2020-07-15 10:49:11,529 - INFO: PciePortLinkSpeed[50] Value to set: Gen 3 (8 GT/s)
+2020-07-15 10:49:11,608 - ERROR: 'PciePortLinkSpeed[50]'
+2020-07-15 10:49:11,608 - INFO: PciePortDisable[51] Value to set: Disable
+2020-07-15 10:49:11,685 - ERROR: 'PciePortDisable[51]'
+2020-07-15 10:49:11,685 - INFO: PciePortLinkSpeed[51] Value to set: Gen 1 (2.5 GT/s)
+2020-07-15 10:49:11,779 - ERROR: 'PciePortLinkSpeed[51]'
+2020-07-15 10:49:11,779 - INFO: PciePortDisable[52] Value to set: Disable
+2020-07-15 10:49:11,857 - ERROR: 'PciePortDisable[52]'
+2020-07-15 10:49:11,873 - INFO: PciePortLinkSpeed[52] Value to set: Gen 2 (5 GT/s)
+2020-07-15 10:49:11,966 - ERROR: 'PciePortLinkSpeed[52]'
+2020-07-15 10:49:11,966 - INFO: PciePortDisable[53] Value to set: Disable
+2020-07-15 10:49:12,060 - ERROR: 'PciePortDisable[53]'
+2020-07-15 10:49:12,060 - INFO: PciePortLinkSpeed[53] Value to set: Gen 2 (5 GT/s)
+2020-07-15 10:49:12,154 - ERROR: 'PciePortLinkSpeed[53]'
+2020-07-15 10:49:12,154 - INFO: PciePortDisable[54] Value to set: Disable
+2020-07-15 10:49:12,263 - ERROR: 'PciePortDisable[54]'
+2020-07-15 10:49:12,263 - INFO: PciePortLinkSpeed[54] Value to set: Gen 2 (5 GT/s)
+2020-07-15 10:49:12,342 - ERROR: 'PciePortLinkSpeed[54]'
+2020-07-15 10:49:12,342 - INFO: PciePortDisable[55] Value to set: Disable
+2020-07-15 10:49:12,435 - INFO: PciePortDisable[55] default value: Auto
+2020-07-15 10:49:12,451 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port4A
+2020-07-15 10:49:13,420 - INFO: Patch Successfully
+2020-07-15 11:03:15,435 - INFO: PciePortDisable[55] : Pass
+2020-07-15 11:03:15,435 - INFO: ------------------------------------------------------------
+2020-07-15 11:03:15,451 - INFO: PciePortLinkSpeed[55] Value to set: Gen 2 (5 GT/s)
+2020-07-15 11:03:15,529 - INFO: PciePortLinkSpeed[55] default value: Auto
+2020-07-15 11:03:15,560 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port4A
+2020-07-15 11:03:16,591 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'iBMC.1.0.SettingPropertyFailed', 'RelatedProperties': ['#/Attributes/PciePortLinkSpeed[55]'], 'Message': 'The property Attributes/PciePortLinkSpeed[55] cannot be modified because the value for the property Attributes/ is null.', 'MessageArgs': ['Attributes/PciePortLinkSpeed[55]', 'Attributes/', 'null'], 'Severity': 'Warning', 'Resolution': 'This property cannot be changed.'}]}
+2020-07-15 11:03:16,591 - INFO: ------------------------------------------------------------
+2020-07-15 11:03:16,607 - INFO: PciePortDisable[56] Value to set: Disable
+2020-07-15 11:03:16,701 - INFO: PciePortDisable[56] default value: Auto
+2020-07-15 11:03:16,716 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port4B
+2020-07-15 11:03:17,529 - INFO: Patch Successfully
+2020-07-15 11:07:50,420 - INFO: PciePortDisable[56] : Pass
+2020-07-15 11:07:50,420 - INFO: ------------------------------------------------------------
+2020-07-15 11:07:50,420 - INFO: PciePortLinkSpeed[56] Value to set: Gen 2 (5 GT/s)
+2020-07-15 11:07:50,513 - INFO: PciePortLinkSpeed[56] default value: Auto
+2020-07-15 11:07:50,529 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port4B
+2020-07-15 11:07:51,529 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'iBMC.1.0.SettingPropertyFailed', 'RelatedProperties': ['#/Attributes/PciePortLinkSpeed[56]'], 'Message': 'The property Attributes/PciePortLinkSpeed[56] cannot be modified because the value for the property Attributes/ is null.', 'MessageArgs': ['Attributes/PciePortLinkSpeed[56]', 'Attributes/', 'null'], 'Severity': 'Warning', 'Resolution': 'This property cannot be changed.'}]}
+2020-07-15 11:07:51,529 - INFO: ------------------------------------------------------------
+2020-07-15 11:07:51,529 - INFO: PciePortDisable[57] Value to set: Disable
+2020-07-15 11:07:51,638 - INFO: PciePortDisable[57] default value: Auto
+2020-07-15 11:07:51,654 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port4C
+2020-07-15 11:07:52,530 - INFO: Patch Successfully
+2020-07-15 11:12:25,419 - INFO: PciePortDisable[57] : Pass
+2020-07-15 11:12:25,419 - INFO: ------------------------------------------------------------
+2020-07-15 11:12:25,419 - INFO: PciePortLinkSpeed[57] Value to set: Gen 2 (5 GT/s)
+2020-07-15 11:12:25,514 - INFO: PciePortLinkSpeed[57] default value: Auto
+2020-07-15 11:12:25,529 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port4C
+2020-07-15 11:12:26,546 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'iBMC.1.0.SettingPropertyFailed', 'RelatedProperties': ['#/Attributes/PciePortLinkSpeed[57]'], 'Message': 'The property Attributes/PciePortLinkSpeed[57] cannot be modified because the value for the property Attributes/ is null.', 'MessageArgs': ['Attributes/PciePortLinkSpeed[57]', 'Attributes/', 'null'], 'Severity': 'Warning', 'Resolution': 'This property cannot be changed.'}]}
+2020-07-15 11:12:26,551 - INFO: ------------------------------------------------------------
+2020-07-15 11:12:26,551 - INFO: PciePortDisable[58] Value to set: Disable
+2020-07-15 11:12:26,654 - INFO: PciePortDisable[58] default value: Auto
+2020-07-15 11:12:26,670 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port4D
+2020-07-15 11:12:27,514 - INFO: Patch Successfully
+2020-07-15 11:16:59,952 - INFO: PciePortDisable[58] : Pass
+2020-07-15 11:16:59,952 - INFO: ------------------------------------------------------------
+2020-07-15 11:16:59,952 - INFO: PciePortLinkSpeed[58] Value to set: Gen 2 (5 GT/s)
+2020-07-15 11:17:00,029 - INFO: PciePortLinkSpeed[58] default value: Auto
+2020-07-15 11:17:00,029 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port4D
+2020-07-15 11:17:01,014 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'iBMC.1.0.SettingPropertyFailed', 'RelatedProperties': ['#/Attributes/PciePortLinkSpeed[58]'], 'Message': 'The property Attributes/PciePortLinkSpeed[58] cannot be modified because the value for the property Attributes/ is null.', 'MessageArgs': ['Attributes/PciePortLinkSpeed[58]', 'Attributes/', 'null'], 'Severity': 'Warning', 'Resolution': 'This property cannot be changed.'}]}
+2020-07-15 11:17:01,014 - INFO: ------------------------------------------------------------
+2020-07-15 11:17:01,021 - INFO: PciePortDisable[59] Value to set: Disable
+2020-07-15 11:17:01,108 - ERROR: 'PciePortDisable[59]'
+2020-07-15 11:17:01,108 - INFO: PciePortLinkSpeed[59] Value to set: Gen 3 (8 GT/s)
+2020-07-15 11:17:01,201 - ERROR: 'PciePortLinkSpeed[59]'
+2020-07-15 11:17:01,201 - INFO: PciePortDisable[60] Value to set: Disable
+2020-07-15 11:17:01,279 - ERROR: 'PciePortDisable[60]'
+2020-07-15 11:17:01,279 - INFO: PciePortLinkSpeed[60] Value to set: Gen 3 (8 GT/s)
+2020-07-15 11:17:01,373 - ERROR: 'PciePortLinkSpeed[60]'
+2020-07-15 11:17:01,373 - INFO: PciePortDisable[61] Value to set: Disable
+2020-07-15 11:17:01,451 - ERROR: 'PciePortDisable[61]'
+2020-07-15 11:17:01,451 - INFO: PciePortLinkSpeed[61] Value to set: Gen 3 (8 GT/s)
+2020-07-15 11:17:01,529 - ERROR: 'PciePortLinkSpeed[61]'
+2020-07-15 11:17:01,529 - INFO: PciePortDisable[62] Value to set: Disable
+2020-07-15 11:17:01,623 - ERROR: 'PciePortDisable[62]'
+2020-07-15 11:17:01,623 - INFO: PciePortLinkSpeed[62] Value to set: Gen 3 (8 GT/s)
+2020-07-15 11:17:01,717 - ERROR: 'PciePortLinkSpeed[62]'
+2020-07-15 11:17:01,717 - INFO: PciePortDisable[63] Value to set: Disable
+2020-07-15 11:17:01,795 - ERROR: 'PciePortDisable[63]'
+2020-07-15 11:17:01,795 - INFO: PciePortLinkSpeed[63] Value to set: Gen 3 (8 GT/s)
+2020-07-15 11:17:01,888 - ERROR: 'PciePortLinkSpeed[63]'
+2020-07-15 11:17:01,888 - INFO: PciePortDisable[64] Value to set: Disable
+2020-07-15 11:17:01,983 - INFO: PciePortDisable[64] default value: Auto
+2020-07-15 11:17:01,998 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port1A
+2020-07-15 11:17:02,795 - INFO: Patch Successfully
+2020-07-15 11:21:35,466 - INFO: PciePortDisable[64] : Pass
+2020-07-15 11:21:35,466 - INFO: ------------------------------------------------------------
+2020-07-15 11:21:35,466 - INFO: PciePortLinkSpeed[64] Value to set: Gen 3 (8 GT/s)
+2020-07-15 11:21:35,607 - INFO: PciePortLinkSpeed[64] default value: Auto
+2020-07-15 11:21:35,622 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port1A
+2020-07-15 11:21:36,545 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'iBMC.1.0.SettingPropertyFailed', 'RelatedProperties': ['#/Attributes/PciePortLinkSpeed[64]'], 'Message': 'The property Attributes/PciePortLinkSpeed[64] cannot be modified because the value for the property Attributes/ is null.', 'MessageArgs': ['Attributes/PciePortLinkSpeed[64]', 'Attributes/', 'null'], 'Severity': 'Warning', 'Resolution': 'This property cannot be changed.'}]}
+2020-07-15 11:21:36,560 - INFO: ------------------------------------------------------------
+2020-07-15 11:21:36,560 - INFO: PciePortDisable[65] Value to set: Disable
+2020-07-15 11:21:36,670 - ERROR: 'PciePortDisable[65]'
+2020-07-15 11:21:36,685 - INFO: PciePortLinkSpeed[65] Value to set: Gen 3 (8 GT/s)
+2020-07-15 11:21:36,763 - ERROR: 'PciePortLinkSpeed[65]'
+2020-07-15 11:21:36,763 - INFO: PciePortDisable[66] Value to set: Disable
+2020-07-15 11:21:36,842 - ERROR: 'PciePortDisable[66]'
+2020-07-15 11:21:36,842 - INFO: PciePortLinkSpeed[66] Value to set: Gen 3 (8 GT/s)
+2020-07-15 11:21:36,904 - ERROR: 'PciePortLinkSpeed[66]'
+2020-07-15 11:21:36,920 - INFO: PciePortDisable[67] Value to set: Disable
+2020-07-15 11:21:36,998 - ERROR: 'PciePortDisable[67]'
+2020-07-15 11:21:36,998 - INFO: PciePortLinkSpeed[67] Value to set: Gen 3 (8 GT/s)
+2020-07-15 11:21:37,076 - ERROR: 'PciePortLinkSpeed[67]'
+2020-07-15 11:21:37,076 - INFO: PciePortDisable[68] Value to set: Disable
+2020-07-15 11:21:37,170 - INFO: PciePortDisable[68] default value: Auto
+2020-07-15 11:21:37,170 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port2A
+2020-07-15 11:21:38,061 - INFO: Patch Successfully
+2020-07-15 11:26:10,935 - INFO: PciePortDisable[68] : Pass
+2020-07-15 11:26:10,935 - INFO: ------------------------------------------------------------
+2020-07-15 11:26:10,935 - INFO: PciePortLinkSpeed[68] Value to set: Gen 2 (5 GT/s)
+2020-07-15 11:26:11,017 - INFO: PciePortLinkSpeed[68] default value: Auto
+2020-07-15 11:26:11,029 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port2A
+2020-07-15 11:26:12,045 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'iBMC.1.0.SettingPropertyFailed', 'RelatedProperties': ['#/Attributes/PciePortLinkSpeed[68]'], 'Message': 'The property Attributes/PciePortLinkSpeed[68] cannot be modified because the value for the property Attributes/ is null.', 'MessageArgs': ['Attributes/PciePortLinkSpeed[68]', 'Attributes/', 'null'], 'Severity': 'Warning', 'Resolution': 'This property cannot be changed.'}]}
+2020-07-15 11:26:12,045 - INFO: ------------------------------------------------------------
+2020-07-15 11:26:12,051 - INFO: PciePortDisable[69] Value to set: Disable
+2020-07-15 11:26:12,154 - INFO: PciePortDisable[69] default value: Auto
+2020-07-15 11:26:12,154 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port2B
+2020-07-15 11:26:13,045 - INFO: Patch Successfully
+2020-07-15 11:31:47,060 - INFO: PciePortDisable[69] : Pass
+2020-07-15 11:31:47,060 - INFO: ------------------------------------------------------------
+2020-07-15 11:31:47,060 - INFO: PciePortLinkSpeed[69] Value to set: Gen 2 (5 GT/s)
+2020-07-15 11:31:47,154 - INFO: PciePortLinkSpeed[69] default value: Auto
+2020-07-15 11:31:47,154 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port2B
+2020-07-15 11:31:48,139 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'iBMC.1.0.SettingPropertyFailed', 'RelatedProperties': ['#/Attributes/PciePortLinkSpeed[69]'], 'Message': 'The property Attributes/PciePortLinkSpeed[69] cannot be modified because the value for the property Attributes/ is null.', 'MessageArgs': ['Attributes/PciePortLinkSpeed[69]', 'Attributes/', 'null'], 'Severity': 'Warning', 'Resolution': 'This property cannot be changed.'}]}
+2020-07-15 11:31:48,139 - INFO: ------------------------------------------------------------
+2020-07-15 11:31:48,151 - INFO: PciePortDisable[70] Value to set: Disable
+2020-07-15 11:31:48,217 - INFO: PciePortDisable[70] default value: Auto
+2020-07-15 11:31:48,248 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port2C
+2020-07-15 11:31:49,092 - INFO: Patch Successfully
+2020-07-15 11:36:21,920 - INFO: PciePortDisable[70] : Pass
+2020-07-15 11:36:21,920 - INFO: ------------------------------------------------------------
+2020-07-15 11:36:21,920 - INFO: PciePortLinkSpeed[70] Value to set: Gen 3 (8 GT/s)
+2020-07-15 11:36:21,997 - INFO: PciePortLinkSpeed[70] default value: Auto
+2020-07-15 11:36:22,013 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port2C
+2020-07-15 11:36:22,967 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'iBMC.1.0.SettingPropertyFailed', 'RelatedProperties': ['#/Attributes/PciePortLinkSpeed[70]'], 'Message': 'The property Attributes/PciePortLinkSpeed[70] cannot be modified because the value for the property Attributes/ is null.', 'MessageArgs': ['Attributes/PciePortLinkSpeed[70]', 'Attributes/', 'null'], 'Severity': 'Warning', 'Resolution': 'This property cannot be changed.'}]}
+2020-07-15 11:36:22,967 - INFO: ------------------------------------------------------------
+2020-07-15 11:36:22,967 - INFO: PciePortDisable[71] Value to set: Disable
+2020-07-15 11:36:23,061 - INFO: PciePortDisable[71] default value: Auto
+2020-07-15 11:36:23,076 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port2D
+2020-07-15 11:36:23,935 - INFO: Patch Successfully
+2020-07-15 11:41:57,435 - INFO: PciePortDisable[71] : Pass
+2020-07-15 11:41:57,435 - INFO: ------------------------------------------------------------
+2020-07-15 11:41:57,435 - INFO: PciePortLinkSpeed[71] Value to set: Gen 2 (5 GT/s)
+2020-07-15 11:41:57,514 - INFO: PciePortLinkSpeed[71] default value: Auto
+2020-07-15 11:41:57,529 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port2D
+2020-07-15 11:41:58,499 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'iBMC.1.0.SettingPropertyFailed', 'RelatedProperties': ['#/Attributes/PciePortLinkSpeed[71]'], 'Message': 'The property Attributes/PciePortLinkSpeed[71] cannot be modified because the value for the property Attributes/ is null.', 'MessageArgs': ['Attributes/PciePortLinkSpeed[71]', 'Attributes/', 'null'], 'Severity': 'Warning', 'Resolution': 'This property cannot be changed.'}]}
+2020-07-15 11:41:58,499 - INFO: ------------------------------------------------------------
+2020-07-15 11:41:58,499 - INFO: PciePortDisable[72] Value to set: Disable
+2020-07-15 11:41:58,607 - ERROR: 'PciePortDisable[72]'
+2020-07-15 11:41:58,607 - INFO: PciePortLinkSpeed[72] Value to set: Gen 3 (8 GT/s)
+2020-07-15 11:41:58,685 - ERROR: 'PciePortLinkSpeed[72]'
+2020-07-15 11:41:58,701 - INFO: PciePortDisable[73] Value to set: Disable
+2020-07-15 11:41:58,779 - ERROR: 'PciePortDisable[73]'
+2020-07-15 11:41:58,779 - INFO: PciePortLinkSpeed[73] Value to set: Gen 2 (5 GT/s)
+2020-07-15 11:41:58,858 - ERROR: 'PciePortLinkSpeed[73]'
+2020-07-15 11:41:58,858 - INFO: PciePortDisable[74] Value to set: Disable
+2020-07-15 11:41:58,935 - ERROR: 'PciePortDisable[74]'
+2020-07-15 11:41:58,935 - INFO: PciePortLinkSpeed[74] Value to set: Gen 2 (5 GT/s)
+2020-07-15 11:41:59,014 - ERROR: 'PciePortLinkSpeed[74]'
+2020-07-15 11:41:59,014 - INFO: PciePortDisable[75] Value to set: Disable
+2020-07-15 11:41:59,107 - ERROR: 'PciePortDisable[75]'
+2020-07-15 11:41:59,107 - INFO: PciePortLinkSpeed[75] Value to set: Gen 3 (8 GT/s)
+2020-07-15 11:41:59,185 - ERROR: 'PciePortLinkSpeed[75]'
+2020-07-15 11:41:59,185 - INFO: PciePortDisable[76] Value to set: Disable
+2020-07-15 11:41:59,279 - ERROR: 'PciePortDisable[76]'
+2020-07-15 11:41:59,279 - INFO: PciePortLinkSpeed[76] Value to set: Gen 2 (5 GT/s)
+2020-07-15 11:41:59,357 - ERROR: 'PciePortLinkSpeed[76]'
+2020-07-15 11:41:59,357 - INFO: PciePortDisable[77] Value to set: Disable
+2020-07-15 11:41:59,451 - ERROR: 'PciePortDisable[77]'
+2020-07-15 11:41:59,451 - INFO: PciePortLinkSpeed[77] Value to set: Gen 2 (5 GT/s)
+2020-07-15 11:41:59,529 - ERROR: 'PciePortLinkSpeed[77]'
+2020-07-15 11:41:59,529 - INFO: PciePortDisable[78] Value to set: Disable
+2020-07-15 11:41:59,607 - ERROR: 'PciePortDisable[78]'
+2020-07-15 11:41:59,623 - INFO: PciePortLinkSpeed[78] Value to set: Gen 3 (8 GT/s)
+2020-07-15 11:41:59,701 - ERROR: 'PciePortLinkSpeed[78]'
+2020-07-15 11:41:59,701 - INFO: PciePortDisable[79] Value to set: Disable
+2020-07-15 11:41:59,795 - ERROR: 'PciePortDisable[79]'
+2020-07-15 11:41:59,795 - INFO: PciePortLinkSpeed[79] Value to set: Gen 2 (5 GT/s)
+2020-07-15 11:41:59,889 - ERROR: 'PciePortLinkSpeed[79]'
+2020-07-15 11:41:59,889 - INFO: PciePortDisable[80] Value to set: Disable
+2020-07-15 11:41:59,966 - ERROR: 'PciePortDisable[80]'
+2020-07-15 11:41:59,966 - INFO: PciePortLinkSpeed[80] Value to set: Gen 1 (2.5 GT/s)
+2020-07-15 11:42:00,045 - ERROR: 'PciePortLinkSpeed[80]'
+2020-07-15 11:42:00,045 - INFO: PciePortDisable[81] Value to set: Disable
+2020-07-15 11:42:00,122 - ERROR: 'PciePortDisable[81]'
+2020-07-15 11:42:00,122 - INFO: PciePortLinkSpeed[81] Value to set: Gen 2 (5 GT/s)
+2020-07-15 11:42:00,201 - ERROR: 'PciePortLinkSpeed[81]'
+2020-07-15 11:42:00,201 - INFO: PciePortDisable[82] Value to set: Disable
+2020-07-15 11:42:00,295 - ERROR: 'PciePortDisable[82]'
+2020-07-15 11:42:00,295 - INFO: PciePortLinkSpeed[82] Value to set: Gen 2 (5 GT/s)
+2020-07-15 11:42:00,389 - ERROR: 'PciePortLinkSpeed[82]'
+2020-07-15 11:42:00,389 - INFO: PciePortDisable[83] Value to set: Disable
+2020-07-15 11:42:00,466 - ERROR: 'PciePortDisable[83]'
+2020-07-15 11:42:00,466 - INFO: PciePortLinkSpeed[83] Value to set: Gen 2 (5 GT/s)
+2020-07-15 11:42:00,560 - ERROR: 'PciePortLinkSpeed[83]'
+2020-07-15 11:42:00,560 - INFO: PciePortDisable[84] Value to set: Disable
+2020-07-15 11:42:00,654 - ERROR: 'PciePortDisable[84]'
+2020-07-15 11:42:00,654 - INFO: PciePortLinkSpeed[84] Value to set: Gen 2 (5 GT/s)
+2020-07-15 11:42:00,748 - ERROR: 'PciePortLinkSpeed[84]'
+2020-07-15 12:30:42,935 - INFO: Run multiple files in directory dep
+2020-07-15 12:30:42,935 - INFO: ************************************************************
+2020-07-15 12:30:42,951 - INFO: Start test with tc_dep_PciePortDisable_00.json
+2020-07-15 12:30:42,951 - INFO: ************************************************************
+2020-07-15 12:32:48,920 - INFO: Run multiple files in directory dep
+2020-07-15 12:32:48,920 - INFO: ************************************************************
+2020-07-15 12:32:48,920 - INFO: Start test with tc_dep_PciePortDisable_00.json
+2020-07-15 12:32:48,920 - INFO: ************************************************************
+2020-07-15 12:33:50,982 - INFO: Run multiple files in directory dep
+2020-07-15 12:33:50,982 - INFO: ************************************************************
+2020-07-15 12:33:50,982 - INFO: Start test with tc_dep_PciePortDisable_00.json
+2020-07-15 12:33:50,982 - INFO: ************************************************************
+2020-07-15 12:33:50,982 - INFO: Complted: 0
+2020-07-15 12:33:50,982 - INFO: Error: 0
+2020-07-15 12:33:50,982 - INFO: Passed: 0
+2020-07-15 12:33:50,982 - INFO: Failed: 0
+2020-07-15 12:35:05,482 - INFO: Run multiple files in directory dep
+2020-07-15 12:35:05,482 - INFO: ************************************************************
+2020-07-15 12:35:05,482 - INFO: Start test with dep\tc_dep_PciePortDisable_00.json
+2020-07-15 12:35:05,482 - INFO: ************************************************************
+2020-07-15 12:35:05,482 - INFO: Complted: 0
+2020-07-15 12:35:05,482 - INFO: Error: 0
+2020-07-15 12:35:05,482 - INFO: Passed: 0
+2020-07-15 12:35:05,482 - INFO: Failed: 0
+2020-07-15 12:35:05,498 - INFO: PciePortLinkSpeed[1] Value to set: Gen 3 (8 GT/s)
+2020-07-15 12:35:05,591 - INFO: PciePortLinkSpeed[1] default value: Auto
+2020-07-15 12:35:05,607 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port1A
+2020-07-15 12:35:06,623 - INFO: Patch Successfully
+2020-07-15 13:26:29,341 - INFO: PciePortLinkSpeed[1] : Pass
+2020-07-15 13:26:29,357 - INFO: ------------------------------------------------------------
+2020-07-15 13:26:29,357 - INFO: PciePortLinkSpeed[2] Value to set: Gen 2 (5 GT/s)
+2020-07-15 13:26:29,435 - ERROR: 'PciePortLinkSpeed[2]'
+2020-07-15 13:26:29,435 - INFO: PciePortLinkSpeed[3] Value to set: Gen 2 (5 GT/s)
+2020-07-15 13:26:29,513 - ERROR: 'PciePortLinkSpeed[3]'
+2020-07-15 13:26:29,513 - INFO: PciePortLinkSpeed[4] Value to set: Gen 3 (8 GT/s)
+2020-07-15 13:26:29,592 - ERROR: 'PciePortLinkSpeed[4]'
+2020-07-15 13:26:29,592 - INFO: PciePortLinkSpeed[5] Value to set: Gen 2 (5 GT/s)
+2020-07-15 13:26:29,686 - INFO: PciePortLinkSpeed[5] default value: Auto
+2020-07-15 13:26:29,701 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port2A
+2020-07-15 13:26:30,686 - INFO: Patch Successfully
+2020-07-15 13:51:00,779 - INFO: Run multiple files in directory dep
+2020-07-15 13:51:00,779 - INFO: ************************************************************
+2020-07-15 13:51:00,779 - INFO: Start test with dep\tc_dep_PciePortDisable_00.json
+2020-07-15 13:51:00,779 - INFO: ************************************************************
+2020-07-15 13:51:00,779 - INFO: Complted: 0
+2020-07-15 13:51:00,779 - INFO: Error: 0
+2020-07-15 13:51:00,779 - INFO: Passed: 0
+2020-07-15 13:51:00,779 - INFO: Failed: 0
+2020-07-15 13:51:00,779 - INFO: Load test status from dep\tc_dep_PciePortDisable_00.json.status
+2020-07-15 13:51:00,795 - INFO: PciePortLinkSpeed[1] Value to set: Gen 3 (8 GT/s)
+2020-07-15 13:51:00,889 - INFO: PciePortLinkSpeed[1] default value: Gen 3 (8 GT/s)
+2020-07-15 13:51:00,904 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port1A
+2020-07-15 13:51:01,858 - INFO: Patch Successfully

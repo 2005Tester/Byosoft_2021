@@ -1,9 +1,0 @@
-{
- "Attributes": {
-  "PcieRootPortEn[1]": "",
-  "PcieRootPortAspm[1]": "",
-  "PcieRootPortSpeed[1]": "",
-  "PcieTopology[1]": "",
-  "PcieRootPortMaxPayLoadSize[1]": ""
- }
-}
