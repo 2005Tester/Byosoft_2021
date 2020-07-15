@@ -60,7 +60,7 @@ def load_test_status(testcase_file):
     log.logger.info("Load test status from %s" %status_file)
     return status
 
-def update_test_status(test_status):
+def update_test_status(test_status,status_file):
     with open(status_file,'w') as f:
         json.dump(test_status, f, indent=1)
 
@@ -424,7 +424,7 @@ def auto_test(testcase_file):
                 test_status["Passed"].append(key)
             if tc_result == "Failed":
                 test_status["Failed"].append(key)
-            update_test_status(test_status)
+            update_test_status(test_status, (testcase_file + '.json'))
 
 def auto_test_dir(dir):
     tc_file_list = os.listdir(dir)

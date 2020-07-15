@@ -1484,3 +1484,18 @@
 2020-07-15 13:51:00,889 - INFO: PciePortLinkSpeed[1] default value: Gen 3 (8 GT/s)
 2020-07-15 13:51:00,904 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port1A
 2020-07-15 13:51:01,858 - INFO: Patch Successfully
+2020-07-15 13:53:32,482 - INFO: PciePortLinkSpeed[1] : Pass
+2020-07-15 13:53:32,482 - INFO: ------------------------------------------------------------
+2020-07-15 13:55:40,716 - INFO: Run multiple files in directory dep
+2020-07-15 13:55:40,716 - INFO: ************************************************************
+2020-07-15 13:55:40,716 - INFO: Start test with dep\tc_dep_PciePortDisable_00.json
+2020-07-15 13:55:40,716 - INFO: ************************************************************
+2020-07-15 13:55:40,716 - INFO: Complted: 0
+2020-07-15 13:55:40,716 - INFO: Error: 0
+2020-07-15 13:55:40,716 - INFO: Passed: 0
+2020-07-15 13:55:40,716 - INFO: Failed: 0
+2020-07-15 13:55:40,716 - INFO: Load test status from dep\tc_dep_PciePortDisable_00.json.status
+2020-07-15 13:55:40,716 - INFO: PciePortLinkSpeed[1] Value to set: Gen 3 (8 GT/s)
+2020-07-15 13:55:40,795 - INFO: PciePortLinkSpeed[1] default value: Gen 3 (8 GT/s)
+2020-07-15 13:55:40,826 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port1A
+2020-07-15 13:55:41,889 - INFO: Patch Successfully
