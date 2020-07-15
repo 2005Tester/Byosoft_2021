@@ -1,6 +1,17 @@
 {
- "Completed": [],
- "Passed": [],
- "Error": [],
+ "Completed": [
+  "PciePortLinkSpeed[1]",
+  "PciePortLinkSpeed[2]",
+  "PciePortLinkSpeed[3]",
+  "PciePortLinkSpeed[4]"
+ ],
+ "Passed": [
+  "PciePortLinkSpeed[1]"
+ ],
+ "Error": [
+  "PciePortLinkSpeed[2]",
+  "PciePortLinkSpeed[3]",
+  "PciePortLinkSpeed[4]"
+ ],
  "Failed": []
 }

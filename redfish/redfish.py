@@ -388,6 +388,7 @@ def run_test_one_by_one(payload):
             log.logger.info("Path: " + get_setup_path(key))
     except Exception as e:
         log.logger.error(e)
+        log.logger.error("-"*60)
         tc_result = "Error"
         return tc_result
 
@@ -424,7 +425,7 @@ def auto_test(testcase_file):
                 test_status["Passed"].append(key)
             if tc_result == "Failed":
                 test_status["Failed"].append(key)
-            update_test_status(test_status, (testcase_file + '.json'))
+            update_test_status(test_status, (testcase_file + '.status'))
 
 def auto_test_dir(dir):
     tc_file_list = os.listdir(dir)

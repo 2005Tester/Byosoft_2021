@@ -1499,3 +1499,40 @@
 2020-07-15 13:55:40,795 - INFO: PciePortLinkSpeed[1] default value: Gen 3 (8 GT/s)
 2020-07-15 13:55:40,826 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port1A
 2020-07-15 13:55:41,889 - INFO: Patch Successfully
+2020-07-15 13:58:55,951 - INFO: PciePortLinkSpeed[1] : Pass
+2020-07-15 13:58:55,951 - INFO: ------------------------------------------------------------
+2020-07-15 13:58:55,951 - INFO: PciePortLinkSpeed[2] Value to set: Gen 2 (5 GT/s)
+2020-07-15 13:58:56,029 - ERROR: 'PciePortLinkSpeed[2]'
+2020-07-15 13:58:56,029 - INFO: PciePortLinkSpeed[3] Value to set: Gen 2 (5 GT/s)
+2020-07-15 13:58:56,107 - ERROR: 'PciePortLinkSpeed[3]'
+2020-07-15 13:58:56,107 - INFO: PciePortLinkSpeed[4] Value to set: Gen 3 (8 GT/s)
+2020-07-15 13:58:56,201 - ERROR: 'PciePortLinkSpeed[4]'
+2020-07-15 13:58:56,201 - INFO: PciePortLinkSpeed[5] Value to set: Gen 2 (5 GT/s)
+2020-07-15 13:58:56,295 - INFO: PciePortLinkSpeed[5] default value: Gen 2 (5 GT/s)
+2020-07-15 13:58:56,310 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port2A
+2020-07-15 13:58:57,232 - INFO: Patch Successfully
+2020-07-15 14:00:48,232 - INFO: Run multiple files in directory dep
+2020-07-15 14:00:48,232 - INFO: ************************************************************
+2020-07-15 14:00:48,232 - INFO: Start test with dep\tc_dep_PciePortDisable_00.json
+2020-07-15 14:00:48,232 - INFO: ************************************************************
+2020-07-15 14:00:48,232 - INFO: Complted: 0
+2020-07-15 14:00:48,232 - INFO: Error: 0
+2020-07-15 14:00:48,232 - INFO: Passed: 0
+2020-07-15 14:00:48,232 - INFO: Failed: 0
+2020-07-15 14:00:48,232 - INFO: Load test status from dep\tc_dep_PciePortDisable_00.json.status
+2020-07-15 14:00:48,232 - INFO: PciePortLinkSpeed[1] Value to set: Gen 3 (8 GT/s)
+2020-07-15 14:00:48,310 - INFO: PciePortLinkSpeed[1] default value: Gen 3 (8 GT/s)
+2020-07-15 14:00:48,326 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port1A
+2020-07-15 14:00:49,295 - INFO: Patch Successfully
+2020-07-15 14:04:20,966 - INFO: PciePortLinkSpeed[1] : Pass
+2020-07-15 14:04:20,966 - INFO: ------------------------------------------------------------
+2020-07-15 14:04:20,966 - INFO: PciePortLinkSpeed[2] Value to set: Gen 2 (5 GT/s)
+2020-07-15 14:04:21,045 - ERROR: 'PciePortLinkSpeed[2]'
+2020-07-15 14:04:21,045 - INFO: PciePortLinkSpeed[3] Value to set: Gen 2 (5 GT/s)
+2020-07-15 14:04:21,138 - ERROR: 'PciePortLinkSpeed[3]'
+2020-07-15 14:04:21,138 - INFO: PciePortLinkSpeed[4] Value to set: Gen 3 (8 GT/s)
+2020-07-15 14:04:21,217 - ERROR: 'PciePortLinkSpeed[4]'
+2020-07-15 14:04:21,217 - INFO: PciePortLinkSpeed[5] Value to set: Gen 2 (5 GT/s)
+2020-07-15 14:04:21,310 - INFO: PciePortLinkSpeed[5] default value: Gen 2 (5 GT/s)
+2020-07-15 14:04:21,341 - INFO: Path: ./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port2A
+2020-07-15 14:04:22,279 - INFO: Patch Successfully
