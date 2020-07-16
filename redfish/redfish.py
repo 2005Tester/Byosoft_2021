@@ -28,9 +28,10 @@ LOG_FILE = "testlog.txt"
 
 help_msg = """
 Usage: 
-python redfish.py xxx.json --Patch and verify all the setup options defined in xxx.json
-python redfish.py directory --Find all the json files in specified directory, and run all the tests in those json files
-python redfish.py init     --cleanup teststatus
+python redfish.py [xxx.json] --Patch and verify all the setup options defined in xxx.json
+python redfish.py [directoryname] --Find all the json files in specified directory, and run all the tests in those json files
+python redfish.py [checkregistry] --check whether registry.json and setup baseline is aligned
+python redfish.py [init]     --cleanup teststatus
 """
 
 log = logger.Logger(LOG_FILE, level = "info")
@@ -102,15 +103,15 @@ def test_registry_file(baseline):
             line = line.strip('\n')
             if not line in exclude:
                 baseline_lst.append(line)
-    print (baseline_lst)
+    #print (baseline_lst)
     registry_lst = get_all_supported_options()
     
     for option in baseline_lst:
         if not option in registry_lst:
-            print(option + ": missed in registry.json.")
+            log.logger.info(option + ": missed in registry.json.")
     for option in registry_lst:
         if not option in baseline_lst:
-            print(option + ": not listed in setup baseline xlsx.")
+            log.logger.info(option + ": not listed in setup baseline xlsx.")
 
 
 def gen_dep_tc():
@@ -453,6 +454,9 @@ if __name__ == "__main__":
             log.logger.info("Function Not ready yet, INTENTION IS TO clenup status and log file")
         elif argv[1] == "init":
             log.logger.info("generating test case")
+        elif argv[1] == "checkregistry":
+            log.logger.info("Testing registry file...")
+            test_registry_file("baseline_0716_1400.txt")
         elif os.path.isfile(argv[1]):
             log.logger.info("Run test for %s" % argv[1])
             auto_test(argv[1])
@@ -469,7 +473,6 @@ if __name__ == "__main__":
 #    print(res)
 #    run_test(".\\hang1\\1sthalf.json")
 #    auto_test(".\\dep\\tc_dep_PciePortDisable_10.json")
-    #test_registry_file("baseline1837.txt")
 #    ping_sut()
 #    change_value(".\\gen_case\\remove_dep.json")
 
