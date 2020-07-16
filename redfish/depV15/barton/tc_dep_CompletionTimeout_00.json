@@ -1,0 +1,8 @@
+{
+ "Attributes": {
+  "CompletionTimeoutValue[0]": "50us to 10ms",
+  "CompletionTimeoutValue[1]": "16ms to 55ms",
+  "CompletionTimeoutValue[2]": "1s to 3.5s",
+  "CompletionTimeoutValue[3]": "17s to 64s"
+ }
+}

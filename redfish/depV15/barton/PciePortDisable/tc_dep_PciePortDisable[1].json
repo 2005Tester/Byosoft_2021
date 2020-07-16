@@ -1,0 +1,18 @@
+{
+ "Attributes": {
+  "PciePortDisable[0]": "",
+  "PciePortLinkSpeed[0]": "",
+  "PciePortDisable[1]": "",
+  "PciePortLinkSpeed[1]": "",
+  "PciePortDisable[2]": "",
+  "PciePortLinkSpeed[2]": "",
+  "PciePortDisable[3]": "",
+  "PciePortLinkSpeed[3]": "",
+  "PciePortDisable[4]": "",
+  "PciePortLinkSpeed[4]": "",
+  "PciePortDisable[5]": "",
+  "PciePortLinkSpeed[5]": "",
+  "PciePortDisable[6]": "",
+  "PciePortLinkSpeed[6]": "",
+ }
+}

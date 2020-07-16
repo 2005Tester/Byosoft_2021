@@ -406,6 +406,7 @@ def run_test_one_by_one(payload):
     return tc_result
 
 def auto_test(testcase_file):
+    tc_executed = 0
     log.logger.info("*"*60)
     log.logger.info("Start test with %s" %(testcase_file))
     log.logger.info("*"*60)
@@ -426,14 +427,22 @@ def auto_test(testcase_file):
             if tc_result == "Failed":
                 test_status["Failed"].append(key)
             update_test_status(test_status, (testcase_file + '.status'))
+            tc_executed +=1
+    if tc_executed == 0:
+        log.logger.info("Test for %s is already done." %(testcase_file))
+        return True
 
 def auto_test_dir(dir):
     tc_file_list = os.listdir(dir)
     for tc_file in tc_file_list:
         if tc_file.split(".")[-1] == 'json':
-            auto_test(os.path.join(dir,tc_file))
-            updatebios.perform_update("HY5V015_candidate1.bin")
-            time.sleep(500)
+            iscomplete = auto_test(os.path.join(dir,tc_file))
+            log.logger.info("Test completed for %s" % tc_file)
+            log.logger.info("#"*60)
+            if not iscomplete:
+                updatebios.perform_update("HY5V015_candidate1.bin")
+                log.logger.info("Rebooting SUT, test will continue in 5 minutes")
+                time.sleep(500)
         else:
             print("%s is not a json file, skip test" %tc_file)
 

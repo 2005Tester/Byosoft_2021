@@ -77,7 +77,7 @@ def upload_bios(src): #src: temp image directory, tmp/rp001.bin or tmp/bios.hpm
     bin_file = 'rp001.bin'
     hpm_file = 'bios.hpm'
     transport = paramiko.Transport(SUT, 22)
-    transport.banner_timeout = 30  # Increase timeout value to fix connection issue
+    transport.banner_timeout = 180  # Increase timeout value to fix connection issue
     transport.connect(username=USERNAME, password=PW)
     sftp = paramiko.SFTPClient.from_transport(transport)
     res = sftp.listdir()
@@ -94,36 +94,39 @@ def upload_bios(src): #src: temp image directory, tmp/rp001.bin or tmp/bios.hpm
             res = sftp.put(src, bin_file)
         except OSError:
             print("Skip due to SSH connection error.")
-            return STATUS_FAIL
+            transport.close()
+            return False
         if re.search("67108864", str(res)):
             print("BIOS image (bin) uploaded to iBMC SFTP.")
             transport.close()
             prt.print_green_text("Upload bios to iBMC: PASS")
-            return STATUS_PASS
+            return True
         else:
             print("Failed to upload BIOS image to iBMC SFTP.")
             print_rawmsg(res)
             transport.close()
-            return STATUS_FAIL
+            return False
     elif re.search('.hpm', src):
         try:
             res = sftp.put(src, hpm_file)
         except OSError:
             print("Skip due to SSH connection error.")
-            return STATUS_FAIL
+            transport.close()
+            return False
         if re.search("rw", str(res)):
             print("HPM image uploaded to iBMC SFTP.")
             transport.close()
             prt.print_green_text("Upload bios to iBMC: PASS")
-            return STATUS_PASS
+            return False
         else:
             print("Failed to upload hpm image to iBMC SFTP.")
             print_rawmsg(res)
             transport.close()
-            return STATUS_FAIL
+            return False
     else:
         print("Invalid image type, please check source file...")
-        return STATUS_FAIL
+        transport.close()
+        return False
 
 def hpm_update():
     cmd_hpmupdate = 'ipmcset -d upgrade -v /tmp/bios.hpm\n'
@@ -162,7 +165,7 @@ def program_flash():
     s = paramiko.SSHClient()
     s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     try:
-        s.connect(SUT,22,USERNAME, PW)
+        s.connect(SUT,22,USERNAME, PW, banner_timeout=180)
     except Exception as e:
         print("Error in connecting SUT...")
         return STATUS_FAIL
@@ -238,7 +241,7 @@ def poweron_sut():
 
     s = paramiko.SSHClient()
     s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    s.connect(SUT,22,USERNAME, PW)
+    s.connect(SUT,22,USERNAME, PW, banner_timeout=150)
     op=s.invoke_shell()
     def send_cmd(cmd):
         op.send(cmd)
