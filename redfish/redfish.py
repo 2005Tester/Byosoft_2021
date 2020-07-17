@@ -67,6 +67,10 @@ def update_test_status(test_status,status_file):
     with open(status_file,'w') as f:
         json.dump(test_status, f, indent=1)
 
+def load_registry_file():
+    with open (REGISTRY_FILE, 'r') as fp:
+        registry = json.load(fp)
+    return registry
 
 def ping_sut():
     cmd_update_bios = r'python C:\UpdateTool\updatebios.py ' + BIOS
@@ -98,6 +102,7 @@ def get_all_supported_options():
     return all_options
 
 def test_registry_file(baseline):
+    log.logger.info("Test case 1: compare registery.json with %s" % baseline)
     exclude = ['','NA','\n']
     baseline_lst = []
     with open (baseline, 'r') as f:
@@ -106,14 +111,34 @@ def test_registry_file(baseline):
             if not line in exclude:
                 baseline_lst.append(line)
     #print (baseline_lst)
-    registry_lst = get_all_supported_options()
-    
+    registry_lst = get_all_supported_options()   
     for option in baseline_lst:
         if not option in registry_lst:
             log.logger.info(option + ": missed in registry.json.")
     for option in registry_lst:
         if not option in baseline_lst:
             log.logger.info(option + ": not listed in setup baseline xlsx.")
+    log.logger.info("-"*60)
+    log.logger.info("Test case 2: Check whetehr all items in dependencies are also in attributes")
+    reg = load_registry_file()
+    dep_list = reg["RegistryEntries"]["Dependencies"]
+    map_from_list = []
+    map_to_list = []
+    for dep in dep_list:
+        map_from = dep["Dependency"]["MapFrom"][0]["MapFromAttribute"]
+        map_to = dep["Dependency"]["MapToAttribute"]
+        if not map_from in map_from_list:
+            map_from_list.append(dep["Dependency"]["MapFrom"][0]["MapFromAttribute"])
+        if not map_to in map_to_list:
+            map_to_list.append(dep["Dependency"]["MapToAttribute"])
+    log.logger.info("Checking map from list...")
+    for setup in map_from_list:
+        if not setup in registry_lst:
+            log.logger.info("%s is not supported by redfish" % setup)
+    log.logger.info("Checking map to list...")
+    for setup in map_to_list:
+        if not setup in registry_lst:
+            log.logger.info("%s is not supported by redfish" % setup)
 
 
 def gen_dep_tc():
@@ -467,7 +492,7 @@ if __name__ == "__main__":
             change_value(gen_nondep_tc("7998.json"))
         elif argv[1] == "checkregistry":
             log.logger.info("Testing registry file...")
-            test_registry_file("baseline_0716_1400.txt")
+            test_registry_file(".\\baseline\\baseline_0716_1400.txt")
         elif os.path.isfile(argv[1]):
             log.logger.info("Run test for %s" % argv[1])
             auto_test(argv[1])
