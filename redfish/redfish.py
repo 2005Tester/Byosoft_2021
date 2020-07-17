@@ -405,8 +405,12 @@ def run_test_one_by_one(payload):
     else:
         log.logger.info("Patch Successfully")
         rebootsut()
-        result = json.loads(get(GET_URL))
-        tc_result = compare_one(payload,result)
+        try:
+            result = json.loads(get(GET_URL))
+            tc_result = compare_one(payload,result)
+        except Exception as e:
+            log.logger.error(e)
+            tc_result = "Error"
     return tc_result
 
 def auto_test(testcase_file):
