@@ -18,6 +18,8 @@ port = '22'
 username = 'Administrator'
 password = 'Admin@9000'
 
+BIOS = "HY5V016_candidate1.bin"
+REGISTRY_FILE = ".\\baseline\\registry.json"
 GET_URL = "https://192.168.2.100/redfish/v1/Systems/1/Bios/"
 PATCH_URL = "https://192.168.2.100/redfish/v1/Systems/1/Bios/Settings/"
 
@@ -67,7 +69,7 @@ def update_test_status(test_status,status_file):
 
 
 def ping_sut():
-    cmd_update_bios = r'python C:\UpdateTool\updatebios.py HY5V015_candidate1.bin'
+    cmd_update_bios = r'python C:\UpdateTool\updatebios.py ' + BIOS
     start_time = time.time()
     while True:        
         p = subprocess.Popen(args=PING_CMD,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
@@ -81,7 +83,7 @@ def ping_sut():
         if time_spent >900:
             print("Lost SUT for %s seconds, refresh BIOS image" %(time_spent))
             try:
-                updatebios.perform_update("HY5V015_candidate1.bin")
+                updatebios.perform_update(BIOS)
                 time.sleep(300)
                 start_time = time.time()
             except Exception as e:
@@ -89,7 +91,7 @@ def ping_sut():
 
 def get_all_supported_options():
     all_options = []
-    with open (".\\testcase\\registry.json", 'r') as fp:
+    with open (REGISTRY_FILE, 'r') as fp:
         registry = json.load(fp)
     for item in registry["RegistryEntries"]["Attributes"]:
         all_options.append(item["AttributeName"])
@@ -118,7 +120,7 @@ def gen_dep_tc():
     dependency_options = {}
     multi_dep = []
     # 生成有依赖关系的dict
-    with open (".\\testcase\\registry.json", 'r') as fp:
+    with open (REGISTRY_FILE, 'r') as fp:
         registry = json.load(fp)
     dep_list = registry["RegistryEntries"]["Dependencies"]
     for item in dep_list:
@@ -152,7 +154,7 @@ def gen_dep_tc():
 
 def gen_nondep_tc(testcase_file):
     dependency_options = []
-    with open (".\\testcase\\registry.json", 'r') as fp:
+    with open (REGISTRY_FILE, 'r') as fp:
         registry = json.load(fp)
     dep_list = registry["RegistryEntries"]["Dependencies"]
     for item in dep_list:
@@ -168,9 +170,10 @@ def gen_nondep_tc(testcase_file):
         if key in dependency_options:
             allcase["Attributes"].pop(key)
             print("remove: " + key)
-
-    with open (".\\gen_case\\remove_dep.json","w") as fp:
+    tc_file = testcase_file.split(".")[0] + "remove_dep.json"
+    with open (tc_file,"w") as fp:
         json.dump(allcase, fp, indent=1)
+    return tc_file
 
 
 def change_value(testcase_file):
@@ -189,7 +192,7 @@ def change_value(testcase_file):
    
 
 def get_setup_path(setupname):
-    with open (".\\testcase\\registry.json", 'r') as fp:
+    with open (REGISTRY_FILE, 'r') as fp:
         registry = json.load(fp)
     for item in registry["RegistryEntries"]["Attributes"]:
         if item["AttributeName"] == setupname:
@@ -214,7 +217,7 @@ def verify_testcase(testcase_file):
 # 获取registry里面每个setup option支持的值
 def supported_value(setupname):
     supported_setup = []
-    with open (".\\testcase\\registry.json", 'r') as fp:
+    with open (REGISTRY_FILE, 'r') as fp:
         registry = json.load(fp)
     for item in registry["RegistryEntries"]["Attributes"]:
         supported_setup.append(item["AttributeName"])
@@ -441,7 +444,7 @@ def auto_test_dir(dir):
             log.logger.info("Test completed for %s" % tc_file)
             log.logger.info("#"*60)
             if not iscomplete:
-                updatebios.perform_update("HY5V015_candidate1.bin")
+                updatebios.perform_update(BIOS)
                 log.logger.info("Rebooting SUT, test will continue in 5 minutes")
                 time.sleep(500)
         else:
@@ -452,8 +455,12 @@ if __name__ == "__main__":
     if len(argv)==2:
         if argv[1] == "clenup":
             log.logger.info("Function Not ready yet, INTENTION IS TO clenup status and log file")
-        elif argv[1] == "init":
-            log.logger.info("generating test case")
+        elif argv[1] == "gendeptc":
+            log.logger.info("generating dependency test case")
+            gen_dep_tc()
+        elif argv[1] == "gennondeptc":
+            log.logger.info("generating non-dependency test case")
+            change_value(gen_nondep_tc("7972.json"))
         elif argv[1] == "checkregistry":
             log.logger.info("Testing registry file...")
             test_registry_file("baseline_0716_1400.txt")
@@ -476,8 +483,7 @@ if __name__ == "__main__":
 #    ping_sut()
 #    change_value(".\\gen_case\\remove_dep.json")
 
-#    gen_dep_tc()
-#    get_dep_options()
+
 #    change_value("remove_dep.json")
     
 #    res = patch("V15_Default_Dis2En.json",PATCH_URL).decode('utf-8')

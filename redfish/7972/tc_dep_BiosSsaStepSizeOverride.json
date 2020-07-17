@@ -1,0 +1,14 @@
+{
+ "Attributes": {
+  "BiosSsaStepSizeOverride": "",
+  "BiosSsaRxDqs": "",
+  "BiosSsaRxVref": "",
+  "BiosSsaTxDq": "",
+  "BiosSsaTxVref": "",
+  "BiosSsaCmdAll": "",
+  "BiosSsaCmdVref": "",
+  "BiosSsaCtlAll": "",
+  "BiosSsaEridDelay": "",
+  "BiosSsaEridVref": ""
+ }
+}

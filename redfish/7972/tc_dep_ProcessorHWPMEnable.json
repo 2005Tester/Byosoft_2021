@@ -1,0 +1,10 @@
+{
+ "Attributes": {
+  "ProcessorHWPMEnable": "",
+  "ProcessorEppProfile": "",
+  "ProcessorHWPMInterrupt": "",
+  "ProcessorEPPEnable": "",
+  "PwrPerfTuning": "",
+  "ProcessorOutofBandAlternateEPB": ""
+ }
+}

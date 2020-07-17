@@ -1,0 +1,1 @@
+['ProcessorHWPMEnable', 'ProcessorEPPEnable', 'ADDDCEn', 'StaticTurbo', 'ProcessorEistEnable', 'PowerSaving', 'TurboMode', 'PwrPerfTuning', 'EnforcePOR', 'IioErrorEn', 'NumaEn', 'volMemMode', 'MirrorMode', 'RankSparing', 'PartialMirrorUefi', 'EnableXe', 'PxeBootToLan', 'NetworkProtocol']
