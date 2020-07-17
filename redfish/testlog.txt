@@ -3808,3 +3808,704 @@
 2020-07-17 09:37:21,275 - INFO: Patch Successfully
 2020-07-17 10:29:33,725 - INFO: generating non-dependency test case
 2020-07-17 10:39:24,257 - INFO: generating non-dependency test case
+2020-07-17 10:48:33,587 - INFO: Run multiple files in directory testcase
+2020-07-17 10:48:33,587 - INFO: ************************************************************
+2020-07-17 10:48:33,587 - INFO: Start test with testcase\secureboot.json
+2020-07-17 10:48:33,587 - INFO: ************************************************************
+2020-07-17 10:48:33,587 - INFO: Complted: 1
+2020-07-17 10:48:33,587 - INFO: Error: 1
+2020-07-17 10:48:33,587 - INFO: Passed: 0
+2020-07-17 10:48:33,587 - INFO: Failed: 0
+2020-07-17 10:48:33,587 - INFO: Load test status from testcase\secureboot.json.status
+2020-07-17 10:48:33,587 - INFO: Test for testcase\secureboot.json is already done.
+2020-07-17 10:48:33,587 - INFO: Test completed for secureboot.json
+2020-07-17 10:48:33,587 - INFO: ############################################################
+2020-07-17 10:48:33,587 - INFO: ************************************************************
+2020-07-17 10:48:33,587 - INFO: Start test with testcase\tc_dep_CompletionTimeout_00.json
+2020-07-17 10:48:33,587 - INFO: ************************************************************
+2020-07-17 10:48:33,602 - INFO: Complted: 4
+2020-07-17 10:48:33,602 - INFO: Error: 0
+2020-07-17 10:48:33,602 - INFO: Passed: 4
+2020-07-17 10:48:33,602 - INFO: Failed: 0
+2020-07-17 10:48:33,602 - INFO: Load test status from testcase\tc_dep_CompletionTimeout_00.json.status
+2020-07-17 10:48:33,602 - INFO: Test for testcase\tc_dep_CompletionTimeout_00.json is already done.
+2020-07-17 10:48:33,602 - INFO: Test completed for tc_dep_CompletionTimeout_00.json
+2020-07-17 10:48:33,602 - INFO: ############################################################
+2020-07-17 10:48:33,602 - INFO: ************************************************************
+2020-07-17 10:48:33,602 - INFO: Start test with testcase\tc_dep_CompletionTimeout_10.json
+2020-07-17 10:48:33,602 - INFO: ************************************************************
+2020-07-17 10:48:33,618 - INFO: Complted: 8
+2020-07-17 10:48:33,618 - INFO: Error: 4
+2020-07-17 10:48:33,618 - INFO: Passed: 4
+2020-07-17 10:48:33,618 - INFO: Failed: 0
+2020-07-17 10:48:33,618 - INFO: Load test status from testcase\tc_dep_CompletionTimeout_10.json.status
+2020-07-17 10:48:33,618 - INFO: Test for testcase\tc_dep_CompletionTimeout_10.json is already done.
+2020-07-17 10:48:33,618 - INFO: Test completed for tc_dep_CompletionTimeout_10.json
+2020-07-17 10:48:33,618 - INFO: ############################################################
+2020-07-17 10:48:33,618 - INFO: ************************************************************
+2020-07-17 10:48:33,618 - INFO: Start test with testcase\tc_dep_PciePortDisable_00.json
+2020-07-17 10:48:33,618 - INFO: ************************************************************
+2020-07-17 10:48:33,634 - INFO: Complted: 85
+2020-07-17 10:48:33,634 - INFO: Error: 81
+2020-07-17 10:48:33,634 - INFO: Passed: 4
+2020-07-17 10:48:33,634 - INFO: Failed: 0
+2020-07-17 10:48:33,634 - INFO: Load test status from testcase\tc_dep_PciePortDisable_00.json.status
+2020-07-17 10:48:33,634 - INFO: Test for testcase\tc_dep_PciePortDisable_00.json is already done.
+2020-07-17 10:48:33,634 - INFO: Test completed for tc_dep_PciePortDisable_00.json
+2020-07-17 10:48:33,634 - INFO: ############################################################
+2020-07-17 10:48:33,634 - INFO: ************************************************************
+2020-07-17 10:48:33,634 - INFO: Start test with testcase\tc_dep_PciePortDisable_01.json
+2020-07-17 10:48:33,634 - INFO: ************************************************************
+2020-07-17 10:48:33,649 - INFO: Complted: 167
+2020-07-17 10:48:33,649 - INFO: Error: 129
+2020-07-17 10:48:33,649 - INFO: Passed: 38
+2020-07-17 10:48:33,649 - INFO: Failed: 0
+2020-07-17 10:48:33,649 - INFO: Load test status from testcase\tc_dep_PciePortDisable_01.json.status
+2020-07-17 10:48:33,649 - INFO: Test for testcase\tc_dep_PciePortDisable_01.json is already done.
+2020-07-17 10:48:33,649 - INFO: Test completed for tc_dep_PciePortDisable_01.json
+2020-07-17 10:48:33,649 - INFO: ############################################################
+2020-07-17 10:48:33,649 - INFO: ************************************************************
+2020-07-17 10:48:33,649 - INFO: Start test with testcase\tc_dep_PciePortDisable_10.json
+2020-07-17 10:48:33,649 - INFO: ************************************************************
+2020-07-17 10:48:33,665 - INFO: Complted: 167
+2020-07-17 10:48:33,665 - INFO: Error: 139
+2020-07-17 10:48:33,665 - INFO: Passed: 27
+2020-07-17 10:48:33,665 - INFO: Failed: 1
+2020-07-17 10:48:33,665 - INFO: Load test status from testcase\tc_dep_PciePortDisable_10.json.status
+2020-07-17 10:48:33,665 - INFO: Test for testcase\tc_dep_PciePortDisable_10.json is already done.
+2020-07-17 10:48:33,665 - INFO: Test completed for tc_dep_PciePortDisable_10.json
+2020-07-17 10:48:33,665 - INFO: ############################################################
+2020-07-17 10:48:33,681 - INFO: ************************************************************
+2020-07-17 10:48:33,681 - INFO: Start test with testcase\tc_dep_UefiOptimizedBootToggle_00.json
+2020-07-17 10:48:33,681 - INFO: ************************************************************
+2020-07-17 10:48:33,681 - INFO: Complted: 4
+2020-07-17 10:48:33,681 - INFO: Error: 1
+2020-07-17 10:48:33,681 - INFO: Passed: 3
+2020-07-17 10:48:33,681 - INFO: Failed: 0
+2020-07-17 10:48:33,681 - INFO: Load test status from testcase\tc_dep_UefiOptimizedBootToggle_00.json.status
+2020-07-17 10:48:33,681 - INFO: Test for testcase\tc_dep_UefiOptimizedBootToggle_00.json is already done.
+2020-07-17 10:48:33,681 - INFO: Test completed for tc_dep_UefiOptimizedBootToggle_00.json
+2020-07-17 10:48:33,681 - INFO: ############################################################
+2020-07-17 10:48:33,681 - INFO: ************************************************************
+2020-07-17 10:48:33,696 - INFO: Start test with testcase\tc_nondep_dep7998.json
+2020-07-17 10:48:33,696 - INFO: ************************************************************
+2020-07-17 10:48:33,696 - INFO: Complted: 0
+2020-07-17 10:48:33,696 - INFO: Error: 0
+2020-07-17 10:48:33,696 - INFO: Passed: 0
+2020-07-17 10:48:33,696 - INFO: Failed: 0
+2020-07-17 10:48:33,696 - INFO: Load test status from testcase\tc_nondep_dep7998.json.status
+2020-07-17 10:48:33,696 - INFO: CdnSupport Value to set: Disable
+2020-07-17 10:48:33,805 - INFO: CdnSupport default value: Enable
+2020-07-17 10:48:33,805 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 10:48:34,571 - INFO: Patch Successfully
+2020-07-17 10:50:50,712 - INFO: Run multiple files in directory testcase
+2020-07-17 10:50:50,712 - INFO: ************************************************************
+2020-07-17 10:50:50,712 - INFO: Start test with testcase\secureboot.json
+2020-07-17 10:50:50,712 - INFO: ************************************************************
+2020-07-17 10:50:50,712 - INFO: Complted: 1
+2020-07-17 10:50:50,712 - INFO: Error: 1
+2020-07-17 10:50:50,712 - INFO: Passed: 0
+2020-07-17 10:50:50,712 - INFO: Failed: 0
+2020-07-17 10:50:50,712 - INFO: Load test status from testcase\secureboot.json.status
+2020-07-17 10:50:50,712 - INFO: Test for testcase\secureboot.json is already done.
+2020-07-17 10:50:50,712 - INFO: Test completed for secureboot.json
+2020-07-17 10:50:50,712 - INFO: ############################################################
+2020-07-17 10:50:50,712 - INFO: ************************************************************
+2020-07-17 10:50:50,712 - INFO: Start test with testcase\tc_dep_CompletionTimeout_00.json
+2020-07-17 10:50:50,712 - INFO: ************************************************************
+2020-07-17 10:50:50,712 - INFO: Complted: 4
+2020-07-17 10:50:50,712 - INFO: Error: 0
+2020-07-17 10:50:50,712 - INFO: Passed: 4
+2020-07-17 10:50:50,712 - INFO: Failed: 0
+2020-07-17 10:50:50,712 - INFO: Load test status from testcase\tc_dep_CompletionTimeout_00.json.status
+2020-07-17 10:50:50,712 - INFO: Test for testcase\tc_dep_CompletionTimeout_00.json is already done.
+2020-07-17 10:50:50,712 - INFO: Test completed for tc_dep_CompletionTimeout_00.json
+2020-07-17 10:50:50,712 - INFO: ############################################################
+2020-07-17 10:50:50,712 - INFO: ************************************************************
+2020-07-17 10:50:50,712 - INFO: Start test with testcase\tc_dep_CompletionTimeout_10.json
+2020-07-17 10:50:50,728 - INFO: ************************************************************
+2020-07-17 10:50:50,728 - INFO: Complted: 8
+2020-07-17 10:50:50,728 - INFO: Error: 4
+2020-07-17 10:50:50,728 - INFO: Passed: 4
+2020-07-17 10:50:50,728 - INFO: Failed: 0
+2020-07-17 10:50:50,728 - INFO: Load test status from testcase\tc_dep_CompletionTimeout_10.json.status
+2020-07-17 10:50:50,728 - INFO: Test for testcase\tc_dep_CompletionTimeout_10.json is already done.
+2020-07-17 10:50:50,728 - INFO: Test completed for tc_dep_CompletionTimeout_10.json
+2020-07-17 10:50:50,728 - INFO: ############################################################
+2020-07-17 10:50:50,728 - INFO: ************************************************************
+2020-07-17 10:50:50,728 - INFO: Start test with testcase\tc_dep_PciePortDisable_00.json
+2020-07-17 10:50:50,728 - INFO: ************************************************************
+2020-07-17 10:50:50,728 - INFO: Complted: 85
+2020-07-17 10:50:50,728 - INFO: Error: 81
+2020-07-17 10:50:50,728 - INFO: Passed: 4
+2020-07-17 10:50:50,728 - INFO: Failed: 0
+2020-07-17 10:50:50,728 - INFO: Load test status from testcase\tc_dep_PciePortDisable_00.json.status
+2020-07-17 10:50:50,728 - INFO: Test for testcase\tc_dep_PciePortDisable_00.json is already done.
+2020-07-17 10:50:50,728 - INFO: Test completed for tc_dep_PciePortDisable_00.json
+2020-07-17 10:50:50,728 - INFO: ############################################################
+2020-07-17 10:50:50,728 - INFO: ************************************************************
+2020-07-17 10:50:50,728 - INFO: Start test with testcase\tc_dep_PciePortDisable_01.json
+2020-07-17 10:50:50,728 - INFO: ************************************************************
+2020-07-17 10:50:50,728 - INFO: Complted: 167
+2020-07-17 10:50:50,728 - INFO: Error: 129
+2020-07-17 10:50:50,728 - INFO: Passed: 38
+2020-07-17 10:50:50,728 - INFO: Failed: 0
+2020-07-17 10:50:50,728 - INFO: Load test status from testcase\tc_dep_PciePortDisable_01.json.status
+2020-07-17 10:50:50,728 - INFO: Test for testcase\tc_dep_PciePortDisable_01.json is already done.
+2020-07-17 10:50:50,728 - INFO: Test completed for tc_dep_PciePortDisable_01.json
+2020-07-17 10:50:50,728 - INFO: ############################################################
+2020-07-17 10:50:50,728 - INFO: ************************************************************
+2020-07-17 10:50:50,728 - INFO: Start test with testcase\tc_dep_PciePortDisable_10.json
+2020-07-17 10:50:50,728 - INFO: ************************************************************
+2020-07-17 10:50:50,728 - INFO: Complted: 167
+2020-07-17 10:50:50,728 - INFO: Error: 139
+2020-07-17 10:50:50,728 - INFO: Passed: 27
+2020-07-17 10:50:50,728 - INFO: Failed: 1
+2020-07-17 10:50:50,728 - INFO: Load test status from testcase\tc_dep_PciePortDisable_10.json.status
+2020-07-17 10:50:50,743 - INFO: Test for testcase\tc_dep_PciePortDisable_10.json is already done.
+2020-07-17 10:50:50,743 - INFO: Test completed for tc_dep_PciePortDisable_10.json
+2020-07-17 10:50:50,743 - INFO: ############################################################
+2020-07-17 10:50:50,743 - INFO: ************************************************************
+2020-07-17 10:50:50,743 - INFO: Start test with testcase\tc_dep_UefiOptimizedBootToggle_00.json
+2020-07-17 10:50:50,743 - INFO: ************************************************************
+2020-07-17 10:50:50,743 - INFO: Complted: 4
+2020-07-17 10:50:50,743 - INFO: Error: 1
+2020-07-17 10:50:50,743 - INFO: Passed: 3
+2020-07-17 10:50:50,743 - INFO: Failed: 0
+2020-07-17 10:50:50,743 - INFO: Load test status from testcase\tc_dep_UefiOptimizedBootToggle_00.json.status
+2020-07-17 10:50:50,743 - INFO: Test for testcase\tc_dep_UefiOptimizedBootToggle_00.json is already done.
+2020-07-17 10:50:50,743 - INFO: Test completed for tc_dep_UefiOptimizedBootToggle_00.json
+2020-07-17 10:50:50,743 - INFO: ############################################################
+2020-07-17 10:50:50,743 - INFO: ************************************************************
+2020-07-17 10:50:50,743 - INFO: Start test with testcase\tc_nondep_dep7998.json
+2020-07-17 10:50:50,743 - INFO: ************************************************************
+2020-07-17 10:50:50,743 - INFO: Complted: 0
+2020-07-17 10:50:50,743 - INFO: Error: 0
+2020-07-17 10:50:50,743 - INFO: Passed: 0
+2020-07-17 10:50:50,743 - INFO: Failed: 0
+2020-07-17 10:50:50,743 - INFO: Load test status from testcase\tc_nondep_dep7998.json.status
+2020-07-17 10:50:50,743 - INFO: CdnSupport Value to set: Disable
+2020-07-17 10:50:50,837 - INFO: CdnSupport default value: Enable
+2020-07-17 10:50:50,837 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 10:50:51,524 - INFO: Patch Successfully
+2020-07-17 10:54:10,493 - INFO: CdnSupport : Pass
+2020-07-17 10:54:10,493 - INFO: ------------------------------------------------------------
+2020-07-17 10:54:10,509 - INFO: AcpiHpet Value to set: Disable
+2020-07-17 10:54:10,587 - INFO: AcpiHpet default value: Enable
+2020-07-17 10:54:10,587 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 10:54:11,337 - INFO: Patch Successfully
+2020-07-17 10:59:44,931 - INFO: AcpiHpet : Pass
+2020-07-17 10:59:44,931 - INFO: ------------------------------------------------------------
+2020-07-17 10:59:44,931 - INFO: AcpiApicPolicy Value to set: All
+2020-07-17 10:59:45,009 - INFO: AcpiApicPolicy default value: Available
+2020-07-17 10:59:45,025 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 10:59:45,728 - INFO: Patch Successfully
+2020-07-17 11:04:18,462 - INFO: AcpiApicPolicy : Pass
+2020-07-17 11:04:18,462 - INFO: ------------------------------------------------------------
+2020-07-17 11:04:18,462 - INFO: PatrolScrub Value to set: Enable at End of POST
+2020-07-17 11:04:18,540 - INFO: PatrolScrub default value: Enable
+2020-07-17 11:04:18,556 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 11:04:19,290 - INFO: Patch Successfully
+2020-07-17 11:08:51,947 - INFO: PatrolScrub : Pass
+2020-07-17 11:08:51,947 - INFO: ------------------------------------------------------------
+2020-07-17 11:08:51,947 - INFO: DdrFreqLimit Value to set: 2666
+2020-07-17 11:08:52,024 - INFO: DdrFreqLimit default value: Auto
+2020-07-17 11:08:52,040 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 11:08:52,790 - INFO: Patch Successfully
+2020-07-17 11:13:25,462 - INFO: DdrFreqLimit : Pass
+2020-07-17 11:13:25,462 - INFO: ------------------------------------------------------------
+2020-07-17 11:13:25,462 - INFO: TStateEnable Value to set: Disable
+2020-07-17 11:13:25,540 - INFO: TStateEnable default value: Enable
+2020-07-17 11:13:25,556 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 11:13:26,244 - INFO: Patch Successfully
+2020-07-17 11:17:58,962 - INFO: TStateEnable : Pass
+2020-07-17 11:17:58,962 - INFO: ------------------------------------------------------------
+2020-07-17 11:17:58,962 - INFO: QpiLinkSpeed Value to set: Use Per Link Setting
+2020-07-17 11:17:59,040 - INFO: QpiLinkSpeed default value: Auto
+2020-07-17 11:17:59,056 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 11:17:59,744 - INFO: Patch Successfully
+2020-07-17 11:22:32,431 - INFO: QpiLinkSpeed : Pass
+2020-07-17 11:22:32,431 - INFO: ------------------------------------------------------------
+2020-07-17 11:22:32,431 - INFO: Use1GPageTable Value to set: 2M
+2020-07-17 11:22:32,509 - INFO: Use1GPageTable default value: 1G
+2020-07-17 11:22:32,525 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 11:22:33,181 - INFO: Patch Successfully
+2020-07-17 11:27:05,931 - INFO: Use1GPageTable : Pass
+2020-07-17 11:27:05,931 - INFO: ------------------------------------------------------------
+2020-07-17 11:27:05,931 - INFO: ResetOnMemMapChange Value to set: Enable
+2020-07-17 11:27:06,009 - INFO: ResetOnMemMapChange default value: Disable
+2020-07-17 11:27:06,024 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 11:27:06,697 - INFO: Patch Successfully
+2020-07-17 11:31:39,463 - INFO: ResetOnMemMapChange : Pass
+2020-07-17 11:31:39,463 - INFO: ------------------------------------------------------------
+2020-07-17 11:31:39,463 - INFO: COMBaseAddress Value to set: 2F8
+2020-07-17 11:31:39,540 - INFO: COMBaseAddress default value: 3F8
+2020-07-17 11:31:39,556 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 11:31:40,243 - INFO: Patch Successfully
+2020-07-17 11:37:13,946 - INFO: COMBaseAddress : Pass
+2020-07-17 11:37:13,946 - INFO: ------------------------------------------------------------
+2020-07-17 11:37:13,946 - INFO: FrontPanelLock Value to set: Enable
+2020-07-17 11:37:14,040 - INFO: FrontPanelLock default value: Disable
+2020-07-17 11:37:14,055 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 11:37:14,697 - INFO: Patch Successfully
+2020-07-17 11:41:47,431 - INFO: FrontPanelLock : Pass
+2020-07-17 11:41:47,431 - INFO: ------------------------------------------------------------
+2020-07-17 11:41:47,446 - INFO: VideoSelect Value to set: Plug-in Graphics
+2020-07-17 11:41:47,525 - INFO: VideoSelect default value: On Board Graphics
+2020-07-17 11:41:47,525 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 11:41:48,212 - INFO: Patch Successfully
+2020-07-17 11:46:20,977 - INFO: VideoSelect : Pass
+2020-07-17 11:46:20,977 - INFO: ------------------------------------------------------------
+2020-07-17 11:46:20,977 - INFO: EnableClockSpreadSpec Value to set: Enable
+2020-07-17 11:46:21,056 - INFO: EnableClockSpreadSpec default value: Disable
+2020-07-17 11:46:21,071 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 11:46:21,790 - INFO: Patch Successfully
+2020-07-17 11:50:54,477 - INFO: EnableClockSpreadSpec : Pass
+2020-07-17 11:50:54,477 - INFO: ------------------------------------------------------------
+2020-07-17 11:50:54,477 - INFO: WakeOnLanSupport Value to set: Enable
+2020-07-17 11:50:54,556 - INFO: WakeOnLanSupport default value: Disable
+2020-07-17 11:50:54,571 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 11:50:55,275 - INFO: Patch Successfully
+2020-07-17 11:55:27,946 - INFO: WakeOnLanSupport : Pass
+2020-07-17 11:55:27,946 - INFO: ------------------------------------------------------------
+2020-07-17 11:55:27,946 - INFO: SlotPxeEnable Value to set: Disable
+2020-07-17 11:55:28,040 - INFO: SlotPxeEnable default value: Enable
+2020-07-17 11:55:28,040 - INFO: Path: ./Advanced/NetworkConfiguration
+2020-07-17 11:55:28,697 - INFO: Patch Successfully
+2020-07-17 12:53:22,712 - INFO: Run multiple files in directory testcase
+2020-07-17 12:53:22,712 - INFO: ************************************************************
+2020-07-17 12:53:22,712 - INFO: Start test with testcase\secureboot.json
+2020-07-17 12:53:22,712 - INFO: ************************************************************
+2020-07-17 12:53:22,712 - INFO: Complted: 1
+2020-07-17 12:53:22,712 - INFO: Error: 1
+2020-07-17 12:53:22,712 - INFO: Passed: 0
+2020-07-17 12:53:22,712 - INFO: Failed: 0
+2020-07-17 12:53:22,712 - INFO: Load test status from testcase\secureboot.json.status
+2020-07-17 12:53:22,712 - INFO: Test for testcase\secureboot.json is already done.
+2020-07-17 12:53:22,712 - INFO: Test completed for secureboot.json
+2020-07-17 12:53:22,712 - INFO: ############################################################
+2020-07-17 12:53:22,712 - INFO: ************************************************************
+2020-07-17 12:53:22,712 - INFO: Start test with testcase\tc_dep_CompletionTimeout_00.json
+2020-07-17 12:53:22,712 - INFO: ************************************************************
+2020-07-17 12:53:22,712 - INFO: Complted: 4
+2020-07-17 12:53:22,712 - INFO: Error: 0
+2020-07-17 12:53:22,712 - INFO: Passed: 4
+2020-07-17 12:53:22,712 - INFO: Failed: 0
+2020-07-17 12:53:22,712 - INFO: Load test status from testcase\tc_dep_CompletionTimeout_00.json.status
+2020-07-17 12:53:22,712 - INFO: Test for testcase\tc_dep_CompletionTimeout_00.json is already done.
+2020-07-17 12:53:22,712 - INFO: Test completed for tc_dep_CompletionTimeout_00.json
+2020-07-17 12:53:22,712 - INFO: ############################################################
+2020-07-17 12:53:22,712 - INFO: ************************************************************
+2020-07-17 12:53:22,727 - INFO: Start test with testcase\tc_dep_CompletionTimeout_10.json
+2020-07-17 12:53:22,727 - INFO: ************************************************************
+2020-07-17 12:53:22,727 - INFO: Complted: 8
+2020-07-17 12:53:22,727 - INFO: Error: 4
+2020-07-17 12:53:22,727 - INFO: Passed: 4
+2020-07-17 12:53:22,727 - INFO: Failed: 0
+2020-07-17 12:53:22,727 - INFO: Load test status from testcase\tc_dep_CompletionTimeout_10.json.status
+2020-07-17 12:53:22,727 - INFO: Test for testcase\tc_dep_CompletionTimeout_10.json is already done.
+2020-07-17 12:53:22,727 - INFO: Test completed for tc_dep_CompletionTimeout_10.json
+2020-07-17 12:53:22,727 - INFO: ############################################################
+2020-07-17 12:53:22,727 - INFO: ************************************************************
+2020-07-17 12:53:22,727 - INFO: Start test with testcase\tc_dep_PciePortDisable_00.json
+2020-07-17 12:53:22,727 - INFO: ************************************************************
+2020-07-17 12:53:22,727 - INFO: Complted: 85
+2020-07-17 12:53:22,727 - INFO: Error: 81
+2020-07-17 12:53:22,727 - INFO: Passed: 4
+2020-07-17 12:53:22,727 - INFO: Failed: 0
+2020-07-17 12:53:22,727 - INFO: Load test status from testcase\tc_dep_PciePortDisable_00.json.status
+2020-07-17 12:53:22,727 - INFO: Test for testcase\tc_dep_PciePortDisable_00.json is already done.
+2020-07-17 12:53:22,727 - INFO: Test completed for tc_dep_PciePortDisable_00.json
+2020-07-17 12:53:22,727 - INFO: ############################################################
+2020-07-17 12:53:22,727 - INFO: ************************************************************
+2020-07-17 12:53:22,727 - INFO: Start test with testcase\tc_dep_PciePortDisable_01.json
+2020-07-17 12:53:22,727 - INFO: ************************************************************
+2020-07-17 12:53:22,727 - INFO: Complted: 167
+2020-07-17 12:53:22,727 - INFO: Error: 129
+2020-07-17 12:53:22,727 - INFO: Passed: 38
+2020-07-17 12:53:22,727 - INFO: Failed: 0
+2020-07-17 12:53:22,727 - INFO: Load test status from testcase\tc_dep_PciePortDisable_01.json.status
+2020-07-17 12:53:22,727 - INFO: Test for testcase\tc_dep_PciePortDisable_01.json is already done.
+2020-07-17 12:53:22,727 - INFO: Test completed for tc_dep_PciePortDisable_01.json
+2020-07-17 12:53:22,727 - INFO: ############################################################
+2020-07-17 12:53:22,743 - INFO: ************************************************************
+2020-07-17 12:53:22,743 - INFO: Start test with testcase\tc_dep_PciePortDisable_10.json
+2020-07-17 12:53:22,743 - INFO: ************************************************************
+2020-07-17 12:53:22,743 - INFO: Complted: 167
+2020-07-17 12:53:22,743 - INFO: Error: 139
+2020-07-17 12:53:22,743 - INFO: Passed: 27
+2020-07-17 12:53:22,743 - INFO: Failed: 1
+2020-07-17 12:53:22,743 - INFO: Load test status from testcase\tc_dep_PciePortDisable_10.json.status
+2020-07-17 12:53:22,743 - INFO: Test for testcase\tc_dep_PciePortDisable_10.json is already done.
+2020-07-17 12:53:22,743 - INFO: Test completed for tc_dep_PciePortDisable_10.json
+2020-07-17 12:53:22,743 - INFO: ############################################################
+2020-07-17 12:53:22,743 - INFO: ************************************************************
+2020-07-17 12:53:22,743 - INFO: Start test with testcase\tc_dep_UefiOptimizedBootToggle_00.json
+2020-07-17 12:53:22,743 - INFO: ************************************************************
+2020-07-17 12:53:22,743 - INFO: Complted: 4
+2020-07-17 12:53:22,743 - INFO: Error: 1
+2020-07-17 12:53:22,743 - INFO: Passed: 3
+2020-07-17 12:53:22,743 - INFO: Failed: 0
+2020-07-17 12:53:22,743 - INFO: Load test status from testcase\tc_dep_UefiOptimizedBootToggle_00.json.status
+2020-07-17 12:53:22,743 - INFO: Test for testcase\tc_dep_UefiOptimizedBootToggle_00.json is already done.
+2020-07-17 12:53:22,743 - INFO: Test completed for tc_dep_UefiOptimizedBootToggle_00.json
+2020-07-17 12:53:22,743 - INFO: ############################################################
+2020-07-17 12:53:22,743 - INFO: ************************************************************
+2020-07-17 12:53:22,743 - INFO: Start test with testcase\tc_nondep_dep7998.json
+2020-07-17 12:53:22,743 - INFO: ************************************************************
+2020-07-17 12:53:22,759 - INFO: Complted: 14
+2020-07-17 12:53:22,759 - INFO: Error: 0
+2020-07-17 12:53:22,759 - INFO: Passed: 14
+2020-07-17 12:53:22,759 - INFO: Failed: 0
+2020-07-17 12:53:22,759 - INFO: Load test status from testcase\tc_nondep_dep7998.json.status
+2020-07-17 12:53:22,759 - INFO: SlotPxeEnable Value to set: Disable
+2020-07-17 12:53:22,884 - INFO: SlotPxeEnable default value: Disable
+2020-07-17 12:53:22,884 - INFO: Path: ./Advanced/NetworkConfiguration
+2020-07-17 12:53:23,634 - INFO: Patch Successfully
+2020-07-17 12:55:54,494 - INFO: SlotPxeEnable : Pass
+2020-07-17 12:55:54,494 - INFO: ------------------------------------------------------------
+2020-07-17 12:55:54,494 - INFO: Cpu1Slot1PxeEnable[0] Value to set: Disable
+2020-07-17 12:55:54,572 - INFO: Cpu1Slot1PxeEnable[0] default value: Enable
+2020-07-17 12:55:54,572 - INFO: Path: ./Advanced/NetworkConfiguration
+2020-07-17 12:55:55,368 - INFO: Patch Successfully
+2020-07-17 13:22:49,994 - INFO: Cpu1Slot1PxeEnable[0] : Pass
+2020-07-17 13:22:49,994 - INFO: ------------------------------------------------------------
+2020-07-17 13:22:49,994 - INFO: Cpu1Slot1PxeEnable[1] Value to set: Disable
+2020-07-17 13:22:50,071 - INFO: Cpu1Slot1PxeEnable[1] default value: Enable
+2020-07-17 13:22:50,087 - INFO: Path: ./Advanced/NetworkConfiguration
+2020-07-17 13:22:50,759 - INFO: Patch Successfully
+2020-07-17 13:26:32,384 - INFO: Run multiple files in directory app
+2020-07-17 13:26:32,384 - INFO: ************************************************************
+2020-07-17 13:26:32,384 - INFO: Start test with app\tc_dep_ApplicationProfile_Custom.json
+2020-07-17 13:26:32,384 - INFO: ************************************************************
+2020-07-17 13:26:32,399 - INFO: Complted: 0
+2020-07-17 13:26:32,399 - INFO: Error: 0
+2020-07-17 13:26:32,399 - INFO: Passed: 0
+2020-07-17 13:26:32,399 - INFO: Failed: 0
+2020-07-17 13:26:32,399 - INFO: Load test status from app\tc_dep_ApplicationProfile_Custom.json.status
+2020-07-17 13:26:32,399 - INFO: ApplicationProfile Value to set: Custom
+2020-07-17 13:26:32,483 - INFO: ApplicationProfile default value: Custom
+2020-07-17 13:26:32,494 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 13:26:33,211 - INFO: Patch Successfully
+2020-07-17 13:31:58,977 - INFO: ApplicationProfile : Pass
+2020-07-17 13:31:58,977 - INFO: ------------------------------------------------------------
+2020-07-17 13:31:58,977 - INFO: FreqSelect Value to set: 30
+2020-07-17 13:31:59,056 - INFO: FreqSelect default value: 40
+2020-07-17 13:31:59,071 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 13:31:59,806 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'iBMC.1.0.SettingPropertyFailed', 'RelatedProperties': ['#/Attributes/FreqSelect'], 'Message': 'The property Attributes/FreqSelect cannot be modified because the value for the property Attributes/ is null.', 'MessageArgs': ['Attributes/FreqSelect', 'Attributes/', 'null'], 'Severity': 'Warning', 'Resolution': 'This property cannot be changed.'}]}
+2020-07-17 13:31:59,809 - INFO: ------------------------------------------------------------
+2020-07-17 13:31:59,809 - INFO: ProcessorEppProfile Value to set: Performance
+2020-07-17 13:31:59,900 - INFO: ProcessorEppProfile default value: Balanced Performance
+2020-07-17 13:31:59,915 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 13:32:00,634 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'iBMC.1.0.SettingPropertyFailed', 'RelatedProperties': ['#/Attributes/ProcessorEppProfile'], 'Message': 'The property Attributes/ProcessorEppProfile cannot be modified because the value for the property Attributes/ is null.', 'MessageArgs': ['Attributes/ProcessorEppProfile', 'Attributes/', 'null'], 'Severity': 'Warning', 'Resolution': 'This property cannot be changed.'}]}
+2020-07-17 13:32:00,634 - INFO: ------------------------------------------------------------
+2020-07-17 13:32:00,634 - INFO: ADDDCEn Value to set: Disable
+2020-07-17 13:32:00,728 - INFO: ADDDCEn default value: Enable
+2020-07-17 13:32:00,728 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 13:32:01,369 - INFO: Patch Successfully
+2020-07-17 13:34:35,994 - INFO: ADDDCEn : Failed
+2020-07-17 13:34:35,994 - INFO: ------------------------------------------------------------
+2020-07-17 13:34:35,994 - INFO: ProcessorEPPEnable Value to set: Disable
+2020-07-17 13:34:36,056 - INFO: ProcessorEPPEnable default value: Enable
+2020-07-17 13:34:36,071 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 13:34:36,759 - INFO: Patch Successfully
+2020-07-17 13:37:07,494 - INFO: ProcessorEPPEnable : Failed
+2020-07-17 13:37:07,494 - INFO: ------------------------------------------------------------
+2020-07-17 13:37:07,494 - INFO: KtiLinkL0pEn Value to set: Disable
+2020-07-17 13:37:07,587 - INFO: KtiLinkL0pEn default value: Enable
+2020-07-17 13:37:07,587 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 13:37:08,291 - INFO: Patch Successfully
+2020-07-17 13:39:39,009 - INFO: KtiLinkL0pEn : Failed
+2020-07-17 13:39:39,009 - INFO: ------------------------------------------------------------
+2020-07-17 13:39:39,009 - INFO: KtiLinkL1En Value to set: Disable
+2020-07-17 13:39:39,087 - INFO: KtiLinkL1En default value: Enable
+2020-07-17 13:39:39,087 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 13:39:39,774 - INFO: Patch Successfully
+2020-07-17 13:42:10,509 - INFO: KtiLinkL1En : Failed
+2020-07-17 13:42:10,509 - INFO: ------------------------------------------------------------
+2020-07-17 13:42:10,509 - INFO: KtiPrefetchEn Value to set: Disable
+2020-07-17 13:42:10,587 - INFO: KtiPrefetchEn default value: Enable
+2020-07-17 13:42:10,603 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 13:42:11,228 - INFO: Patch Successfully
+2020-07-17 13:44:41,993 - INFO: KtiPrefetchEn : Failed
+2020-07-17 13:44:41,993 - INFO: ------------------------------------------------------------
+2020-07-17 13:44:41,993 - INFO: IrqThreshold Value to set: High
+2020-07-17 13:44:42,071 - INFO: IrqThreshold default value: Auto
+2020-07-17 13:44:42,087 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 13:44:42,775 - INFO: Patch Successfully
+2020-07-17 13:47:13,478 - INFO: IrqThreshold : Failed
+2020-07-17 13:47:13,478 - INFO: ------------------------------------------------------------
+2020-07-17 13:47:13,478 - INFO: SncEn Value to set: Enable
+2020-07-17 13:47:13,556 - INFO: SncEn default value: Disable
+2020-07-17 13:47:13,571 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 13:47:14,244 - INFO: Patch Successfully
+2020-07-17 13:49:45,009 - INFO: SncEn : Failed
+2020-07-17 13:49:45,009 - INFO: ------------------------------------------------------------
+2020-07-17 13:49:45,009 - INFO: LLCDeadLineAlloc Value to set: Disable
+2020-07-17 13:49:45,087 - INFO: LLCDeadLineAlloc default value: Enable
+2020-07-17 13:49:45,103 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 13:49:45,806 - INFO: Patch Successfully
+2020-07-17 13:52:16,493 - INFO: LLCDeadLineAlloc : Failed
+2020-07-17 13:52:16,493 - INFO: ------------------------------------------------------------
+2020-07-17 13:52:16,493 - INFO: refreshMode Value to set: Disable
+2020-07-17 13:52:16,572 - INFO: refreshMode default value: Auto
+2020-07-17 13:52:16,587 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 13:52:17,243 - INFO: Patch Successfully
+2020-07-17 13:56:49,962 - INFO: refreshMode : Failed
+2020-07-17 13:56:49,962 - INFO: ------------------------------------------------------------
+2020-07-17 13:56:49,962 - INFO: PagePolicy Value to set: Closed
+2020-07-17 13:56:50,056 - INFO: PagePolicy default value: Adaptive
+2020-07-17 13:56:50,056 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 13:56:50,794 - INFO: Patch Successfully
+2020-07-17 13:59:21,480 - INFO: PagePolicy : Failed
+2020-07-17 13:59:21,480 - INFO: ------------------------------------------------------------
+2020-07-17 13:59:21,483 - INFO: CkeProgramming Value to set: Enable
+2020-07-17 13:59:21,555 - INFO: CkeProgramming default value: Disable
+2020-07-17 13:59:21,568 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 13:59:22,181 - INFO: Patch Successfully
+2020-07-17 14:01:52,993 - INFO: CkeProgramming : Failed
+2020-07-17 14:01:52,993 - INFO: ------------------------------------------------------------
+2020-07-17 14:01:52,993 - INFO: StaticTurbo Value to set: Enable
+2020-07-17 14:01:53,071 - INFO: StaticTurbo default value: Disable
+2020-07-17 14:01:53,087 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 14:01:53,744 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueNotInList', 'RelatedProperties': ['#/Attributes/StaticTurbo'], 'Message': 'The value Enable for the property Attributes/StaticTurbo is not in the list of acceptable values.', 'MessageArgs': ['Enable', 'Attributes/StaticTurbo'], 'Severity': 'Warning', 'Resolution': 'Choose a value from the enumeration list that the implementation can support and resubmit the request if the operation failed.'}]}
+2020-07-17 14:01:53,746 - INFO: ------------------------------------------------------------
+2020-07-17 14:01:53,746 - INFO: ProcessorHWPMEnable Value to set: Enable
+2020-07-17 14:01:53,838 - INFO: ProcessorHWPMEnable default value: Disable
+2020-07-17 14:01:53,853 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 14:01:54,588 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueNotInList', 'RelatedProperties': ['#/Attributes/ProcessorHWPMEnable'], 'Message': 'The value Enable for the property Attributes/ProcessorHWPMEnable is not in the list of acceptable values.', 'MessageArgs': ['Enable', 'Attributes/ProcessorHWPMEnable'], 'Severity': 'Warning', 'Resolution': 'Choose a value from the enumeration list that the implementation can support and resubmit the request if the operation failed.'}]}
+2020-07-17 14:01:54,593 - INFO: ------------------------------------------------------------
+2020-07-17 14:01:54,593 - INFO: UFSDisable Value to set: Enable
+2020-07-17 14:01:54,665 - INFO: UFSDisable default value: Enable
+2020-07-17 14:01:54,681 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 14:01:55,368 - INFO: Patch Successfully
+2020-07-17 14:04:25,962 - INFO: UFSDisable : Pass
+2020-07-17 14:04:25,962 - INFO: ------------------------------------------------------------
+2020-07-17 14:04:25,962 - INFO: ProcessorEistEnable Value to set: Disable
+2020-07-17 14:04:26,040 - INFO: ProcessorEistEnable default value: Enable
+2020-07-17 14:04:26,056 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 14:04:26,822 - INFO: Patch Successfully
+2020-07-17 14:06:57,493 - INFO: ProcessorEistEnable : Failed
+2020-07-17 14:06:57,493 - INFO: ------------------------------------------------------------
+2020-07-17 14:06:57,493 - INFO: ProcessorEistPsdFunc Value to set: Enable
+2020-07-17 14:06:57,571 - INFO: ProcessorEistPsdFunc default value: HW_ALL
+2020-07-17 14:06:57,587 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 14:06:58,213 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueNotInList', 'RelatedProperties': ['#/Attributes/ProcessorEistPsdFunc'], 'Message': 'The value Enable for the property Attributes/ProcessorEistPsdFunc is not in the list of acceptable values.', 'MessageArgs': ['Enable', 'Attributes/ProcessorEistPsdFunc'], 'Severity': 'Warning', 'Resolution': 'Choose a value from the enumeration list that the implementation can support and resubmit the request if the operation failed.'}]}
+2020-07-17 14:06:58,220 - INFO: ------------------------------------------------------------
+2020-07-17 14:06:58,220 - INFO: BootPState Value to set: Enable
+2020-07-17 14:06:58,290 - INFO: BootPState default value: Max Performance
+2020-07-17 14:06:58,306 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 14:06:58,931 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueNotInList', 'RelatedProperties': ['#/Attributes/BootPState'], 'Message': 'The value Enable for the property Attributes/BootPState is not in the list of acceptable values.', 'MessageArgs': ['Enable', 'Attributes/BootPState'], 'Severity': 'Warning', 'Resolution': 'Choose a value from the enumeration list that the implementation can support and resubmit the request if the operation failed.'}]}
+2020-07-17 14:06:58,937 - INFO: ------------------------------------------------------------
+2020-07-17 14:06:58,937 - INFO: EETurboDisable Value to set: Enable
+2020-07-17 14:06:59,025 - INFO: EETurboDisable default value: Enable
+2020-07-17 14:06:59,025 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 14:06:59,712 - INFO: Patch Successfully
+2020-07-17 14:09:30,509 - INFO: EETurboDisable : Pass
+2020-07-17 14:09:30,509 - INFO: ------------------------------------------------------------
+2020-07-17 14:09:30,509 - INFO: PowerSaving Value to set: Enable
+2020-07-17 14:09:30,603 - INFO: PowerSaving default value: Disable
+2020-07-17 14:09:30,603 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 14:09:31,290 - INFO: Patch Successfully
+2020-07-17 14:12:01,978 - INFO: PowerSaving : Failed
+2020-07-17 14:12:01,978 - INFO: ------------------------------------------------------------
+2020-07-17 14:12:01,978 - INFO: TurboMode Value to set: Disable
+2020-07-17 14:12:02,056 - INFO: TurboMode default value: Enable
+2020-07-17 14:12:02,071 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 14:12:02,744 - INFO: Patch Successfully
+2020-07-17 14:14:33,509 - INFO: TurboMode : Failed
+2020-07-17 14:14:33,509 - INFO: ------------------------------------------------------------
+2020-07-17 14:14:33,509 - INFO: MonitorMWait Value to set: Enable
+2020-07-17 14:14:33,587 - INFO: MonitorMWait default value: Disable
+2020-07-17 14:14:33,602 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 14:14:34,290 - INFO: Patch Successfully
+2020-07-17 14:17:04,993 - INFO: MonitorMWait : Failed
+2020-07-17 14:17:04,993 - INFO: ------------------------------------------------------------
+2020-07-17 14:17:04,993 - INFO: C6Enable Value to set: Enable
+2020-07-17 14:17:05,087 - INFO: C6Enable default value: Disable
+2020-07-17 14:17:05,103 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 14:17:05,791 - INFO: Patch Successfully
+2020-07-17 14:20:14,212 - INFO: Testing registry file...
+2020-07-17 14:20:14,212 - INFO: Test case 1: compare registery.json with baseline_0716_1400.txt
+2020-07-17 14:24:10,962 - INFO: Testing registry file...
+2020-07-17 14:24:10,962 - INFO: Test case 1: compare registery.json with \baseline\baseline.txt
+2020-07-17 14:25:16,946 - INFO: Testing registry file...
+2020-07-17 14:25:16,946 - INFO: Test case 1: compare registery.json with .\baseline\baseline_0716_1400.txt
+2020-07-17 14:25:16,962 - INFO: BootClassOrder: not listed in setup baseline xlsx.
+2020-07-17 14:25:16,962 - INFO: OemSecureBoot: not listed in setup baseline xlsx.
+2020-07-17 14:25:16,962 - INFO: Test case 2: Check whetehr all items in dependencies are also in attributes
+2020-07-17 14:26:35,524 - INFO: Testing registry file...
+2020-07-17 14:26:35,524 - INFO: Test case 1: compare registery.json with .\baseline\baseline_0716_1400.txt
+2020-07-17 14:26:35,540 - INFO: BootClassOrder: not listed in setup baseline xlsx.
+2020-07-17 14:26:35,540 - INFO: OemSecureBoot: not listed in setup baseline xlsx.
+2020-07-17 14:26:35,540 - INFO: Test case 2: Check whetehr all items in dependencies are also in attributes
+2020-07-17 14:28:38,446 - INFO: Testing registry file...
+2020-07-17 14:28:38,446 - INFO: Test case 1: compare registery.json with .\baseline\baseline_0716_1400.txt
+2020-07-17 14:28:38,462 - INFO: BootClassOrder: not listed in setup baseline xlsx.
+2020-07-17 14:28:38,462 - INFO: OemSecureBoot: not listed in setup baseline xlsx.
+2020-07-17 14:28:38,462 - INFO: Test case 2: Check whetehr all items in dependencies are also in attributes
+2020-07-17 14:33:01,696 - INFO: Testing registry file...
+2020-07-17 14:33:01,696 - INFO: Test case 1: compare registery.json with .\baseline\baseline_0716_1400.txt
+2020-07-17 14:33:01,712 - INFO: BootClassOrder: not listed in setup baseline xlsx.
+2020-07-17 14:33:01,712 - INFO: OemSecureBoot: not listed in setup baseline xlsx.
+2020-07-17 14:33:01,712 - INFO: Test case 2: Check whetehr all items in dependencies are also in attributes
+2020-07-17 14:33:01,712 - INFO: Checking map from list...
+2020-07-17 14:33:01,712 - INFO: BootRetry is not supported by redfish
+2020-07-17 14:33:01,712 - INFO: Checking map from list...
+2020-07-17 14:33:01,712 - INFO: EnableSgx is not supported by redfish
+2020-07-17 14:33:01,712 - INFO: Checking map to list...
+2020-07-17 14:33:01,712 - INFO: IIOErrorEn is not supported by redfish
+2020-07-17 14:33:01,712 - INFO: Checking map to list...
+2020-07-17 14:33:01,727 - INFO: NoBootReset is not supported by redfish
+2020-07-17 14:33:01,727 - INFO: Checking map to list...
+2020-07-17 14:33:01,727 - INFO: SystemCpuUsage is not supported by redfish
+2020-07-17 14:33:01,727 - INFO: Checking map to list...
+2020-07-17 14:33:01,727 - INFO: TcoTimeout is not supported by redfish
+2020-07-17 14:33:01,727 - INFO: Checking map to list...
+2020-07-17 14:33:01,727 - INFO: LowOccupyControl is not supported by redfish
+2020-07-17 14:33:01,727 - INFO: Checking map to list...
+2020-07-17 14:33:01,727 - INFO: EMCACSMIEn is not supported by redfish
+2020-07-17 14:33:01,727 - INFO: Checking map to list...
+2020-07-17 14:33:01,727 - INFO: DmiAspm is not supported by redfish
+2020-07-17 14:33:57,884 - INFO: Testing registry file...
+2020-07-17 14:33:57,884 - INFO: Test case 1: compare registery.json with .\baseline\baseline_0716_1400.txt
+2020-07-17 14:33:57,899 - INFO: BootClassOrder: not listed in setup baseline xlsx.
+2020-07-17 14:33:57,899 - INFO: OemSecureBoot: not listed in setup baseline xlsx.
+2020-07-17 14:33:57,899 - INFO: Test case 2: Check whetehr all items in dependencies are also in attributes
+2020-07-17 14:33:57,899 - INFO: Checking map from list...
+2020-07-17 14:33:57,899 - INFO: BootRetry is not supported by redfish
+2020-07-17 14:33:57,915 - INFO: EnableSgx is not supported by redfish
+2020-07-17 14:33:57,915 - INFO: Checking map to list...
+2020-07-17 14:33:57,915 - INFO: IIOErrorEn is not supported by redfish
+2020-07-17 14:33:57,915 - INFO: NoBootReset is not supported by redfish
+2020-07-17 14:33:57,915 - INFO: SystemCpuUsage is not supported by redfish
+2020-07-17 14:33:57,915 - INFO: TcoTimeout is not supported by redfish
+2020-07-17 14:33:57,915 - INFO: LowOccupyControl is not supported by redfish
+2020-07-17 14:33:57,915 - INFO: EMCACSMIEn is not supported by redfish
+2020-07-17 14:33:57,915 - INFO: DmiAspm is not supported by redfish
+2020-07-17 14:34:37,212 - INFO: Testing registry file...
+2020-07-17 14:34:37,212 - INFO: Test case 1: compare registery.json with .\baseline\baseline_0716_1400.txt
+2020-07-17 14:34:37,228 - INFO: BootClassOrder: not listed in setup baseline xlsx.
+2020-07-17 14:34:37,228 - INFO: OemSecureBoot: not listed in setup baseline xlsx.
+2020-07-17 14:34:37,228 - INFO: ------------------------------------------------------------
+2020-07-17 14:34:37,228 - INFO: Test case 2: Check whetehr all items in dependencies are also in attributes
+2020-07-17 14:34:37,243 - INFO: Checking map from list...
+2020-07-17 14:34:37,243 - INFO: BootRetry is not supported by redfish
+2020-07-17 14:34:37,243 - INFO: EnableSgx is not supported by redfish
+2020-07-17 14:34:37,243 - INFO: Checking map to list...
+2020-07-17 14:34:37,243 - INFO: IIOErrorEn is not supported by redfish
+2020-07-17 14:34:37,243 - INFO: NoBootReset is not supported by redfish
+2020-07-17 14:34:37,243 - INFO: SystemCpuUsage is not supported by redfish
+2020-07-17 14:34:37,243 - INFO: TcoTimeout is not supported by redfish
+2020-07-17 14:34:37,243 - INFO: LowOccupyControl is not supported by redfish
+2020-07-17 14:34:37,243 - INFO: EMCACSMIEn is not supported by redfish
+2020-07-17 14:34:37,243 - INFO: DmiAspm is not supported by redfish
+2020-07-17 15:26:46,977 - INFO: Run multiple files in directory testcase
+2020-07-17 15:26:46,977 - INFO: ************************************************************
+2020-07-17 15:26:46,993 - INFO: Start test with testcase\secureboot.json
+2020-07-17 15:26:46,993 - INFO: ************************************************************
+2020-07-17 15:26:46,993 - INFO: Complted: 1
+2020-07-17 15:26:46,993 - INFO: Error: 1
+2020-07-17 15:26:46,993 - INFO: Passed: 0
+2020-07-17 15:26:46,993 - INFO: Failed: 0
+2020-07-17 15:26:46,993 - INFO: Load test status from testcase\secureboot.json.status
+2020-07-17 15:26:46,993 - INFO: Test for testcase\secureboot.json is already done.
+2020-07-17 15:26:46,993 - INFO: Test completed for secureboot.json
+2020-07-17 15:26:46,993 - INFO: ############################################################
+2020-07-17 15:26:46,993 - INFO: ************************************************************
+2020-07-17 15:26:46,993 - INFO: Start test with testcase\tc_dep_CompletionTimeout_00.json
+2020-07-17 15:26:46,993 - INFO: ************************************************************
+2020-07-17 15:26:46,993 - INFO: Complted: 4
+2020-07-17 15:26:46,993 - INFO: Error: 0
+2020-07-17 15:26:46,993 - INFO: Passed: 4
+2020-07-17 15:26:46,993 - INFO: Failed: 0
+2020-07-17 15:26:46,993 - INFO: Load test status from testcase\tc_dep_CompletionTimeout_00.json.status
+2020-07-17 15:26:46,993 - INFO: Test for testcase\tc_dep_CompletionTimeout_00.json is already done.
+2020-07-17 15:26:46,993 - INFO: Test completed for tc_dep_CompletionTimeout_00.json
+2020-07-17 15:26:46,993 - INFO: ############################################################
+2020-07-17 15:26:46,993 - INFO: ************************************************************
+2020-07-17 15:26:46,993 - INFO: Start test with testcase\tc_dep_CompletionTimeout_10.json
+2020-07-17 15:26:46,993 - INFO: ************************************************************
+2020-07-17 15:26:46,993 - INFO: Complted: 8
+2020-07-17 15:26:46,993 - INFO: Error: 4
+2020-07-17 15:26:46,993 - INFO: Passed: 4
+2020-07-17 15:26:46,993 - INFO: Failed: 0
+2020-07-17 15:26:46,993 - INFO: Load test status from testcase\tc_dep_CompletionTimeout_10.json.status
+2020-07-17 15:26:46,993 - INFO: Test for testcase\tc_dep_CompletionTimeout_10.json is already done.
+2020-07-17 15:26:46,993 - INFO: Test completed for tc_dep_CompletionTimeout_10.json
+2020-07-17 15:26:46,993 - INFO: ############################################################
+2020-07-17 15:26:46,993 - INFO: ************************************************************
+2020-07-17 15:26:46,993 - INFO: Start test with testcase\tc_dep_PciePortDisable_00.json
+2020-07-17 15:26:47,009 - INFO: ************************************************************
+2020-07-17 15:26:47,009 - INFO: Complted: 85
+2020-07-17 15:26:47,009 - INFO: Error: 81
+2020-07-17 15:26:47,009 - INFO: Passed: 4
+2020-07-17 15:26:47,009 - INFO: Failed: 0
+2020-07-17 15:26:47,009 - INFO: Load test status from testcase\tc_dep_PciePortDisable_00.json.status
+2020-07-17 15:26:47,009 - INFO: Test for testcase\tc_dep_PciePortDisable_00.json is already done.
+2020-07-17 15:26:47,009 - INFO: Test completed for tc_dep_PciePortDisable_00.json
+2020-07-17 15:26:47,009 - INFO: ############################################################
+2020-07-17 15:26:47,009 - INFO: ************************************************************
+2020-07-17 15:26:47,009 - INFO: Start test with testcase\tc_dep_PciePortDisable_01.json
+2020-07-17 15:26:47,009 - INFO: ************************************************************
+2020-07-17 15:26:47,009 - INFO: Complted: 167
+2020-07-17 15:26:47,009 - INFO: Error: 129
+2020-07-17 15:26:47,009 - INFO: Passed: 38
+2020-07-17 15:26:47,009 - INFO: Failed: 0
+2020-07-17 15:26:47,009 - INFO: Load test status from testcase\tc_dep_PciePortDisable_01.json.status
+2020-07-17 15:26:47,009 - INFO: Test for testcase\tc_dep_PciePortDisable_01.json is already done.
+2020-07-17 15:26:47,009 - INFO: Test completed for tc_dep_PciePortDisable_01.json
+2020-07-17 15:26:47,009 - INFO: ############################################################
+2020-07-17 15:26:47,009 - INFO: ************************************************************
+2020-07-17 15:26:47,009 - INFO: Start test with testcase\tc_dep_PciePortDisable_10.json
+2020-07-17 15:26:47,009 - INFO: ************************************************************
+2020-07-17 15:26:47,009 - INFO: Complted: 167
+2020-07-17 15:26:47,009 - INFO: Error: 139
+2020-07-17 15:26:47,009 - INFO: Passed: 27
+2020-07-17 15:26:47,009 - INFO: Failed: 1
+2020-07-17 15:26:47,009 - INFO: Load test status from testcase\tc_dep_PciePortDisable_10.json.status
+2020-07-17 15:26:47,024 - INFO: Test for testcase\tc_dep_PciePortDisable_10.json is already done.
+2020-07-17 15:26:47,024 - INFO: Test completed for tc_dep_PciePortDisable_10.json
+2020-07-17 15:26:47,024 - INFO: ############################################################
+2020-07-17 15:26:47,024 - INFO: ************************************************************
+2020-07-17 15:26:47,024 - INFO: Start test with testcase\tc_dep_UefiOptimizedBootToggle_00.json
+2020-07-17 15:26:47,024 - INFO: ************************************************************
+2020-07-17 15:26:47,024 - INFO: Complted: 4
+2020-07-17 15:26:47,024 - INFO: Error: 1
+2020-07-17 15:26:47,024 - INFO: Passed: 3
+2020-07-17 15:26:47,024 - INFO: Failed: 0
+2020-07-17 15:26:47,024 - INFO: Load test status from testcase\tc_dep_UefiOptimizedBootToggle_00.json.status
+2020-07-17 15:26:47,024 - INFO: Test for testcase\tc_dep_UefiOptimizedBootToggle_00.json is already done.
+2020-07-17 15:26:47,024 - INFO: Test completed for tc_dep_UefiOptimizedBootToggle_00.json
+2020-07-17 15:26:47,024 - INFO: ############################################################
+2020-07-17 15:26:47,024 - INFO: ************************************************************
+2020-07-17 15:26:47,024 - INFO: Start test with testcase\tc_nondep_dep7998.json
+2020-07-17 15:26:47,024 - INFO: ************************************************************
+2020-07-17 15:26:47,040 - INFO: Complted: 16
+2020-07-17 15:26:47,040 - INFO: Error: 0
+2020-07-17 15:26:47,040 - INFO: Passed: 16
+2020-07-17 15:26:47,040 - INFO: Failed: 0
+2020-07-17 15:26:47,040 - INFO: Load test status from testcase\tc_nondep_dep7998.json.status
+2020-07-17 15:26:47,040 - INFO: Cpu1Slot1PxeEnable[1] Value to set: Disable
+2020-07-17 15:26:47,134 - INFO: Cpu1Slot1PxeEnable[1] default value: Disable
+2020-07-17 15:26:47,134 - INFO: Path: ./Advanced/NetworkConfiguration
+2020-07-17 15:26:47,837 - INFO: Patch Successfully
+2020-07-17 15:29:18,494 - INFO: Cpu1Slot1PxeEnable[1] : Pass
+2020-07-17 15:29:18,494 - INFO: ------------------------------------------------------------
+2020-07-17 15:29:18,494 - INFO: Cpu1Slot1PxeEnable[2] Value to set: Disable
+2020-07-17 15:29:18,571 - INFO: Cpu1Slot1PxeEnable[2] default value: Enable
+2020-07-17 15:29:18,571 - INFO: Path: ./Advanced/NetworkConfiguration
+2020-07-17 15:29:19,244 - INFO: Patch Successfully
+2020-07-17 15:31:07,274 - INFO: Run multiple files in directory app
+2020-07-17 15:31:07,274 - INFO: ************************************************************
+2020-07-17 15:31:07,274 - INFO: Start test with app\tc_dep_ApplicationProfile_Custom.json
+2020-07-17 15:31:07,274 - INFO: ************************************************************
+2020-07-17 15:31:07,274 - INFO: Complted: 24
+2020-07-17 15:31:07,290 - INFO: Error: 6
+2020-07-17 15:31:07,290 - INFO: Passed: 3
+2020-07-17 15:31:07,290 - INFO: Failed: 15
+2020-07-17 15:31:07,290 - INFO: Load test status from app\tc_dep_ApplicationProfile_Custom.json.status
+2020-07-17 15:31:07,290 - INFO: C6Enable Value to set: Enable
+2020-07-17 15:31:07,400 - INFO: C6Enable default value: Disable
+2020-07-17 15:31:07,431 - INFO: Path: ./Advanced/MiscellaneousConfiguration
+2020-07-17 15:31:08,150 - INFO: Patch Successfully

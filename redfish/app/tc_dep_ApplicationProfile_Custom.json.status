@@ -1,0 +1,58 @@
+{
+ "Completed": [
+  "ApplicationProfile",
+  "FreqSelect",
+  "ProcessorEppProfile",
+  "ADDDCEn",
+  "ProcessorEPPEnable",
+  "KtiLinkL0pEn",
+  "KtiLinkL1En",
+  "KtiPrefetchEn",
+  "IrqThreshold",
+  "SncEn",
+  "LLCDeadLineAlloc",
+  "refreshMode",
+  "PagePolicy",
+  "CkeProgramming",
+  "StaticTurbo",
+  "ProcessorHWPMEnable",
+  "UFSDisable",
+  "ProcessorEistEnable",
+  "ProcessorEistPsdFunc",
+  "BootPState",
+  "EETurboDisable",
+  "PowerSaving",
+  "TurboMode",
+  "MonitorMWait"
+ ],
+ "Passed": [
+  "ApplicationProfile",
+  "UFSDisable",
+  "EETurboDisable"
+ ],
+ "Error": [
+  "FreqSelect",
+  "ProcessorEppProfile",
+  "StaticTurbo",
+  "ProcessorHWPMEnable",
+  "ProcessorEistPsdFunc",
+  "BootPState"
+ ],
+ "Failed": [
+  "ADDDCEn",
+  "ProcessorEPPEnable",
+  "KtiLinkL0pEn",
+  "KtiLinkL1En",
+  "KtiPrefetchEn",
+  "IrqThreshold",
+  "SncEn",
+  "LLCDeadLineAlloc",
+  "refreshMode",
+  "PagePolicy",
+  "CkeProgramming",
+  "ProcessorEistEnable",
+  "PowerSaving",
+  "TurboMode",
+  "MonitorMWait"
+ ]
+}
