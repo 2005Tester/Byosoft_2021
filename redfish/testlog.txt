@@ -3806,3 +3806,5 @@
 2020-07-17 09:37:20,556 - INFO: Cpu1Slot1PxeEnable[2] default value: Enable
 2020-07-17 09:37:20,571 - INFO: Path: ./Advanced/NetworkConfiguration
 2020-07-17 09:37:21,275 - INFO: Patch Successfully
+2020-07-17 10:29:33,725 - INFO: generating non-dependency test case
+2020-07-17 10:39:24,257 - INFO: generating non-dependency test case

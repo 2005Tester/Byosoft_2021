@@ -187,7 +187,7 @@ def change_value(testcase_file):
             values.remove(testscope["Attributes"][key])
             desired_value = random.choice(values)
             testscope["Attributes"][key] = desired_value
-        with open ("changes.json", 'w') as fp:
+        with open (testcase_file, 'w') as fp:
             json.dump(testscope, fp, indent=1)
    
 
@@ -455,12 +455,12 @@ if __name__ == "__main__":
     if len(argv)==2:
         if argv[1] == "clenup":
             log.logger.info("Function Not ready yet, INTENTION IS TO clenup status and log file")
-        elif argv[1] == "gendeptc":
+        elif argv[1] == "gen-dep-tc":
             log.logger.info("generating dependency test case")
             gen_dep_tc()
-        elif argv[1] == "gennondeptc":
+        elif argv[1] == "gen-non-dep-tc":
             log.logger.info("generating non-dependency test case")
-            change_value(gen_nondep_tc("7972.json"))
+            change_value(gen_nondep_tc("7998.json"))
         elif argv[1] == "checkregistry":
             log.logger.info("Testing registry file...")
             test_registry_file("baseline_0716_1400.txt")
@@ -476,16 +476,10 @@ if __name__ == "__main__":
         print(help_msg)
 
 #    verify_testcase("V15_Default_all.json")
-#    res = patch("tc_debug.json",PATCH_URL).decode('utf-8')
-#    print(res)
 #    run_test(".\\hang1\\1sthalf.json")
-#    auto_test(".\\dep\\tc_dep_PciePortDisable_10.json")
 #    ping_sut()
 #    change_value(".\\gen_case\\remove_dep.json")
 
-
-#    change_value("remove_dep.json")
-    
 #    res = patch("V15_Default_Dis2En.json",PATCH_URL).decode('utf-8')
 #    print(res)
 
