@@ -869,3 +869,646 @@
 2020-07-19 11:34:26,956 - INFO: MemhotOutputOnlyOpt : Enable only temphi & mid
 2020-07-19 11:34:27,956 - INFO: MemhotOutputOnlyOpt : Enable only temphi, mid and low
 2020-07-19 11:34:28,862 - INFO: Errors: 11
+2020-07-19 13:34:45,049 - INFO: Run multiple files in directory testcase
+2020-07-19 13:34:45,049 - INFO: ************************************************************
+2020-07-19 13:34:45,049 - INFO: Start test with testcase\secureboot.json
+2020-07-19 13:34:45,049 - INFO: ************************************************************
+2020-07-19 13:34:45,065 - INFO: Complted: 1
+2020-07-19 13:34:45,065 - INFO: Error: 1
+2020-07-19 13:34:45,065 - INFO: Passed: 0
+2020-07-19 13:34:45,065 - INFO: Failed: 0
+2020-07-19 13:34:45,065 - INFO: Load test status from testcase\secureboot.json.status
+2020-07-19 13:34:45,065 - INFO: Test for testcase\secureboot.json is already done.
+2020-07-19 13:34:45,065 - INFO: Test completed for secureboot.json
+2020-07-19 13:34:45,065 - INFO: ############################################################
+2020-07-19 13:34:45,065 - INFO: ************************************************************
+2020-07-19 13:34:45,065 - INFO: Start test with testcase\tc_dep_CompletionTimeout_00.json
+2020-07-19 13:34:45,065 - INFO: ************************************************************
+2020-07-19 13:34:45,065 - INFO: Complted: 4
+2020-07-19 13:34:45,065 - INFO: Error: 0
+2020-07-19 13:34:45,065 - INFO: Passed: 4
+2020-07-19 13:34:45,065 - INFO: Failed: 0
+2020-07-19 13:34:45,065 - INFO: Load test status from testcase\tc_dep_CompletionTimeout_00.json.status
+2020-07-19 13:34:45,065 - INFO: Test for testcase\tc_dep_CompletionTimeout_00.json is already done.
+2020-07-19 13:34:45,065 - INFO: Test completed for tc_dep_CompletionTimeout_00.json
+2020-07-19 13:34:45,065 - INFO: ############################################################
+2020-07-19 13:34:45,065 - INFO: ************************************************************
+2020-07-19 13:34:45,065 - INFO: Start test with testcase\tc_dep_CompletionTimeout_10.json
+2020-07-19 13:34:45,065 - INFO: ************************************************************
+2020-07-19 13:34:45,081 - INFO: Complted: 8
+2020-07-19 13:34:45,081 - INFO: Error: 4
+2020-07-19 13:34:45,081 - INFO: Passed: 4
+2020-07-19 13:34:45,081 - INFO: Failed: 0
+2020-07-19 13:34:45,081 - INFO: Load test status from testcase\tc_dep_CompletionTimeout_10.json.status
+2020-07-19 13:34:45,081 - INFO: Test for testcase\tc_dep_CompletionTimeout_10.json is already done.
+2020-07-19 13:34:45,081 - INFO: Test completed for tc_dep_CompletionTimeout_10.json
+2020-07-19 13:34:45,081 - INFO: ############################################################
+2020-07-19 13:34:45,081 - INFO: ************************************************************
+2020-07-19 13:34:45,081 - INFO: Start test with testcase\tc_dep_PciePortDisable_00.json
+2020-07-19 13:34:45,081 - INFO: ************************************************************
+2020-07-19 13:34:45,081 - INFO: Complted: 85
+2020-07-19 13:34:45,081 - INFO: Error: 81
+2020-07-19 13:34:45,081 - INFO: Passed: 4
+2020-07-19 13:34:45,081 - INFO: Failed: 0
+2020-07-19 13:34:45,081 - INFO: Load test status from testcase\tc_dep_PciePortDisable_00.json.status
+2020-07-19 13:34:45,096 - INFO: Test for testcase\tc_dep_PciePortDisable_00.json is already done.
+2020-07-19 13:34:45,096 - INFO: Test completed for tc_dep_PciePortDisable_00.json
+2020-07-19 13:34:45,096 - INFO: ############################################################
+2020-07-19 13:34:45,096 - INFO: ************************************************************
+2020-07-19 13:34:45,096 - INFO: Start test with testcase\tc_dep_PciePortDisable_01.json
+2020-07-19 13:34:45,096 - INFO: ************************************************************
+2020-07-19 13:34:45,096 - INFO: Complted: 167
+2020-07-19 13:34:45,096 - INFO: Error: 129
+2020-07-19 13:34:45,096 - INFO: Passed: 38
+2020-07-19 13:34:45,096 - INFO: Failed: 0
+2020-07-19 13:34:45,096 - INFO: Load test status from testcase\tc_dep_PciePortDisable_01.json.status
+2020-07-19 13:34:45,112 - INFO: Test for testcase\tc_dep_PciePortDisable_01.json is already done.
+2020-07-19 13:34:45,112 - INFO: Test completed for tc_dep_PciePortDisable_01.json
+2020-07-19 13:34:45,112 - INFO: ############################################################
+2020-07-19 13:34:45,112 - INFO: ************************************************************
+2020-07-19 13:34:45,112 - INFO: Start test with testcase\tc_dep_PciePortDisable_10.json
+2020-07-19 13:34:45,112 - INFO: ************************************************************
+2020-07-19 13:34:45,112 - INFO: Complted: 167
+2020-07-19 13:34:45,112 - INFO: Error: 139
+2020-07-19 13:34:45,112 - INFO: Passed: 27
+2020-07-19 13:34:45,112 - INFO: Failed: 1
+2020-07-19 13:34:45,112 - INFO: Load test status from testcase\tc_dep_PciePortDisable_10.json.status
+2020-07-19 13:34:45,127 - INFO: Test for testcase\tc_dep_PciePortDisable_10.json is already done.
+2020-07-19 13:34:45,127 - INFO: Test completed for tc_dep_PciePortDisable_10.json
+2020-07-19 13:34:45,127 - INFO: ############################################################
+2020-07-19 13:34:45,127 - INFO: ************************************************************
+2020-07-19 13:34:45,127 - INFO: Start test with testcase\tc_dep_UefiOptimizedBootToggle_00.json
+2020-07-19 13:34:45,127 - INFO: ************************************************************
+2020-07-19 13:34:45,127 - INFO: Complted: 4
+2020-07-19 13:34:45,127 - INFO: Error: 1
+2020-07-19 13:34:45,127 - INFO: Passed: 3
+2020-07-19 13:34:45,127 - INFO: Failed: 0
+2020-07-19 13:34:45,127 - INFO: Load test status from testcase\tc_dep_UefiOptimizedBootToggle_00.json.status
+2020-07-19 13:34:45,127 - INFO: Test for testcase\tc_dep_UefiOptimizedBootToggle_00.json is already done.
+2020-07-19 13:34:45,127 - INFO: Test completed for tc_dep_UefiOptimizedBootToggle_00.json
+2020-07-19 13:34:45,127 - INFO: ############################################################
+2020-07-19 13:34:45,127 - INFO: ************************************************************
+2020-07-19 13:34:45,127 - INFO: Start test with testcase\tc_nondep_dep7998.json
+2020-07-19 13:34:45,127 - INFO: ************************************************************
+2020-07-19 13:34:45,127 - INFO: Complted: 296
+2020-07-19 13:34:45,127 - INFO: Error: 33
+2020-07-19 13:34:45,127 - INFO: Passed: 257
+2020-07-19 13:34:45,143 - INFO: Failed: 6
+2020-07-19 13:34:45,143 - INFO: Load test status from testcase\tc_nondep_dep7998.json.status
+2020-07-19 13:34:45,143 - INFO: Test for testcase\tc_nondep_dep7998.json is already done.
+2020-07-19 13:34:45,143 - INFO: Test completed for tc_nondep_dep7998.json
+2020-07-19 13:34:45,143 - INFO: ############################################################
+2020-07-19 13:34:45,143 - INFO: ************************************************************
+2020-07-19 13:34:45,143 - INFO: Start test with testcase\tc_nondep_dep7998_err_fail.json
+2020-07-19 13:34:45,143 - INFO: ************************************************************
+2020-07-19 13:34:45,143 - INFO: Complted: 0
+2020-07-19 13:34:45,143 - INFO: Error: 0
+2020-07-19 13:34:45,143 - INFO: Passed: 0
+2020-07-19 13:34:45,143 - INFO: Failed: 0
+2020-07-19 13:34:45,143 - INFO: Load test status from testcase\tc_nondep_dep7998_err_fail.json.status
+2020-07-19 13:34:45,143 - INFO: SpsAltitude Value to set: 9000
+2020-07-19 13:34:45,237 - INFO: SpsAltitude default value: 32768
+2020-07-19 13:34:45,253 - INFO: Path: ./Advanced/ServerMEConfiguration
+2020-07-19 13:34:45,956 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueTypeError', 'RelatedProperties': ['#/Attributes/SpsAltitude'], 'Message': 'The value 9000 for the property Attributes/SpsAltitude is of a different type than the property can accept.', 'MessageArgs': ['9000', 'Attributes/SpsAltitude'], 'Severity': 'Warning', 'Resolution': 'Correct the value for the property in the request body and resubmit the request if the operation failed.'}]}
+2020-07-19 13:34:45,956 - INFO: ------------------------------------------------------------
+2020-07-19 13:34:45,956 - INFO: CustomRefreshRate Value to set: 30
+2020-07-19 13:34:46,034 - INFO: CustomRefreshRate default value: 20
+2020-07-19 13:34:46,049 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration
+2020-07-19 13:34:46,769 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueTypeError', 'RelatedProperties': ['#/Attributes/CustomRefreshRate'], 'Message': 'The value 30 for the property Attributes/CustomRefreshRate is of a different type than the property can accept.', 'MessageArgs': ['30', 'Attributes/CustomRefreshRate'], 'Severity': 'Warning', 'Resolution': 'Correct the value for the property in the request body and resubmit the request if the operation failed.'}]}
+2020-07-19 13:34:46,769 - INFO: ------------------------------------------------------------
+2020-07-19 13:34:46,769 - INFO: CkeIdleTimer Value to set: 250
+2020-07-19 13:34:46,847 - INFO: CkeIdleTimer default value: 20
+2020-07-19 13:34:46,862 - INFO: Path: ./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/MemoryPowerThermalConfiguration/MemoryPowerSavingsAdvancedOptions/CKEFeature
+2020-07-19 13:34:47,456 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueTypeError', 'RelatedProperties': ['#/Attributes/CkeIdleTimer'], 'Message': 'The value 250 for the property Attributes/CkeIdleTimer is of a different type than the property can accept.', 'MessageArgs': ['250', 'Attributes/CkeIdleTimer'], 'Severity': 'Warning', 'Resolution': 'Correct the value for the property in the request body and resubmit the request if the operation failed.'}]}
+2020-07-19 13:34:47,456 - INFO: ------------------------------------------------------------
+2020-07-19 13:34:47,456 - INFO: NgnAveragePower Value to set: 16000
+2020-07-19 13:34:47,566 - INFO: NgnAveragePower default value: 15000
+2020-07-19 13:34:47,566 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration/PMemConfiguration
+2020-07-19 13:34:48,159 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueTypeError', 'RelatedProperties': ['#/Attributes/NgnAveragePower'], 'Message': 'The value 16000 for the property Attributes/NgnAveragePower is of a different type than the property can accept.', 'MessageArgs': ['16000', 'Attributes/NgnAveragePower'], 'Severity': 'Warning', 'Resolution': 'Correct the value for the property in the request body and resubmit the request if the operation failed.'}]}
+2020-07-19 13:34:48,169 - INFO: ------------------------------------------------------------
+2020-07-19 13:34:48,169 - INFO: DcpmmAveragePowerLimit Value to set: 11000
+2020-07-19 13:34:48,237 - INFO: DcpmmAveragePowerLimit default value: 12000
+2020-07-19 13:34:48,253 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration/PMemConfiguration
+2020-07-19 13:34:48,894 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueTypeError', 'RelatedProperties': ['#/Attributes/DcpmmAveragePowerLimit'], 'Message': 'The value 11000 for the property Attributes/DcpmmAveragePowerLimit is of a different type than the property can accept.', 'MessageArgs': ['11000', 'Attributes/DcpmmAveragePowerLimit'], 'Severity': 'Warning', 'Resolution': 'Correct the value for the property in the request body and resubmit the request if the operation failed.'}]}
+2020-07-19 13:34:48,894 - INFO: ------------------------------------------------------------
+2020-07-19 13:34:48,894 - INFO: BiosSsaLoopCount Value to set: 26
+2020-07-19 13:34:48,987 - INFO: BiosSsaLoopCount default value: 16
+2020-07-19 13:34:49,002 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration/BSSAConfigurationMenu
+2020-07-19 13:34:49,566 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueTypeError', 'RelatedProperties': ['#/Attributes/BiosSsaLoopCount'], 'Message': 'The value 26 for the property Attributes/BiosSsaLoopCount is of a different type than the property can accept.', 'MessageArgs': ['26', 'Attributes/BiosSsaLoopCount'], 'Severity': 'Warning', 'Resolution': 'Correct the value for the property in the request body and resubmit the request if the operation failed.'}]}
+2020-07-19 13:34:49,580 - INFO: ------------------------------------------------------------
+2020-07-19 13:34:49,581 - INFO: spareErrTh Value to set: 32767
+2020-07-19 13:34:49,644 - INFO: spareErrTh default value: 6000
+2020-07-19 13:34:49,659 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration/MemoryRASConfiguration
+2020-07-19 13:34:50,315 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueTypeError', 'RelatedProperties': ['#/Attributes/spareErrTh'], 'Message': 'The value 32767 for the property Attributes/spareErrTh is of a different type than the property can accept.', 'MessageArgs': ['32767', 'Attributes/spareErrTh'], 'Severity': 'Warning', 'Resolution': 'Correct the value for the property in the request body and resubmit the request if the operation failed.'}]}
+2020-07-19 13:34:50,322 - INFO: ------------------------------------------------------------
+2020-07-19 13:34:50,322 - INFO: ProchotResponseRatio Value to set: 8
+2020-07-19 13:34:50,409 - INFO: ProchotResponseRatio default value: 0
+2020-07-19 13:34:50,424 - INFO: Path: ./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPUThermalManagement
+2020-07-19 13:34:51,143 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueTypeError', 'RelatedProperties': ['#/Attributes/ProchotResponseRatio'], 'Message': 'The value 8 for the property Attributes/ProchotResponseRatio is of a different type than the property can accept.', 'MessageArgs': ['8', 'Attributes/ProchotResponseRatio'], 'Severity': 'Warning', 'Resolution': 'Correct the value for the property in the request body and resubmit the request if the operation failed.'}]}
+2020-07-19 13:34:51,143 - INFO: ------------------------------------------------------------
+2020-07-19 13:34:51,143 - INFO: TCCActivationOffset Value to set: 9
+2020-07-19 13:34:51,222 - INFO: TCCActivationOffset default value: 0
+2020-07-19 13:34:51,237 - INFO: Path: ./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPUThermalManagement
+2020-07-19 13:34:51,863 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueTypeError', 'RelatedProperties': ['#/Attributes/TCCActivationOffset'], 'Message': 'The value 9 for the property Attributes/TCCActivationOffset is of a different type than the property can accept.', 'MessageArgs': ['9', 'Attributes/TCCActivationOffset'], 'Severity': 'Warning', 'Resolution': 'Correct the value for the property in the request body and resubmit the request if the operation failed.'}]}
+2020-07-19 13:34:51,863 - INFO: ------------------------------------------------------------
+2020-07-19 13:34:51,863 - INFO: sSataPort[2] Value to set: Disable
+2020-07-19 13:34:51,956 - INFO: sSataPort[2] default value: Enable
+2020-07-19 13:34:51,971 - INFO: Path: ./Advanced/PCHConfiguration/PCHsSATAConfiguration
+2020-07-19 13:34:52,675 - INFO: Patch Successfully
+2020-07-19 13:39:25,268 - INFO: sSataPort[2] : Pass
+2020-07-19 13:39:25,268 - INFO: ------------------------------------------------------------
+2020-07-19 13:39:25,268 - INFO: sSataHotPlug[2] Value to set: Disable
+2020-07-19 13:39:25,346 - INFO: sSataHotPlug[2] default value: Enable
+2020-07-19 13:39:25,362 - INFO: Path: ./Advanced/PCHConfiguration/PCHsSATAConfiguration
+2020-07-19 13:39:26,050 - INFO: Patch Successfully
+2020-07-19 13:43:13,565 - INFO: Run multiple files in directory testcase
+2020-07-19 13:43:13,565 - INFO: ************************************************************
+2020-07-19 13:43:13,565 - INFO: Start test with testcase\secureboot.json
+2020-07-19 13:43:13,565 - INFO: ************************************************************
+2020-07-19 13:43:13,565 - INFO: Complted: 1
+2020-07-19 13:43:13,565 - INFO: Error: 1
+2020-07-19 13:43:13,565 - INFO: Passed: 0
+2020-07-19 13:43:13,565 - INFO: Failed: 0
+2020-07-19 13:43:13,565 - INFO: Load test status from testcase\secureboot.json.status
+2020-07-19 13:43:13,565 - INFO: Test for testcase\secureboot.json is already done.
+2020-07-19 13:43:13,565 - INFO: Test completed for secureboot.json
+2020-07-19 13:43:13,565 - INFO: ############################################################
+2020-07-19 13:43:13,565 - INFO: ************************************************************
+2020-07-19 13:43:13,565 - INFO: Start test with testcase\tc_dep_CompletionTimeout_00.json
+2020-07-19 13:43:13,565 - INFO: ************************************************************
+2020-07-19 13:43:13,565 - INFO: Complted: 4
+2020-07-19 13:43:13,565 - INFO: Error: 0
+2020-07-19 13:43:13,565 - INFO: Passed: 4
+2020-07-19 13:43:13,565 - INFO: Failed: 0
+2020-07-19 13:43:13,565 - INFO: Load test status from testcase\tc_dep_CompletionTimeout_00.json.status
+2020-07-19 13:43:13,565 - INFO: Test for testcase\tc_dep_CompletionTimeout_00.json is already done.
+2020-07-19 13:43:13,565 - INFO: Test completed for tc_dep_CompletionTimeout_00.json
+2020-07-19 13:43:13,565 - INFO: ############################################################
+2020-07-19 13:43:13,565 - INFO: ************************************************************
+2020-07-19 13:43:13,565 - INFO: Start test with testcase\tc_dep_CompletionTimeout_10.json
+2020-07-19 13:43:13,565 - INFO: ************************************************************
+2020-07-19 13:43:13,565 - INFO: Complted: 8
+2020-07-19 13:43:13,565 - INFO: Error: 4
+2020-07-19 13:43:13,565 - INFO: Passed: 4
+2020-07-19 13:43:13,565 - INFO: Failed: 0
+2020-07-19 13:43:13,565 - INFO: Load test status from testcase\tc_dep_CompletionTimeout_10.json.status
+2020-07-19 13:43:13,565 - INFO: Test for testcase\tc_dep_CompletionTimeout_10.json is already done.
+2020-07-19 13:43:13,565 - INFO: Test completed for tc_dep_CompletionTimeout_10.json
+2020-07-19 13:43:13,565 - INFO: ############################################################
+2020-07-19 13:43:13,565 - INFO: ************************************************************
+2020-07-19 13:43:13,565 - INFO: Start test with testcase\tc_dep_PciePortDisable_00.json
+2020-07-19 13:43:13,565 - INFO: ************************************************************
+2020-07-19 13:43:13,565 - INFO: Complted: 85
+2020-07-19 13:43:13,565 - INFO: Error: 81
+2020-07-19 13:43:13,565 - INFO: Passed: 4
+2020-07-19 13:43:13,565 - INFO: Failed: 0
+2020-07-19 13:43:13,565 - INFO: Load test status from testcase\tc_dep_PciePortDisable_00.json.status
+2020-07-19 13:43:13,565 - INFO: Test for testcase\tc_dep_PciePortDisable_00.json is already done.
+2020-07-19 13:43:13,565 - INFO: Test completed for tc_dep_PciePortDisable_00.json
+2020-07-19 13:43:13,565 - INFO: ############################################################
+2020-07-19 13:43:13,565 - INFO: ************************************************************
+2020-07-19 13:43:13,565 - INFO: Start test with testcase\tc_dep_PciePortDisable_01.json
+2020-07-19 13:43:13,565 - INFO: ************************************************************
+2020-07-19 13:43:13,565 - INFO: Complted: 167
+2020-07-19 13:43:13,565 - INFO: Error: 129
+2020-07-19 13:43:13,565 - INFO: Passed: 38
+2020-07-19 13:43:13,565 - INFO: Failed: 0
+2020-07-19 13:43:13,565 - INFO: Load test status from testcase\tc_dep_PciePortDisable_01.json.status
+2020-07-19 13:43:13,565 - INFO: Test for testcase\tc_dep_PciePortDisable_01.json is already done.
+2020-07-19 13:43:13,565 - INFO: Test completed for tc_dep_PciePortDisable_01.json
+2020-07-19 13:43:13,565 - INFO: ############################################################
+2020-07-19 13:43:13,565 - INFO: ************************************************************
+2020-07-19 13:43:13,565 - INFO: Start test with testcase\tc_dep_PciePortDisable_10.json
+2020-07-19 13:43:13,565 - INFO: ************************************************************
+2020-07-19 13:43:13,565 - INFO: Complted: 167
+2020-07-19 13:43:13,565 - INFO: Error: 139
+2020-07-19 13:43:13,565 - INFO: Passed: 27
+2020-07-19 13:43:13,565 - INFO: Failed: 1
+2020-07-19 13:43:13,565 - INFO: Load test status from testcase\tc_dep_PciePortDisable_10.json.status
+2020-07-19 13:43:13,565 - INFO: Test for testcase\tc_dep_PciePortDisable_10.json is already done.
+2020-07-19 13:43:13,565 - INFO: Test completed for tc_dep_PciePortDisable_10.json
+2020-07-19 13:43:13,565 - INFO: ############################################################
+2020-07-19 13:43:13,565 - INFO: ************************************************************
+2020-07-19 13:43:13,565 - INFO: Start test with testcase\tc_dep_UefiOptimizedBootToggle_00.json
+2020-07-19 13:43:13,565 - INFO: ************************************************************
+2020-07-19 13:43:13,565 - INFO: Complted: 4
+2020-07-19 13:43:13,565 - INFO: Error: 1
+2020-07-19 13:43:13,565 - INFO: Passed: 3
+2020-07-19 13:43:13,565 - INFO: Failed: 0
+2020-07-19 13:43:13,565 - INFO: Load test status from testcase\tc_dep_UefiOptimizedBootToggle_00.json.status
+2020-07-19 13:43:13,565 - INFO: Test for testcase\tc_dep_UefiOptimizedBootToggle_00.json is already done.
+2020-07-19 13:43:13,565 - INFO: Test completed for tc_dep_UefiOptimizedBootToggle_00.json
+2020-07-19 13:43:13,565 - INFO: ############################################################
+2020-07-19 13:43:13,565 - INFO: ************************************************************
+2020-07-19 13:43:13,565 - INFO: Start test with testcase\tc_nondep_dep7998.json
+2020-07-19 13:43:13,565 - INFO: ************************************************************
+2020-07-19 13:43:13,565 - INFO: Complted: 296
+2020-07-19 13:43:13,565 - INFO: Error: 33
+2020-07-19 13:43:13,565 - INFO: Passed: 257
+2020-07-19 13:43:13,565 - INFO: Failed: 6
+2020-07-19 13:43:13,565 - INFO: Load test status from testcase\tc_nondep_dep7998.json.status
+2020-07-19 13:43:13,581 - INFO: Test for testcase\tc_nondep_dep7998.json is already done.
+2020-07-19 13:43:13,581 - INFO: Test completed for tc_nondep_dep7998.json
+2020-07-19 13:43:13,581 - INFO: ############################################################
+2020-07-19 13:43:13,581 - INFO: ************************************************************
+2020-07-19 13:43:13,581 - INFO: Start test with testcase\tc_nondep_dep7998_err_fail.json
+2020-07-19 13:43:13,581 - INFO: ************************************************************
+2020-07-19 13:43:13,581 - INFO: Complted: 10
+2020-07-19 13:43:13,581 - INFO: Error: 9
+2020-07-19 13:43:13,581 - INFO: Passed: 1
+2020-07-19 13:43:13,581 - INFO: Failed: 0
+2020-07-19 13:43:13,581 - INFO: Load test status from testcase\tc_nondep_dep7998_err_fail.json.status
+2020-07-19 13:43:13,581 - INFO: sSataHotPlug[2] Value to set: Disable
+2020-07-19 13:43:13,674 - INFO: sSataHotPlug[2] default value: Disable
+2020-07-19 13:43:13,690 - INFO: Path: ./Advanced/PCHConfiguration/PCHsSATAConfiguration
+2020-07-19 13:43:14,331 - INFO: Patch Successfully
+2020-07-19 13:44:19,034 - INFO: Run multiple files in directory testcase
+2020-07-19 13:44:19,034 - INFO: ************************************************************
+2020-07-19 13:44:19,034 - INFO: Start test with testcase\secureboot.json
+2020-07-19 13:44:19,034 - INFO: ************************************************************
+2020-07-19 13:44:19,034 - INFO: Complted: 1
+2020-07-19 13:44:19,034 - INFO: Error: 1
+2020-07-19 13:44:19,034 - INFO: Passed: 0
+2020-07-19 13:44:19,034 - INFO: Failed: 0
+2020-07-19 13:44:19,034 - INFO: Load test status from testcase\secureboot.json.status
+2020-07-19 13:44:19,049 - INFO: Test for testcase\secureboot.json is already done.
+2020-07-19 13:44:19,049 - INFO: Test completed for secureboot.json
+2020-07-19 13:44:19,049 - INFO: ############################################################
+2020-07-19 13:44:19,049 - INFO: ************************************************************
+2020-07-19 13:44:19,049 - INFO: Start test with testcase\tc_dep_CompletionTimeout_00.json
+2020-07-19 13:44:19,049 - INFO: ************************************************************
+2020-07-19 13:44:19,049 - INFO: Complted: 4
+2020-07-19 13:44:19,049 - INFO: Error: 0
+2020-07-19 13:44:19,049 - INFO: Passed: 4
+2020-07-19 13:44:19,049 - INFO: Failed: 0
+2020-07-19 13:44:19,049 - INFO: Load test status from testcase\tc_dep_CompletionTimeout_00.json.status
+2020-07-19 13:44:19,049 - INFO: Test for testcase\tc_dep_CompletionTimeout_00.json is already done.
+2020-07-19 13:44:19,049 - INFO: Test completed for tc_dep_CompletionTimeout_00.json
+2020-07-19 13:44:19,049 - INFO: ############################################################
+2020-07-19 13:44:19,049 - INFO: ************************************************************
+2020-07-19 13:44:19,049 - INFO: Start test with testcase\tc_dep_CompletionTimeout_10.json
+2020-07-19 13:44:19,049 - INFO: ************************************************************
+2020-07-19 13:44:19,049 - INFO: Complted: 8
+2020-07-19 13:44:19,049 - INFO: Error: 4
+2020-07-19 13:44:19,049 - INFO: Passed: 4
+2020-07-19 13:44:19,049 - INFO: Failed: 0
+2020-07-19 13:44:19,049 - INFO: Load test status from testcase\tc_dep_CompletionTimeout_10.json.status
+2020-07-19 13:44:19,049 - INFO: Test for testcase\tc_dep_CompletionTimeout_10.json is already done.
+2020-07-19 13:44:19,049 - INFO: Test completed for tc_dep_CompletionTimeout_10.json
+2020-07-19 13:44:19,049 - INFO: ############################################################
+2020-07-19 13:44:19,049 - INFO: ************************************************************
+2020-07-19 13:44:19,049 - INFO: Start test with testcase\tc_dep_PciePortDisable_00.json
+2020-07-19 13:44:19,049 - INFO: ************************************************************
+2020-07-19 13:44:19,049 - INFO: Complted: 85
+2020-07-19 13:44:19,049 - INFO: Error: 81
+2020-07-19 13:44:19,049 - INFO: Passed: 4
+2020-07-19 13:44:19,049 - INFO: Failed: 0
+2020-07-19 13:44:19,049 - INFO: Load test status from testcase\tc_dep_PciePortDisable_00.json.status
+2020-07-19 13:44:19,049 - INFO: Test for testcase\tc_dep_PciePortDisable_00.json is already done.
+2020-07-19 13:44:19,049 - INFO: Test completed for tc_dep_PciePortDisable_00.json
+2020-07-19 13:44:19,049 - INFO: ############################################################
+2020-07-19 13:44:19,049 - INFO: ************************************************************
+2020-07-19 13:44:19,049 - INFO: Start test with testcase\tc_dep_PciePortDisable_01.json
+2020-07-19 13:44:19,049 - INFO: ************************************************************
+2020-07-19 13:44:19,049 - INFO: Complted: 167
+2020-07-19 13:44:19,049 - INFO: Error: 129
+2020-07-19 13:44:19,049 - INFO: Passed: 38
+2020-07-19 13:44:19,049 - INFO: Failed: 0
+2020-07-19 13:44:19,049 - INFO: Load test status from testcase\tc_dep_PciePortDisable_01.json.status
+2020-07-19 13:44:19,049 - INFO: Test for testcase\tc_dep_PciePortDisable_01.json is already done.
+2020-07-19 13:44:19,049 - INFO: Test completed for tc_dep_PciePortDisable_01.json
+2020-07-19 13:44:19,049 - INFO: ############################################################
+2020-07-19 13:44:19,049 - INFO: ************************************************************
+2020-07-19 13:44:19,049 - INFO: Start test with testcase\tc_dep_PciePortDisable_10.json
+2020-07-19 13:44:19,049 - INFO: ************************************************************
+2020-07-19 13:44:19,049 - INFO: Complted: 167
+2020-07-19 13:44:19,049 - INFO: Error: 139
+2020-07-19 13:44:19,049 - INFO: Passed: 27
+2020-07-19 13:44:19,049 - INFO: Failed: 1
+2020-07-19 13:44:19,049 - INFO: Load test status from testcase\tc_dep_PciePortDisable_10.json.status
+2020-07-19 13:44:19,049 - INFO: Test for testcase\tc_dep_PciePortDisable_10.json is already done.
+2020-07-19 13:44:19,049 - INFO: Test completed for tc_dep_PciePortDisable_10.json
+2020-07-19 13:44:19,049 - INFO: ############################################################
+2020-07-19 13:44:19,049 - INFO: ************************************************************
+2020-07-19 13:44:19,049 - INFO: Start test with testcase\tc_dep_UefiOptimizedBootToggle_00.json
+2020-07-19 13:44:19,049 - INFO: ************************************************************
+2020-07-19 13:44:19,049 - INFO: Complted: 4
+2020-07-19 13:44:19,049 - INFO: Error: 1
+2020-07-19 13:44:19,049 - INFO: Passed: 3
+2020-07-19 13:44:19,049 - INFO: Failed: 0
+2020-07-19 13:44:19,049 - INFO: Load test status from testcase\tc_dep_UefiOptimizedBootToggle_00.json.status
+2020-07-19 13:44:19,049 - INFO: Test for testcase\tc_dep_UefiOptimizedBootToggle_00.json is already done.
+2020-07-19 13:44:19,049 - INFO: Test completed for tc_dep_UefiOptimizedBootToggle_00.json
+2020-07-19 13:44:19,049 - INFO: ############################################################
+2020-07-19 13:44:19,049 - INFO: ************************************************************
+2020-07-19 13:44:19,049 - INFO: Start test with testcase\tc_nondep_dep7998.json
+2020-07-19 13:44:19,049 - INFO: ************************************************************
+2020-07-19 13:44:19,049 - INFO: Complted: 296
+2020-07-19 13:44:19,049 - INFO: Error: 33
+2020-07-19 13:44:19,049 - INFO: Passed: 257
+2020-07-19 13:44:19,049 - INFO: Failed: 6
+2020-07-19 13:44:19,049 - INFO: Load test status from testcase\tc_nondep_dep7998.json.status
+2020-07-19 13:44:19,049 - INFO: Test for testcase\tc_nondep_dep7998.json is already done.
+2020-07-19 13:44:19,049 - INFO: Test completed for tc_nondep_dep7998.json
+2020-07-19 13:44:19,049 - INFO: ############################################################
+2020-07-19 13:44:19,049 - INFO: ************************************************************
+2020-07-19 13:44:19,049 - INFO: Start test with testcase\tc_nondep_dep7998_err_fail.json
+2020-07-19 13:44:19,049 - INFO: ************************************************************
+2020-07-19 13:44:19,049 - INFO: Complted: 1
+2020-07-19 13:44:19,049 - INFO: Error: 0
+2020-07-19 13:44:19,049 - INFO: Passed: 1
+2020-07-19 13:44:19,049 - INFO: Failed: 0
+2020-07-19 13:44:19,049 - INFO: Load test status from testcase\tc_nondep_dep7998_err_fail.json.status
+2020-07-19 13:44:19,049 - INFO: SpsAltitude Value to set: 9000
+2020-07-19 13:44:19,159 - INFO: SpsAltitude default value: 32768
+2020-07-19 13:44:19,174 - INFO: Path: ./Advanced/ServerMEConfiguration
+2020-07-19 13:44:19,815 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueTypeError', 'RelatedProperties': ['#/Attributes/SpsAltitude'], 'Message': 'The value 9000 for the property Attributes/SpsAltitude is of a different type than the property can accept.', 'MessageArgs': ['9000', 'Attributes/SpsAltitude'], 'Severity': 'Warning', 'Resolution': 'Correct the value for the property in the request body and resubmit the request if the operation failed.'}]}
+2020-07-19 13:44:19,821 - INFO: ------------------------------------------------------------
+2020-07-19 13:44:19,821 - INFO: CustomRefreshRate Value to set: 30
+2020-07-19 13:44:19,924 - INFO: CustomRefreshRate default value: 20
+2020-07-19 13:44:19,940 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration
+2020-07-19 13:44:20,597 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueTypeError', 'RelatedProperties': ['#/Attributes/CustomRefreshRate'], 'Message': 'The value 30 for the property Attributes/CustomRefreshRate is of a different type than the property can accept.', 'MessageArgs': ['30', 'Attributes/CustomRefreshRate'], 'Severity': 'Warning', 'Resolution': 'Correct the value for the property in the request body and resubmit the request if the operation failed.'}]}
+2020-07-19 13:44:20,600 - INFO: ------------------------------------------------------------
+2020-07-19 13:44:20,600 - INFO: CkeIdleTimer Value to set: 250
+2020-07-19 13:44:20,706 - INFO: CkeIdleTimer default value: 20
+2020-07-19 13:44:20,722 - INFO: Path: ./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/MemoryPowerThermalConfiguration/MemoryPowerSavingsAdvancedOptions/CKEFeature
+2020-07-19 13:44:21,331 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueTypeError', 'RelatedProperties': ['#/Attributes/CkeIdleTimer'], 'Message': 'The value 250 for the property Attributes/CkeIdleTimer is of a different type than the property can accept.', 'MessageArgs': ['250', 'Attributes/CkeIdleTimer'], 'Severity': 'Warning', 'Resolution': 'Correct the value for the property in the request body and resubmit the request if the operation failed.'}]}
+2020-07-19 13:44:21,331 - INFO: ------------------------------------------------------------
+2020-07-19 13:44:21,331 - INFO: NgnAveragePower Value to set: 16000
+2020-07-19 13:44:21,441 - INFO: NgnAveragePower default value: 15000
+2020-07-19 13:44:21,441 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration/PMemConfiguration
+2020-07-19 13:44:22,081 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueTypeError', 'RelatedProperties': ['#/Attributes/NgnAveragePower'], 'Message': 'The value 16000 for the property Attributes/NgnAveragePower is of a different type than the property can accept.', 'MessageArgs': ['16000', 'Attributes/NgnAveragePower'], 'Severity': 'Warning', 'Resolution': 'Correct the value for the property in the request body and resubmit the request if the operation failed.'}]}
+2020-07-19 13:44:22,097 - INFO: ------------------------------------------------------------
+2020-07-19 13:44:22,097 - INFO: DcpmmAveragePowerLimit Value to set: 11000
+2020-07-19 13:44:22,190 - INFO: DcpmmAveragePowerLimit default value: 12000
+2020-07-19 13:44:22,206 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration/PMemConfiguration
+2020-07-19 13:44:22,862 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueTypeError', 'RelatedProperties': ['#/Attributes/DcpmmAveragePowerLimit'], 'Message': 'The value 11000 for the property Attributes/DcpmmAveragePowerLimit is of a different type than the property can accept.', 'MessageArgs': ['11000', 'Attributes/DcpmmAveragePowerLimit'], 'Severity': 'Warning', 'Resolution': 'Correct the value for the property in the request body and resubmit the request if the operation failed.'}]}
+2020-07-19 13:44:22,862 - INFO: ------------------------------------------------------------
+2020-07-19 13:44:22,862 - INFO: BiosSsaLoopCount Value to set: 26
+2020-07-19 13:44:22,956 - INFO: BiosSsaLoopCount default value: 16
+2020-07-19 13:44:22,956 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration/BSSAConfigurationMenu
+2020-07-19 13:44:23,566 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueTypeError', 'RelatedProperties': ['#/Attributes/BiosSsaLoopCount'], 'Message': 'The value 26 for the property Attributes/BiosSsaLoopCount is of a different type than the property can accept.', 'MessageArgs': ['26', 'Attributes/BiosSsaLoopCount'], 'Severity': 'Warning', 'Resolution': 'Correct the value for the property in the request body and resubmit the request if the operation failed.'}]}
+2020-07-19 13:44:23,579 - INFO: ------------------------------------------------------------
+2020-07-19 13:44:23,581 - INFO: spareErrTh Value to set: 32767
+2020-07-19 13:44:23,690 - INFO: spareErrTh default value: 6000
+2020-07-19 13:44:23,706 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration/MemoryRASConfiguration
+2020-07-19 13:44:24,315 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueTypeError', 'RelatedProperties': ['#/Attributes/spareErrTh'], 'Message': 'The value 32767 for the property Attributes/spareErrTh is of a different type than the property can accept.', 'MessageArgs': ['32767', 'Attributes/spareErrTh'], 'Severity': 'Warning', 'Resolution': 'Correct the value for the property in the request body and resubmit the request if the operation failed.'}]}
+2020-07-19 13:44:24,315 - INFO: ------------------------------------------------------------
+2020-07-19 13:44:24,315 - INFO: ProchotResponseRatio Value to set: 8
+2020-07-19 13:44:24,409 - INFO: ProchotResponseRatio default value: 0
+2020-07-19 13:44:24,425 - INFO: Path: ./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPUThermalManagement
+2020-07-19 13:44:25,065 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueTypeError', 'RelatedProperties': ['#/Attributes/ProchotResponseRatio'], 'Message': 'The value 8 for the property Attributes/ProchotResponseRatio is of a different type than the property can accept.', 'MessageArgs': ['8', 'Attributes/ProchotResponseRatio'], 'Severity': 'Warning', 'Resolution': 'Correct the value for the property in the request body and resubmit the request if the operation failed.'}]}
+2020-07-19 13:44:25,065 - INFO: ------------------------------------------------------------
+2020-07-19 13:44:25,065 - INFO: TCCActivationOffset Value to set: 9
+2020-07-19 13:44:25,174 - INFO: TCCActivationOffset default value: 0
+2020-07-19 13:44:25,190 - INFO: Path: ./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPUThermalManagement
+2020-07-19 13:44:25,815 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueTypeError', 'RelatedProperties': ['#/Attributes/TCCActivationOffset'], 'Message': 'The value 9 for the property Attributes/TCCActivationOffset is of a different type than the property can accept.', 'MessageArgs': ['9', 'Attributes/TCCActivationOffset'], 'Severity': 'Warning', 'Resolution': 'Correct the value for the property in the request body and resubmit the request if the operation failed.'}]}
+2020-07-19 13:44:25,823 - INFO: ------------------------------------------------------------
+2020-07-19 13:44:25,823 - INFO: sSataHotPlug[2] Value to set: Disable
+2020-07-19 13:44:25,925 - INFO: sSataHotPlug[2] default value: Disable
+2020-07-19 13:44:25,940 - INFO: Path: ./Advanced/PCHConfiguration/PCHsSATAConfiguration
+2020-07-19 13:44:26,628 - INFO: Patch Successfully
+2020-07-19 13:54:02,549 - INFO: Run multiple files in directory testcase
+2020-07-19 13:54:02,549 - INFO: ************************************************************
+2020-07-19 13:54:02,549 - INFO: Start test with testcase\secureboot.json
+2020-07-19 13:54:02,549 - INFO: ************************************************************
+2020-07-19 13:54:02,549 - INFO: Complted: 1
+2020-07-19 13:54:02,549 - INFO: Error: 1
+2020-07-19 13:54:02,549 - INFO: Passed: 0
+2020-07-19 13:54:02,549 - INFO: Failed: 0
+2020-07-19 13:54:02,549 - INFO: Load test status from testcase\secureboot.json.status
+2020-07-19 13:54:02,549 - INFO: Test for testcase\secureboot.json is already done.
+2020-07-19 13:54:02,549 - INFO: Test completed for secureboot.json
+2020-07-19 13:54:02,549 - INFO: ############################################################
+2020-07-19 13:54:02,549 - INFO: ************************************************************
+2020-07-19 13:54:02,549 - INFO: Start test with testcase\tc_dep_CompletionTimeout_00.json
+2020-07-19 13:54:02,549 - INFO: ************************************************************
+2020-07-19 13:54:02,549 - INFO: Complted: 4
+2020-07-19 13:54:02,549 - INFO: Error: 0
+2020-07-19 13:54:02,549 - INFO: Passed: 4
+2020-07-19 13:54:02,549 - INFO: Failed: 0
+2020-07-19 13:54:02,549 - INFO: Load test status from testcase\tc_dep_CompletionTimeout_00.json.status
+2020-07-19 13:54:02,549 - INFO: Test for testcase\tc_dep_CompletionTimeout_00.json is already done.
+2020-07-19 13:54:02,549 - INFO: Test completed for tc_dep_CompletionTimeout_00.json
+2020-07-19 13:54:02,549 - INFO: ############################################################
+2020-07-19 13:54:02,549 - INFO: ************************************************************
+2020-07-19 13:54:02,549 - INFO: Start test with testcase\tc_dep_CompletionTimeout_10.json
+2020-07-19 13:54:02,549 - INFO: ************************************************************
+2020-07-19 13:54:02,549 - INFO: Complted: 8
+2020-07-19 13:54:02,549 - INFO: Error: 4
+2020-07-19 13:54:02,549 - INFO: Passed: 4
+2020-07-19 13:54:02,549 - INFO: Failed: 0
+2020-07-19 13:54:02,565 - INFO: Load test status from testcase\tc_dep_CompletionTimeout_10.json.status
+2020-07-19 13:54:02,565 - INFO: Test for testcase\tc_dep_CompletionTimeout_10.json is already done.
+2020-07-19 13:54:02,565 - INFO: Test completed for tc_dep_CompletionTimeout_10.json
+2020-07-19 13:54:02,565 - INFO: ############################################################
+2020-07-19 13:54:02,565 - INFO: ************************************************************
+2020-07-19 13:54:02,565 - INFO: Start test with testcase\tc_dep_PciePortDisable_00.json
+2020-07-19 13:54:02,565 - INFO: ************************************************************
+2020-07-19 13:54:02,565 - INFO: Complted: 85
+2020-07-19 13:54:02,565 - INFO: Error: 81
+2020-07-19 13:54:02,565 - INFO: Passed: 4
+2020-07-19 13:54:02,565 - INFO: Failed: 0
+2020-07-19 13:54:02,565 - INFO: Load test status from testcase\tc_dep_PciePortDisable_00.json.status
+2020-07-19 13:54:02,565 - INFO: Test for testcase\tc_dep_PciePortDisable_00.json is already done.
+2020-07-19 13:54:02,565 - INFO: Test completed for tc_dep_PciePortDisable_00.json
+2020-07-19 13:54:02,565 - INFO: ############################################################
+2020-07-19 13:54:02,565 - INFO: ************************************************************
+2020-07-19 13:54:02,565 - INFO: Start test with testcase\tc_dep_PciePortDisable_01.json
+2020-07-19 13:54:02,565 - INFO: ************************************************************
+2020-07-19 13:54:02,565 - INFO: Complted: 167
+2020-07-19 13:54:02,565 - INFO: Error: 129
+2020-07-19 13:54:02,565 - INFO: Passed: 38
+2020-07-19 13:54:02,565 - INFO: Failed: 0
+2020-07-19 13:54:02,565 - INFO: Load test status from testcase\tc_dep_PciePortDisable_01.json.status
+2020-07-19 13:54:02,565 - INFO: Test for testcase\tc_dep_PciePortDisable_01.json is already done.
+2020-07-19 13:54:02,565 - INFO: Test completed for tc_dep_PciePortDisable_01.json
+2020-07-19 13:54:02,565 - INFO: ############################################################
+2020-07-19 13:54:02,565 - INFO: ************************************************************
+2020-07-19 13:54:02,565 - INFO: Start test with testcase\tc_dep_PciePortDisable_10.json
+2020-07-19 13:54:02,565 - INFO: ************************************************************
+2020-07-19 13:54:02,565 - INFO: Complted: 167
+2020-07-19 13:54:02,565 - INFO: Error: 139
+2020-07-19 13:54:02,565 - INFO: Passed: 27
+2020-07-19 13:54:02,565 - INFO: Failed: 1
+2020-07-19 13:54:02,565 - INFO: Load test status from testcase\tc_dep_PciePortDisable_10.json.status
+2020-07-19 13:54:02,565 - INFO: Test for testcase\tc_dep_PciePortDisable_10.json is already done.
+2020-07-19 13:54:02,565 - INFO: Test completed for tc_dep_PciePortDisable_10.json
+2020-07-19 13:54:02,565 - INFO: ############################################################
+2020-07-19 13:54:02,565 - INFO: ************************************************************
+2020-07-19 13:54:02,565 - INFO: Start test with testcase\tc_dep_UefiOptimizedBootToggle_00.json
+2020-07-19 13:54:02,565 - INFO: ************************************************************
+2020-07-19 13:54:02,565 - INFO: Complted: 4
+2020-07-19 13:54:02,565 - INFO: Error: 1
+2020-07-19 13:54:02,565 - INFO: Passed: 3
+2020-07-19 13:54:02,565 - INFO: Failed: 0
+2020-07-19 13:54:02,565 - INFO: Load test status from testcase\tc_dep_UefiOptimizedBootToggle_00.json.status
+2020-07-19 13:54:02,565 - INFO: Test for testcase\tc_dep_UefiOptimizedBootToggle_00.json is already done.
+2020-07-19 13:54:02,565 - INFO: Test completed for tc_dep_UefiOptimizedBootToggle_00.json
+2020-07-19 13:54:02,565 - INFO: ############################################################
+2020-07-19 13:54:02,565 - INFO: ************************************************************
+2020-07-19 13:54:02,565 - INFO: Start test with testcase\tc_nondep_dep7998.json
+2020-07-19 13:54:02,565 - INFO: ************************************************************
+2020-07-19 13:54:02,565 - INFO: Complted: 296
+2020-07-19 13:54:02,565 - INFO: Error: 33
+2020-07-19 13:54:02,565 - INFO: Passed: 257
+2020-07-19 13:54:02,565 - INFO: Failed: 6
+2020-07-19 13:54:02,565 - INFO: Load test status from testcase\tc_nondep_dep7998.json.status
+2020-07-19 13:54:02,565 - INFO: Test for testcase\tc_nondep_dep7998.json is already done.
+2020-07-19 13:54:02,565 - INFO: Test completed for tc_nondep_dep7998.json
+2020-07-19 13:54:02,565 - INFO: ############################################################
+2020-07-19 13:54:02,565 - INFO: ************************************************************
+2020-07-19 13:54:02,565 - INFO: Start test with testcase\tc_nondep_dep7998_err_fail.json
+2020-07-19 13:54:02,565 - INFO: ************************************************************
+2020-07-19 13:54:02,565 - INFO: Complted: 1
+2020-07-19 13:54:02,565 - INFO: Error: 0
+2020-07-19 13:54:02,565 - INFO: Passed: 1
+2020-07-19 13:54:02,565 - INFO: Failed: 0
+2020-07-19 13:54:02,565 - INFO: Load test status from testcase\tc_nondep_dep7998_err_fail.json.status
+2020-07-19 13:54:02,565 - INFO: SpsAltitude Value to set: 9000
+2020-07-19 13:58:17,018 - INFO: Run multiple files in directory testcase
+2020-07-19 13:58:17,018 - INFO: ************************************************************
+2020-07-19 13:58:17,018 - INFO: Start test with testcase\secureboot.json
+2020-07-19 13:58:17,018 - INFO: ************************************************************
+2020-07-19 13:58:17,034 - INFO: Complted: 1
+2020-07-19 13:58:17,034 - INFO: Error: 1
+2020-07-19 13:58:17,034 - INFO: Passed: 0
+2020-07-19 13:58:17,034 - INFO: Failed: 0
+2020-07-19 13:58:17,034 - INFO: Load test status from testcase\secureboot.json.status
+2020-07-19 13:58:17,034 - INFO: Test for testcase\secureboot.json is already done.
+2020-07-19 13:58:17,034 - INFO: Test completed for secureboot.json
+2020-07-19 13:58:17,034 - INFO: ############################################################
+2020-07-19 13:58:17,034 - INFO: ************************************************************
+2020-07-19 13:58:17,034 - INFO: Start test with testcase\tc_dep_CompletionTimeout_00.json
+2020-07-19 13:58:17,034 - INFO: ************************************************************
+2020-07-19 13:58:17,034 - INFO: Complted: 4
+2020-07-19 13:58:17,034 - INFO: Error: 0
+2020-07-19 13:58:17,034 - INFO: Passed: 4
+2020-07-19 13:58:17,034 - INFO: Failed: 0
+2020-07-19 13:58:17,034 - INFO: Load test status from testcase\tc_dep_CompletionTimeout_00.json.status
+2020-07-19 13:58:17,034 - INFO: Test for testcase\tc_dep_CompletionTimeout_00.json is already done.
+2020-07-19 13:58:17,034 - INFO: Test completed for tc_dep_CompletionTimeout_00.json
+2020-07-19 13:58:17,034 - INFO: ############################################################
+2020-07-19 13:58:17,034 - INFO: ************************************************************
+2020-07-19 13:58:17,034 - INFO: Start test with testcase\tc_dep_CompletionTimeout_10.json
+2020-07-19 13:58:17,034 - INFO: ************************************************************
+2020-07-19 13:58:17,034 - INFO: Complted: 8
+2020-07-19 13:58:17,034 - INFO: Error: 4
+2020-07-19 13:58:17,034 - INFO: Passed: 4
+2020-07-19 13:58:17,034 - INFO: Failed: 0
+2020-07-19 13:58:17,034 - INFO: Load test status from testcase\tc_dep_CompletionTimeout_10.json.status
+2020-07-19 13:58:17,034 - INFO: Test for testcase\tc_dep_CompletionTimeout_10.json is already done.
+2020-07-19 13:58:17,034 - INFO: Test completed for tc_dep_CompletionTimeout_10.json
+2020-07-19 13:58:17,034 - INFO: ############################################################
+2020-07-19 13:58:17,034 - INFO: ************************************************************
+2020-07-19 13:58:17,034 - INFO: Start test with testcase\tc_dep_PciePortDisable_00.json
+2020-07-19 13:58:17,034 - INFO: ************************************************************
+2020-07-19 13:58:17,034 - INFO: Complted: 85
+2020-07-19 13:58:17,034 - INFO: Error: 81
+2020-07-19 13:58:17,034 - INFO: Passed: 4
+2020-07-19 13:58:17,034 - INFO: Failed: 0
+2020-07-19 13:58:17,034 - INFO: Load test status from testcase\tc_dep_PciePortDisable_00.json.status
+2020-07-19 13:58:17,034 - INFO: Test for testcase\tc_dep_PciePortDisable_00.json is already done.
+2020-07-19 13:58:17,034 - INFO: Test completed for tc_dep_PciePortDisable_00.json
+2020-07-19 13:58:17,034 - INFO: ############################################################
+2020-07-19 13:58:17,034 - INFO: ************************************************************
+2020-07-19 13:58:17,034 - INFO: Start test with testcase\tc_dep_PciePortDisable_01.json
+2020-07-19 13:58:17,034 - INFO: ************************************************************
+2020-07-19 13:58:17,034 - INFO: Complted: 167
+2020-07-19 13:58:17,034 - INFO: Error: 129
+2020-07-19 13:58:17,034 - INFO: Passed: 38
+2020-07-19 13:58:17,034 - INFO: Failed: 0
+2020-07-19 13:58:17,034 - INFO: Load test status from testcase\tc_dep_PciePortDisable_01.json.status
+2020-07-19 13:58:17,034 - INFO: Test for testcase\tc_dep_PciePortDisable_01.json is already done.
+2020-07-19 13:58:17,034 - INFO: Test completed for tc_dep_PciePortDisable_01.json
+2020-07-19 13:58:17,034 - INFO: ############################################################
+2020-07-19 13:58:17,034 - INFO: ************************************************************
+2020-07-19 13:58:17,034 - INFO: Start test with testcase\tc_dep_PciePortDisable_10.json
+2020-07-19 13:58:17,034 - INFO: ************************************************************
+2020-07-19 13:58:17,034 - INFO: Complted: 167
+2020-07-19 13:58:17,034 - INFO: Error: 139
+2020-07-19 13:58:17,034 - INFO: Passed: 27
+2020-07-19 13:58:17,034 - INFO: Failed: 1
+2020-07-19 13:58:17,034 - INFO: Load test status from testcase\tc_dep_PciePortDisable_10.json.status
+2020-07-19 13:58:17,034 - INFO: Test for testcase\tc_dep_PciePortDisable_10.json is already done.
+2020-07-19 13:58:17,034 - INFO: Test completed for tc_dep_PciePortDisable_10.json
+2020-07-19 13:58:17,034 - INFO: ############################################################
+2020-07-19 13:58:17,034 - INFO: ************************************************************
+2020-07-19 13:58:17,034 - INFO: Start test with testcase\tc_dep_UefiOptimizedBootToggle_00.json
+2020-07-19 13:58:17,034 - INFO: ************************************************************
+2020-07-19 13:58:17,034 - INFO: Complted: 4
+2020-07-19 13:58:17,034 - INFO: Error: 1
+2020-07-19 13:58:17,034 - INFO: Passed: 3
+2020-07-19 13:58:17,034 - INFO: Failed: 0
+2020-07-19 13:58:17,034 - INFO: Load test status from testcase\tc_dep_UefiOptimizedBootToggle_00.json.status
+2020-07-19 13:58:17,034 - INFO: Test for testcase\tc_dep_UefiOptimizedBootToggle_00.json is already done.
+2020-07-19 13:58:17,034 - INFO: Test completed for tc_dep_UefiOptimizedBootToggle_00.json
+2020-07-19 13:58:17,034 - INFO: ############################################################
+2020-07-19 13:58:17,034 - INFO: ************************************************************
+2020-07-19 13:58:17,034 - INFO: Start test with testcase\tc_nondep_dep7998.json
+2020-07-19 13:58:17,034 - INFO: ************************************************************
+2020-07-19 13:58:17,034 - INFO: Complted: 296
+2020-07-19 13:58:17,034 - INFO: Error: 33
+2020-07-19 13:58:17,034 - INFO: Passed: 257
+2020-07-19 13:58:17,034 - INFO: Failed: 6
+2020-07-19 13:58:17,034 - INFO: Load test status from testcase\tc_nondep_dep7998.json.status
+2020-07-19 13:58:17,034 - INFO: Test for testcase\tc_nondep_dep7998.json is already done.
+2020-07-19 13:58:17,034 - INFO: Test completed for tc_nondep_dep7998.json
+2020-07-19 13:58:17,034 - INFO: ############################################################
+2020-07-19 13:58:17,049 - INFO: ************************************************************
+2020-07-19 13:58:17,049 - INFO: Start test with testcase\tc_nondep_dep7998_err_fail.json
+2020-07-19 13:58:17,049 - INFO: ************************************************************
+2020-07-19 13:58:17,049 - INFO: Complted: 1
+2020-07-19 13:58:17,049 - INFO: Error: 0
+2020-07-19 13:58:17,049 - INFO: Passed: 1
+2020-07-19 13:58:17,049 - INFO: Failed: 0
+2020-07-19 13:58:17,049 - INFO: Load test status from testcase\tc_nondep_dep7998_err_fail.json.status
+2020-07-19 13:58:17,049 - INFO: SpsAltitude Value to set: 9000
+2020-07-19 13:58:17,159 - INFO: SpsAltitude default value: 32768
+2020-07-19 13:58:17,174 - INFO: Path: ./Advanced/ServerMEConfiguration
+2020-07-19 13:58:17,847 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueTypeError', 'RelatedProperties': ['#/Attributes/SpsAltitude'], 'Message': 'The value 9000 for the property Attributes/SpsAltitude is of a different type than the property can accept.', 'MessageArgs': ['9000', 'Attributes/SpsAltitude'], 'Severity': 'Warning', 'Resolution': 'Correct the value for the property in the request body and resubmit the request if the operation failed.'}]}
+2020-07-19 13:58:17,853 - INFO: ------------------------------------------------------------
+2020-07-19 13:58:17,853 - INFO: CustomRefreshRate Value to set: 30
+2020-07-19 13:58:17,925 - INFO: CustomRefreshRate default value: 20
+2020-07-19 13:58:17,925 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration
+2020-07-19 13:58:18,503 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueTypeError', 'RelatedProperties': ['#/Attributes/CustomRefreshRate'], 'Message': 'The value 30 for the property Attributes/CustomRefreshRate is of a different type than the property can accept.', 'MessageArgs': ['30', 'Attributes/CustomRefreshRate'], 'Severity': 'Warning', 'Resolution': 'Correct the value for the property in the request body and resubmit the request if the operation failed.'}]}
+2020-07-19 13:58:18,508 - INFO: ------------------------------------------------------------
+2020-07-19 13:58:18,508 - INFO: CkeIdleTimer Value to set: 250
+2020-07-19 13:58:18,597 - INFO: CkeIdleTimer default value: 20
+2020-07-19 13:58:18,612 - INFO: Path: ./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/MemoryPowerThermalConfiguration/MemoryPowerSavingsAdvancedOptions/CKEFeature
+2020-07-19 13:58:19,268 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueTypeError', 'RelatedProperties': ['#/Attributes/CkeIdleTimer'], 'Message': 'The value 250 for the property Attributes/CkeIdleTimer is of a different type than the property can accept.', 'MessageArgs': ['250', 'Attributes/CkeIdleTimer'], 'Severity': 'Warning', 'Resolution': 'Correct the value for the property in the request body and resubmit the request if the operation failed.'}]}
+2020-07-19 13:58:19,268 - INFO: ------------------------------------------------------------
+2020-07-19 13:58:19,268 - INFO: NgnAveragePower Value to set: 16000
+2020-07-19 13:58:19,362 - INFO: NgnAveragePower default value: 15000
+2020-07-19 13:58:19,378 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration/PMemConfiguration
+2020-07-19 13:58:19,956 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueTypeError', 'RelatedProperties': ['#/Attributes/NgnAveragePower'], 'Message': 'The value 16000 for the property Attributes/NgnAveragePower is of a different type than the property can accept.', 'MessageArgs': ['16000', 'Attributes/NgnAveragePower'], 'Severity': 'Warning', 'Resolution': 'Correct the value for the property in the request body and resubmit the request if the operation failed.'}]}
+2020-07-19 13:58:19,956 - INFO: ------------------------------------------------------------
+2020-07-19 13:58:19,956 - INFO: DcpmmAveragePowerLimit Value to set: 11000
+2020-07-19 13:58:20,081 - INFO: DcpmmAveragePowerLimit default value: 12000
+2020-07-19 13:58:20,096 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration/PMemConfiguration
+2020-07-19 13:58:20,659 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueTypeError', 'RelatedProperties': ['#/Attributes/DcpmmAveragePowerLimit'], 'Message': 'The value 11000 for the property Attributes/DcpmmAveragePowerLimit is of a different type than the property can accept.', 'MessageArgs': ['11000', 'Attributes/DcpmmAveragePowerLimit'], 'Severity': 'Warning', 'Resolution': 'Correct the value for the property in the request body and resubmit the request if the operation failed.'}]}
+2020-07-19 13:58:20,662 - INFO: ------------------------------------------------------------
+2020-07-19 13:58:20,662 - INFO: BiosSsaLoopCount Value to set: 26
+2020-07-19 13:58:20,737 - INFO: BiosSsaLoopCount default value: 16
+2020-07-19 13:58:20,753 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration/BSSAConfigurationMenu
+2020-07-19 13:58:21,362 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueTypeError', 'RelatedProperties': ['#/Attributes/BiosSsaLoopCount'], 'Message': 'The value 26 for the property Attributes/BiosSsaLoopCount is of a different type than the property can accept.', 'MessageArgs': ['26', 'Attributes/BiosSsaLoopCount'], 'Severity': 'Warning', 'Resolution': 'Correct the value for the property in the request body and resubmit the request if the operation failed.'}]}
+2020-07-19 13:58:21,362 - INFO: ------------------------------------------------------------
+2020-07-19 13:58:21,362 - INFO: spareErrTh Value to set: 32767
+2020-07-19 13:58:21,472 - INFO: spareErrTh default value: 6000
+2020-07-19 13:58:21,487 - INFO: Path: ./Advanced/CPUConfiguration/MemoryConfiguration/MemoryRASConfiguration
+2020-07-19 13:58:22,128 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueTypeError', 'RelatedProperties': ['#/Attributes/spareErrTh'], 'Message': 'The value 32767 for the property Attributes/spareErrTh is of a different type than the property can accept.', 'MessageArgs': ['32767', 'Attributes/spareErrTh'], 'Severity': 'Warning', 'Resolution': 'Correct the value for the property in the request body and resubmit the request if the operation failed.'}]}
+2020-07-19 13:58:22,141 - INFO: ------------------------------------------------------------
+2020-07-19 13:58:22,143 - INFO: ProchotResponseRatio Value to set: 8
+2020-07-19 13:58:22,222 - INFO: ProchotResponseRatio default value: 0
+2020-07-19 13:58:22,222 - INFO: Path: ./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPUThermalManagement
+2020-07-19 13:58:22,862 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueTypeError', 'RelatedProperties': ['#/Attributes/ProchotResponseRatio'], 'Message': 'The value 8 for the property Attributes/ProchotResponseRatio is of a different type than the property can accept.', 'MessageArgs': ['8', 'Attributes/ProchotResponseRatio'], 'Severity': 'Warning', 'Resolution': 'Correct the value for the property in the request body and resubmit the request if the operation failed.'}]}
+2020-07-19 13:58:22,862 - INFO: ------------------------------------------------------------
+2020-07-19 13:58:22,862 - INFO: TCCActivationOffset Value to set: 9
+2020-07-19 13:58:22,956 - INFO: TCCActivationOffset default value: 0
+2020-07-19 13:58:22,987 - INFO: Path: ./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPUThermalManagement
+2020-07-19 13:58:23,550 - INFO: {'code': 'Base.1.0.GeneralError', 'message': 'A general error has occurred. See ExtendedInfo for more information.', '@Message.ExtendedInfo': [{'@odata.type': '/redfish/v1/$metadata#MessageRegistry.1.0.0.MessageRegistry', 'MessageId': 'Base.1.0.PropertyValueTypeError', 'RelatedProperties': ['#/Attributes/TCCActivationOffset'], 'Message': 'The value 9 for the property Attributes/TCCActivationOffset is of a different type than the property can accept.', 'MessageArgs': ['9', 'Attributes/TCCActivationOffset'], 'Severity': 'Warning', 'Resolution': 'Correct the value for the property in the request body and resubmit the request if the operation failed.'}]}
+2020-07-19 13:58:23,550 - INFO: ------------------------------------------------------------
+2020-07-19 13:58:23,550 - INFO: sSataHotPlug[2] Value to set: Disable
+2020-07-19 13:58:23,643 - INFO: sSataHotPlug[2] default value: Disable
+2020-07-19 13:58:23,643 - INFO: Path: ./Advanced/PCHConfiguration/PCHsSATAConfiguration
+2020-07-19 13:58:24,393 - INFO: Patch Successfully

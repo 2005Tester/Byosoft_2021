@@ -348,6 +348,12 @@ def patch(testcase_file, url):
 
 def patch_one_option(payload, url):
     # Payload 格式: payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%s\" \r\n    }\r\n}" %(key, value)
+    #key = list(payload["Attributes"].keys())[0]
+    #value = payload["Attributes"][key]
+    #if isinstance(value, int):
+    #    payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%d\" \r\n    }\r\n}" %(key, value)
+    #else:
+    #    payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%s\" \r\n    }\r\n}" %(key, value)
     headers = {
     'If-Match': 'W/"584db857"',
     'Authorization': 'Basic QWRtaW5pc3RyYXRvcjpBZG1pbkA5MDAw',
@@ -500,8 +506,10 @@ def auto_test(testcase_file):
     for key in payloads["Attributes"]:
         if not key in test_status["Completed"]:
             timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            #print(timestamp)
-            payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%s\" \r\n    }\r\n}" %(key, payloads["Attributes"][key])
+            if isinstance(payloads["Attributes"][key], int):
+                payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": %d \r\n    }\r\n}" %(key, payloads["Attributes"][key])
+            else:
+                payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%s\" \r\n    }\r\n}" %(key, payloads["Attributes"][key])
             log.logger.info(key + " Value to set: " + str(payloads["Attributes"][key]))
             tc_result = run_test_one_by_one(payload)
             test_status["Completed"].append(key)
