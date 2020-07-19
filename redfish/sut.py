@@ -105,7 +105,7 @@ def patch_tc_file(testcase_file, url):
     return response.text.encode('utf8')
 
 
-def patch_signle_payload(payload, url):
+def patch_single_payload(payload, url):
     # Payload 格式: payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%s\" \r\n    }\r\n}" %(key, value)
     #key = list(payload["Attributes"].keys())[0]
     #value = payload["Attributes"][key]
