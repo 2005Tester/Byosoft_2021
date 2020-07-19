@@ -101,6 +101,49 @@ def get_all_supported_options():
         all_options.append(item["AttributeName"])
     return all_options
 
+#遍历registry.json, 找到所有无联动关系的选项所支持的value
+def gen_payload_list():
+    payload = {"Attributes":{}}
+    payload_list = []
+    all_options = get_all_supported_options()
+    dependency_options = []
+    with open (REGISTRY_FILE, 'r') as fp:
+        registry = json.load(fp)
+    dep_list = registry["RegistryEntries"]["Dependencies"]
+    for item in dep_list:
+        if item["Dependency"]["MapToAttribute"] not in dependency_options:
+            dependency_options.append(item["Dependency"]["MapToAttribute"])
+        elif item["DependencyFor"] not in dependency_options:
+            dependency_options.append(item["DependencyFor"])
+    non_dep_options = list(set(all_options)-set(dependency_options))
+    for option in non_dep_options:
+        values = supported_value(option)
+        for value in values:
+            payload = {"Attributes":{option:value}}
+            payload_list.append(payload)
+    return payload_list
+
+def registry_file_value_test():
+    log.logger.info("-"*60)
+    log.logger.info("Testing all supported values for non dependency options")
+    errors = []
+    payloads = gen_payload_list()
+    for payload in payloads:
+        key = list(payload["Attributes"].keys())[0]
+        value = payload["Attributes"][key]
+        log.logger.info("%s : %s" %(str(key), str(value)))
+        payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%s\" \r\n    }\r\n}" %(key, value)
+        res = patch_one_option(payload,PATCH_URL).decode('utf-8')
+        res = json.loads(res)
+        if 'error' in res:
+            errors.append(payload)
+            log.logger.info("_"*60)
+            log.logger.info(payload)
+            log.logger.info(res['error'])
+            log.logger.info("_"*60)
+    log.logger.info("Errors: %d" % len(errors))
+           
+
 def test_registry_file(baseline):
     log.logger.info("Test case 1: compare registery.json with %s" % baseline)
     exclude = ['','NA','\n']
@@ -125,23 +168,28 @@ def test_registry_file(baseline):
     map_from_list = []
     map_to_list = []
     for dep in dep_list:
-        map_from = dep["Dependency"]["MapFrom"][0]["MapFromAttribute"]
         map_to = dep["Dependency"]["MapToAttribute"]
-        if not map_from in map_from_list:
-            map_from_list.append(dep["Dependency"]["MapFrom"][0]["MapFromAttribute"])
         if not map_to in map_to_list:
             map_to_list.append(dep["Dependency"]["MapToAttribute"])
+    log.logger.info("Checking MapToAttribute list...")
+    for setup in map_to_list:
+        if not setup in registry_lst:
+            log.logger.info("[MapToAttribute]: %s is not supported by redfish" % setup)
+
+    for dep in dep_list:
+        for i in range(0, len(dep["Dependency"]["MapFrom"])):
+            map_from = dep["Dependency"]["MapFrom"][i]["MapFromAttribute"]
+            if not map_from in map_from_list:
+                map_from_list.append(dep["Dependency"]["MapFrom"][i]["MapFromAttribute"])
     log.logger.info("Checking map from list...")
     for setup in map_from_list:
         if not setup in registry_lst:
-            log.logger.info("%s is not supported by redfish" % setup)
-    log.logger.info("Checking map to list...")
-    for setup in map_to_list:
-        if not setup in registry_lst:
-            log.logger.info("%s is not supported by redfish" % setup)
+            log.logger.info("[MapFromAttribute]: %s is not supported by redfish" % setup)
 
 
 def gen_dep_tc():
+    log.logger.info("-"*60)
+    log.logger.info("Generateing dependency test cases...")
     dependency_options = {}
     multi_dep = []
     # 生成有依赖关系的dict
@@ -157,7 +205,9 @@ def gen_dep_tc():
         for dep in dep_list:
             if (dep["DependencyFor"] == key) and (dep["Dependency"]["MapToAttribute"] not in dependency_options[key]):
                 dependency_options[key].append(dep["Dependency"]["MapToAttribute"])
-    print(dependency_options)
+    #log.logger.info(dependency_options)
+    with open("dep_overview.json", "w") as f:
+        json.dump(dependency_options, f, indent=1)
 
     #检查是否有多层依赖.
     for key in dependency_options:
@@ -175,7 +225,8 @@ def gen_dep_tc():
             tc_dep["Attributes"][opt] = ""
             with open (file_name, 'w') as f:
                 json.dump(tc_dep, f, indent=1)
-    print(multi_dep)
+    log.logger.info(multi_dep)
+    log.logger.info("-"*60)
 
 def gen_nondep_tc(testcase_file):
     dependency_options = []
@@ -296,6 +347,7 @@ def patch(testcase_file, url):
     return response.text.encode('utf8')
 
 def patch_one_option(payload, url):
+    # Payload 格式: payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%s\" \r\n    }\r\n}" %(key, value)
     headers = {
     'If-Match': 'W/"584db857"',
     'Authorization': 'Basic QWRtaW5pc3RyYXRvcjpBZG1pbkA5MDAw',
@@ -487,6 +539,9 @@ if __name__ == "__main__":
         elif argv[1] == "gen-dep-tc":
             log.logger.info("generating dependency test case")
             gen_dep_tc()
+        elif argv[1] == "valuetest":
+            registry_file_value_test()
+
         elif argv[1] == "gen-non-dep-tc":
             log.logger.info("generating non-dependency test case")
             change_value(gen_nondep_tc("7998.json"))

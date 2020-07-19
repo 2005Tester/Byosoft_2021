@@ -1,0 +1,15 @@
+{
+ "Completed": [
+  "StaticTurbo",
+  "MirrorMode",
+  "RankSparing"
+ ],
+ "Passed": [
+  "RankSparing"
+ ],
+ "Error": [],
+ "Failed": [
+  "StaticTurbo",
+  "MirrorMode"
+ ]
+}
