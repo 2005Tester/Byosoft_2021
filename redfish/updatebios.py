@@ -127,6 +127,7 @@ def upload_bios(src): #src: temp image directory, tmp/rp001.bin or tmp/bios.hpm
         transport.close()
         return False
 
+
 def hpm_update():
     cmd_hpmupdate = 'ipmcset -d upgrade -v /tmp/bios.hpm\n'
     s = paramiko.SSHClient()

@@ -4,24 +4,15 @@ import time
 import os
 import datetime
 import random
-from collections import OrderedDict
 from sys import argv
 import logger
 import updatebios
 import config
 import sut
+import testcase
 
 log = logger.Logger(config.LOG_FILE, level="info")
-
 requests.packages.urllib3.disable_warnings()
-
-
-def load_testcase(testcase_file):
-    with open (testcase_file, 'r') as f:
-        payloads = json.load(f, object_pairs_hook=OrderedDict)
-        if not isinstance(payloads, dict):
-            payloads = json.loads(payloads, object_pairs_hook=OrderedDict)
-        return payloads
 
 
 def load_test_status(testcase_file):
@@ -45,40 +36,23 @@ def update_test_status(test_status, status_file):
         json.dump(test_status, f, indent=1)
 
 
-def load_registry_file():
-    with open(config.REGISTRY_FILE, 'r') as fp:
-        registry = json.load(fp)
-    return registry
-
-
-def get_all_supported_options():
-    all_options = []
-    with open(config.REGISTRY_FILE, 'r') as fp:
-        registry = json.load(fp)
-    for item in registry["RegistryEntries"]["Attributes"]:
-        all_options.append(item["AttributeName"])
-    return all_options
-
-
 # 遍历registry.json, 找到所有无联动关系的选项所支持的value
 def gen_payload_list():
-    payload = {"Attributes":{}}
     payload_list = []
-    all_options = get_all_supported_options()
-    dependency_options = []
-    with open(config.REGISTRY_FILE, 'r') as fp:
-        registry = json.load(fp)
+    all_options = testcase.get_all_varnames()
+    dep_options = []
+    registry = testcase.load_registry_file()
     dep_list = registry["RegistryEntries"]["Dependencies"]
     for item in dep_list:
-        if item["Dependency"]["MapToAttribute"] not in dependency_options:
-            dependency_options.append(item["Dependency"]["MapToAttribute"])
-        elif item["DependencyFor"] not in dependency_options:
-            dependency_options.append(item["DependencyFor"])
-    non_dep_options = list(set(all_options)-set(dependency_options))
+        if item["Dependency"]["MapToAttribute"] not in dep_options:
+            dep_options.append(item["Dependency"]["MapToAttribute"])
+        elif item["DependencyFor"] not in dep_options:
+            dep_options.append(item["DependencyFor"])
+    non_dep_options = list(set(all_options)-set(dep_options))
     for option in non_dep_options:
         values = supported_value(option)
         for value in values:
-            payload = {"Attributes":{option:value}}
+            payload = {"Attributes": {option: value}}
             payload_list.append(payload)
     return payload_list
 
@@ -92,8 +66,8 @@ def registry_file_value_test():
         key = list(payload["Attributes"].keys())[0]
         value = payload["Attributes"][key]
         log.logger.info("%s : %s" %(str(key), str(value)))
-        payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%s\" \r\n    }\r\n}" %(key, value)
-        res = sut.patch_signle_payload(payload, config.PATCH_URL).decode('utf-8')
+        payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%s\" \r\n    }\r\n}" % (key, value)
+        res = sut.patch_single_payload(payload, config.PATCH_URL).decode('utf-8')
         res = json.loads(res)
         if 'error' in res:
             errors.append(payload)
@@ -113,7 +87,7 @@ def test_registry_file(baseline):
             line = line.strip('\n')
             if line not in exclude:
                 baseline_lst.append(line)
-    registry_lst = get_all_supported_options()
+    registry_lst = testcase.get_all_varnames()
     for option in baseline_lst:
         if option not in registry_lst:
             log.logger.info(option + ": missed in registry.json.")
@@ -122,7 +96,7 @@ def test_registry_file(baseline):
             log.logger.info(option + ": not listed in setup baseline xlsx.")
     log.logger.info("-"*60)
     log.logger.info("Test case 2: Check whetehr all items in dependencies are also in attributes")
-    reg = load_registry_file()
+    reg = testcase.load_registry_file()
     dep_list = reg["RegistryEntries"]["Dependencies"]
     map_from_list = []
     map_to_list = []
@@ -152,13 +126,12 @@ def gen_dep_tc():
     dependency_options = {}
     multi_dep = []
     # 生成有依赖关系的dict
-    with open(config.REGISTRY_FILE, 'r') as fp:
-        registry = json.load(fp)
+    registry = testcase.load_registry_file()
     dep_list = registry["RegistryEntries"]["Dependencies"]
     for item in dep_list:
         for i in item["Dependency"]["MapFrom"]:
             if i["MapFromAttribute"] not in dependency_options:
-                dependency_options[(i["MapFromAttribute"])]=[]
+                dependency_options[(i["MapFromAttribute"])] = []
     # 把有依赖的选项写入列表
     for key in dependency_options:
         for dep in dep_list:
@@ -182,7 +155,7 @@ def gen_dep_tc():
         tc_dep["Attributes"][key] = ""
         for opt in dependency_options[key]:
             tc_dep["Attributes"][opt] = ""
-            with open (file_name, 'w') as f:
+            with open(file_name, 'w') as f:
                 json.dump(tc_dep, f, indent=1)
     log.logger.info(multi_dep)
     log.logger.info("-"*60)
@@ -190,15 +163,14 @@ def gen_dep_tc():
 
 def gen_nondep_tc(testcase_file):
     dependency_options = []
-    with open(config.REGISTRY_FILE, 'r') as fp:
-        registry = json.load(fp)
+    registry = testcase.load_registry_file()
     dep_list = registry["RegistryEntries"]["Dependencies"]
     for item in dep_list:
         if item["Dependency"]["MapToAttribute"] not in dependency_options:
             dependency_options.append(item["Dependency"]["MapToAttribute"])
         elif item["DependencyFor"] not in dependency_options:
             dependency_options.append(item["DependencyFor"])
-    #print(dependency_options)
+
     with open(testcase_file, "r") as fp:
         allcase = json.load(fp)
     alloptions = list(allcase["Attributes"].keys())
@@ -207,13 +179,13 @@ def gen_nondep_tc(testcase_file):
             allcase["Attributes"].pop(key)
             print("remove: " + key)
     tc_file = testcase_file.split(".")[0] + "remove_dep.json"
-    with open (tc_file,"w") as fp:
+    with open(tc_file, "w") as fp:
         json.dump(allcase, fp, indent=1)
     return tc_file
 
 
 def change_value(testcase_file):
-    with open (testcase_file, 'r') as fp:
+    with open(testcase_file, 'r') as fp:
         testscope = json.load(fp)
     for key in testscope["Attributes"]:
         values = supported_value(key)
@@ -228,8 +200,7 @@ def change_value(testcase_file):
    
 
 def get_setup_path(setupname):
-    with open(config.REGISTRY_FILE, 'r') as fp:
-        registry = json.load(fp)
+    registry = testcase.load_registry_file()
     for item in registry["RegistryEntries"]["Attributes"]:
         if item["AttributeName"] == setupname:
             return item["MenuPath"]
@@ -237,14 +208,14 @@ def get_setup_path(setupname):
 
 # 通过registry.json检查testcase json文件里面的setup option的值是否合法
 def verify_testcase(testcase_file):
-    with open (testcase_file, 'r') as fp:
+    with open(testcase_file, 'r') as fp:
         testscope = json.loads(json.load(fp))
         # testscope = json.load(fp)
     for setupoption in testscope["Attributes"]:
         try:
             if not testscope["Attributes"][setupoption] in supported_value(setupoption):
                 print(setupoption + ":Value is invalid.")
-                print("Supported values: " )
+                print("Supported values: ")
                 print(supported_value(setupoption))
         except Exception as e:
             print(e)
@@ -253,8 +224,7 @@ def verify_testcase(testcase_file):
 # 获取registry里面每个setup option支持的值
 def supported_value(setupname):
     supported_setup = []
-    with open(config.REGISTRY_FILE, 'r') as fp:
-        registry = json.load(fp)
+    registry = testcase.load_registry_file()
     for item in registry["RegistryEntries"]["Attributes"]:
         supported_setup.append(item["AttributeName"])
     if setupname in supported_setup:
@@ -266,9 +236,6 @@ def supported_value(setupname):
                     return ["Value is Null"]
     else:
         print(setupname + " is not supported.")
-
-    
-
 
 
 # 比较testcase里面的预期值和实际get到的值
@@ -362,7 +329,7 @@ def auto_test(testcase_file):
     log.logger.info("Start test with %s" % testcase_file)
     log.logger.info("*"*60)
     test_status = load_test_status(testcase_file)
-    payloads = load_testcase(testcase_file)
+    payloads = testcase.load(testcase_file)
     for key in payloads["Attributes"]:
         if key not in test_status["Completed"]:
             timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
