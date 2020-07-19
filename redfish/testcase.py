@@ -28,3 +28,18 @@ def get_all_varnames():
         varnames.append(item["AttributeName"])
     return varnames
 
+
+# 给定varname，获取registry里面所有支持的值，返回列表
+def supported_value(varname):
+    all_varnames = get_all_varnames()
+    registry = load_registry_file()
+    if varname in all_varnames:
+        for item in registry["RegistryEntries"]["Attributes"]:  # Attributes list中的每个选项的详细信息
+            if item["AttributeName"] == varname:
+                try:
+                    return [val["ValueName"] for val in item["Value"]]  # val为描述所有支持的value的dict
+                except Exception as e:
+                    return ["Value is Null"]
+    else:
+        print(varname + " is not supported.")
+

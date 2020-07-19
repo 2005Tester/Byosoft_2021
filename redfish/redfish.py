@@ -50,7 +50,7 @@ def gen_payload_list():
             dep_options.append(item["DependencyFor"])
     non_dep_options = list(set(all_options)-set(dep_options))
     for option in non_dep_options:
-        values = supported_value(option)
+        values = testcase.supported_value(option)
         for value in values:
             payload = {"Attributes": {option: value}}
             payload_list.append(payload)
@@ -188,14 +188,14 @@ def change_value(testcase_file):
     with open(testcase_file, 'r') as fp:
         testscope = json.load(fp)
     for key in testscope["Attributes"]:
-        values = supported_value(key)
+        values = testcase.supported_value(key)
         if len(values) == 1:
             pass
         else:
             values.remove(testscope["Attributes"][key])
             desired_value = random.choice(values)
             testscope["Attributes"][key] = desired_value
-        with open (testcase_file, 'w') as fp:
+        with open(testcase_file, 'w') as fp:
             json.dump(testscope, fp, indent=1)
    
 
@@ -213,29 +213,12 @@ def verify_testcase(testcase_file):
         # testscope = json.load(fp)
     for setupoption in testscope["Attributes"]:
         try:
-            if not testscope["Attributes"][setupoption] in supported_value(setupoption):
+            if not testscope["Attributes"][setupoption] in testcase.supported_value(setupoption):
                 print(setupoption + ":Value is invalid.")
                 print("Supported values: ")
-                print(supported_value(setupoption))
+                print(testcase.supported_value(setupoption))
         except Exception as e:
             print(e)
-
-
-# 获取registry里面每个setup option支持的值
-def supported_value(setupname):
-    supported_setup = []
-    registry = testcase.load_registry_file()
-    for item in registry["RegistryEntries"]["Attributes"]:
-        supported_setup.append(item["AttributeName"])
-    if setupname in supported_setup:
-        for item in registry["RegistryEntries"]["Attributes"]:
-            if item["AttributeName"] == setupname:
-                try:
-                    return [i["ValueName"] for i in item["Value"]]
-                except Exception as e:
-                    return ["Value is Null"]
-    else:
-        print(setupname + " is not supported.")
 
 
 # 比较testcase里面的预期值和实际get到的值
