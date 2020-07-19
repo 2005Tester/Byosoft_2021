@@ -297,7 +297,10 @@ def auto_test(testcase_file):
     log.logger.info("Start test with %s" % testcase_file)
     log.logger.info("*"*60)
     test_status = load_test_status(testcase_file)
-    payloads = testcase.load(testcase_file)
+    try:
+        payloads = testcase.load(testcase_file)
+    except Exception as e:
+        log.logger.error(e)
     for key in payloads["Attributes"]:
         if key not in test_status["Completed"]:
             timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
