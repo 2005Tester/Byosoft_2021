@@ -1,6 +1,5 @@
 # -*- encoding=utf8 -*-
 import paramiko
-import datetime
 import time
 import re
 import ctypes
