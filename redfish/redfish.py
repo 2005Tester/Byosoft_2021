@@ -40,14 +40,7 @@ def update_test_status(test_status, status_file):
 def gen_payload_list():
     payload_list = []
     all_options = testcase.get_all_varnames()
-    dep_options = []
-    registry = testcase.load_registry_file()
-    dep_list = registry["RegistryEntries"]["Dependencies"]
-    for item in dep_list:
-        if item["Dependency"]["MapToAttribute"] not in dep_options:
-            dep_options.append(item["Dependency"]["MapToAttribute"])
-        elif item["DependencyFor"] not in dep_options:
-            dep_options.append(item["DependencyFor"])
+    dep_options = testcase.get_varnames_dep()
     non_dep_options = list(set(all_options)-set(dep_options))
     for option in non_dep_options:
         values = testcase.supported_value(option)
@@ -162,15 +155,7 @@ def gen_dep_tc():
 
 
 def gen_nondep_tc(testcase_file):
-    dependency_options = []
-    registry = testcase.load_registry_file()
-    dep_list = registry["RegistryEntries"]["Dependencies"]
-    for item in dep_list:
-        if item["Dependency"]["MapToAttribute"] not in dependency_options:
-            dependency_options.append(item["Dependency"]["MapToAttribute"])
-        elif item["DependencyFor"] not in dependency_options:
-            dependency_options.append(item["DependencyFor"])
-
+    dependency_options = testcase.get_varnames_dep()
     with open(testcase_file, "r") as fp:
         allcase = json.load(fp)
     alloptions = list(allcase["Attributes"].keys())
@@ -330,7 +315,7 @@ def auto_test(testcase_file):
             if tc_result == "Failed":
                 test_status["Failed"].append(key)
             update_test_status(test_status, (testcase_file + '.status'))
-            tc_executed +=1
+            tc_executed += 1
     if tc_executed == 0:
         log.logger.info("Test for %s is already done." % testcase_file)
         return True

@@ -29,6 +29,19 @@ def get_all_varnames():
     return varnames
 
 
+# 从Dependencies 描述里面获取所有有依赖关系的setup选项
+def get_varnames_dep():
+    varnames_dep = []
+    registry = load_registry_file()
+    dep_list = registry["RegistryEntries"]["Dependencies"]
+    for item in dep_list:
+        if item["Dependency"]["MapToAttribute"] not in varnames_dep:
+            varnames_dep.append(item["Dependency"]["MapToAttribute"])
+        elif item["DependencyFor"] not in varnames_dep:
+            varnames_dep.append(item["DependencyFor"])
+    return varnames_dep
+
+
 # 给定varname，获取registry里面所有支持的值，返回列表
 def supported_value(varname):
     all_varnames = get_all_varnames()
