@@ -297,10 +297,9 @@ def auto_test(testcase_file):
     log.logger.info("Start test with %s" % testcase_file)
     log.logger.info("*"*60)
     test_status = load_test_status(testcase_file)
-    try:
-        payloads = testcase.load(testcase_file)
-    except Exception as e:
-        log.logger.error(e)
+
+    payloads = testcase.load(testcase_file)
+
     for key in payloads["Attributes"]:
         if key not in test_status["Completed"]:
             timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -328,9 +327,12 @@ def auto_test_dir(tc_dir):
     tc_file_list = os.listdir(tc_dir)
     for tc_file in tc_file_list:
         if tc_file.split(".")[-1] == 'json':
-            iscomplete = auto_test(os.path.join(tc_dir, tc_file))
-            log.logger.info("Test completed for %s" % tc_file)
-            log.logger.info("#"*60)
+            try:
+                iscomplete = auto_test(os.path.join(tc_dir, tc_file))
+                log.logger.info("Test completed for %s" % tc_file)
+                log.logger.info("#"*60)
+            except Exception as e:
+                log.logger.info(e)
             if not iscomplete:
                 updatebios.perform_update(config.BIOS)
                 log.logger.info("Rebooting SUT, test will continue in 5 minutes")
