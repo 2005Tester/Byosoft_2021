@@ -22,11 +22,11 @@ def load_test_status(testcase_file):
         
     with open(status_file, 'r') as f:
         status = json.load(f)
+    log.logger.info("Load test status from %s" % status_file)
     log.logger.info("Complted: " + str(len(status["Completed"])))
     log.logger.info("Error: " + str(len(status["Error"])))
     log.logger.info("Passed: " + str(len(status["Passed"])))
     log.logger.info("Failed: " + str(len(status["Failed"])))
-    log.logger.info("Load test status from %s" % status_file)
     return status
 
 
@@ -297,6 +297,7 @@ def auto_test_dir(tc_dir):
                 log.logger.info("#"*60)
             except Exception as e:
                 log.logger.info(e)
+                iscomplete = True
             if not iscomplete:
                 updatebios.perform_update(config.BIOS)
                 log.logger.info("Rebooting SUT, test will continue in 5 minutes")
