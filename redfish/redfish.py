@@ -3,7 +3,6 @@ import json
 import time
 import os
 import datetime
-import random
 from sys import argv
 import logger
 import updatebios
@@ -21,7 +20,7 @@ def load_test_status(testcase_file):
         with open(status_file, 'w') as f:
             json.dump(config.INIT_STATUS, f, indent=1)
         
-    with open(status_file,'r') as f:
+    with open(status_file, 'r') as f:
         status = json.load(f)
     log.logger.info("Complted: " + str(len(status["Completed"])))
     log.logger.info("Error: " + str(len(status["Error"])))
@@ -36,25 +35,12 @@ def update_test_status(test_status, status_file):
         json.dump(test_status, f, indent=1)
 
 
-# 遍历registry.json, 找到所有无联动关系的选项所支持的value
-def gen_payload_list():
-    payload_list = []
-    all_options = testcase.get_all_varnames()
-    dep_options = testcase.get_varnames_dep()
-    non_dep_options = list(set(all_options)-set(dep_options))
-    for option in non_dep_options:
-        values = testcase.supported_value(option)
-        for value in values:
-            payload = {"Attributes": {option: value}}
-            payload_list.append(payload)
-    return payload_list
-
-
+# 遍历所有无依赖关系的选项支持的值, set但是不重启, 看有没有patch不成功的
 def registry_file_value_test():
     log.logger.info("-"*60)
     log.logger.info("Testing all supported values for non dependency options")
     errors = []
-    payloads = gen_payload_list()
+    payloads = testcase.gen_payload_list()
     for payload in payloads:
         key = list(payload["Attributes"].keys())[0]
         value = payload["Attributes"][key]
@@ -142,7 +128,7 @@ def gen_dep_tc():
     
     # 生成有依赖关系的test case, 导出到tc_dependency.json    
     for key in dependency_options:
-        tc_dep = {} 
+        tc_dep = dict()
         tc_dep["Attributes"] = {}
         file_name = 'tc_dep_' + key + '.json'
         tc_dep["Attributes"][key] = ""
@@ -167,28 +153,6 @@ def gen_nondep_tc(testcase_file):
     with open(tc_file, "w") as fp:
         json.dump(allcase, fp, indent=1)
     return tc_file
-
-
-def change_value(testcase_file):
-    with open(testcase_file, 'r') as fp:
-        testscope = json.load(fp)
-    for key in testscope["Attributes"]:
-        values = testcase.supported_value(key)
-        if len(values) == 1:
-            pass
-        else:
-            values.remove(testscope["Attributes"][key])
-            desired_value = random.choice(values)
-            testscope["Attributes"][key] = desired_value
-        with open(testcase_file, 'w') as fp:
-            json.dump(testscope, fp, indent=1)
-   
-
-def get_setup_path(setupname):
-    registry = testcase.load_registry_file()
-    for item in registry["RegistryEntries"]["Attributes"]:
-        if item["AttributeName"] == setupname:
-            return item["MenuPath"]
 
 
 # 通过registry.json检查testcase json文件里面的setup option的值是否合法
@@ -216,11 +180,11 @@ def compare(testcase_file, result):
     for key in testscope["Attributes"]:
         if not testscope["Attributes"][key] == result["Attributes"][key]:
             print(key + " : Failed")
-            print(get_setup_path(key))
+            print(testcase.get_setup_path(key))
             failures.append(key)
         else:
             print(key + " : Pass")
-            print(get_setup_path(key))
+            print(testcase.get_setup_path(key))
             passed.append(key)
     print('-'*60)
     print("Passed Setup options: %d" % (len(passed)))
@@ -266,7 +230,7 @@ def run_test_one_by_one(payload):
     try:
         for key in test_item["Attributes"]:
             log.logger.info(key + " default value: " + str(current_all["Attributes"][key]))
-            log.logger.info("Path: " + get_setup_path(key))
+            log.logger.info("Path: " + testcase.get_setup_path(key))
     except Exception as e:
         log.logger.error(e)
         log.logger.error("-"*60)
@@ -382,7 +346,7 @@ if __name__ == "__main__":
 
         elif argv[1] == "gen-non-dep-tc":
             log.logger.info("generating non-dependency test case")
-            change_value(gen_nondep_tc("7998.json"))  # 使用postman get, 把所有current value存为json文件
+            testcase.change_value(gen_nondep_tc("7998.json"))  # 使用postman get, 把所有current value存为json文件
 
         elif argv[1] == "checkregistry":
             log.logger.info("Testing registry file...")

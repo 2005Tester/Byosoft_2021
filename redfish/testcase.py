@@ -2,6 +2,7 @@
 import json
 import os
 import re
+import random
 from collections import OrderedDict
 import config
 
@@ -15,11 +16,35 @@ def load(tc_file):
         return payloads
 
 
+# 改变testcase 文件中选项的值为非默认（随机）
+def change_value(tc_file):
+    with open(tc_file, 'r') as fp:
+        testscope = json.load(fp)
+    for key in testscope["Attributes"]:
+        values = supported_value(key)
+        if len(values) == 1:
+            pass
+        else:
+            values.remove(testscope["Attributes"][key])
+            desired_value = random.choice(values)
+            testscope["Attributes"][key] = desired_value
+        with open(tc_file, 'w') as fp:
+            json.dump(testscope, fp, indent=1)
+
+
 # 读取registry.json，返回registry字典
 def load_registry_file():
     with open(config.REGISTRY_FILE, 'r') as fp:
         registry = json.load(fp)
     return registry
+
+
+# 获取setup的menpath
+def get_setup_path(setupname):
+    registry = load_registry_file()
+    for var in registry["RegistryEntries"]["Attributes"]:
+        if var["AttributeName"] == setupname:
+            return var["MenuPath"]
 
 
 # 读取registry.json中所有AttributeName, 返回varnames list
@@ -31,7 +56,34 @@ def get_all_varnames():
     return varnames
 
 
-# 从setup基线中获取所有隐藏的setup选项
+# 从Dependencies 描述里面获取所有有依赖关系的setup选项
+def get_varnames_dep():
+    varnames_dep = []
+    registry = load_registry_file()
+    dep_list = registry["RegistryEntries"]["Dependencies"]
+    for item in dep_list:
+        if item["Dependency"]["MapToAttribute"] not in varnames_dep:
+            varnames_dep.append(item["Dependency"]["MapToAttribute"])
+        elif item["DependencyFor"] not in varnames_dep:
+            varnames_dep.append(item["DependencyFor"])
+    return varnames_dep
+
+
+# 遍历registry.json, 找到所有无联动关系的选项所支持的value
+def gen_payload_list():
+    payload_list = []
+    all_options = get_all_varnames()
+    dep_options = get_varnames_dep()
+    non_dep_options = list(set(all_options)-set(dep_options))
+    for option in non_dep_options:
+        values = supported_value(option)
+        for value in values:
+            payload = {"Attributes": {option: value}}
+            payload_list.append(payload)
+    return payload_list
+
+
+# 从HIDDEN_LIST(setup基线文档)中获取所有隐藏的setup选项
 def get_hidden_list():
     exclude = ['', 'NA', '\n']
     hidden_lst = []
@@ -74,19 +126,6 @@ def get_setup_category(setup):
                 if itm not in setup_categories:
                     setup_categories.append(itm)
     return setup_categories
-
-
-# 从Dependencies 描述里面获取所有有依赖关系的setup选项
-def get_varnames_dep():
-    varnames_dep = []
-    registry = load_registry_file()
-    dep_list = registry["RegistryEntries"]["Dependencies"]
-    for item in dep_list:
-        if item["Dependency"]["MapToAttribute"] not in varnames_dep:
-            varnames_dep.append(item["Dependency"]["MapToAttribute"])
-        elif item["DependencyFor"] not in varnames_dep:
-            varnames_dep.append(item["DependencyFor"])
-    return varnames_dep
 
 
 # 给定varname，获取registry里面所有支持的值，返回列表
