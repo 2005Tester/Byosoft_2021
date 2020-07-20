@@ -27,6 +27,7 @@ def load_test_status(testcase_file):
     log.logger.info("Error: " + str(len(status["Error"])))
     log.logger.info("Passed: " + str(len(status["Passed"])))
     log.logger.info("Failed: " + str(len(status["Failed"])))
+    log.logger.info("-"*60)
     return status
 
 
@@ -226,7 +227,14 @@ def run_test(test_case_file):
 
 def run_test_one_by_one(payload):
     current_all = json.loads(sut.get(config.GET_URL))
-    test_item = json.loads(payload)
+    try:
+        test_item = json.loads(payload)
+    except json.decoder.JSONDecodeError:
+        log.logger.error("Payload decode error")
+        log.logger.error("-"*60)
+        tc_result = "Error"
+        return tc_result
+    
     try:
         for key in test_item["Attributes"]:
             log.logger.info(key + " default value: " + str(current_all["Attributes"][key]))
