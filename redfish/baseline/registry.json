@@ -145,84 +145,6 @@
 "ValueExpression":null
 },
 {
-"AttributeName":"MonitorMWait",
-"Type":"Enumeration",
-"Value":[
-{
-"ValueName":"Disable",
-"DisplayName":"Disable"
-},
-{
-"ValueName":"Enable",
-"DisplayName":"Enable"
-}
-],
-"DisplayName":"MONITOR/MWAIT",
-"HelpText":"Allows Monitor and MWAIT instructions.",
-"DefaultValue":"Enable",
-"DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
-"ReadOnly":false,
-"WriteOnly":false,
-"GrayOut":false,
-"Hidden":false,
-"Immutable":false,
-"IsSystemUniqueProperty":true,
-"ValueExpression":null
-},
-{
-"AttributeName":"MlcStreamerPrefetcherEnable",
-"Type":"Enumeration",
-"Value":[
-{
-"ValueName":"Enable",
-"DisplayName":"Enable"
-},
-{
-"ValueName":"Disable",
-"DisplayName":"Disable"
-}
-],
-"DisplayName":"Hardware Prefetcher",
-"HelpText":"= MLC Streamer Prefetcher (MSR 1A4h Bit[0])",
-"DefaultValue":"Enable",
-"DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
-"ReadOnly":false,
-"WriteOnly":false,
-"GrayOut":false,
-"Hidden":false,
-"Immutable":false,
-"IsSystemUniqueProperty":true,
-"ValueExpression":null
-},
-{
-"AttributeName":"MlcSpatialPrefetcherEnable",
-"Type":"Enumeration",
-"Value":[
-{
-"ValueName":"Enable",
-"DisplayName":"Enable"
-},
-{
-"ValueName":"Disable",
-"DisplayName":"Disable"
-}
-],
-"DisplayName":"Adjacent Cache Prefetch",
-"HelpText":"= MLC Spatial Prefetcher (MSR 1A4h Bit[1])",
-"DefaultValue":"Enable",
-"DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
-"ReadOnly":false,
-"WriteOnly":false,
-"GrayOut":false,
-"Hidden":false,
-"Immutable":false,
-"IsSystemUniqueProperty":true,
-"ValueExpression":null
-},
-{
 "AttributeName":"DCUStreamerPrefetcherEnable",
 "Type":"Enumeration",
 "Value":[
@@ -239,7 +161,7 @@
 "HelpText":"DCU streamer prefetcher is an L1 data cache prefetcher (MSR 1A4h [2]).",
 "DefaultValue":"Enable",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/ProcessorConfiguration",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -265,7 +187,7 @@
 "HelpText":"DCU IP prefetcher is an L1 data cache prefetcher (MSR 1A4h [3]).",
 "DefaultValue":"Enable",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/ProcessorConfiguration",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -291,7 +213,7 @@
 "HelpText":"Enables Hyper Threading (Software Method to Enable/Disable Logical Processor threads .",
 "DefaultValue":"Enable",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/ProcessorConfiguration",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -317,7 +239,7 @@
 "HelpText":"Enables the Vanderpool Technology, takes effect after reboot.",
 "DefaultValue":"Disable",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/ProcessorConfiguration",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -343,7 +265,7 @@
 "HelpText":"Enable/disable extended APIC support    Note:  This will disable x2APIC automatically if VT-d Support is disabled",
 "DefaultValue":"Disable",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/ProcessorConfiguration",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -373,7 +295,7 @@
 "HelpText":"Enable/Disable Patrol Scrub",
 "DefaultValue":"Enable",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/MemoryConfiguration/MemoryRASConfiguration",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -399,7 +321,7 @@
 "HelpText":"Enable/Disable ADDDC Sparing",
 "DefaultValue":"Disable",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/MemoryConfiguration/MemoryRASConfiguration",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -433,7 +355,7 @@
 "HelpText":"Maximum Memory Frequency Selections in Mhz. If Enforce POR is disabled, user will be able to run at higher frequencies than the memory support (limited by processor support). Do not select Reserved",
 "DefaultValue":"Auto",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/MemoryConfiguration",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -463,7 +385,7 @@
 "HelpText":"Full Mirror Mode will set entire 1LM memory in system to be mirrored, consequently reducing the memory capacity by half. Partial Mirror Mode will enable the required size of memory to be mirrored. If rank sparing is enabled partial mirroring will not take effect. Enabling any type of Mirror Mode will disable XPT Prefetch.",
 "DefaultValue":"Disable",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/MemoryConfiguration/MemoryRASConfiguration",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -489,7 +411,7 @@
 "HelpText":"Enable Mirror on entire memory for TAD0",
 "DefaultValue":"Disable",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/MemoryConfiguration/MemoryRASConfiguration",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -515,7 +437,7 @@
 "HelpText":"Imitate behavior of UEFI based Address Range Mirror with setup option",
 "DefaultValue":"Disable",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/MemoryConfiguration/MemoryRASConfiguration",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -527,12 +449,11 @@
 {
 "AttributeName":"PartialMirrorUefiPercent",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"ARM Mirror percentage",
 "HelpText":"Enter the percentage to be mirrored in basis points. 12.75% is represented 1275",
 "DefaultValue":0,
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/MemoryConfiguration/MemoryRASConfiguration",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -561,7 +482,7 @@
 "HelpText":"Enable/Disable processor Turbo Mode (requires EMTTM enabled too).",
 "DefaultValue":"Enable",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/CPUPStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -595,7 +516,7 @@
 "HelpText":"Disable: Hardware chooses a P-state based on OS Request (Legacy P-States)  Native Mode:Hardware chooses a P-state based on OS guidance  Out of Band Mode:Hardware autonomously chooses a P-state (no OS guidance)  Native Mode with No Legacy Support:same as Native Mode but only support new ACPI specification.",
 "DefaultValue":"Disable",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/HardwarePMStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -621,7 +542,7 @@
 "HelpText":"Options decides who Controls EPB.  In OS mode: IA32_ENERGY_PERF_BIAS is used  In BIOS mode: ENERGY_PERF_BIAS_CONFIG is used  In PECI mode: PCS53 is used",
 "DefaultValue":"OS Controls EPB",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/CPU-AdvancedPMTuning/EnergyPerfBIAS",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -647,7 +568,7 @@
 "HelpText":"Core C1E auto promotion Control. Takes effect after reboot.",
 "DefaultValue":"Disable",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/CPUCStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -673,7 +594,7 @@
 "HelpText":"When disabled, HW masks EPP in CPUID[6].10 and uses EPB for EPP",
 "DefaultValue":"Enable",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/HardwarePMStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -707,7 +628,7 @@
 "HelpText":"Choose an HWPM Profile (EPP)",
 "DefaultValue":"Balanced Performance",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/HardwarePMStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -737,7 +658,7 @@
 "HelpText":"Enable/Disable CPU C6(ACPI C3) report to OS",
 "DefaultValue":"Auto",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/CPUCStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -779,7 +700,7 @@
 "HelpText":"Package C State limit",
 "DefaultValue":"Auto",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/PackageCStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -805,7 +726,7 @@
 "HelpText":"Enable/Disable EIST (P-States)",
 "DefaultValue":"Enable",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/CPUPStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -831,7 +752,7 @@
 "HelpText":"Enable/Disable Extreme Edition support.",
 "DefaultValue":"Enable",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/Overclocking",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -857,7 +778,7 @@
 "HelpText":"Enable/Disable Software Controlled T-States",
 "DefaultValue":"Enable",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/CPUThermalManagement/CPUTStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -887,7 +808,7 @@
 "HelpText":"Select the performance state that the BIOS will set before OS hand off.",
 "DefaultValue":"Max Performance",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/CPUPStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -913,7 +834,7 @@
 "HelpText":"Enable or disable dynamic energy management technology(DEMT) mode.",
 "DefaultValue":"Disable",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/CPUPStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -939,67 +860,17 @@
 "DisplayName":"Disable_Min"
 }
 ],
-"DisplayName":"Uncore Freq Scaling (UFS)",
+"DisplayName":"UFS",
 "HelpText":"Enable/Disable autonomous uncore frequency scaling",
 "DefaultValue":"Enable",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/CPUPStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
 "Hidden":false,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
-"ValueExpression":null
-},
-{
-"AttributeName":"StaticTurbo",
-"Type":"Enumeration",
-"Value":[
-{
-"ValueName":"Auto",
-"DisplayName":"Auto"
-},
-{
-"ValueName":"Manual",
-"DisplayName":"Manual"
-},
-{
-"ValueName":"Disable",
-"DisplayName":"Disable"
-}
-],
-"DisplayName":"Static Turbo",
-"HelpText":"Select Static Turbo policy that the BIOS will apply.Frequency ranges from selected frequency to turbo frequency if Auto mode is selected.When Manual mode is selected,Frequency is just the selected Frequency.",
-"DefaultValue":"Disable",
-"DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
-"ReadOnly":false,
-"WriteOnly":false,
-"GrayOut":false,
-"Hidden":false,
-"Immutable":false,
-"IsSystemUniqueProperty":true,
-"ValueExpression":null
-},
-{
-"AttributeName":"FreqSelect",
-"Type":"Integer",
-"Value":null,
-"DisplayName":"CPU Frequency Select",
-"HelpText":"Please select frequency between Base and Turbo,Unit:100MHz.When the input value is less than the base value, the setting is made at the base frequency. When the input value is greater than the maximum supported turbo value, the setting is made at the maximum turbo frequency.",
-"DefaultValue":40,
-"DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
-"ReadOnly":false,
-"WriteOnly":false,
-"GrayOut":false,
-"Hidden":false,
-"Immutable":false,
-"IsSystemUniqueProperty":true,
-"ScalarIncrement":1,
-"UpperBound":40,
-"LowerBound":12,
 "ValueExpression":null
 },
 {
@@ -1031,7 +902,7 @@
 "HelpText":"Allows for selecting the UPI Link Frequency",
 "DefaultValue":"Auto",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/UncoreConfiguration/UncoreGeneralConfiguration",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -1061,7 +932,7 @@
 "HelpText":"Enable - Set the c_l0p_en, Disable - Reset it, Auto - Auto decides based on Si Compatibility.",
 "DefaultValue":"Auto",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/UncoreConfiguration/UncoreGeneralConfiguration",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -1091,7 +962,7 @@
 "HelpText":"Enable - Set the c_l1_en, Disable - Reset it, Auto - Auto decides based on Si Compatibility.",
 "DefaultValue":"Auto",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/UncoreConfiguration/UncoreGeneralConfiguration",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -1121,7 +992,7 @@
 "HelpText":"SNC disable will support 1-cluster (XPT/KTI Prefetch enable) 4-IMC way interleave. SNC2 Enable supports 2-clusters SNC and 2-way IMC interleave.SNC4 Enable supports 4-clusters SNC and 1-way IMC interleave. Enable SNC2 or SNC4 will gray out iMC_Interleave knob and UmaBasedClustering knob",
 "DefaultValue":"Disable",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/UncoreConfiguration/UncoreGeneralConfiguration",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -1163,7 +1034,7 @@
 "HelpText":"Local/Remote Threshold setting",
 "DefaultValue":"Auto",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/UncoreConfiguration/UncoreGeneralConfiguration",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -1193,7 +1064,7 @@
 "HelpText":"Enable - opportunistically fill dead lines in LLC. Disable - never fill dead lines in LLC",
 "DefaultValue":"Enable",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/UncoreConfiguration/UncoreGeneralConfiguration",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -1223,7 +1094,7 @@
 "HelpText":"KTI Prefetch",
 "DefaultValue":"Auto",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/UncoreConfiguration/UncoreGeneralConfiguration",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -1249,7 +1120,7 @@
 "HelpText":"Enable/Disable LLC Prefetch on all threads",
 "DefaultValue":"Disable",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/ProcessorConfiguration",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -1275,7 +1146,7 @@
 "HelpText":"Enable or disable Memory Turbo.",
 "DefaultValue":"Disable",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/MemoryConfiguration",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -1305,7 +1176,7 @@
 "HelpText":"Isoc: Disable,Enable",
 "DefaultValue":"Auto",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/CommonRefCodeConfiguration",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -1331,7 +1202,7 @@
 "HelpText":"Choose HW_ALL/SW_ALL in _PSD return",
 "DefaultValue":"HW_ALL",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/CPUPStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -1357,7 +1228,7 @@
 "HelpText":"Energy Efficient Turbo Disable, MSR 0x1FC [19]",
 "DefaultValue":"Enable",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/CPUPStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -1391,7 +1262,7 @@
 "HelpText":"Use input from ENERGY_PERF_BIAS_CONFIG mode selection. PERF/Balanced Perf/Balanced Power/Power",
 "DefaultValue":"Balanced Performance",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/CPU-AdvancedPMTuning/EnergyPerfBIAS",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -1417,7 +1288,7 @@
 "HelpText":"Configures CKE Power Down",
 "DefaultValue":"Disable",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/MemoryPower&ThermalConfiguration/MemoryPowerSavingsAdvancedOptions",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -1447,7 +1318,7 @@
 "HelpText":"Enable/Disable 2x Refresh",
 "DefaultValue":"Auto",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/MemoryConfiguration",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -1473,7 +1344,7 @@
 "HelpText":"Select Page Policy",
 "DefaultValue":"Adaptive",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/MiscellaneousConfiguration",
+"MenuPath":"./Advanced/CPUConfiguration/MemoryConfiguration/PagePolicy",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -1485,9 +1356,8 @@
 {
 "AttributeName":"CurrentUnderReport",
 "Type":"Integer",
-"Value":null,
-"DisplayName":"STR_CURRENT_UNDER_REPORT",
-"HelpText":"STR_CURRENT_UNDER_REPORT_HELP",
+"DisplayName":"Current Under Report",
+"HelpText":"",
 "DefaultValue":0,
 "DisplayOrder":0,
 "MenuPath":"./Advanced/MiscellaneousConfiguration",
@@ -1620,7 +1490,7 @@
 }
 ],
 "DisplayName":"Serial Debug Message Level",
-"HelpText":"Disabled = OEM/ERROR Messages, Enabled = All Messages",
+"HelpText":"Disable = OEM/ERROR Messages, Enable = All Messages",
 "DefaultValue":"Disable",
 "DisplayOrder":0,
 "MenuPath":"./Advanced/MiscellaneousConfiguration",
@@ -2965,10 +2835,9 @@
 {
 "AttributeName":"SpsAltitude",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"Altitude",
 "HelpText":"The altitude of the platform location above the sea level, expressed in meters. The hex number is decoded as 2's complement signed integer.  Provide the 8000h value if the altitude is unknown.",
-"DefaultValue":8000,
+"DefaultValue":32768,
 "DisplayOrder":0,
 "MenuPath":"./Advanced/ServerMEConfiguration",
 "ReadOnly":false,
@@ -2978,7 +2847,7 @@
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ScalarIncrement":0,
-"UpperBound":0,
+"UpperBound":65535,
 "LowerBound":0,
 "ValueExpression":null
 },
@@ -3048,7 +2917,7 @@
 }
 ],
 "DisplayName":"USB Physical Port1",
-"HelpText":"Enable/Disable this USB Physical Connector (physical port).  Once disabled, any USB devices plug into the connector will not be detected by BIOS or OS.",
+"HelpText":"Enable/Disable this USB Physical Connector (physical port).  Once disable, any USB devices plug into the connector will not be detected by BIOS or OS.",
 "DefaultValue":"Enable",
 "DisplayOrder":0,
 "MenuPath":"./Advanced/PCHConfiguration/USBConfiguration",
@@ -3074,7 +2943,7 @@
 }
 ],
 "DisplayName":"USB Physical Port2",
-"HelpText":"Enable/Disable this USB Physical Connector (physical port).  Once disabled, any USB devices plug into the connector will not be detected by BIOS or OS.",
+"HelpText":"Enable/Disable this USB Physical Connector (physical port).  Once disable, any USB devices plug into the connector will not be detected by BIOS or OS.",
 "DefaultValue":"Enable",
 "DisplayOrder":0,
 "MenuPath":"./Advanced/PCHConfiguration/USBConfiguration",
@@ -3100,7 +2969,7 @@
 }
 ],
 "DisplayName":"USB Physical Port1",
-"HelpText":"Enable/Disable this USB Physical Connector (physical port).  Once disabled, any USB devices plug into the connector will not be detected by BIOS or OS.",
+"HelpText":"Enable/Disable this USB Physical Connector (physical port).  Once disable, any USB devices plug into the connector will not be detected by BIOS or OS.",
 "DefaultValue":"Enable",
 "DisplayOrder":0,
 "MenuPath":"./Advanced/PCHConfiguration/USBConfiguration",
@@ -3126,7 +2995,7 @@
 }
 ],
 "DisplayName":"USB Physical Port2",
-"HelpText":"Enable/Disable this USB Physical Connector (physical port).  Once disabled, any USB devices plug into the connector will not be detected by BIOS or OS.",
+"HelpText":"Enable/Disable this USB Physical Connector (physical port).  Once disable, any USB devices plug into the connector will not be detected by BIOS or OS.",
 "DefaultValue":"Enable",
 "DisplayOrder":0,
 "MenuPath":"./Advanced/PCHConfiguration/USBConfiguration",
@@ -3152,7 +3021,7 @@
 }
 ],
 "DisplayName":"USB Physical Port1",
-"HelpText":"Enable/Disable this USB Physical Connector (physical port).  Once disabled, any USB devices plug into the connector will not be detected by BIOS or OS.",
+"HelpText":"Enable/Disable this USB Physical Connector (physical port).  Once disable, any USB devices plug into the connector will not be detected by BIOS or OS.",
 "DefaultValue":"Enable",
 "DisplayOrder":0,
 "MenuPath":"./Advanced/PCHConfiguration/USBConfiguration",
@@ -5061,7 +4930,6 @@
 {
 "AttributeName":"PxeRetrylimites",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"PXE Retry Count",
 "HelpText":"Retry count number, 99 is endless mode.",
 "DefaultValue":1,
@@ -5403,7 +5271,6 @@
 {
 "AttributeName":"EmcaCsmiThreshold",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"eMCA CMCI-SMI Threshold",
 "HelpText":"Set the threshold of correctable error for signaling CMCI-CSMI",
 "DefaultValue":0,
@@ -5416,7 +5283,7 @@
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ScalarIncrement":1,
-"UpperBound":7,
+"UpperBound":32767,
 "LowerBound":0,
 "ValueExpression":null
 },
@@ -5839,7 +5706,6 @@
 {
 "AttributeName":"PcieCorErrLimit",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"PCIe Corrected Error Limit",
 "HelpText":"Set the maximum number of corrected errors before corrected error reporting is disabled for a device",
 "DefaultValue":80,
@@ -6101,7 +5967,6 @@
 {
 "AttributeName":"POSTBootWDTimerTimeout",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"iBMC WDT Time Out For POST",
 "HelpText":"The watchdog timeout value from power on to OS load. Valid values are from 15 to 25 minutes.",
 "DefaultValue":20,
@@ -6181,7 +6046,6 @@
 {
 "AttributeName":"OSBootWDTimerTimeout",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"iBMC WDT Time Out For OS",
 "HelpText":"Set the maximum allowable time for loading OS completely. If it times out, the watchdog will be triggered. Value range: 2 to 8 minutes.",
 "DefaultValue":5,
@@ -9475,7 +9339,6 @@
 {
 "AttributeName":"CustomRefreshRate",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"Custom Refresh Rate",
 "HelpText":"Refresh Rate in 0.1x units of the standard 7.8 usec interval. Valid range is 20 to 40 (i.e. 2x to 4x)",
 "DefaultValue":20,
@@ -9649,7 +9512,6 @@
 {
 "AttributeName":"CkeIdleTimer",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"CKE Idle Timer",
 "HelpText":"CKE Idle Timer in ns. Value should be greater than 20 ns",
 "DefaultValue":20,
@@ -9859,7 +9721,6 @@
 {
 "AttributeName":"NgnAveragePower",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"100 Series PMem Average Power Budget (in mW)",
 "HelpText":"Sets the power management policy for average power (must be an increment of 250 mW). Warning: Average power range depends on NVDIMM size. For 128GB range is 10..15 W, for 256/512GB range is 12..18 W. If value out of range is set, it is silently corrected.",
 "DefaultValue":15000,
@@ -9879,7 +9740,6 @@
 {
 "AttributeName":"DcpmmAveragePowerLimit",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"200 Series PMem Average Power Limit (in mW)",
 "HelpText":"Power limit in mW used for average power. Valid range for power limit starts from 10000mW and must be a multiple of 250mW.",
 "DefaultValue":12000,
@@ -9925,7 +9785,6 @@
 {
 "AttributeName":"DcpmmMbbMaxPowerLimit",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"200 Series PMem Turbo/Memory Bandwidth Boost Feature(MBB) Power Limit (in mW)",
 "HelpText":"Power limit in mW used for limiting the Turbo/Memory Bandwidth Boost(MBB) Feature power consumption.Valid range for Turbo Power Limit starts from 15000mW.",
 "DefaultValue":15000,
@@ -10385,7 +10244,6 @@
 {
 "AttributeName":"BiosSsaLoopCount",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"Loop Count",
 "HelpText":"Exponential loop count for single rank test",
 "DefaultValue":16,
@@ -11495,10 +11353,9 @@
 {
 "AttributeName":"spareErrTh",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"Correctable Error Threshold",
 "HelpText":"Correctable Error Threshold (1 - 32767) used for sparing and leaky bucket",
-"DefaultValue":1770,
+"DefaultValue":6000,
 "DisplayOrder":0,
 "MenuPath":"./Advanced/CPUConfiguration/MemoryConfiguration/MemoryRASConfiguration",
 "ReadOnly":false,
@@ -11508,7 +11365,7 @@
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ScalarIncrement":1,
-"UpperBound":7,
+"UpperBound":32767,
 "LowerBound":0,
 "ValueExpression":null
 },
@@ -11541,7 +11398,6 @@
 {
 "AttributeName":"leakyBktHour",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"Leaky bucket time window based interface Hour",
 "HelpText":"Leaky bucket time window based interface Hour (0 - 24)",
 "DefaultValue":24,
@@ -11561,7 +11417,6 @@
 {
 "AttributeName":"leakyBktMinute",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"Leaky bucket time window based interface Minute",
 "HelpText":"Leaky bucket time window based interface Minute (0 - 60)",
 "DefaultValue":0,
@@ -11633,7 +11488,6 @@
 {
 "AttributeName":"PatrolScrubDuration",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"Patrol Scrub Interval",
 "HelpText":"Selects the number of hours (1-24) required to complete full scrub. A value of zero means auto!",
 "DefaultValue":24,
@@ -11648,6 +11502,55 @@
 "ScalarIncrement":0,
 "UpperBound":24,
 "LowerBound":0,
+"ValueExpression":null
+},
+{
+"AttributeName":"StaticTurbo",
+"Type":"Enumeration",
+"Value":[
+{
+"ValueName":"Auto",
+"DisplayName":"Auto"
+},
+{
+"ValueName":"Manual",
+"DisplayName":"Manual"
+},
+{
+"ValueName":"Disable",
+"DisplayName":"Disable"
+}
+],
+"DisplayName":"Static Turbo",
+"HelpText":"Select Static Turbo policy that the BIOS will apply.Frequency ranges from selected frequency to turbo frequency if Auto mode is selected.When Manual mode is selected,Frequency is just the selected Frequency.",
+"DefaultValue":"Disable",
+"DisplayOrder":0,
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration",
+"ReadOnly":false,
+"WriteOnly":false,
+"GrayOut":false,
+"Hidden":false,
+"Immutable":false,
+"IsSystemUniqueProperty":true,
+"ValueExpression":null
+},
+{
+"AttributeName":"FreqSelect",
+"Type":"Integer",
+"DisplayName":"CPU Frequency Select",
+"HelpText":"Please select frequency between Base and Turbo,Unit:100MHz.When the input value is less than the base value, the setting is made at the base frequency. When the input value is greater than the maximum supported turbo value, the setting is made at the maximum turbo frequency.",
+"DefaultValue":40,
+"DisplayOrder":0,
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration",
+"ReadOnly":false,
+"WriteOnly":false,
+"GrayOut":false,
+"Hidden":false,
+"Immutable":false,
+"IsSystemUniqueProperty":true,
+"ScalarIncrement":1,
+"UpperBound":40,
+"LowerBound":12,
 "ValueExpression":null
 },
 {
@@ -11685,16 +11588,16 @@
 "DisplayName":"Auto"
 },
 {
-"ValueName":"Enabled",
-"DisplayName":"Enabled"
+"ValueName":"Enable",
+"DisplayName":"Enable"
 },
 {
-"ValueName":"Disabled",
-"DisplayName":"Disabled"
+"ValueName":"Disable",
+"DisplayName":"Disable"
 }
 ],
 "DisplayName":"Native ASPM",
-"HelpText":"Enabled - OS Controlled ASPM, Disabled - ASPM Off, AUTO - BIOS Controlled ASPM",
+"HelpText":"Enable - OS Controlled ASPM, Disable - ASPM Off, AUTO - BIOS Controlled ASPM",
 "DefaultValue":"Auto",
 "DisplayOrder":0,
 "MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/HardwarePMStateControl",
@@ -11933,7 +11836,6 @@
 {
 "AttributeName":"TurboRatioLimitRatio[0]",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"TurboRatioLimit0",
 "HelpText":"User defined Ratio for TurboRatioLimits Msr(0x1AD)",
 "DefaultValue":0,
@@ -11953,10 +11855,9 @@
 {
 "AttributeName":"TurboRatioLimitCores[0]",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"TurboRatioCores0",
 "HelpText":"User defined core# for TurboRatioLimits Msr(0x1AE)",
-"DefaultValue":0,
+"DefaultValue":255,
 "DisplayOrder":0,
 "MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/Overclocking",
 "ReadOnly":false,
@@ -11966,14 +11867,13 @@
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ScalarIncrement":0,
-"UpperBound":0,
+"UpperBound":255,
 "LowerBound":0,
 "ValueExpression":null
 },
 {
 "AttributeName":"TurboRatioLimitRatio[1]",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"TurboRatioLimit1",
 "HelpText":"User defined Ratio for TurboRatioLimits Msr(0x1AD)",
 "DefaultValue":0,
@@ -11993,10 +11893,9 @@
 {
 "AttributeName":"TurboRatioLimitCores[1]",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"TurboRatioCores1",
 "HelpText":"User defined core# for TurboRatioLimits Msr(0x1AE)",
-"DefaultValue":0,
+"DefaultValue":255,
 "DisplayOrder":0,
 "MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/Overclocking",
 "ReadOnly":false,
@@ -12006,14 +11905,13 @@
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ScalarIncrement":0,
-"UpperBound":0,
+"UpperBound":255,
 "LowerBound":0,
 "ValueExpression":null
 },
 {
 "AttributeName":"TurboRatioLimitRatio[2]",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"TurboRatioLimit2",
 "HelpText":"User defined Ratio for TurboRatioLimits Msr(0x1AD)",
 "DefaultValue":0,
@@ -12033,10 +11931,9 @@
 {
 "AttributeName":"TurboRatioLimitCores[2]",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"TurboRatioCores2",
 "HelpText":"User defined core# for TurboRatioLimits Msr(0x1AE)",
-"DefaultValue":0,
+"DefaultValue":255,
 "DisplayOrder":0,
 "MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/Overclocking",
 "ReadOnly":false,
@@ -12046,14 +11943,13 @@
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ScalarIncrement":0,
-"UpperBound":0,
+"UpperBound":255,
 "LowerBound":0,
 "ValueExpression":null
 },
 {
 "AttributeName":"TurboRatioLimitRatio[3]",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"TurboRatioLimit3",
 "HelpText":"User defined Ratio for TurboRatioLimits Msr(0x1AD)",
 "DefaultValue":0,
@@ -12073,10 +11969,9 @@
 {
 "AttributeName":"TurboRatioLimitCores[3]",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"TurboRatioCores3",
 "HelpText":"User defined core# for TurboRatioLimits Msr(0x1AE)",
-"DefaultValue":0,
+"DefaultValue":255,
 "DisplayOrder":0,
 "MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/Overclocking",
 "ReadOnly":false,
@@ -12086,14 +11981,13 @@
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ScalarIncrement":0,
-"UpperBound":0,
+"UpperBound":255,
 "LowerBound":0,
 "ValueExpression":null
 },
 {
 "AttributeName":"TurboRatioLimitRatio[4]",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"TurboRatioLimit4",
 "HelpText":"User defined Ratio for TurboRatioLimits Msr(0x1AD)",
 "DefaultValue":0,
@@ -12113,10 +12007,9 @@
 {
 "AttributeName":"TurboRatioLimitCores[4]",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"TurboRatioCores4",
 "HelpText":"User defined core# for TurboRatioLimits Msr(0x1AE)",
-"DefaultValue":0,
+"DefaultValue":255,
 "DisplayOrder":0,
 "MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/Overclocking",
 "ReadOnly":false,
@@ -12126,14 +12019,13 @@
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ScalarIncrement":0,
-"UpperBound":0,
+"UpperBound":255,
 "LowerBound":0,
 "ValueExpression":null
 },
 {
 "AttributeName":"TurboRatioLimitRatio[5]",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"TurboRatioLimit5",
 "HelpText":"User defined Ratio for TurboRatioLimits Msr(0x1AD)",
 "DefaultValue":0,
@@ -12153,10 +12045,9 @@
 {
 "AttributeName":"TurboRatioLimitCores[5]",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"TurboRatioCores5",
 "HelpText":"User defined core# for TurboRatioLimits Msr(0x1AE)",
-"DefaultValue":0,
+"DefaultValue":255,
 "DisplayOrder":0,
 "MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/Overclocking",
 "ReadOnly":false,
@@ -12166,14 +12057,13 @@
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ScalarIncrement":0,
-"UpperBound":0,
+"UpperBound":255,
 "LowerBound":0,
 "ValueExpression":null
 },
 {
 "AttributeName":"TurboRatioLimitRatio[6]",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"TurboRatioLimit6",
 "HelpText":"User defined Ratio for TurboRatioLimits Msr(0x1AD)",
 "DefaultValue":0,
@@ -12193,10 +12083,9 @@
 {
 "AttributeName":"TurboRatioLimitCores[6]",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"TurboRatioCores6",
 "HelpText":"User defined core# for TurboRatioLimits Msr(0x1AE)",
-"DefaultValue":0,
+"DefaultValue":255,
 "DisplayOrder":0,
 "MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/Overclocking",
 "ReadOnly":false,
@@ -12206,14 +12095,13 @@
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ScalarIncrement":0,
-"UpperBound":0,
+"UpperBound":255,
 "LowerBound":0,
 "ValueExpression":null
 },
 {
 "AttributeName":"TurboRatioLimitRatio[7]",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"TurboRatioLimit7",
 "HelpText":"User defined Ratio for TurboRatioLimits Msr(0x1AD)",
 "DefaultValue":0,
@@ -12233,10 +12121,9 @@
 {
 "AttributeName":"TurboRatioLimitCores[7]",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"TurboRatioCores7",
 "HelpText":"User defined core# for TurboRatioLimits Msr(0x1AE)",
-"DefaultValue":0,
+"DefaultValue":255,
 "DisplayOrder":0,
 "MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/Overclocking",
 "ReadOnly":false,
@@ -12246,8 +12133,34 @@
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ScalarIncrement":0,
-"UpperBound":0,
+"UpperBound":255,
 "LowerBound":0,
+"ValueExpression":null
+},
+{
+"AttributeName":"MonitorMWait",
+"Type":"Enumeration",
+"Value":[
+{
+"ValueName":"Disable",
+"DisplayName":"Disable"
+},
+{
+"ValueName":"Enable",
+"DisplayName":"Enable"
+}
+],
+"DisplayName":"MONITOR/MWAIT",
+"HelpText":"Allows Monitor and MWAIT instructions.",
+"DefaultValue":"Enable",
+"DisplayOrder":0,
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/CPUCStateControl",
+"ReadOnly":false,
+"WriteOnly":false,
+"GrayOut":false,
+"Hidden":false,
+"Immutable":false,
+"IsSystemUniqueProperty":true,
 "ValueExpression":null
 },
 {
@@ -12421,7 +12334,6 @@
 {
 "AttributeName":"ProchotResponseRatio",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"PROCHOT RATIO",
 "HelpText":"Controls the CPU response to an inbound platform assertion of xxPROCHOT# by capping to the programmed ratio. Default value 0 will allow ME to control this value. If ME does not set ratio, default 0 equates to Pn. A non-zero value will override ME setting. The min allowed ratio is defined by PLATFORM_INFO[MIN_OPERATING_RATIO]",
 "DefaultValue":0,
@@ -12434,14 +12346,13 @@
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ScalarIncrement":0,
-"UpperBound":0,
+"UpperBound":255,
 "LowerBound":0,
 "ValueExpression":null
 },
 {
 "AttributeName":"TCCActivationOffset",
 "Type":"Integer",
-"Value":null,
 "DisplayName":"TCC Activation Offset ",
 "HelpText":"Offset from factory set TCC activation temperature at which the Thermal Control Circuit must be activated.",
 "DefaultValue":0,
@@ -12454,7 +12365,7 @@
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ScalarIncrement":0,
-"UpperBound":3,
+"UpperBound":63,
 "LowerBound":0,
 "ValueExpression":null
 },
@@ -12731,6 +12642,32 @@
 "ValueExpression":null
 },
 {
+"AttributeName":"MlcStreamerPrefetcherEnable",
+"Type":"Enumeration",
+"Value":[
+{
+"ValueName":"Enable",
+"DisplayName":"Enable"
+},
+{
+"ValueName":"Disable",
+"DisplayName":"Disable"
+}
+],
+"DisplayName":"Hardware Prefetcher",
+"HelpText":"= MLC Streamer Prefetcher (MSR 1A4h Bit[0])",
+"DefaultValue":"Enable",
+"DisplayOrder":0,
+"MenuPath":"./Advanced/CPUConfiguration/ProcessorConfiguration",
+"ReadOnly":false,
+"WriteOnly":false,
+"GrayOut":false,
+"Hidden":false,
+"Immutable":false,
+"IsSystemUniqueProperty":true,
+"ValueExpression":null
+},
+{
 "AttributeName":"L2RfoPrefetchDisable",
 "Type":"Enumeration",
 "Value":[
@@ -12746,6 +12683,32 @@
 "DisplayName":"L2 RFO Prefetch Disable",
 "HelpText":"= L2 RFO Prefetch (MSR 972h Bit[3])",
 "DefaultValue":"Disable",
+"DisplayOrder":0,
+"MenuPath":"./Advanced/CPUConfiguration/ProcessorConfiguration",
+"ReadOnly":false,
+"WriteOnly":false,
+"GrayOut":false,
+"Hidden":false,
+"Immutable":false,
+"IsSystemUniqueProperty":true,
+"ValueExpression":null
+},
+{
+"AttributeName":"MlcSpatialPrefetcherEnable",
+"Type":"Enumeration",
+"Value":[
+{
+"ValueName":"Enable",
+"DisplayName":"Enable"
+},
+{
+"ValueName":"Disable",
+"DisplayName":"Disable"
+}
+],
+"DisplayName":"Adjacent Cache Prefetch",
+"HelpText":"= MLC Spatial Prefetcher (MSR 1A4h Bit[1])",
+"DefaultValue":"Enable",
 "DisplayOrder":0,
 "MenuPath":"./Advanced/CPUConfiguration/ProcessorConfiguration",
 "ReadOnly":false,
@@ -14623,53 +14586,15 @@
 "MapFromAttribute":"SystemErrorEn",
 "MapFromProperty":"CurrentValue",
 "MapFromCondition":"EQU",
-"MapFromValue":"Disabled",
+"MapFromValue":"Disable",
 "MapTerms":"AND"
 }
 ],
-"MapToAttribute":"IIOErrorEn",
+"MapToAttribute":"IioErrorEn",
 "MapToProperty":"GrayOut",
 "MapToValue":true
 },
 "DependencyFor":"SystemErrorEn",
-"Type":"Map"
-},
-{
-"Dependency":
-{
-"MapFrom":[
-{
-"MapFromAttribute":"BootRetry",
-"MapFromProperty":"CurrentValue",
-"MapFromCondition":"EQU",
-"MapFromValue":"Enabled",
-"MapTerms":"AND"
-}
-],
-"MapToAttribute":"NoBootReset",
-"MapToProperty":"Hidden",
-"MapToValue":false
-},
-"DependencyFor":"BootRetry",
-"Type":"Map"
-},
-{
-"Dependency":
-{
-"MapFrom":[
-{
-"MapFromAttribute":"BootRetry",
-"MapFromProperty":"CurrentValue",
-"MapFromCondition":"EQU",
-"MapFromValue":"Disabled",
-"MapTerms":"AND"
-}
-],
-"MapToAttribute":"NoBootReset",
-"MapToProperty":"Hidden",
-"MapToValue":true
-},
-"DependencyFor":"BootRetry",
 "Type":"Map"
 },
 {
@@ -14687,63 +14612,6 @@
 "MapToAttribute":"ProcessorHWPMEnable",
 "MapToProperty":"CurrentValue",
 "MapToValue":"Disable"
-},
-"DependencyFor":"PowerSaving",
-"Type":"Map"
-},
-{
-"Dependency":
-{
-"MapFrom":[
-{
-"MapFromAttribute":"PowerSaving",
-"MapFromProperty":"CurrentValue",
-"MapFromCondition":"EQU",
-"MapFromValue":"Disable",
-"MapTerms":"AND"
-}
-],
-"MapToAttribute":"SystemCpuUsage",
-"MapToProperty":"Hidden",
-"MapToValue":true
-},
-"DependencyFor":"PowerSaving",
-"Type":"Map"
-},
-{
-"Dependency":
-{
-"MapFrom":[
-{
-"MapFromAttribute":"PowerSaving",
-"MapFromProperty":"CurrentValue",
-"MapFromCondition":"EQU",
-"MapFromValue":"Disable",
-"MapTerms":"AND"
-}
-],
-"MapToAttribute":"TcoTimeout",
-"MapToProperty":"Hidden",
-"MapToValue":true
-},
-"DependencyFor":"PowerSaving",
-"Type":"Map"
-},
-{
-"Dependency":
-{
-"MapFrom":[
-{
-"MapFromAttribute":"PowerSaving",
-"MapFromProperty":"CurrentValue",
-"MapFromCondition":"EQU",
-"MapFromValue":"Disable",
-"MapTerms":"AND"
-}
-],
-"MapToAttribute":"LowOccupyControl",
-"MapToProperty":"Hidden",
-"MapToValue":true
 },
 "DependencyFor":"PowerSaving",
 "Type":"Map"
@@ -14812,7 +14680,7 @@
 "MapTerms":"AND"
 }
 ],
-"MapToAttribute":"EMCACSMIEn",
+"MapToAttribute":"EmcaCsmiEn",
 "MapToProperty":"Hidden",
 "MapToValue":true
 },
@@ -14976,25 +14844,6 @@
 "MapToValue":true
 },
 "DependencyFor":"ProcessorLtsxEnable",
-"Type":"Map"
-},
-{
-"Dependency":
-{
-"MapFrom":[
-{
-"MapFromAttribute":"EnableSgx",
-"MapFromProperty":"CurrentValue",
-"MapFromCondition":"EQU",
-"MapFromValue":"Enable",
-"MapTerms":"AND"
-}
-],
-"MapToAttribute":"NumaEn",
-"MapToProperty":"GrayOut",
-"MapToValue":true
-},
-"DependencyFor":"EnableSgx",
 "Type":"Map"
 },
 {
@@ -28547,7 +28396,7 @@
 "MapTerms":"AND"
 }
 ],
-"MapToAttribute":"DmiAspm",
+"MapToAttribute":"PcieDmiAspm",
 "MapToProperty":"CurrentValue",
 "MapToValue":"Disable"
 },
@@ -28566,7 +28415,7 @@
 "MapTerms":"AND"
 }
 ],
-"MapToAttribute":"DmiAspm",
+"MapToAttribute":"PcieDmiAspm",
 "MapToProperty":"CurrentValue",
 "MapToValue":"ASPM L1"
 },
