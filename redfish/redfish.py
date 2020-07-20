@@ -341,28 +341,61 @@ def auto_test_dir(tc_dir):
             print("%s is not a json file, skip test" % tc_file)
 
 
+def test_menu_path():
+    result = dict()
+    hidden_list = testcase.get_hidden_list()
+    print(hidden_list)
+    with open(config.REGISTRY_FILE, 'r') as f:
+        registry = json.load(f)
+    for attr in registry["RegistryEntries"]["Attributes"]:
+        if not attr["AttributeName"] in hidden_list:
+            result[attr["AttributeName"]] = []
+            result[attr["AttributeName"]].append(attr["DisplayName"])
+            result[attr["AttributeName"]].append(attr["MenuPath"])
+    for key in result:
+        categories = testcase.get_setup_category(key)
+        print(categories)
+        if categories:
+            for menu in categories:
+                result[key].append(menu)
+        if key in hidden_list:
+            print(key)
+
+    with open("result.json", "w") as f:
+        json.dump(result, f, indent=1)
+
+
 if __name__ == "__main__":
     if len(argv) == 2:
         if argv[1] == "clenup":
             log.logger.info("Function Not ready yet, INTENTION IS TO clenup status and log file")
+
         elif argv[1] == "gen-dep-tc":
             log.logger.info("generating dependency test case")
-            gen_dep_tc()
+            gen_dep_tc()   # 把最新dump的registry.json放入baseline目录, 运行会生成tc_dep 前缀的json文件和dep_overview.json.
+
         elif argv[1] == "valuetest":
             registry_file_value_test()
 
+        elif argv[1] == "menupath":
+            test_menu_path()
+
         elif argv[1] == "gen-non-dep-tc":
             log.logger.info("generating non-dependency test case")
-            change_value(gen_nondep_tc("7998.json"))
+            change_value(gen_nondep_tc("7998.json"))  # 使用postman get, 把所有current value存为json文件
+
         elif argv[1] == "checkregistry":
             log.logger.info("Testing registry file...")
             test_registry_file(".\\baseline\\baseline_0716_1400.txt")
+
         elif os.path.isfile(argv[1]):
             log.logger.info("Run test for %s" % argv[1])
             auto_test(argv[1])
+
         elif os.path.isdir(argv[1]):
             log.logger.info("Run multiple files in directory %s" % argv[1])
             auto_test_dir(argv[1])
+
         else:
             print(config.help_msg)
     else:

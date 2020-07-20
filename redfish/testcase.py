@@ -1,5 +1,7 @@
 # -*- encoding=utf8 -*-
 import json
+import os
+import re
 from collections import OrderedDict
 import config
 
@@ -27,6 +29,51 @@ def get_all_varnames():
     for item in registry["RegistryEntries"]["Attributes"]:
         varnames.append(item["AttributeName"])
     return varnames
+
+
+# 从setup基线中获取所有隐藏的setup选项
+def get_hidden_list():
+    exclude = ['', 'NA', '\n']
+    hidden_lst = []
+    with open(config.HIDDEN_LIST, 'r') as f:
+        for line in f.readlines():
+            line = line.strip('\n')
+            if line not in exclude:
+                hidden_lst.append(line)
+    return hidden_lst
+
+
+# 从BIOS code base 获取hfr和vrf文件
+def get_file_list():
+    hfr_vfr_list = []
+    for root, directory, files in os.walk(config.BIOS_CODE):
+        for filename in files:
+            name, suf = os.path.splitext(filename)
+            if suf in ['.hfr', '.vfr']:
+                hfr_vfr_list.append(os.path.join(root, filename))
+    return hfr_vfr_list
+
+
+# 在VFR和HFR文件中查找给定setup选项, 返回该选项属于哪一类，比如'SOCKET_MEMORY_CONFIGURATION'
+def match_setup(setup, file):
+    with open(file, "r", encoding='utf-8') as f:
+        buf = f.read()
+        pat = re.compile(r"=\s+(.+).%s,.*redfish" % setup)
+        ret = pat.findall(buf)
+    return ret
+
+
+# 获取所有HFR, VFR中该setup的路径，返回列表
+def get_setup_category(setup):
+    setup_categories = []
+    file_list = get_file_list()
+    for hfr_vfr in file_list:
+        match = match_setup(setup, hfr_vfr)
+        if match:
+            for itm in match:
+                if itm not in setup_categories:
+                    setup_categories.append(itm)
+    return setup_categories
 
 
 # 从Dependencies 描述里面获取所有有依赖关系的setup选项
