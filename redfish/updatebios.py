@@ -65,14 +65,16 @@ class PrintColor:
 
 prt = PrintColor()
 
+
 def print_rawmsg(msg):
     prt.print_red_text('*'*50)
     prt.print_red_text(msg)
     prt.print_red_text('*'*50)
 
 
-def upload_bios(src): #src: temp image directory, tmp/rp001.bin or tmp/bios.hpm 
-     # Upload BIOS image (.bin. .hpm) to SUT
+def upload_bios(src):
+    # src: temp image directory, tmp/rp001.bin or tmp/bios.hpm
+    # Upload BIOS image (.bin. .hpm) to SUT
     bin_file = 'rp001.bin'
     hpm_file = 'bios.hpm'
     transport = paramiko.Transport(SUT, 22)
@@ -80,7 +82,7 @@ def upload_bios(src): #src: temp image directory, tmp/rp001.bin or tmp/bios.hpm
     transport.connect(username=USERNAME, password=PW)
     sftp = paramiko.SFTPClient.from_transport(transport)
     res = sftp.listdir()
-    #print(res)  
+
     for item in res:
         if re.search(".bin",item):
             print("Deleting old .bin image...")
@@ -191,11 +193,11 @@ def program_flash():
                 if re.search("Success", res.decode('utf-8')):
                     print("iBMC attach upgrade successfullly")
                     start_time = time.time()
-                    res = send_cmd(cmd_load) #Load bios to SUT   
-                    #print(res.decode('utf-8'))               
+                    res = send_cmd(cmd_load) # Load bios to SUT
+                    # print(res.decode('utf-8'))
                     while (re.search("load bios succefully",res.decode('utf-8'))==None):
                         print("Checking Status...")
-                        res=op.recv(1024)
+                        res = op.recv(1024)
                         print(res.decode('utf-8'))
                         now = time.time()
                         if ((now - start_time)>300):
@@ -233,6 +235,7 @@ def program_flash():
         s.close()
         return STATUS_FAIL 
 
+
 def poweron_sut():
     cmd_power_on = 'ipmcset -d powerstate -v 1\n'
     cmd_fan_manual_mode = 'ipmcset -d fanmode -v 1 0\n'
@@ -241,8 +244,9 @@ def poweron_sut():
 
     s = paramiko.SSHClient()
     s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    s.connect(SUT,22,USERNAME, PW, banner_timeout=150)
-    op=s.invoke_shell()
+    s.connect(SUT, 22, USERNAME, PW, banner_timeout=150)
+    op = s.invoke_shell()
+
     def send_cmd(cmd):
         op.send(cmd)
         time.sleep(5)
@@ -267,10 +271,12 @@ def poweron_sut():
     op.close()
     s.close()
 
+
 def perform_update(bios):
     if not upload_bios(bios):
-        Print("Upload BIOS image failed")
+        print("Upload BIOS image failed")
     if not program_flash():
         print("Program flash failed")
     poweron_sut()
-     
+
+

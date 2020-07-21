@@ -142,3 +142,17 @@ def supported_value(varname):
     else:
         print(varname + " is not supported.")
 
+
+# 通过registry.json检查testcase json文件里面的setup option的值是否合法
+def verify_testcase(testcase_file):
+    with open(testcase_file, 'r') as fp:
+        testscope = json.loads(json.load(fp))
+        # testscope = json.load(fp)
+    for setupoption in testscope["Attributes"]:
+        try:
+            if not testscope["Attributes"][setupoption] in supported_value(setupoption):
+                print(setupoption + ":Value is invalid.")
+                print("Supported values: ")
+                print(supported_value(setupoption))
+        except Exception as e:
+            print(e)

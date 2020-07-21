@@ -45,7 +45,7 @@ def registry_file_value_test():
     for payload in payloads:
         key = list(payload["Attributes"].keys())[0]
         value = payload["Attributes"][key]
-        log.logger.info("%s : %s" %(str(key), str(value)))
+        log.logger.info("%s : %s" % (str(key), str(value)))
         payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%s\" \r\n    }\r\n}" % (key, value)
         res = sut.patch_single_payload(payload, config.PATCH_URL).decode('utf-8')
         res = json.loads(res)
@@ -56,48 +56,6 @@ def registry_file_value_test():
             log.logger.info(res['error'])
             log.logger.info("_"*60)
     log.logger.info("Errors: %d" % len(errors))
-           
-
-def test_registry_file(baseline):
-    log.logger.info("Test case 1: compare registery.json with %s" % baseline)
-    exclude = ['', 'NA', '\n']
-    baseline_lst = []
-    with open(baseline, 'r') as f:
-        for line in f.readlines():
-            line = line.strip('\n')
-            if line not in exclude:
-                baseline_lst.append(line)
-    registry_lst = testcase.get_all_varnames()
-    for option in baseline_lst:
-        if option not in registry_lst:
-            log.logger.info(option + ": missed in registry.json.")
-    for option in registry_lst:
-        if option not in baseline_lst:
-            log.logger.info(option + ": not listed in setup baseline xlsx.")
-    log.logger.info("-"*60)
-    log.logger.info("Test case 2: Check whetehr all items in dependencies are also in attributes")
-    reg = testcase.load_registry_file()
-    dep_list = reg["RegistryEntries"]["Dependencies"]
-    map_from_list = []
-    map_to_list = []
-    for dep in dep_list:
-        map_to = dep["Dependency"]["MapToAttribute"]
-        if map_to not in map_to_list:
-            map_to_list.append(dep["Dependency"]["MapToAttribute"])
-    log.logger.info("Checking MapToAttribute list...")
-    for setup in map_to_list:
-        if setup not in registry_lst:
-            log.logger.info("[MapToAttribute]: %s is not supported by redfish" % setup)
-
-    for dep in dep_list:
-        for i in range(0, len(dep["Dependency"]["MapFrom"])):
-            map_from = dep["Dependency"]["MapFrom"][i]["MapFromAttribute"]
-            if map_from not in map_from_list:
-                map_from_list.append(dep["Dependency"]["MapFrom"][i]["MapFromAttribute"])
-    log.logger.info("Checking map from list...")
-    for setup in map_from_list:
-        if setup not in registry_lst:
-            log.logger.info("[MapFromAttribute]: %s is not supported by redfish" % setup)
 
 
 def gen_dep_tc():
@@ -154,21 +112,6 @@ def gen_nondep_tc(testcase_file):
     with open(tc_file, "w") as fp:
         json.dump(allcase, fp, indent=1)
     return tc_file
-
-
-# 通过registry.json检查testcase json文件里面的setup option的值是否合法
-def verify_testcase(testcase_file):
-    with open(testcase_file, 'r') as fp:
-        testscope = json.loads(json.load(fp))
-        # testscope = json.load(fp)
-    for setupoption in testscope["Attributes"]:
-        try:
-            if not testscope["Attributes"][setupoption] in testcase.supported_value(setupoption):
-                print(setupoption + ":Value is invalid.")
-                print("Supported values: ")
-                print(testcase.supported_value(setupoption))
-        except Exception as e:
-            print(e)
 
 
 # 比较testcase里面的预期值和实际get到的值
@@ -338,6 +281,54 @@ def test_menu_path():
         json.dump(result, f, indent=1)
 
 
+def test_registry_file(baseline):
+    # case1: 检查registry.json, 测试之前需要更新registry.json, baseline.txt与setup基线文档一致
+    # case2：检查dependiecies描述里面不存在不支持redfish的选项
+    # case3：需要最新的registry.json和BIOS code, 在config.BIOS_CODE 中指定路径，输出检查menpath和HFR中获取的路径
+    log.logger.info("Test case 1: compare registery.json with %s" % baseline)
+    exclude = ['', 'NA', '\n']
+    baseline_lst = []
+    with open(baseline, 'r') as f:
+        for line in f.readlines():
+            line = line.strip('\n')
+            if line not in exclude:
+                baseline_lst.append(line)
+    registry_lst = testcase.get_all_varnames()
+    for option in baseline_lst:
+        if option not in registry_lst:
+            log.logger.info(option + ": missed in registry.json.")
+    for option in registry_lst:
+        if option not in baseline_lst:
+            log.logger.info(option + ": not listed in setup baseline xlsx.")
+    log.logger.info("-" * 60)
+    log.logger.info("Test case 2: Check whetehr all items in dependencies are also in attributes")
+    reg = testcase.load_registry_file()
+    dep_list = reg["RegistryEntries"]["Dependencies"]
+    map_from_list = []
+    map_to_list = []
+    for dep in dep_list:
+        map_to = dep["Dependency"]["MapToAttribute"]
+        if map_to not in map_to_list:
+            map_to_list.append(dep["Dependency"]["MapToAttribute"])
+    log.logger.info("Checking MapToAttribute list...")
+    for setup in map_to_list:
+        if setup not in registry_lst:
+            log.logger.info("[MapToAttribute]: %s is not supported by redfish" % setup)
+
+    for dep in dep_list:
+        for i in range(0, len(dep["Dependency"]["MapFrom"])):
+            map_from = dep["Dependency"]["MapFrom"][i]["MapFromAttribute"]
+            if map_from not in map_from_list:
+                map_from_list.append(dep["Dependency"]["MapFrom"][i]["MapFromAttribute"])
+    log.logger.info("Checking map from list...")
+    for setup in map_from_list:
+        if setup not in registry_lst:
+            log.logger.info("[MapFromAttribute]: %s is not supported by redfish" % setup)
+
+    log.logger.info("Test case 3: Dump menupath from registry.json and .hfr and .vfr")
+    test_menu_path()
+
+
 if __name__ == "__main__":
     if len(argv) == 2:
         if argv[1] == "clenup":
@@ -349,9 +340,6 @@ if __name__ == "__main__":
 
         elif argv[1] == "valuetest":
             registry_file_value_test()
-
-        elif argv[1] == "menupath":
-            test_menu_path()
 
         elif argv[1] == "gen-non-dep-tc":
             log.logger.info("generating non-dependency test case")
