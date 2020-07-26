@@ -59,6 +59,9 @@ def registry_file_value_test():
 
 
 def gen_dep_tc():
+    output_dir = os.path.join(config.TEST_RESULT_DIR, 'dep')
+    if not os.path.isdir(output_dir):
+        os.makedirs(output_dir)
     log.logger.info("-"*60)
     log.logger.info("Generateing dependency test cases...")
     dependency_options = {}
@@ -76,7 +79,8 @@ def gen_dep_tc():
             if (dep["DependencyFor"] == key) and (dep["Dependency"]["MapToAttribute"] not in dependency_options[key]):
                 dependency_options[key].append(dep["Dependency"]["MapToAttribute"])
     # log.logger.info(dependency_options)
-    with open("dep_overview.json", "w") as f:
+    dep_overview = os.path.join(output_dir, "dep_overview.json")
+    with open(dep_overview, "w") as f:
         json.dump(dependency_options, f, indent=1)
 
     # 检查是否有多层依赖.
@@ -89,7 +93,7 @@ def gen_dep_tc():
     for key in dependency_options:
         tc_dep = dict()
         tc_dep["Attributes"] = {}
-        file_name = 'tc_dep_' + key + '.json'
+        file_name = output_dir + '\\tc_dep_' + key + '.json'
         tc_dep["Attributes"][key] = ""
         for opt in dependency_options[key]:
             tc_dep["Attributes"][opt] = ""
@@ -99,16 +103,16 @@ def gen_dep_tc():
     log.logger.info("-"*60)
 
 
-def gen_nondep_tc(testcase_file):
+def gen_nondep_tc():
     dependency_options = testcase.get_varnames_dep()
-    with open(testcase_file, "r") as fp:
+    with open(config.CURR_SET_JSON, "r") as fp:
         allcase = json.load(fp)
     alloptions = list(allcase["Attributes"].keys())
     for key in alloptions:
         if key in dependency_options:
             allcase["Attributes"].pop(key)
             print("remove: " + key)
-    tc_file = testcase_file.split(".")[0] + "remove_dep.json"
+    tc_file = os.path.join(config.TEST_RESULT_DIR, "remove_dep.json")
     with open(tc_file, "w") as fp:
         json.dump(allcase, fp, indent=1)
     return tc_file
@@ -260,7 +264,7 @@ def auto_test_dir(tc_dir):
 def test_menu_path():
     result = dict()
     hidden_list = testcase.get_hidden_list()
-    print(hidden_list)
+    # print(hidden_list)
     with open(config.REGISTRY_FILE, 'r') as f:
         registry = json.load(f)
     for attr in registry["RegistryEntries"]["Attributes"]:
@@ -270,15 +274,16 @@ def test_menu_path():
             result[attr["AttributeName"]].append(attr["MenuPath"])
     for key in result:
         categories = testcase.get_setup_category(key)
-        print(categories)
+        # print(categories)
         if categories:
             for menu in categories:
                 result[key].append(menu)
-        if key in hidden_list:
-            print(key)
-
-    with open("result.json", "w") as f:
+        # if key in hidden_list:
+            # print(key)
+    result_file = os.path.join(config.TEST_RESULT_DIR, "menupath_result.json")
+    with open(result_file, "w") as f:
         json.dump(result, f, indent=1)
+    log.logger.info("Test result dumpped to menupath_result.json")
 
 
 def test_registry_file(baseline):
@@ -334,20 +339,20 @@ if __name__ == "__main__":
         if argv[1] == "clenup":
             log.logger.info("Function Not ready yet, INTENTION IS TO clenup status and log file")
 
-        elif argv[1] == "gen-dep-tc":
+        elif argv[1] == "gendeptc":
             log.logger.info("generating dependency test case")
             gen_dep_tc()   # 把最新dump的registry.json放入baseline目录, 运行会生成tc_dep 前缀的json文件和dep_overview.json.
 
         elif argv[1] == "valuetest":
             registry_file_value_test()
 
-        elif argv[1] == "gen-non-dep-tc":
+        elif argv[1] == "gennondeptc":
             log.logger.info("generating non-dependency test case")
-            testcase.change_value(gen_nondep_tc("7998.json"))  # 使用postman get, 把所有current value存为json文件
+            testcase.change_value(gen_nondep_tc())  # 使用postman get, 把所有current value存为json文件
 
         elif argv[1] == "checkregistry":
             log.logger.info("Testing registry file...")
-            test_registry_file(".\\baseline\\baseline_0716_1400.txt")
+            test_registry_file(".\\baseline\\baseline_v0.03.txt")
 
         elif os.path.isfile(argv[1]):
             log.logger.info("Run test for %s" % argv[1])
