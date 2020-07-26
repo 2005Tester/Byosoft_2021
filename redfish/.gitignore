@@ -1,6 +1,5 @@
 *.bin
 *.log
-*.txt
 .idea
 testcase
 dep
