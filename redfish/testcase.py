@@ -59,14 +59,16 @@ def get_all_varnames():
 # 从Dependencies 描述里面获取所有有依赖关系的setup选项
 def get_varnames_dep():
     varnames_dep = []
+    dependency_for = []
     registry = load_registry_file()
     dep_list = registry["RegistryEntries"]["Dependencies"]
     for item in dep_list:
         if item["Dependency"]["MapToAttribute"] not in varnames_dep:
             varnames_dep.append(item["Dependency"]["MapToAttribute"])
-        elif item["DependencyFor"] not in varnames_dep:
+        if item["DependencyFor"] not in varnames_dep:
             varnames_dep.append(item["DependencyFor"])
-    return varnames_dep
+            dependency_for.append(item["DependencyFor"])
+    return varnames_dep, dependency_for
 
 
 # 遍历registry.json, 找到所有无联动关系的选项所支持的value
@@ -159,8 +161,14 @@ def verify_testcase(testcase_file):
 
 
 def gen_all_tc():
+    dep_for = get_varnames_dep()[1]   # 获取所有依赖关系的父选项（DependencyFor）
+    # print(dep_for)
     with open(config.CURR_SET_JSON, "r") as fp:
         allcase = json.load(fp)
+    alloptions = list(allcase["Attributes"].keys())
+    for key in alloptions:
+        if key in dep_for:
+            allcase["Attributes"].pop(key)
     tc_file = os.path.join(config.TEST_RESULT_DIR, "all.json")
     with open(tc_file, "w") as fp:
         json.dump(allcase, fp, indent=1)

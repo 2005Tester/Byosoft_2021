@@ -2,7 +2,6 @@ import requests
 import json
 import time
 import os
-import datetime
 from sys import argv
 import logger
 import updatebios
@@ -44,18 +43,19 @@ def registry_file_value_test():
     payloads = testcase.gen_payload_list()
     for payload in payloads:
         key = list(payload["Attributes"].keys())[0]
-        value = payload["Attributes"][key]
-        log.logger.info("%s : %s" % (str(key), str(value)))
-        payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%s\" \r\n    }\r\n}" % (key, value)
-        res = sut.patch_single_payload(payload, config.PATCH_URL).decode('utf-8')
-        res = json.loads(res)
-        if 'error' in res:
-            errors.append(payload)
-            log.logger.info("_"*60)
-            log.logger.info(payload)
-            log.logger.info(res['error'])
-            log.logger.info("_"*60)
-    log.logger.info("Errors: %d" % len(errors))
+        if key not in config.EXELUDE_TEST:
+            value = payload["Attributes"][key]
+            log.logger.info("%s : %s" % (str(key), str(value)))
+            payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%s\" \r\n    }\r\n}" % (key, value)
+            res = sut.patch_single_payload(payload, config.PATCH_URL).decode('utf-8')
+            res = json.loads(res)
+            if 'error' in res:
+                errors.append(payload)
+                log.logger.info("_"*60)
+                log.logger.info(payload)
+                log.logger.info(res['error'])
+                log.logger.info("_"*60)
+        log.logger.info("Errors: %d" % len(errors))
 
 
 def gen_dep_tc():
@@ -104,7 +104,7 @@ def gen_dep_tc():
 
 
 def gen_nondep_tc():
-    dependency_options = testcase.get_varnames_dep()
+    dependency_options = testcase.get_varnames_dep()[0]
     with open(config.CURR_SET_JSON, "r") as fp:
         allcase = json.load(fp)
     alloptions = list(allcase["Attributes"].keys())
@@ -335,8 +335,8 @@ def test_registry_file(baseline):
 
 if __name__ == "__main__":
     if len(argv) == 2:
-        if argv[1] == "clenup":
-            log.logger.info("Function Not ready yet, INTENTION IS TO clenup status and log file")
+        if argv[1] == "debug":
+            print(testcase.get_varnames_dep()[1])
 
         elif argv[1] == "gendeptc":
             log.logger.info("generating dependency test case")
