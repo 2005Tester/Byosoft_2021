@@ -8,7 +8,7 @@ password = 'Admin@9000'
 PING_CMD = 'ping 192.168.100.178'
 
 EXELUDE_TEST = ['serialDebugMsgLvl', 'PowerOnPassword', 'MemChannelEnable[0]', 'MemChannelEnable[7]']
-BIOS = "HY5V016_candidate1.bin"
+BIOS = "C:\\UpdateTool\\HY5V017_candidate1.bin"
 BIOS_CODE = "D:\\Code\\HY5\\Intel\\WhitleyRpPkg001"
 REGISTRY_FILE = ".\\baseline\\registry.json"
 HIDDEN_LIST = ".\\baseline\\hidden.txt"
