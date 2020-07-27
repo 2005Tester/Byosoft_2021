@@ -75,7 +75,7 @@ def get_varnames_dep():
 def gen_payload_list():
     payload_list = []
     all_options = get_all_varnames()
-    dep_options = get_varnames_dep()
+    dep_options = get_varnames_dep()[0]
     non_dep_options = list(set(all_options)-set(dep_options))
     for option in non_dep_options:
         values = supported_value(option)
