@@ -220,8 +220,7 @@ def auto_test(testcase_file):
     payloads = testcase.load(testcase_file)
 
     for key in payloads["Attributes"]:
-        if key not in test_status["Completed"]:
-            timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        if (key not in test_status["Completed"]) and (key not in config.EXELUDE_TEST):
             if isinstance(payloads["Attributes"][key], int):
                 payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": %d \r\n    }\r\n}" % (key, payloads["Attributes"][key])
             else:
@@ -342,6 +341,10 @@ if __name__ == "__main__":
         elif argv[1] == "gendeptc":
             log.logger.info("generating dependency test case")
             gen_dep_tc()   # 把最新dump的registry.json放入baseline目录, 运行会生成tc_dep 前缀的json文件和dep_overview.json.
+
+        elif argv[1] == "genalltc":
+            log.logger.info("generating test case with all the supported setup options.")
+            testcase.gen_all_tc()
 
         elif argv[1] == "valuetest":
             registry_file_value_test()

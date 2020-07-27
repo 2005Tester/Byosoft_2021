@@ -156,3 +156,13 @@ def verify_testcase(testcase_file):
                 print(supported_value(setupoption))
         except Exception as e:
             print(e)
+
+
+def gen_all_tc():
+    with open(config.CURR_SET_JSON, "r") as fp:
+        allcase = json.load(fp)
+    tc_file = os.path.join(config.TEST_RESULT_DIR, "all.json")
+    with open(tc_file, "w") as fp:
+        json.dump(allcase, fp, indent=1)
+    change_value(tc_file)
+    return tc_file
