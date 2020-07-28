@@ -14,7 +14,7 @@ STATUS_PASS = 1
 STATUS_SKIP = 2
 
 
-BINARY_DIR='\\\\172.16.0.73\\HY5_Binary'
+BINARY_DIR = '\\\\172.16.0.73\\HY5_Binary'
 
 
 # define parametres for airtest
@@ -30,20 +30,20 @@ TC6 = {'id': 6, 'name':'legacy_boot',     'script': "\"C:\\autotest\\testcases\\
 TC7 = {'id': 7, 'name':'hpm_downgrade',   'script': "C:\\autotest\\testcases\\HpmDowngrade\\HpmDowngrade.py", 'exec':1}
 """
 
-TC0 = {'id': 0, 'name':'reset_default',     'script': "\"C:\\autotest\\testcases\\ResetDefault\\ResetDefault.py\"",              'exec':1}
-TC1 = {'id': 1, 'name':'boot_ubuntu',     'script': "\"C:\\autotest\\testcases\\BootUbuntu\\BootUbuntu.py\"",                   'exec':1}
-TC2 = {'id': 2, 'name':'boot_to_shell',   'script': "\"C:\\autotest\\testcases\\BootoShell\\BootoShell.py\"",                   'exec':1}
-TC3 = {'id': 3, 'name':'boot_to_setup',   'script': "\"C:\\autotest\\testcases\\BootToSetup\\BootToSetup.py\"",                 'exec':1}
-TC4 = {'id': 4, 'name':'boot_to_bm',      'script': "\"C:\\autotest\\testcases\\BootToBootManager\\BootToBootManager.py\"",     'exec':1}
-TC5 = {'id': 5, 'name':'sp_boot',         'script': "\"C:\\autotest\\testcases\\SpBoot\\SpBoot.py\"",                           'exec':1}
-TC6 = {'id': 6, 'name':'boot_to_win2019', 'script': "\"C:\\autotest\\testcases\\BootWindows2019\\BootWindows2019.py\"",         'exec':1}
-TC7 = {'id': 7, 'name':'legacy_boot',     'script': "\"C:\\autotest\\testcases\\LegacyBoot\\LegacyBoot.py\"",                   'exec':1}
-TC8 = {'id': 8, 'name':'hpm_downgrade',   'script': "C:\\autotest\\testcases\\HpmDowngrade\\HpmDowngrade.py",                   'exec':1}
+TC0 = {'id': 0, 'name': 'reset_default',   'script': "\"C:\\autotest\\testcases\\ResetDefault\\ResetDefault.py\"",               'exec': 1}
+TC1 = {'id': 1, 'name': 'boot_ubuntu',     'script': "\"C:\\autotest\\testcases\\BootUbuntu\\BootUbuntu.py\"",                   'exec': 1}
+TC2 = {'id': 2, 'name': 'boot_to_shell',   'script': "\"C:\\autotest\\testcases\\BootoShell\\BootoShell.py\"",                   'exec': 1}
+TC3 = {'id': 3, 'name': 'boot_to_setup',   'script': "\"C:\\autotest\\testcases\\BootToSetup\\BootToSetup.py\"",                 'exec': 1}
+TC4 = {'id': 4, 'name': 'boot_to_bm',      'script': "\"C:\\autotest\\testcases\\BootToBootManager\\BootToBootManager.py\"",     'exec': 1}
+TC5 = {'id': 5, 'name': 'sp_boot',         'script': "\"C:\\autotest\\testcases\\SpBoot\\SpBoot.py\"",                           'exec': 1}
+TC6 = {'id': 6, 'name': 'boot_to_win2019', 'script': "\"C:\\autotest\\testcases\\BootWindows2019\\BootWindows2019.py\"",         'exec': 1}
+TC7 = {'id': 7, 'name': 'legacy_boot',     'script': "\"C:\\autotest\\testcases\\LegacyBoot\\LegacyBoot.py\"",                   'exec': 1}
+TC8 = {'id': 8, 'name': 'hpm_downgrade',   'script': "C:\\autotest\\testcases\\HpmDowngrade\\HpmDowngrade.py",                   'exec': 1}
 
 
 def update_bios():
     if argv[1] == "RUNONCE":
-        status = STATUS_PASS #force get_test_image() success to test local image
+        status = STATUS_PASS  # force get_test_image() success to test local image
     elif argv[1] == "LOOP":
         status = common.get_test_image(BINARY_DIR)
     else:
@@ -103,6 +103,7 @@ def loop_test(tc_list):
             print("Will check update in 30 minutes")
             time.sleep(1800)
 
+
 def loop_test_py(tc_list):
     while True:
         status = update_bios()
@@ -125,6 +126,7 @@ def loop_test_py(tc_list):
         else:
             print("Will check update in 30 minutes")
             time.sleep(1800)
+
 
 if __name__ == '__main__':
 
