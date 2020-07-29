@@ -67,6 +67,7 @@ def get_varnames_dep():
             varnames_dep.append(item["Dependency"]["MapToAttribute"])
         if item["DependencyFor"] not in varnames_dep:
             varnames_dep.append(item["DependencyFor"])
+        if item["DependencyFor"] not in dependency_for:
             dependency_for.append(item["DependencyFor"])
     return varnames_dep, dependency_for
 
@@ -162,7 +163,6 @@ def verify_testcase(testcase_file):
 
 def gen_all_tc():
     dep_for = get_varnames_dep()[1]   # 获取所有依赖关系的父选项（DependencyFor）
-    # print(dep_for)
     with open(config.CURR_SET_JSON, "r") as fp:
         allcase = json.load(fp)
     alloptions = list(allcase["Attributes"].keys())
