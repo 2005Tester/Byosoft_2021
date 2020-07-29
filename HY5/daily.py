@@ -1,5 +1,7 @@
 # -*- encoding=utf8 -*-
 
+TEST_DIR = "C:\\daily"
+
 TC0 = {'id': 0, 'name': 'reset_default',   'script': "\"C:\\autotest\\testcases\\ResetDefault\\ResetDefault.py\"",               'exec': 1}
 TC1 = {'id': 1, 'name': 'boot_ubuntu',     'script': "\"C:\\autotest\\testcases\\BootUbuntu\\BootUbuntu.py\"",                   'exec': 1}
 TC2 = {'id': 2, 'name': 'boot_to_shell',   'script': "\"C:\\autotest\\testcases\\BootoShell\\BootoShell.py\"",                   'exec': 1}
