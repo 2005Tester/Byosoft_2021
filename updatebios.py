@@ -99,77 +99,106 @@ def hpm_update():
 def program_flash():
     # Program flash procedure: power off->maint mode->attach upgrade ->load bin
     cmd_shutdown = 'ipmcset -d powerstate -v 2\n'
-    cmd_power_on = 'ipmcset -d powerstate -v 1\n'
-    cmd_maint_mode = 'maint_debug_cli\n' 
+    cmd_maint_mode = 'maint_debug_cli\n'
     cmd_confirm = 'Y\n'
     cmd_upgrade_mode = 'attach upgrade\n'
     cmd_load = 'load_bios_bin /tmp/rp001.bin\n'
-    cmd_fan_manual_mode = 'ipmcset -d fanmode -v 1 0\n'
-    cmd_fan_40 = 'ipmcset -d fanlevel -v 40\n'
-
     s = paramiko.SSHClient()
     s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     try:
         s.connect(SUT, 22, USERNAME, PW)
     except Exception as e:
         print("Error in connecting SUT...")
-        return STATUS_FAIL
+        return False
 
     op = s.invoke_shell()
     res = ssh.send_command(cmd_shutdown, op)  # shutdown SUT
-    if re.search("Do you want to continue", res.decode('utf-8')):
-        print("Shutdown command sent to SUT successfully")
-        res = ssh.send_command(cmd_confirm, op)  # confirm shutdown
-        if re.search("Control fru0 forced power off successfully", res.decode('utf-8')):
-            print("Shutdown successfully")
-            res = ssh.send_command(cmd_maint_mode, op)
-            if re.search("Debug Shell", res.decode('utf-8')):
-                print("iBMC enter maintenance debug mode")
-                res = ssh.send_command(cmd_upgrade_mode, op)  # attach upgrade mode
-                if re.search("Success", res.decode('utf-8')):
-                    print("iBMC attach upgrade successfullly")
-                    start_time = time.time()
-                    res = ssh.send_command(cmd_load)  # Load bios to SUT
-                    # print(res.decode('utf-8'))
-                    while re.search("load bios succefully",res.decode('utf-8')) == None:
-                        print("Checking Status...")
-                        res = op.recv(1024)
-                        print(res.decode('utf-8'))
-                        now = time.time()
-                        if ((now - start_time)>600):
-                            print("Porgraming Flash Device Timeout!!!")
-                            op.close()
-                            s.close()
-                            return STATUS_FAIL
-                    if re.search("load bios succefully",res.decode('utf-8')):
-                            op.close()
-                            s.close()
-                            common.prt.print_green_text("Load bios to iBMC: PASS")
-                            return STATUS_PASS         
-                else:
-                    print("iBMC Failed to attach upgrade")
-                    print_rawmsg(res.decode('utf-8'))
-                    op.close()
-                    s.close()
-                    return STATUS_FAIL             
-            else:
-                print("Failed to enter iBMC Enter Maintenance Debug Mode")
-                print_rawmsg(res.decode('utf-8'))
-                op.close()
-                s.close()
-                return STATUS_FAIL 
+    if not re.search("Do you want to continue", res.decode('utf-8')):
+        return False
+    print("Shutdown command sent to SUT successfully")
+    res = ssh.send_command(cmd_confirm, op)  # confirm shutdown
+    if not re.search("Control fru0 forced power off successfully", res.decode('utf-8')):
+        return False
+    print("Shutdown successfully")
+    res = ssh.send_command(cmd_maint_mode, op)
+    if not re.search("Debug Shell", res.decode('utf-8')):
+        return False
+    print("iBMC enter maintenance debug mode")
+    res = ssh.send_command(cmd_upgrade_mode, op)  # attach upgrade mode
+    if not re.search("Success", res.decode('utf-8')):
+        return False
+    print("iBMC attach upgrade successfullly")
+    start_time = time.time()
+    res = ssh.send_command(cmd_load, op)  # Load bios to SUT
+    while not re.search("load bios succefully", res.decode('utf-8')):
+        print("Checking Status...")
+        res = op.recv(1024)
+        print(res.decode('utf-8'))
+        now = time.time()
+        if (now - start_time) > 600:
+            print("Porgraming Flash Device Timeout!!!")
+            op.close()
+            s.close()
+            return False
+        if re.search("load bios succefully", res.decode('utf-8')):
+            op.close()
+            s.close()
+            common.prt.print_green_text("Load bios to iBMC: PASS")
+            return True
         else:
-            print("Failed to shutdown SUT")
+            print("iBMC Failed to attach upgrade")
             print_rawmsg(res.decode('utf-8'))
             op.close()
             s.close()
-            return STATUS_FAIL 
-    else:
-        print("Failed to Send Shutdown Command Sent to SUT")
-        print_rawmsg(res.decode('utf-8'))
-        op.close()
-        s.close()
-        return STATUS_FAIL 
+            return False
+
+
+def program_flash2():
+    # Program flash procedure: power off->maint mode->attach upgrade ->load bin
+    cmd_shutdown = 'ipmcset -d powerstate -v 2\n'
+    ret_shutdown = 'Do you want to continue'
+    cmd_maint_mode = 'maint_debug_cli\n'
+    ret_maint_mode = 'Debug Shell'
+    cmd_confirm = 'Y\n'
+    ret_confirm = 'Control fru0 forced power off successfully'
+    cmd_upgrade_mode = 'attach upgrade\n'
+    ret_upgrade_mode = 'Success'
+    cmd_load = 'load_bios_bin /tmp/rp001.bin\n'
+    cmds = [cmd_shutdown, cmd_confirm, cmd_maint_mode, cmd_upgrade_mode]
+    rets = [ret_shutdown, ret_confirm, ret_maint_mode, ret_upgrade_mode]
+    s = paramiko.SSHClient()
+    s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    try:
+        s.connect(SUT, 22, USERNAME, PW)
+    except Exception as e:
+        print("Error in connecting SUT...")
+        return False
+
+    op = s.invoke_shell()
+    if not ssh.call_commands(cmds, rets, op, s):
+        return False
+    res = ssh.send_command(cmd_load, op)  # Load bios to SUT
+    while not re.search("load bios succefully", res.decode('utf-8')):
+        print("Checking Status...")
+        res = op.recv(1024)
+        print(res.decode('utf-8'))
+        now = time.time()
+        if (now - start_time) > 600:
+            print("Porgraming Flash Device Timeout!!!")
+            op.close()
+            s.close()
+            return False
+        if re.search("load bios succefully", res.decode('utf-8')):
+            op.close()
+            s.close()
+            common.prt.print_green_text("Load bios to iBMC: PASS")
+            return True
+        else:
+            print("iBMC Failed to attach upgrade")
+            print_rawmsg(res.decode('utf-8'))
+            op.close()
+            s.close()
+            return False
 
 
 def poweron_sut():
@@ -180,16 +209,15 @@ def poweron_sut():
 
     s = paramiko.SSHClient()
     s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    s.connect(SUT,22,USERNAME, PW)
-    op=s.invoke_shell()
-
+    s.connect(SUT, 22, USERNAME, PW)
+    op = s.invoke_shell()
     res = ssh.send_command(cmd_power_on, op)
     if re.search("Do you want to continue", res.decode('utf-8')):
         print("Power on command sent to SUT.")
-        res = ssh.send_command(cmd_confirm, op) #confirm power on
+        res = ssh.send_command(cmd_confirm, op) # confirm power on
         if re.search("Control fru0 power on successfully", res.decode('utf-8')):
             print("Power on successfully.")
-            ssh.send_command(cmd_fan_manual_mode, op) #tune fan speed
+            ssh.send_command(cmd_fan_manual_mode, op) # tune fan speed
             ssh.send_command(cmd_fan_40, op)
             common.prt.print_green_text("Power On SUT: PASS")
             return STATUS_PASS
@@ -201,7 +229,7 @@ def poweron_sut():
     op.close()
     s.close()
 
-if __name__ =='__main__':
+
+if __name__ == '__main__':
     upload_bios()
     program_flash()
-#    test()
