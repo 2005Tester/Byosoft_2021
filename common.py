@@ -43,7 +43,7 @@ prt = printcolor.PrintColor()
 def get_test_image(path):
     bios_dir = os.path.join(daily.TEST_DIR, 'bios')
     if not os.path.exists(bios_dir):
-        os.mkdirs(bios_dir)
+        os.mkdir(bios_dir)
     if os.path.exists(path):
         versions = os.listdir(path)
         versions.sort(reverse=True)

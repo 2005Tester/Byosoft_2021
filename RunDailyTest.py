@@ -8,6 +8,7 @@ import common
 import updatebios
 import report
 from sys import argv
+from HY5 import daily
 
 STATUS_FAIL = 0
 STATUS_PASS = 1
@@ -50,7 +51,7 @@ def update_bios():
         print("Usage: RUNONCE or LOOP")
 
     if status == STATUS_PASS:
-        if not updatebios.upload_bios('bios\RP001.bin'):
+        if not updatebios.upload_bios(daily.TEST_DIR + '\\bios\\RP001.bin'):
             return STATUS_FAIL
 
         if not updatebios.program_flash():

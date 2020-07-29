@@ -5,7 +5,7 @@ sut = '192.168.2.100'
 port = '22'
 username = 'Administrator'
 password = 'Admin@9000'
-PING_CMD = 'ping 192.168.100.178'
+PING_CMD = 'ping 192.168.100.199'
 
 EXELUDE_TEST = ['serialDebugMsgLvl', 'PowerOnPassword', 'MemChannelEnable[0]', 'MemChannelEnable[7]', 'PchUsbHsPort[8]']
 BIOS = "C:\\UpdateTool\\HY5V017_candidate1.bin"
