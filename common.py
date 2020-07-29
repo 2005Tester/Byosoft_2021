@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 import shutil
 import json
-import printcolor
+from common import printcolor
 from HY5 import daily
 
 STATUS_FAIL = 0
@@ -16,25 +16,7 @@ STATUS_SKIP = 2
 
 VER_TESTED = []
 
-TestRunInfo = {"testPass":1,
-    "testResult":[
-        {"className":"Reset Default","methodName":"TC0","description":"Reset BIOS default by F9","spendTime":"0s","status":"","log":[]},
-	    {"className":"Boot to Ubuntu","methodName":"TC1","description":"Boot to Ubuntu 18.0 LTS Desktop","spendTime":"0s","status":"","log":[]},
-	    {"className":"Boot to UEFI Shell","methodName":"TC2","description":"Test Boot to UEFI Shell","spendTime":"0s","status":"","log":[]},
-	    {"className":"Boot to Setup","methodName":"TC3","description":"Boot to setu using hotkey: Del","spendTime":"0s","status":"","log":[]},
-	    {"className":"Boot to Boot Manager","methodName":"TC4","description":"Boot to boot manager using hotkey: F11","spendTime":"0s","status":"","log":[]},
-	    {"className":"SP Boot","methodName":"TC5","description":"SP Boot using hotkey: F6","spendTime":"0s","status":"","log":[]},
-	    {"className":"Boot to UEFI Win 2019 ","methodName":"TC6","description":"Boot to UEFI windows server 2019","spendTime":"0s","status":"","log":[]},
-        {"className":"Legacy Boot ","methodName":"TC7","description":"Legacy Boot (No bootable device)","spendTime":"0s","status":"","log":[]},
-        {"className":"HPM Downgrade ","methodName":"TC8","description":"Downgrdae to last official release using hpm","spendTime":"0s","status":"","log":[]}
-	],
-    "testName" :'',
-    "testAll"  :'9',
-	"testPass" :'',
-    "testFail" :'',
-    "testSkip" :'',
-    "beginTime":'',
-    "totalTime":0}
+TestRunInfo = daily.RESULT_TEMPLATE
 
 
 prt = printcolor.PrintColor()

@@ -4,6 +4,7 @@ import datetime
 import time
 import re
 import common
+from common import ssh
 
 STATUS_FAIL = 0
 STATUS_PASS = 1
@@ -18,8 +19,8 @@ def print_rawmsg(msg):
     common.prt.print_red_text('*'*50)
 
 
-def upload_bios(src): #src: temp image directory, tmp/rp001.bin or tmp/bios.hpm 
-     # Upload BIOS image (.bin. .hpm) to SUT
+def upload_bios(src):
+    # Upload BIOS image (.bin. .hpm) to SUT
     bin_file = 'rp001.bin'
     hpm_file = 'bios.hpm'
     transport = paramiko.Transport(SUT, 22)
@@ -27,12 +28,12 @@ def upload_bios(src): #src: temp image directory, tmp/rp001.bin or tmp/bios.hpm
     transport.connect(username=USERNAME, password=PW)
     sftp = paramiko.SFTPClient.from_transport(transport)
     res = sftp.listdir()
-    #print(res)  
+    # print(res)
     for item in res:
-        if re.search(".bin",item):
+        if re.search(".bin", item):
             print("Deleting old .bin image...")
             sftp.remove(item)
-        elif re.search(".hpm",item):
+        elif re.search(".hpm", item):
             print("Deleting old .hpm image...")
             sftp.remove(item)
     if re.search('.bin', src):
@@ -71,6 +72,7 @@ def upload_bios(src): #src: temp image directory, tmp/rp001.bin or tmp/bios.hpm
         print("Invalid image type, please check source file...")
         return STATUS_FAIL
 
+
 def hpm_update():
     cmd_hpmupdate = 'ipmcset -d upgrade -v /tmp/bios.hpm\n'
     s = paramiko.SSHClient()
@@ -81,7 +83,7 @@ def hpm_update():
     time.sleep(5)
     res=op.recv(1024)
     if re.search('successfully',res.decode('utf-8')):
-#        print_rawmsg(res)
+        # print_rawmsg(res)
         print("HPM Uploaded successfully, upgrade on next reboot")
         op.close()
         s.close()
@@ -108,37 +110,30 @@ def program_flash():
     s = paramiko.SSHClient()
     s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     try:
-        s.connect(SUT,22,USERNAME, PW)
+        s.connect(SUT, 22, USERNAME, PW)
     except Exception as e:
         print("Error in connecting SUT...")
         return STATUS_FAIL
 
-    op=s.invoke_shell()
-    
-    def send_cmd(cmd):
-        op.send(cmd)
-        time.sleep(5)
-        res=op.recv(1024)
-        return(res)
-
-    res = send_cmd(cmd_shutdown)  #shutdown SUT
+    op = s.invoke_shell()
+    res = ssh.send_command(cmd_shutdown, op)  # shutdown SUT
     if re.search("Do you want to continue", res.decode('utf-8')):
         print("Shutdown command sent to SUT successfully")
-        res = send_cmd(cmd_confirm) #confirm shutdown
+        res = ssh.send_command(cmd_confirm, op)  # confirm shutdown
         if re.search("Control fru0 forced power off successfully", res.decode('utf-8')):
             print("Shutdown successfully")
-            res = send_cmd(cmd_maint_mode)
+            res = ssh.send_command(cmd_maint_mode, op)
             if re.search("Debug Shell", res.decode('utf-8')):
                 print("iBMC enter maintenance debug mode")
-                res = send_cmd(cmd_upgrade_mode) #attach upgrade mode
+                res = ssh.send_command(cmd_upgrade_mode, op)  # attach upgrade mode
                 if re.search("Success", res.decode('utf-8')):
                     print("iBMC attach upgrade successfullly")
                     start_time = time.time()
-                    res = send_cmd(cmd_load) #Load bios to SUT   
-                    #print(res.decode('utf-8'))               
-                    while (re.search("load bios succefully",res.decode('utf-8'))==None):
+                    res = ssh.send_command(cmd_load)  # Load bios to SUT
+                    # print(res.decode('utf-8'))
+                    while re.search("load bios succefully",res.decode('utf-8')) == None:
                         print("Checking Status...")
-                        res=op.recv(1024)
+                        res = op.recv(1024)
                         print(res.decode('utf-8'))
                         now = time.time()
                         if ((now - start_time)>600):
@@ -176,6 +171,7 @@ def program_flash():
         s.close()
         return STATUS_FAIL 
 
+
 def poweron_sut():
     cmd_power_on = 'ipmcset -d powerstate -v 1\n'
     cmd_fan_manual_mode = 'ipmcset -d fanmode -v 1 0\n'
@@ -186,20 +182,15 @@ def poweron_sut():
     s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     s.connect(SUT,22,USERNAME, PW)
     op=s.invoke_shell()
-    def send_cmd(cmd):
-        op.send(cmd)
-        time.sleep(5)
-        res=op.recv(1024)
-        return(res)
 
-    res = send_cmd(cmd_power_on)
+    res = ssh.send_command(cmd_power_on, op)
     if re.search("Do you want to continue", res.decode('utf-8')):
         print("Power on command sent to SUT.")
-        res = send_cmd(cmd_confirm) #confirm power on
+        res = ssh.send_command(cmd_confirm, op) #confirm power on
         if re.search("Control fru0 power on successfully", res.decode('utf-8')):
             print("Power on successfully.")
-            send_cmd(cmd_fan_manual_mode) #tune fan speed
-            send_cmd(cmd_fan_40)
+            ssh.send_command(cmd_fan_manual_mode, op) #tune fan speed
+            ssh.send_command(cmd_fan_40, op)
             common.prt.print_green_text("Power On SUT: PASS")
             return STATUS_PASS
         else:
