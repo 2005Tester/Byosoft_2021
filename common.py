@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 import shutil
 import json
-from common import printcolor
+from comm import printcolor
 from HY5 import daily
 
 STATUS_FAIL = 0
