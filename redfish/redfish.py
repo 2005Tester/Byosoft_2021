@@ -53,6 +53,7 @@ def registry_file_value_test():
                 errors.append(payload)
                 log.logger.info("_"*60)
                 log.logger.info(payload)
+                log.logger.info(testcase.get_dep_info(key))
                 log.logger.info(testcase.get_error_details(res))
                 log.logger.info("_"*60)
         log.logger.info("Errors: %d" % len(errors))
@@ -336,7 +337,7 @@ def test_registry_file(baseline):
 if __name__ == "__main__":
     if len(argv) == 2:
         if argv[1] == "debug":
-            print(testcase.get_error_details())
+            print(testcase.get_dep_info('partialmirrorsad0'))
 
         elif argv[1] == "gendeptc":
             log.logger.info("generating dependency test case")

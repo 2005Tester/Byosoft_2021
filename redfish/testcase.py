@@ -188,3 +188,13 @@ def get_error_details(error_msg):
         msgs.append(msg['Message'])
     return msgs
 
+
+def get_dep_info(setup_option):
+    dep_info = {setup_option: []}
+    registry = load_registry_file()
+    dependencies = registry['RegistryEntries']['Dependencies']
+    for item in dependencies:
+        if item['Dependency']['MapToAttribute'] == setup_option:
+            if item['DependencyFor'] not in dep_info[setup_option]:
+                dep_info[setup_option].append(item['DependencyFor'])
+    return dep_info
