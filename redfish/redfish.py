@@ -35,10 +35,10 @@ def update_test_status(test_status, status_file):
         json.dump(test_status, f, indent=1)
 
 
-# 遍历所有无依赖关系的选项支持的值, set但是不重启, 看有没有patch不成功的
+# 遍历所有选项支持的值, set但是不重启, 看有没有patch不成功的
 def registry_file_value_test():
     log.logger.info("-"*60)
-    log.logger.info("Testing all supported values for non dependency options")
+    log.logger.info("Testing all supported values for all options")
     errors = []
     payloads = testcase.gen_payload_list()
     for payload in payloads:
