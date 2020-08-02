@@ -37,6 +37,14 @@ def load_registry_file():
         registry = json.load(fp)
     return registry
 
+def get_hidden_options():
+    hidden_options = []
+    registry = load_registry_file()
+    for item in registry["RegistryEntries"]["Attributes"]:
+        if item["Hidden"] == True:
+            hidden_options.append(item["AttributeName"])
+    return hidden_options
+
 
 # 获取setup的menpath
 def get_setup_path(setupname):
@@ -75,9 +83,9 @@ def get_varnames_dep():
 def gen_payload_list():
     payload_list = []
     all_options = get_all_varnames()
-    dep_options = get_varnames_dep()[0]
-    non_dep_options = list(set(all_options)-set(dep_options))
-    for option in non_dep_options:
+    # dep_options = get_varnames_dep()[0]
+    # non_dep_options = list(set(all_options)-set(dep_options))
+    for option in all_options:
         values = supported_value(option)
         for value in values:
             payload = {"Attributes": {option: value}}
