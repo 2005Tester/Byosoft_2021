@@ -336,7 +336,7 @@ def test_registry_file(baseline):
 if __name__ == "__main__":
     if len(argv) == 2:
         if argv[1] == "debug":
-            print(testcase.get_hidden_options(),len(testcase.get_hidden_options()))
+            print(testcase.get_error_details())
 
         elif argv[1] == "gendeptc":
             log.logger.info("generating dependency test case")

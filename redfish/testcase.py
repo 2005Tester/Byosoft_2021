@@ -182,6 +182,9 @@ def gen_all_tc():
     return tc_file
 
 def get_error_details(error_msg):
+    msgs = []
     msg_ext_info = error_msg['error']['@Message.ExtendedInfo']
-    return enumerate(msg_ext_info['Message'])
+    for i, msg in enumerate(msg_ext_info):
+        msgs.append(msg['Message'])
+    return msgs
 
