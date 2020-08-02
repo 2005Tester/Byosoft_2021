@@ -175,9 +175,13 @@ def program_flash2():
         return False
 
     op = s.invoke_shell()
-    if not ssh.call_commands(cmds, rets, op, s):
+    if not ssh.call_commands(cmds, rets, op):
+        op.close()
+        s.close()
         return False
     res = ssh.send_command(cmd_load, op)  # Load bios to SUT
+    print("Sending command: %s" % cmd_load)
+    start_time = time.time()
     while not re.search("load bios succefully", res.decode('utf-8')):
         print("Checking Status...")
         res = op.recv(1024)
@@ -185,21 +189,11 @@ def program_flash2():
         now = time.time()
         if (now - start_time) > 600:
             print("Porgraming Flash Device Timeout!!!")
-            op.close()
-            s.close()
-            return False
+            status = False
         if re.search("load bios succefully", res.decode('utf-8')):
-            op.close()
-            s.close()
             common.prt.print_green_text("Load bios to iBMC: PASS")
-            return True
-        else:
-            print("iBMC Failed to attach upgrade")
-            print_rawmsg(res.decode('utf-8'))
-            op.close()
-            s.close()
-            return False
-
+            status = True
+    return status
 
 def poweron_sut():
     cmd_power_on = 'ipmcset -d powerstate -v 1\n'

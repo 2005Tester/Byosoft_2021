@@ -11,16 +11,12 @@ def send_command(command, op):
     return ret
 
 
-def call_commands(cmds, strs, op, s):
+def call_commands(cmds, strs, op):
     for i in range(0, len(cmds)):
-        res = ssh.send_command(cmd[i], op)  # confirm shutdown
+        res = send_command(cmds[i], op)  # confirm shutdown
         if not re.search(strs[i], res.decode('utf-8')):
-            op.close()
-            s.close()
-            print('%s failed to execute.' % cmd[i])
+            print('Command: %s failed to execute.' % cmds[i])
             return False
-        print('%s executed successfully.' % cmd[i])
-    op.close()
-    s.close()
+        print('Sending command: %s' % cmds[i])
     return True
 
