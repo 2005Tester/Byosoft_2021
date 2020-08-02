@@ -197,4 +197,4 @@ def get_dep_info(setup_option):
         if item['Dependency']['MapToAttribute'] == setup_option:
             if item['DependencyFor'] not in dep_info[setup_option]:
                 dep_info[setup_option].append(item['DependencyFor'])
-    return dep_info
+    return dep_info[setup_option]
