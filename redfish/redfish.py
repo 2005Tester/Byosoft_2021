@@ -53,7 +53,7 @@ def registry_file_value_test():
                 errors.append(payload)
                 log.logger.info("_"*60)
                 log.logger.info(payload)
-                log.logger.info('%s depends %s' % (key,testcase.get_dep_info(key)))
+                log.logger.info('%s depends on: %s' % (key,testcase.get_dep_info(key)))
                 log.logger.info(testcase.get_error_details(res))
                 log.logger.info("_"*60)
         log.logger.info("Errors: %d" % len(errors))
