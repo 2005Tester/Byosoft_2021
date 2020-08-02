@@ -1,5 +1,4 @@
 {
- "Attributes": {
 "CdnSupport":"Enabled",
 "AcpiHpet":"Enabled",
 "AcpiApicPolicy":"Available",
@@ -147,26 +146,6 @@
 "sSataExternal[1]":"Disabled",
 "sSataType[1]":"Hard Disk Drive",
 "sSataTopology[1]":"Unknown",
-"sSataPort[2]":"Enabled",
-"sSataHotPlug[2]":"Enabled",
-"sSataExternal[2]":"Disabled",
-"sSataType[2]":"Hard Disk Drive",
-"sSataTopology[2]":"Unknown",
-"sSataPort[3]":"Enabled",
-"sSataHotPlug[3]":"Enabled",
-"sSataExternal[3]":"Disabled",
-"sSataType[3]":"Hard Disk Drive",
-"sSataTopology[3]":"Unknown",
-"sSataPort[4]":"Enabled",
-"sSataHotPlug[4]":"Enabled",
-"sSataExternal[4]":"Disabled",
-"sSataType[4]":"Hard Disk Drive",
-"sSataTopology[4]":"Unknown",
-"sSataPort[5]":"Enabled",
-"sSataHotPlug[5]":"Enabled",
-"sSataExternal[5]":"Disabled",
-"sSataType[5]":"Hard Disk Drive",
-"sSataTopology[5]":"Unknown",
 "PchPcieUX16MaxPayloadSize":"MPL 512B",
 "PchPcieUX8MaxPayloadSize":"MPL 512B",
 "PcieDmiAspm":"Disabled",
@@ -456,4 +435,3 @@
 "BootClassOrder":"HDD,DVD,PXE,OTH",
 "OemSecureBoot":"Enabled"
 }
-	}

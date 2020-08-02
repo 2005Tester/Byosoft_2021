@@ -210,7 +210,7 @@
 }
 ],
 "DisplayName":"Hyper-Threading [ALL]",
-"HelpText":"Enables Hyper Threading (Software Method to Enable/Disable Logical Processor threads .",
+"HelpText":"Enable Hyper Threading (Software Method to Enable/Disable Logical Processor threads .",
 "DefaultValue":"Enabled",
 "DisplayOrder":0,
 "MenuPath":"./Advanced/CPUConfiguration/ProcessorConfiguration",
@@ -287,8 +287,8 @@
 "DisplayName":"Enabled"
 },
 {
-"ValueName":"Enable at End of POST",
-"DisplayName":"Enable at End of POST"
+"ValueName":"Enabled at End of POST",
+"DisplayName":"Enabled at End of POST"
 }
 ],
 "DisplayName":"Patrol Scrub",
@@ -299,7 +299,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -415,7 +415,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -482,7 +482,7 @@
 "HelpText":"Enable/Disable processor Turbo Mode (requires EMTTM enabled too).",
 "DefaultValue":"Enabled",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/CPUPStateControl",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPUPStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -516,7 +516,7 @@
 "HelpText":"Disable: Hardware chooses a P-state based on OS Request (Legacy P-States)  Native Mode:Hardware chooses a P-state based on OS guidance  Out of Band Mode:Hardware autonomously chooses a P-state (no OS guidance)  Native Mode with No Legacy Support:same as Native Mode but only support new ACPI specification.",
 "DefaultValue":"Disabled",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/HardwarePMStateControl",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/HardwarePMStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -542,7 +542,7 @@
 "HelpText":"Options decides who Controls EPB.  In OS mode: IA32_ENERGY_PERF_BIAS is used  In BIOS mode: ENERGY_PERF_BIAS_CONFIG is used  In PECI mode: PCS53 is used",
 "DefaultValue":"OS Controls EPB",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/CPU-AdvancedPMTuning/EnergyPerfBIAS",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPU-AdvancedPMTuning/EnergyPerfBIAS",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -568,7 +568,7 @@
 "HelpText":"Core C1E auto promotion Control. Takes effect after reboot.",
 "DefaultValue":"Disabled",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/CPUCStateControl",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPUCStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -594,7 +594,7 @@
 "HelpText":"When disabled, HW masks EPP in CPUID[6].10 and uses EPB for EPP",
 "DefaultValue":"Enabled",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/HardwarePMStateControl",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/HardwarePMStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -628,7 +628,7 @@
 "HelpText":"Choose an HWPM Profile (EPP)",
 "DefaultValue":"Balanced Performance",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/HardwarePMStateControl",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/HardwarePMStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -658,7 +658,7 @@
 "HelpText":"Enable/Disable CPU C6(ACPI C3) report to OS",
 "DefaultValue":"Auto",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/CPUCStateControl",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPUCStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -700,7 +700,7 @@
 "HelpText":"Package C State limit",
 "DefaultValue":"Auto",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/PackageCStateControl",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/PackageCStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -726,7 +726,7 @@
 "HelpText":"Enable/Disable EIST (P-States)",
 "DefaultValue":"Enabled",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/CPUPStateControl",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPUPStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -752,7 +752,7 @@
 "HelpText":"Enable/Disable Extreme Edition support.",
 "DefaultValue":"Enabled",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/Overclocking",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/Overclocking",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -778,7 +778,7 @@
 "HelpText":"Enable/Disable Software Controlled T-States",
 "DefaultValue":"Enabled",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/CPUThermalManagement/CPUTStateControl",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPUThermalManagement/CPUTStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -808,11 +808,11 @@
 "HelpText":"Select the performance state that the BIOS will set before OS hand off.",
 "DefaultValue":"Max Performance",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/CPUPStateControl",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPUPStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -834,7 +834,7 @@
 "HelpText":"Enable or disable dynamic energy management technology(DEMT) mode.",
 "DefaultValue":"Disabled",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/CPUPStateControl",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPUPStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -864,7 +864,7 @@
 "HelpText":"Enable/Disable autonomous uncore frequency scaling",
 "DefaultValue":"Enabled",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/CPUPStateControl",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPUPStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -1064,7 +1064,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -1176,7 +1176,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -1198,11 +1198,11 @@
 "HelpText":"Choose HW_ALL/SW_ALL in _PSD return",
 "DefaultValue":"HW_ALL",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/CPUPStateControl",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPUPStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -1224,11 +1224,11 @@
 "HelpText":"Energy Efficient Turbo Disable, MSR 0x1FC [19]",
 "DefaultValue":"Enabled",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/CPUPStateControl",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPUPStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -1258,7 +1258,7 @@
 "HelpText":"Use input from ENERGY_PERF_BIAS_CONFIG mode selection. PERF/Balanced Perf/Balanced Power/Power",
 "DefaultValue":"Balanced Performance",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/CPU-AdvancedPMTuning/EnergyPerfBIAS",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPU-AdvancedPMTuning/EnergyPerfBIAS",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -1284,7 +1284,7 @@
 "HelpText":"Configures CKE Power Down",
 "DefaultValue":"Disabled",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/MemoryPower&ThermalConfiguration/MemoryPowerSavingsAdvancedOptions",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/MemoryPowerThermalConfiguration/MemoryPowerSavingsAdvancedOptions",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -1360,7 +1360,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ScalarIncrement":1,
@@ -1389,7 +1389,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -1415,7 +1415,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -2579,7 +2579,7 @@
 "HelpText":"This setting will toggle the UEFI Optimized Boot to enabled or disabled at next boot.",
 "DefaultValue":"UEFI Boot Type",
 "DisplayOrder":0,
-"MenuPath":"./Exit/BootType",
+"MenuPath":"./Boot",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -2823,7 +2823,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -2839,7 +2839,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ScalarIncrement":0,
@@ -2868,7 +2868,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -2894,7 +2894,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -3050,7 +3050,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -3076,7 +3076,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -3102,7 +3102,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -3128,7 +3128,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -3258,7 +3258,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -3284,7 +3284,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -3322,7 +3322,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -3400,7 +3400,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -3426,7 +3426,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -3464,7 +3464,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -3542,7 +3542,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -3568,7 +3568,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -3606,7 +3606,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -3684,7 +3684,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -3710,7 +3710,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -3748,7 +3748,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -3878,7 +3878,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -3904,7 +3904,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -3942,7 +3942,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -4020,7 +4020,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -4046,7 +4046,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -4084,575 +4084,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
-"Immutable":false,
-"IsSystemUniqueProperty":true,
-"ValueExpression":null
-},
-{
-"AttributeName":"sSataPort[2]",
-"Type":"Enumeration",
-"Value":[
-{
-"ValueName":"Disabled",
-"DisplayName":"Disabled"
-},
-{
-"ValueName":"Enabled",
-"DisplayName":"Enabled"
-}
-],
-"DisplayName":"  Port 2",
-"HelpText":"Enable or Disable sSATA Port",
-"DefaultValue":"Enabled",
-"DisplayOrder":0,
-"MenuPath":"./Advanced/PCHConfiguration/PCHsSATAConfiguration",
-"ReadOnly":false,
-"WriteOnly":false,
-"GrayOut":false,
-"Hidden":false,
-"Immutable":false,
-"IsSystemUniqueProperty":true,
-"ValueExpression":null
-},
-{
-"AttributeName":"sSataHotPlug[2]",
-"Type":"Enumeration",
-"Value":[
-{
-"ValueName":"Disabled",
-"DisplayName":"Disabled"
-},
-{
-"ValueName":"Enabled",
-"DisplayName":"Enabled"
-}
-],
-"DisplayName":"  Hot Plug",
-"HelpText":"Enable or disable the hot-pluggable feature.",
-"DefaultValue":"Enabled",
-"DisplayOrder":0,
-"MenuPath":"./Advanced/PCHConfiguration/PCHsSATAConfiguration",
-"ReadOnly":false,
-"WriteOnly":false,
-"GrayOut":false,
-"Hidden":false,
-"Immutable":false,
-"IsSystemUniqueProperty":true,
-"ValueExpression":null
-},
-{
-"AttributeName":"sSataExternal[2]",
-"Type":"Enumeration",
-"Value":[
-{
-"ValueName":"Disabled",
-"DisplayName":"Disabled"
-},
-{
-"ValueName":"Enabled",
-"DisplayName":"Enabled"
-}
-],
-"DisplayName":"  Configure as eSATA",
-"HelpText":"Configures port as External SATA (eSATA)",
-"DefaultValue":"Disabled",
-"DisplayOrder":0,
-"MenuPath":"./Advanced/PCHConfiguration/PCHsSATAConfiguration",
-"ReadOnly":false,
-"WriteOnly":false,
-"GrayOut":false,
-"Hidden":false,
-"Immutable":false,
-"IsSystemUniqueProperty":true,
-"ValueExpression":null
-},
-{
-"AttributeName":"sSataType[2]",
-"Type":"Enumeration",
-"Value":[
-{
-"ValueName":"Hard Disk Drive",
-"DisplayName":"Hard Disk Drive"
-},
-{
-"ValueName":"Solid State Drive",
-"DisplayName":"Solid State Drive"
-}
-],
-"DisplayName":"  sSATA Device Type",
-"HelpText":"Configure sSATA as AHCI or RAID.",
-"DefaultValue":"Hard Disk Drive",
-"DisplayOrder":0,
-"MenuPath":"./Advanced/PCHConfiguration/PCHsSATAConfiguration",
-"ReadOnly":false,
-"WriteOnly":false,
-"GrayOut":false,
-"Hidden":false,
-"Immutable":false,
-"IsSystemUniqueProperty":true,
-"ValueExpression":null
-},
-{
-"AttributeName":"sSataTopology[2]",
-"Type":"Enumeration",
-"Value":[
-{
-"ValueName":"Unknown",
-"DisplayName":"Unknown"
-},
-{
-"ValueName":"ISATA",
-"DisplayName":"ISATA"
-},
-{
-"ValueName":"Direct Connect",
-"DisplayName":"Direct Connect"
-},
-{
-"ValueName":"Flex",
-"DisplayName":"Flex"
-},
-{
-"ValueName":"M2",
-"DisplayName":"M2"
-}
-],
-"DisplayName":"SATA Topology",
-"HelpText":"Identify the Secondary SATA Topology if it is Default or ISATA or Flex or DirectConnect or M2",
-"DefaultValue":"Unknown",
-"DisplayOrder":0,
-"MenuPath":"./Advanced/PCHConfiguration/PCHsSATAConfiguration",
-"ReadOnly":false,
-"WriteOnly":false,
-"GrayOut":false,
-"Hidden":false,
-"Immutable":false,
-"IsSystemUniqueProperty":true,
-"ValueExpression":null
-},
-{
-"AttributeName":"sSataPort[3]",
-"Type":"Enumeration",
-"Value":[
-{
-"ValueName":"Disabled",
-"DisplayName":"Disabled"
-},
-{
-"ValueName":"Enabled",
-"DisplayName":"Enabled"
-}
-],
-"DisplayName":"  Port 3",
-"HelpText":"Enable or Disable sSATA Port",
-"DefaultValue":"Enabled",
-"DisplayOrder":0,
-"MenuPath":"./Advanced/PCHConfiguration/PCHsSATAConfiguration",
-"ReadOnly":false,
-"WriteOnly":false,
-"GrayOut":false,
-"Hidden":false,
-"Immutable":false,
-"IsSystemUniqueProperty":true,
-"ValueExpression":null
-},
-{
-"AttributeName":"sSataHotPlug[3]",
-"Type":"Enumeration",
-"Value":[
-{
-"ValueName":"Disabled",
-"DisplayName":"Disabled"
-},
-{
-"ValueName":"Enabled",
-"DisplayName":"Enabled"
-}
-],
-"DisplayName":"  Hot Plug",
-"HelpText":"Enable or disable the hot-pluggable feature.",
-"DefaultValue":"Enabled",
-"DisplayOrder":0,
-"MenuPath":"./Advanced/PCHConfiguration/PCHsSATAConfiguration",
-"ReadOnly":false,
-"WriteOnly":false,
-"GrayOut":false,
-"Hidden":false,
-"Immutable":false,
-"IsSystemUniqueProperty":true,
-"ValueExpression":null
-},
-{
-"AttributeName":"sSataExternal[3]",
-"Type":"Enumeration",
-"Value":[
-{
-"ValueName":"Disabled",
-"DisplayName":"Disabled"
-},
-{
-"ValueName":"Enabled",
-"DisplayName":"Enabled"
-}
-],
-"DisplayName":"  Configure as eSATA",
-"HelpText":"Configures port as External SATA (eSATA)",
-"DefaultValue":"Disabled",
-"DisplayOrder":0,
-"MenuPath":"./Advanced/PCHConfiguration/PCHsSATAConfiguration",
-"ReadOnly":false,
-"WriteOnly":false,
-"GrayOut":false,
-"Hidden":false,
-"Immutable":false,
-"IsSystemUniqueProperty":true,
-"ValueExpression":null
-},
-{
-"AttributeName":"sSataType[3]",
-"Type":"Enumeration",
-"Value":[
-{
-"ValueName":"Hard Disk Drive",
-"DisplayName":"Hard Disk Drive"
-},
-{
-"ValueName":"Solid State Drive",
-"DisplayName":"Solid State Drive"
-}
-],
-"DisplayName":"  sSATA Device Type",
-"HelpText":"Configure sSATA as AHCI or RAID.",
-"DefaultValue":"Hard Disk Drive",
-"DisplayOrder":0,
-"MenuPath":"./Advanced/PCHConfiguration/PCHsSATAConfiguration",
-"ReadOnly":false,
-"WriteOnly":false,
-"GrayOut":false,
-"Hidden":false,
-"Immutable":false,
-"IsSystemUniqueProperty":true,
-"ValueExpression":null
-},
-{
-"AttributeName":"sSataTopology[3]",
-"Type":"Enumeration",
-"Value":[
-{
-"ValueName":"Unknown",
-"DisplayName":"Unknown"
-},
-{
-"ValueName":"ISATA",
-"DisplayName":"ISATA"
-},
-{
-"ValueName":"Direct Connect",
-"DisplayName":"Direct Connect"
-},
-{
-"ValueName":"Flex",
-"DisplayName":"Flex"
-},
-{
-"ValueName":"M2",
-"DisplayName":"M2"
-}
-],
-"DisplayName":"SATA Topology",
-"HelpText":"Identify the Secondary SATA Topology if it is Default or ISATA or Flex or DirectConnect or M2",
-"DefaultValue":"Unknown",
-"DisplayOrder":0,
-"MenuPath":"./Advanced/PCHConfiguration/PCHsSATAConfiguration",
-"ReadOnly":false,
-"WriteOnly":false,
-"GrayOut":false,
-"Hidden":false,
-"Immutable":false,
-"IsSystemUniqueProperty":true,
-"ValueExpression":null
-},
-{
-"AttributeName":"sSataPort[4]",
-"Type":"Enumeration",
-"Value":[
-{
-"ValueName":"Disabled",
-"DisplayName":"Disabled"
-},
-{
-"ValueName":"Enabled",
-"DisplayName":"Enabled"
-}
-],
-"DisplayName":"  Port 4",
-"HelpText":"Enable or Disable sSATA Port",
-"DefaultValue":"Enabled",
-"DisplayOrder":0,
-"MenuPath":"./Advanced/PCHConfiguration/PCHsSATAConfiguration",
-"ReadOnly":false,
-"WriteOnly":false,
-"GrayOut":false,
-"Hidden":false,
-"Immutable":false,
-"IsSystemUniqueProperty":true,
-"ValueExpression":null
-},
-{
-"AttributeName":"sSataHotPlug[4]",
-"Type":"Enumeration",
-"Value":[
-{
-"ValueName":"Disabled",
-"DisplayName":"Disabled"
-},
-{
-"ValueName":"Enabled",
-"DisplayName":"Enabled"
-}
-],
-"DisplayName":"  Hot Plug",
-"HelpText":"Enable or disable the hot-pluggable feature.",
-"DefaultValue":"Enabled",
-"DisplayOrder":0,
-"MenuPath":"./Advanced/PCHConfiguration/PCHsSATAConfiguration",
-"ReadOnly":false,
-"WriteOnly":false,
-"GrayOut":false,
-"Hidden":false,
-"Immutable":false,
-"IsSystemUniqueProperty":true,
-"ValueExpression":null
-},
-{
-"AttributeName":"sSataExternal[4]",
-"Type":"Enumeration",
-"Value":[
-{
-"ValueName":"Disabled",
-"DisplayName":"Disabled"
-},
-{
-"ValueName":"Enabled",
-"DisplayName":"Enabled"
-}
-],
-"DisplayName":"  Configure as eSATA",
-"HelpText":"Configures port as External SATA (eSATA)",
-"DefaultValue":"Disabled",
-"DisplayOrder":0,
-"MenuPath":"./Advanced/PCHConfiguration/PCHsSATAConfiguration",
-"ReadOnly":false,
-"WriteOnly":false,
-"GrayOut":false,
-"Hidden":false,
-"Immutable":false,
-"IsSystemUniqueProperty":true,
-"ValueExpression":null
-},
-{
-"AttributeName":"sSataType[4]",
-"Type":"Enumeration",
-"Value":[
-{
-"ValueName":"Hard Disk Drive",
-"DisplayName":"Hard Disk Drive"
-},
-{
-"ValueName":"Solid State Drive",
-"DisplayName":"Solid State Drive"
-}
-],
-"DisplayName":"  sSATA Device Type",
-"HelpText":"Configure sSATA as AHCI or RAID.",
-"DefaultValue":"Hard Disk Drive",
-"DisplayOrder":0,
-"MenuPath":"./Advanced/PCHConfiguration/PCHsSATAConfiguration",
-"ReadOnly":false,
-"WriteOnly":false,
-"GrayOut":false,
-"Hidden":false,
-"Immutable":false,
-"IsSystemUniqueProperty":true,
-"ValueExpression":null
-},
-{
-"AttributeName":"sSataTopology[4]",
-"Type":"Enumeration",
-"Value":[
-{
-"ValueName":"Unknown",
-"DisplayName":"Unknown"
-},
-{
-"ValueName":"ISATA",
-"DisplayName":"ISATA"
-},
-{
-"ValueName":"Direct Connect",
-"DisplayName":"Direct Connect"
-},
-{
-"ValueName":"Flex",
-"DisplayName":"Flex"
-},
-{
-"ValueName":"M2",
-"DisplayName":"M2"
-}
-],
-"DisplayName":"SATA Topology",
-"HelpText":"Identify the Secondary SATA Topology if it is Default or ISATA or Flex or DirectConnect or M2",
-"DefaultValue":"Unknown",
-"DisplayOrder":0,
-"MenuPath":"./Advanced/PCHConfiguration/PCHsSATAConfiguration",
-"ReadOnly":false,
-"WriteOnly":false,
-"GrayOut":false,
-"Hidden":false,
-"Immutable":false,
-"IsSystemUniqueProperty":true,
-"ValueExpression":null
-},
-{
-"AttributeName":"sSataPort[5]",
-"Type":"Enumeration",
-"Value":[
-{
-"ValueName":"Disabled",
-"DisplayName":"Disabled"
-},
-{
-"ValueName":"Enabled",
-"DisplayName":"Enabled"
-}
-],
-"DisplayName":"  Port 5",
-"HelpText":"Enable or Disable sSATA Port",
-"DefaultValue":"Enabled",
-"DisplayOrder":0,
-"MenuPath":"./Advanced/PCHConfiguration/PCHsSATAConfiguration",
-"ReadOnly":false,
-"WriteOnly":false,
-"GrayOut":false,
-"Hidden":false,
-"Immutable":false,
-"IsSystemUniqueProperty":true,
-"ValueExpression":null
-},
-{
-"AttributeName":"sSataHotPlug[5]",
-"Type":"Enumeration",
-"Value":[
-{
-"ValueName":"Disabled",
-"DisplayName":"Disabled"
-},
-{
-"ValueName":"Enabled",
-"DisplayName":"Enabled"
-}
-],
-"DisplayName":"  Hot Plug",
-"HelpText":"Enable or disable the hot-pluggable feature.",
-"DefaultValue":"Enabled",
-"DisplayOrder":0,
-"MenuPath":"./Advanced/PCHConfiguration/PCHsSATAConfiguration",
-"ReadOnly":false,
-"WriteOnly":false,
-"GrayOut":false,
-"Hidden":false,
-"Immutable":false,
-"IsSystemUniqueProperty":true,
-"ValueExpression":null
-},
-{
-"AttributeName":"sSataExternal[5]",
-"Type":"Enumeration",
-"Value":[
-{
-"ValueName":"Disabled",
-"DisplayName":"Disabled"
-},
-{
-"ValueName":"Enabled",
-"DisplayName":"Enabled"
-}
-],
-"DisplayName":"  Configure as eSATA",
-"HelpText":"Configures port as External SATA (eSATA)",
-"DefaultValue":"Disabled",
-"DisplayOrder":0,
-"MenuPath":"./Advanced/PCHConfiguration/PCHsSATAConfiguration",
-"ReadOnly":false,
-"WriteOnly":false,
-"GrayOut":false,
-"Hidden":false,
-"Immutable":false,
-"IsSystemUniqueProperty":true,
-"ValueExpression":null
-},
-{
-"AttributeName":"sSataType[5]",
-"Type":"Enumeration",
-"Value":[
-{
-"ValueName":"Hard Disk Drive",
-"DisplayName":"Hard Disk Drive"
-},
-{
-"ValueName":"Solid State Drive",
-"DisplayName":"Solid State Drive"
-}
-],
-"DisplayName":"  sSATA Device Type",
-"HelpText":"Configure sSATA as AHCI or RAID.",
-"DefaultValue":"Hard Disk Drive",
-"DisplayOrder":0,
-"MenuPath":"./Advanced/PCHConfiguration/PCHsSATAConfiguration",
-"ReadOnly":false,
-"WriteOnly":false,
-"GrayOut":false,
-"Hidden":false,
-"Immutable":false,
-"IsSystemUniqueProperty":true,
-"ValueExpression":null
-},
-{
-"AttributeName":"sSataTopology[5]",
-"Type":"Enumeration",
-"Value":[
-{
-"ValueName":"Unknown",
-"DisplayName":"Unknown"
-},
-{
-"ValueName":"ISATA",
-"DisplayName":"ISATA"
-},
-{
-"ValueName":"Direct Connect",
-"DisplayName":"Direct Connect"
-},
-{
-"ValueName":"Flex",
-"DisplayName":"Flex"
-},
-{
-"ValueName":"M2",
-"DisplayName":"M2"
-}
-],
-"DisplayName":"SATA Topology",
-"HelpText":"Identify the Secondary SATA Topology if it is Default or ISATA or Flex or DirectConnect or M2",
-"DefaultValue":"Unknown",
-"DisplayOrder":0,
-"MenuPath":"./Advanced/PCHConfiguration/PCHsSATAConfiguration",
-"ReadOnly":false,
-"WriteOnly":false,
-"GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -4802,7 +4234,7 @@
 "HelpText":"Disable PXE boot capability or select one of the options: UEFI: IPv4, UEFI: IPv6, or UEFI: IPv4/IPv6.",
 "DefaultValue":"UEFI:IPv4",
 "DisplayOrder":0,
-"MenuPath":"./Exit",
+"MenuPath":"./Boot",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -4828,7 +4260,7 @@
 "HelpText":"IPv4 PXE",
 "DefaultValue":"Enabled",
 "DisplayOrder":0,
-"MenuPath":"./Exit",
+"MenuPath":"./Boot",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -4854,7 +4286,7 @@
 "HelpText":"IPv6 PXE",
 "DefaultValue":"Disabled",
 "DisplayOrder":0,
-"MenuPath":"./Exit",
+"MenuPath":"./Boot",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -4888,7 +4320,7 @@
 "HelpText":"Disable HTTPS boot capability or select one of the options: HTTPS: IPv4, HTTPS: IPv6, or HTTPS: IPv4/IPv6.",
 "DefaultValue":"HTTPS:IPv4",
 "DisplayOrder":0,
-"MenuPath":"./Exit",
+"MenuPath":"./Boot",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -4914,11 +4346,11 @@
 "HelpText":"Enable/Disable quiet boot. With disable, show text mode info and skip POST LOGO.",
 "DefaultValue":"Disabled",
 "DisplayOrder":0,
-"MenuPath":"./Exit",
+"MenuPath":"./Boot",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -4930,7 +4362,7 @@
 "HelpText":"Retry count number, 99 is endless mode.",
 "DefaultValue":1,
 "DisplayOrder":0,
-"MenuPath":"./Exit",
+"MenuPath":"./Boot",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -4963,7 +4395,7 @@
 "HelpText":"Boot Retry Policy",
 "DefaultValue":"None",
 "DisplayOrder":0,
-"MenuPath":"./Exit",
+"MenuPath":"./Boot",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -4989,7 +4421,7 @@
 "HelpText":"Enable or disable booting to USB boot devices.",
 "DefaultValue":"Enabled",
 "DisplayOrder":0,
-"MenuPath":"./Exit",
+"MenuPath":"./Boot",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -5015,7 +4447,7 @@
 "HelpText":"Enable or disable network stack support.",
 "DefaultValue":"Enabled",
 "DisplayOrder":0,
-"MenuPath":"./Exit",
+"MenuPath":"./Boot",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -5069,7 +4501,7 @@
 "HelpText":"Override boot order.",
 "DefaultValue":"Disabled",
 "DisplayOrder":0,
-"MenuPath":"./Exit",
+"MenuPath":"./Boot",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -5095,7 +4527,7 @@
 "HelpText":"Enable/Disable SP boot.",
 "DefaultValue":"Enabled",
 "DisplayOrder":0,
-"MenuPath":"./Exit",
+"MenuPath":"./Boot",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -5408,7 +4840,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -5434,7 +4866,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -5460,7 +4892,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -7953,7 +7385,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -7979,7 +7411,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -8319,7 +7751,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -8427,7 +7859,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -9059,7 +8491,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -9301,7 +8733,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -9317,7 +8749,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ScalarIncrement":1,
@@ -9406,7 +8838,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -9440,7 +8872,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -9627,7 +9059,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -11252,7 +10684,7 @@
 }
 ],
 "DisplayName":"Memory Correctable Error Flood Policy",
-"HelpText":"[Disable] - Don't deal with Memory CE flood.  [Once] - Only First Memory CE will trigger SMI,and BIOS will disable this rank silicon side to trigger SMI.  [Frequency] Disable SMI when Memory CE reache threshold within time limits.",
+"HelpText":"[Disabled] - Don't deal with Memory CE flood.  [Once] - Only First Memory CE will trigger SMI,and BIOS will disable this rank silicon side to trigger SMI.  [Frequency] Disable SMI when Memory CE reache threshold within time limits.",
 "DefaultValue":"Frequency",
 "DisplayOrder":0,
 "MenuPath":"./Advanced/CPUConfiguration/MemoryConfiguration/MemoryRASConfiguration",
@@ -11410,7 +10842,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ScalarIncrement":0,
@@ -11439,7 +10871,7 @@
 "HelpText":"Select Static Turbo policy that the BIOS will apply.Frequency ranges from selected frequency to turbo frequency if Auto mode is selected.When Manual mode is selected,Frequency is just the selected Frequency.",
 "DefaultValue":"Disabled",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -11455,7 +10887,7 @@
 "HelpText":"Please select frequency between Base and Turbo,Unit:100MHz.When the input value is less than the base value, the setting is made at the base frequency. When the input value is greater than the maximum supported turbo value, the setting is made at the maximum turbo frequency.",
 "DefaultValue":40,
 "DisplayOrder":0,
-"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -11488,7 +10920,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -11608,7 +11040,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -12068,7 +11500,7 @@
 "HelpText":"Allows Monitor and MWAIT instructions.",
 "DefaultValue":"Enabled",
 "DisplayOrder":0,
-"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmt.Configuration/CPUCStateControl",
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPUCStateControl",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -12098,7 +11530,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -12214,7 +11646,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -12240,7 +11672,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -12256,7 +11688,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ScalarIncrement":0,
@@ -12275,7 +11707,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ScalarIncrement":0,
@@ -12304,7 +11736,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -12446,7 +11878,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -12624,7 +12056,7 @@
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
-"Hidden":false,
+"Hidden":true,
 "Immutable":false,
 "IsSystemUniqueProperty":true,
 "ValueExpression":null
@@ -12768,7 +12200,7 @@
 "HelpText":"Boot option type order",
 "DefaultValue":"HDD,DVD,PXE,OTH",
 "DisplayOrder":0,
-"MenuPath":"./Exit",
+"MenuPath":"./Boot/BootTypeOrder",
 "ReadOnly":false,
 "WriteOnly":false,
 "GrayOut":false,
@@ -12804,9 +12236,71 @@
 "ValueExpression":null
 }
 ],
-"Menus":
+"Menus":[
 {
-"":
+"MenuName":"Advanced",
+"DisplayName":"Advanced",
+"DisplayOrder":0,
+"ReadOnly":false,
+"GrayOut":false,
+"MenuPath":"./Advanced"
+},
+{
+"MenuName":"Boot",
+"DisplayName":"Boot",
+"DisplayOrder":0,
+"ReadOnly":false,
+"GrayOut":false,
+"MenuPath":"./Boot"
+},
+{
+"MenuName":"PCHConfiguration",
+"DisplayName":"PCH Configuration",
+"DisplayOrder":0,
+"ReadOnly":false,
+"GrayOut":false,
+"MenuPath":"./Advanced/PCHConfiguration"
+},
+{
+"MenuName":"CPUConfiguration",
+"DisplayName":"CPU Configuration",
+"DisplayOrder":0,
+"ReadOnly":false,
+"GrayOut":false,
+"MenuPath":"./Advanced/CPUConfiguration"
+},
+{
+"MenuName":"UncoreConfiguration",
+"DisplayName":"Uncore Configuration",
+"DisplayOrder":0,
+"ReadOnly":false,
+"GrayOut":false,
+"MenuPath":"./Advanced/CPUConfiguration/UncoreConfiguration"
+},
+{
+"MenuName":"AdvancedPowerMgmtConfiguration",
+"DisplayName":"Advanced Power Mgmt. Configuration",
+"DisplayOrder":0,
+"ReadOnly":false,
+"GrayOut":false,
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration"
+},
+{
+"MenuName":"MemoryPowerSavingsAdvancedOptions",
+"DisplayName":"Memory Power Savings Advanced Options",
+"DisplayOrder":0,
+"ReadOnly":false,
+"GrayOut":false,
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/MemoryPowerThermalConfiguration/MemoryPowerSavingsAdvancedOptions"
+},
+{
+"MenuName":"BootTypeOrder",
+"DisplayName":"Boot Type Order",
+"DisplayOrder":0,
+"ReadOnly":false,
+"GrayOut":false,
+"MenuPath":"./Boot/BootTypeOrder"
+},
 {
 "MenuName":"MiscellaneousConfiguration",
 "DisplayName":"Miscellaneous Configuration",
@@ -12815,7 +12309,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/MiscellaneousConfiguration"
 },
-"":
 {
 "MenuName":"NetworkConfiguration",
 "DisplayName":"Network Configuration",
@@ -12824,7 +12317,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/NetworkConfiguration"
 },
-"":
 {
 "MenuName":"VirtualizationConfiguration",
 "DisplayName":"Virtualization Configuration",
@@ -12833,7 +12325,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/VirtualizationConfiguration"
 },
-"":
 {
 "MenuName":"IntelRVTforDirectedIOVTd",
 "DisplayName":"Intel(R) VT for Directed I/O (VT-d)",
@@ -12842,7 +12333,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/VirtualizationConfiguration/IntelRVTforDirectedIOVTd"
 },
-"":
 {
 "MenuName":"BootType",
 "DisplayName":"Boot Type",
@@ -12851,7 +12341,6 @@
 "GrayOut":false,
 "MenuPath":"./Exit/BootType"
 },
-"":
 {
 "MenuName":"ConsoleRedirectionConfiguration",
 "DisplayName":"Console Redirection Configuration",
@@ -12860,7 +12349,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/ConsoleRedirectionConfiguration"
 },
-"":
 {
 "MenuName":"ServerMEConfiguration",
 "DisplayName":"Server ME Configuration",
@@ -12869,7 +12357,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/ServerMEConfiguration"
 },
-"":
 {
 "MenuName":"USBConfiguration",
 "DisplayName":"USB Configuration",
@@ -12878,7 +12365,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/PCHConfiguration/USBConfiguration"
 },
-"":
 {
 "MenuName":"PCHSATAConfiguration",
 "DisplayName":"PCH SATA Configuration",
@@ -12887,7 +12373,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/PCHConfiguration/PCHSATAConfiguration"
 },
-"":
 {
 "MenuName":"PCHsSATAConfiguration",
 "DisplayName":"PCH sSATA Configuration",
@@ -12896,7 +12381,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/PCHConfiguration/PCHsSATAConfiguration"
 },
-"":
 {
 "MenuName":"PCIExpressConfiguration",
 "DisplayName":"PCI Express Configuration",
@@ -12905,7 +12389,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/PCHConfiguration/PCIExpressConfiguration"
 },
-"":
 {
 "MenuName":"ADRConfiguration",
 "DisplayName":"ADR Configuration",
@@ -12914,7 +12397,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/PCHConfiguration/ADRConfiguration"
 },
-"":
 {
 "MenuName":"Exit",
 "DisplayName":"Exit",
@@ -12923,7 +12405,6 @@
 "GrayOut":false,
 "MenuPath":"./Exit"
 },
-"":
 {
 "MenuName":"SystemEventLog",
 "DisplayName":"System Event Log",
@@ -12932,7 +12413,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/SystemEventLog"
 },
-"":
 {
 "MenuName":"eMCASettings",
 "DisplayName":"eMCA Settings",
@@ -12941,7 +12421,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/SystemEventLog/eMCASettings"
 },
-"":
 {
 "MenuName":"WheaSettings",
 "DisplayName":"Whea Settings",
@@ -12950,7 +12429,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/SystemEventLog/WheaSettings"
 },
-"":
 {
 "MenuName":"UPIErrorEnabling",
 "DisplayName":"UPI Error Enabling",
@@ -12959,7 +12437,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/SystemEventLog/UPIErrorEnabling"
 },
-"":
 {
 "MenuName":"IIOErrorEnabling",
 "DisplayName":"IIO Error Enabling",
@@ -12968,7 +12445,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/SystemEventLog/IIOErrorEnabling"
 },
-"":
 {
 "MenuName":"PCIeErrorEnabling",
 "DisplayName":"PCIe Error Enabling",
@@ -12977,7 +12453,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/SystemEventLog/PCIeErrorEnabling"
 },
-"":
 {
 "MenuName":"Security",
 "DisplayName":"Security",
@@ -12986,7 +12461,6 @@
 "GrayOut":false,
 "MenuPath":"./Security"
 },
-"":
 {
 "MenuName":"ServerMgmt",
 "DisplayName":"Server Mgmt",
@@ -12995,7 +12469,6 @@
 "GrayOut":false,
 "MenuPath":"./ServerMgmt"
 },
-"":
 {
 "MenuName":"CommonRefCodeConfiguration",
 "DisplayName":"Common RefCode Configuration",
@@ -13004,7 +12477,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/CommonRefCodeConfiguration"
 },
-"":
 {
 "MenuName":"Port1A",
 "DisplayName":"Port 1A",
@@ -13013,7 +12485,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port1A"
 },
-"":
 {
 "MenuName":"Port2A",
 "DisplayName":"Port 2A",
@@ -13022,7 +12493,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port2A"
 },
-"":
 {
 "MenuName":"Port2C",
 "DisplayName":"Port 2C",
@@ -13031,7 +12501,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port2C"
 },
-"":
 {
 "MenuName":"Port4A",
 "DisplayName":"Port 4A",
@@ -13040,7 +12509,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port4A"
 },
-"":
 {
 "MenuName":"Port1A",
 "DisplayName":"Port 1A",
@@ -13049,7 +12517,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port1A"
 },
-"":
 {
 "MenuName":"Port1C",
 "DisplayName":"Port 1C",
@@ -13058,7 +12525,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port1C"
 },
-"":
 {
 "MenuName":"Port2A",
 "DisplayName":"Port 2A",
@@ -13067,7 +12533,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port2A"
 },
-"":
 {
 "MenuName":"Port4A",
 "DisplayName":"Port 4A",
@@ -13076,7 +12541,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port4A"
 },
-"":
 {
 "MenuName":"Port4C",
 "DisplayName":"Port 4C",
@@ -13085,7 +12549,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration/Port4C"
 },
-"":
 {
 "MenuName":"Port1A",
 "DisplayName":"Port 1A",
@@ -13094,7 +12557,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port1A"
 },
-"":
 {
 "MenuName":"Port4A",
 "DisplayName":"Port 4A",
@@ -13103,7 +12565,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port4A"
 },
-"":
 {
 "MenuName":"Port4B",
 "DisplayName":"Port 4B",
@@ -13112,7 +12573,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port4B"
 },
-"":
 {
 "MenuName":"Port4C",
 "DisplayName":"Port 4C",
@@ -13121,7 +12581,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port4C"
 },
-"":
 {
 "MenuName":"Port4D",
 "DisplayName":"Port 4D",
@@ -13130,7 +12589,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration/Port4D"
 },
-"":
 {
 "MenuName":"Port1A",
 "DisplayName":"Port 1A",
@@ -13139,7 +12597,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port1A"
 },
-"":
 {
 "MenuName":"Port2A",
 "DisplayName":"Port 2A",
@@ -13148,7 +12605,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port2A"
 },
-"":
 {
 "MenuName":"Port2B",
 "DisplayName":"Port 2B",
@@ -13157,7 +12613,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port2B"
 },
-"":
 {
 "MenuName":"Port2C",
 "DisplayName":"Port 2C",
@@ -13166,7 +12621,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port2C"
 },
-"":
 {
 "MenuName":"Port2D",
 "DisplayName":"Port 2D",
@@ -13175,7 +12629,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration/Port2D"
 },
-"":
 {
 "MenuName":"Port0DMI",
 "DisplayName":"Port 0/DMI",
@@ -13184,7 +12637,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration/Port0DMI"
 },
-"":
 {
 "MenuName":"IIOConfiguration",
 "DisplayName":"IIO Configuration",
@@ -13193,7 +12645,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration"
 },
-"":
 {
 "MenuName":"CPU1Configuration",
 "DisplayName":"CPU 1 Configuration",
@@ -13202,7 +12653,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration/CPU1Configuration"
 },
-"":
 {
 "MenuName":"CPU2Configuration",
 "DisplayName":"CPU 2 Configuration",
@@ -13211,7 +12661,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration/CPU2Configuration"
 },
-"":
 {
 "MenuName":"CPU3Configuration",
 "DisplayName":"CPU 3 Configuration",
@@ -13220,7 +12669,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration/CPU3Configuration"
 },
-"":
 {
 "MenuName":"CPU4Configuration",
 "DisplayName":"CPU 4 Configuration",
@@ -13229,7 +12677,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration/CPU4Configuration"
 },
-"":
 {
 "MenuName":"IntelRVMDtechnology",
 "DisplayName":"Intel(R) VMD technology",
@@ -13238,7 +12685,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration/IntelRVMDtechnology"
 },
-"":
 {
 "MenuName":"IOATConfiguration",
 "DisplayName":"IOAT Configuration",
@@ -13247,7 +12693,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration/IOATConfiguration"
 },
-"":
 {
 "MenuName":"IIOGlobalPerformanceTuning",
 "DisplayName":"IIO Global Performance Tuning",
@@ -13256,7 +12701,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/IIOConfiguration/IIOGlobalPerformanceTuning"
 },
-"":
 {
 "MenuName":"UncoreGeneralConfiguration",
 "DisplayName":"Uncore General Configuration",
@@ -13265,7 +12709,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/UncoreConfiguration/UncoreGeneralConfiguration"
 },
-"":
 {
 "MenuName":"MemoryBootHealthCheck",
 "DisplayName":"Memory Boot Health Check",
@@ -13274,7 +12717,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/MemoryConfiguration/MemoryBootHealthCheck"
 },
-"":
 {
 "MenuName":"MemoryDfxConfiguration",
 "DisplayName":"Memory Dfx Configuration",
@@ -13283,7 +12725,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/MemoryConfiguration/MemoryDfxConfiguration"
 },
-"":
 {
 "MenuName":"MemoryConfiguration",
 "DisplayName":"Memory Configuration",
@@ -13292,7 +12733,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/MemoryConfiguration"
 },
-"":
 {
 "MenuName":"MemoryThermal",
 "DisplayName":"Memory Thermal",
@@ -13301,7 +12741,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/MemoryPowerThermalConfiguration/MemoryThermal"
 },
-"":
 {
 "MenuName":"MemoryPowerThermalConfiguration",
 "DisplayName":"Memory Power & Thermal Configuration",
@@ -13310,7 +12749,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/MemoryPowerThermalConfiguration"
 },
-"":
 {
 "MenuName":"CKEFeature",
 "DisplayName":"CKE Feature",
@@ -13319,7 +12757,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/MemoryPowerThermalConfiguration/MemoryPowerSavingsAdvancedOptions/CKEFeature"
 },
-"":
 {
 "MenuName":"MemoryMap",
 "DisplayName":"Memory Map",
@@ -13328,7 +12765,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/MemoryConfiguration/MemoryMap"
 },
-"":
 {
 "MenuName":"PMemConfiguration",
 "DisplayName":"PMem Configuration",
@@ -13337,7 +12773,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/MemoryConfiguration/PMemConfiguration"
 },
-"":
 {
 "MenuName":"BSSAConfigurationMenu",
 "DisplayName":"BSSA Configuration Menu",
@@ -13346,7 +12781,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/MemoryConfiguration/BSSAConfigurationMenu"
 },
-"":
 {
 "MenuName":"MemoryChannelControl",
 "DisplayName":"Memory Channel Control",
@@ -13355,7 +12789,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/MemoryConfiguration/MemoryChannelControl"
 },
-"":
 {
 "MenuName":"MemoryRASConfiguration",
 "DisplayName":"Memory RAS Configuration",
@@ -13364,7 +12797,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/MemoryConfiguration/MemoryRASConfiguration"
 },
-"":
 {
 "MenuName":"HardwarePMStateControl",
 "DisplayName":"Hardware PM State Control",
@@ -13373,7 +12805,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/HardwarePMStateControl"
 },
-"":
 {
 "MenuName":"FrequencyPrioritization",
 "DisplayName":"Frequency Prioritization",
@@ -13382,7 +12813,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/FrequencyPrioritization"
 },
-"":
 {
 "MenuName":"CPUPStateControl",
 "DisplayName":"CPU P State Control",
@@ -13391,7 +12821,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPUPStateControl"
 },
-"":
 {
 "MenuName":"Overclocking",
 "DisplayName":"Overclocking",
@@ -13400,7 +12829,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/Overclocking"
 },
-"":
 {
 "MenuName":"PackageCStateControl",
 "DisplayName":"Package C State Control",
@@ -13409,7 +12837,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/PackageCStateControl"
 },
-"":
 {
 "MenuName":"CPUTStateControl",
 "DisplayName":"CPU T State Control",
@@ -13418,7 +12845,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPUThermalManagement/CPUTStateControl"
 },
-"":
 {
 "MenuName":"CPUThermalManagement",
 "DisplayName":"CPU Thermal Management",
@@ -13427,7 +12853,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPUThermalManagement"
 },
-"":
 {
 "MenuName":"EnergyPerfBIAS",
 "DisplayName":"Energy Perf BIAS",
@@ -13436,7 +12861,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPUAdvancedPMTuning/EnergyPerfBIAS"
 },
-"":
 {
 "MenuName":"DRAMRAPLConfiguration",
 "DisplayName":"DRAM RAPL Configuration",
@@ -13445,7 +12869,6 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/MemoryPowerThermalConfiguration/DRAMRAPLConfiguration"
 },
-"":
 {
 "MenuName":"ProcessorConfiguration",
 "DisplayName":"Processor Configuration",
@@ -13454,7 +12877,7 @@
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/ProcessorConfiguration"
 }
-},
+],
 "Dependencies":[
 {
 "Dependency":
@@ -13578,6 +13001,95 @@
 ],
 "MapToAttribute":"FreqSelect",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"FreqSelect",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -13830,6 +13342,25 @@
 {
 "MapFrom":[
 {
+"MapFromAttribute":"ProcessorEPPEnable",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Disabled",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"ProcessorEppProfile",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"ProcessorEPPEnable",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
 "MapFromAttribute":"StaticTurbo",
 "MapFromProperty":"CurrentValue",
 "MapFromCondition":"EQU",
@@ -13947,6 +13478,95 @@
 ],
 "MapToAttribute":"ProcessorEppProfile",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"ProcessorEppProfile",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -14374,6 +13994,25 @@
 {
 "MapFrom":[
 {
+"MapFromAttribute":"SystemErrorEn",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Disabled",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"IioErrorEn",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"SystemErrorEn",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
 "MapFromAttribute":"PowerSaving",
 "MapFromProperty":"CurrentValue",
 "MapFromCondition":"EQU",
@@ -14623,6 +14262,25 @@
 {
 "MapFrom":[
 {
+"MapFromAttribute":"ProcessorLtsxEnable",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Enabled",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"ProcessorVmxEnable",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"ProcessorLtsxEnable",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
 "MapFromAttribute":"PartialMirrorUefi",
 "MapFromProperty":"CurrentValue",
 "MapFromCondition":"EQU",
@@ -14808,6 +14466,191 @@
 {
 "MapFrom":[
 {
+"MapFromAttribute":"PartialMirrorUefi",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Enabled",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"MirrorMode",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"PartialMirrorUefi",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ADDDCEn",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Enabled",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"MirrorMode",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"ADDDCEn",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"MirrorMode",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Full Mirror Mode",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"partialmirrorsad0",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"MirrorMode",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ADDDCEn",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Enabled",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"partialmirrorsad0",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"ADDDCEn",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"MirrorMode",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Full Mirror Mode",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"MirrorMode",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Partial Mirror Mode",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"PartialMirrorUefi",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"MirrorMode",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ADDDCEn",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Enabled",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"PartialMirrorUefi",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"ADDDCEn",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"MirrorMode",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Full Mirror Mode",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"MirrorMode",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Partial Mirror Mode",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"RankSparing",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"MirrorMode",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"PartialMirrorUefi",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Enabled",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"RankSparing",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"PartialMirrorUefi",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"RankSparing",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Enabled",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"ADDDCEn",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"RankSparing",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
 "MapFromAttribute":"ApplicationProfile",
 "MapFromProperty":"CurrentValue",
 "MapFromCondition":"EQU",
@@ -14887,6 +14730,95 @@
 ],
 "MapToAttribute":"ADDDCEn",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"ADDDCEn",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -15873,8 +15805,46 @@
 "MapTerms":"AND"
 }
 ],
+"MapToAttribute":"ProcessorEistPsdFunc",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"ProcessorEistEnable",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ProcessorEistEnable",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Disabled",
+"MapTerms":"AND"
+}
+],
 "MapToAttribute":"BootPState",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ProcessorEistEnable",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ProcessorEistEnable",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Disabled",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"BootPState",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ProcessorEistEnable",
@@ -16891,11 +16861,63 @@
 "MapFromProperty":"CurrentValue",
 "MapFromCondition":"EQU",
 "MapFromValue":"Disabled",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ProcessorHWPMEnable",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Out of Band Mode",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ProcessorHWPMEnable",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Native Mode with No Legacy Support",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"ProcessorHWPMInterrupt",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"ProcessorHWPMEnable",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ProcessorHWPMEnable",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Disabled",
 "MapTerms":"AND"
 }
 ],
 "MapToAttribute":"ProcessorEPPEnable",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ProcessorHWPMEnable",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ProcessorHWPMEnable",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Disabled",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"ProcessorEPPEnable",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ProcessorHWPMEnable",
@@ -16985,6 +17007,95 @@
 ],
 "MapToAttribute":"ProcessorEPPEnable",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"ProcessorEPPEnable",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -17356,6 +17467,82 @@
 {
 "MapFrom":[
 {
+"MapFromAttribute":"ProcessorHWPMEnable",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Out of Band Mode",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"PwrPerfTuning",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"ProcessorHWPMEnable",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"PwrPerfTuning",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"BIOS Controls EPB",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"ProcessorOutofBandAlternateEPB",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"PwrPerfTuning",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ProcessorHWPMEnable",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Out of Band Mode",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"ProcessorOutofBandAlternateEPB",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"ProcessorHWPMEnable",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"PwrPerfTuning",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"OS Controls EPB",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"AltEngPerfBIAS",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"PwrPerfTuning",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
 "MapFromAttribute":"PchSata",
 "MapFromProperty":"CurrentValue",
 "MapFromCondition":"EQU",
@@ -17517,6 +17704,44 @@
 ],
 "MapToAttribute":"PropagatePerr",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"PropagateSerr",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"PcieCorErrLimitEn",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Disabled",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"PcieCorErrLimit",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"PcieCorErrLimitEn",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"PropagateSerr",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Disabled",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"PropagatePerr",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"PropagateSerr",
@@ -18061,6 +18286,215 @@
 {
 "MapFrom":[
 {
+"MapFromAttribute":"ConsoleRedirection",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Disabled",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"TerminalType",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"ConsoleRedirection",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ConsoleRedirection",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Disabled",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"BaudRate",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"ConsoleRedirection",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ConsoleRedirection",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Disabled",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"DataBits",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"ConsoleRedirection",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ConsoleRedirection",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Disabled",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"Parity",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"ConsoleRedirection",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ConsoleRedirection",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Disabled",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"StopBits",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"ConsoleRedirection",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ConsoleRedirection",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Disabled",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"FlowControl",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"ConsoleRedirection",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ConsoleRedirection",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Disabled",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"CRAfterPost",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"ConsoleRedirection",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"OSBootWDTimer",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Disabled",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"OSBootWDTimerTimeout",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"OSBootWDTimer",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"OSBootWDTimer",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Disabled",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"OSBootWDTimerPolicy",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"OSBootWDTimer",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"SvrMngmntFrb2Enable",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Disabled",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"POSTBootWDTimerPolicy",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"SvrMngmntFrb2Enable",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"SvrMngmntFrb2Enable",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Disabled",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"POSTBootWDTimerTimeout",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"SvrMngmntFrb2Enable",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
 "MapFromAttribute":"EadrSupport",
 "MapFromProperty":"CurrentValue",
 "MapFromCondition":"EQU",
@@ -18292,6 +18726,95 @@
 ],
 "MapToAttribute":"KtiLinkL0pEn",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"KtiLinkL0pEn",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -18571,6 +19094,95 @@
 ],
 "MapToAttribute":"KtiLinkL1En",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"KtiLinkL1En",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -18850,6 +19462,95 @@
 ],
 "MapToAttribute":"KtiPrefetchEn",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"KtiPrefetchEn",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -19129,6 +19830,95 @@
 ],
 "MapToAttribute":"IrqThreshold",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"IrqThreshold",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -19422,6 +20212,95 @@
 "MapFromProperty":"CurrentValue",
 "MapFromCondition":"EQU",
 "MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"SncEn",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
 "MapTerms":"AND"
 }
 ],
@@ -19701,6 +20580,95 @@
 "MapFromProperty":"CurrentValue",
 "MapFromCondition":"EQU",
 "MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"LLCDeadLineAlloc",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
 "MapTerms":"AND"
 }
 ],
@@ -19966,6 +20934,95 @@
 ],
 "MapToAttribute":"refreshMode",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"refreshMode",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -20245,6 +21302,95 @@
 ],
 "MapToAttribute":"PagePolicy",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"PagePolicy",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -20524,6 +21670,95 @@
 ],
 "MapToAttribute":"CkeProgramming",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"CkeProgramming",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -20803,6 +22038,95 @@
 ],
 "MapToAttribute":"StaticTurbo",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"StaticTurbo",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -21082,6 +22406,95 @@
 ],
 "MapToAttribute":"ProcessorHWPMEnable",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"ProcessorHWPMEnable",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -21361,6 +22774,95 @@
 ],
 "MapToAttribute":"UFSDisable",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"UFSDisable",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -21640,6 +23142,95 @@
 ],
 "MapToAttribute":"ProcessorEistEnable",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"ProcessorEistEnable",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -21919,6 +23510,95 @@
 ],
 "MapToAttribute":"ProcessorEistPsdFunc",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"ProcessorEistPsdFunc",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -22198,6 +23878,95 @@
 ],
 "MapToAttribute":"BootPState",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"BootPState",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -22477,6 +24246,95 @@
 ],
 "MapToAttribute":"EETurboDisable",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"EETurboDisable",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -22756,6 +24614,95 @@
 ],
 "MapToAttribute":"PowerSaving",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"PowerSaving",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -23035,6 +24982,95 @@
 ],
 "MapToAttribute":"TurboMode",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"TurboMode",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -23314,6 +25350,95 @@
 ],
 "MapToAttribute":"MonitorMWait",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"MonitorMWait",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -23593,6 +25718,95 @@
 ],
 "MapToAttribute":"C6Enable",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"C6Enable",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -23872,6 +26086,95 @@
 ],
 "MapToAttribute":"ProcessorC1eEnable",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"ProcessorC1eEnable",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -24151,6 +26454,95 @@
 ],
 "MapToAttribute":"PackageCState",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"PackageCState",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -24430,6 +26822,95 @@
 ],
 "MapToAttribute":"PwrPerfTuning",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"PwrPerfTuning",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -24723,6 +27204,95 @@
 "MapFromProperty":"CurrentValue",
 "MapFromCondition":"EQU",
 "MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"AltEngPerfBIAS",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
 "MapTerms":"AND"
 }
 ],
@@ -25002,6 +27572,95 @@
 "MapFromProperty":"CurrentValue",
 "MapFromCondition":"EQU",
 "MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"ProcessorHyperThreadingDisable",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
 "MapTerms":"AND"
 }
 ],
@@ -25281,6 +27940,95 @@
 "MapFromProperty":"CurrentValue",
 "MapFromCondition":"EQU",
 "MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"MlcStreamerPrefetcherEnable",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
 "MapTerms":"AND"
 }
 ],
@@ -25546,6 +28294,95 @@
 ],
 "MapToAttribute":"MlcSpatialPrefetcherEnable",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"MlcSpatialPrefetcherEnable",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -25825,6 +28662,95 @@
 ],
 "MapToAttribute":"DCUStreamerPrefetcherEnable",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"DCUStreamerPrefetcherEnable",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -26104,6 +29030,95 @@
 ],
 "MapToAttribute":"DCUIPPrefetcherEnable",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"DCUIPPrefetcherEnable",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -26383,6 +29398,95 @@
 ],
 "MapToAttribute":"LlcPrefetchEnable",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"LlcPrefetchEnable",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -26662,6 +29766,95 @@
 ],
 "MapToAttribute":"EnforcePOR",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"EnforcePOR",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -26941,6 +30134,95 @@
 ],
 "MapToAttribute":"CurrentUnderReport",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"CurrentUnderReport",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"ApplicationProfile",
@@ -27234,6 +30516,95 @@
 "MapFromProperty":"CurrentValue",
 "MapFromCondition":"EQU",
 "MapFromValue":"HPC",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Power Efficiency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-INT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"General Computing-FLOAT",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Server Side Java",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Memory Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"I/O Throughput",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Energy Saving",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Low Latency",
+"MapTerms":"OR"
+},
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"NFV",
+"MapTerms":"OR"
+}
+],
+"MapToAttribute":"IsocEn",
+"MapToProperty":"ReadOnly",
+"MapToValue":true
+},
+"DependencyFor":"ApplicationProfile",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"ApplicationProfile",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"HPC",
 "MapTerms":"AND"
 }
 ],
@@ -27429,6 +30800,25 @@
 ],
 "MapToAttribute":"OffPkgMemToThermTrip",
 "MapToProperty":"GrayOut",
+"MapToValue":true
+},
+"DependencyFor":"thermalthrottlingsupport",
+"Type":"Map"
+},
+{
+"Dependency":
+{
+"MapFrom":[
+{
+"MapFromAttribute":"thermalthrottlingsupport",
+"MapFromProperty":"CurrentValue",
+"MapFromCondition":"EQU",
+"MapFromValue":"Disabled",
+"MapTerms":"AND"
+}
+],
+"MapToAttribute":"OffPkgMemToThermTrip",
+"MapToProperty":"ReadOnly",
 "MapToValue":true
 },
 "DependencyFor":"thermalthrottlingsupport",

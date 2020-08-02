@@ -18,16 +18,15 @@ def load(tc_file):
 
 # 改变testcase 文件中选项的值为非默认（随机）
 def change_value(tc_file):
-    with open(tc_file, 'r') as fp:
-        testscope = json.load(fp)
-    for key in testscope["Attributes"]:
+    testscope = load(tc_file)
+    for key in testscope:
         values = supported_value(key)
         if len(values) == 1:
             pass
         else:
-            values.remove(testscope["Attributes"][key])
+            values.remove(testscope[key])
             desired_value = random.choice(values)
-            testscope["Attributes"][key] = desired_value
+            testscope[key] = desired_value
         with open(tc_file, 'w') as fp:
             json.dump(testscope, fp, indent=1)
 
@@ -163,12 +162,11 @@ def verify_testcase(testcase_file):
 
 def gen_all_tc():
     dep_for = get_varnames_dep()[1]   # 获取所有依赖关系的父选项（DependencyFor）
-    with open(config.CURR_SET_JSON, "r") as fp:
-        allcase = json.load(fp)
-    alloptions = list(allcase["Attributes"].keys())
+    allcase = load(config.CURR_SET_JSON)
+    alloptions = list(allcase.keys())
     for key in alloptions:
         if key in dep_for:
-            allcase["Attributes"].pop(key)
+            allcase.pop(key)
     tc_file = os.path.join(config.TEST_RESULT_DIR, "all.json")
     with open(tc_file, "w") as fp:
         json.dump(allcase, fp, indent=1)
