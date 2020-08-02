@@ -107,10 +107,10 @@ def gen_nondep_tc():
     dependency_options = testcase.get_varnames_dep()[0]
     with open(config.CURR_SET_JSON, "r") as fp:
         allcase = json.load(fp)
-    alloptions = list(allcase["Attributes"].keys())
+    alloptions = list(allcase.keys())
     for key in alloptions:
         if key in dependency_options:
-            allcase["Attributes"].pop(key)
+            allcase.pop(key)
             print("remove: " + key)
     tc_file = os.path.join(config.TEST_RESULT_DIR, "remove_dep.json")
     with open(tc_file, "w") as fp:
@@ -219,7 +219,7 @@ def auto_test(testcase_file):
 
     payloads = testcase.load(testcase_file)
 
-    for key in payloads["Attributes"]:
+    for key in payloads:
         if (key not in test_status["Completed"]) and (key not in config.EXELUDE_TEST):
             if isinstance(payloads["Attributes"][key], int):
                 payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": %d \r\n    }\r\n}" % (key, payloads["Attributes"][key])
@@ -355,7 +355,7 @@ if __name__ == "__main__":
 
         elif argv[1] == "checkregistry":
             log.logger.info("Testing registry file...")
-            test_registry_file(".\\baseline\\baseline_v0.03.txt")
+            test_registry_file(".\\baseline\\baseline_v0.03_0802.txt")
 
         elif os.path.isfile(argv[1]):
             log.logger.info("Run test for %s" % argv[1])

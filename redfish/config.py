@@ -12,7 +12,7 @@ BIOS = "C:\\UpdateTool\\HY5V017_candidate1.bin"
 BIOS_CODE = "D:\\Code\\HY5\\Intel\\WhitleyRpPkg001"
 REGISTRY_FILE = ".\\baseline\\registry.json"
 HIDDEN_LIST = ".\\baseline\\hidden.txt"
-CURR_SET_JSON = ".\\baseline\\current.json"
+CURR_SET_JSON = ".\\baseline\\currentvalue.json"
 
 GET_URL = "https://192.168.2.100/redfish/v1/Systems/1/Bios/"
 PATCH_URL = "https://192.168.2.100/redfish/v1/Systems/1/Bios/Settings/"
