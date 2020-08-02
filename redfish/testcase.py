@@ -180,3 +180,8 @@ def gen_all_tc():
         json.dump(allcase, fp, indent=1)
     change_value(tc_file)
     return tc_file
+
+def get_error_details(error_msg):
+    msg_ext_info = error_msg['error']['@Message.ExtendedInfo']
+    return enumerate(msg_ext_info['Message'])
+
