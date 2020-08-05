@@ -30,15 +30,15 @@ def force_reset():
 
 def input_password():
     password = "Admin@9000"
-    wait(Template(r"tpl1588735622040.png", record_pos=(1.421, 0.129), resolution=(1042, 940)), 90, interval=3) #waiting for password promption 
+    wait(Template(r"tpl1596435579741.png", record_pos=(-0.0, 0.067), resolution=(1024, 940)), 120, interval=3) #waiting for password promption 
         
-    touch(Template(r"tpl1588735622040.png", record_pos=(1.421, 0.129), resolution=(1042, 940)))
+    touch(Template(r"tpl1596435579741.png", record_pos=(-0.0, 0.067), resolution=(1024, 940)))
     sleep(1.0)
     text(password)
     sleep(1.0)
     keyevent("{ENTER}")
     sleep(1.0)
-    if exists(Template(r"tpl1593395950246.png", record_pos=(0.009, 0.045), resolution=(1031, 935))):    #workaround for invalid password issue.
+    if exists(Template(r"tpl1596435737405.png", record_pos=(0.002, 0.069), resolution=(1024, 940))):    #workaround for invalid password issue.
         keyevent("{ENTER}")
         sleep(1.0)
         text(password)
@@ -47,16 +47,16 @@ def input_password():
     else:
         return
     
-    wait(Template(r"tpl1593396125644.png", record_pos=(0.003, 0.033), resolution=(1031, 935)),90)
+    wait(Template(r"tpl1596435612648.png", record_pos=(-0.002, 0.057), resolution=(1024, 940)),90)
     keyevent("{ENTER}")
     return
 
 def wait_for_hotkey_prompt():
-    wait(Template(r"tpl1588734826875.png", record_pos=(1.024, -0.153), resolution=(1042, 940)), 90, interval=2) #wait for hotkey prpomption
-    touch(Template(r"tpl1588734826875.png", record_pos=(1.024, -0.153), resolution=(1042, 940)))
+    wait(Template(r"tpl1596435468383.png", record_pos=(-0.395, -0.222), resolution=(1024, 940)), 90, interval=2) #wait for hotkey prpomption
+    touch(Template(r"tpl1596435468383.png", record_pos=(-0.395, -0.222), resolution=(1024, 940)))
 
 def boot_to_setup():
-    if exists(Template(r"tpl1588726655823.png", record_pos=(1.55, 0.006), resolution=(966, 739))):
+    if exists(Template(r"tpl1596434993798.png", record_pos=(-0.001, 0.033), resolution=(1024, 940))):
 
         return
     else:
@@ -75,7 +75,7 @@ def boot_to_bios_configuration():
 
     boot_to_setup()
     sleep(3.0)
-    touch(Template(r"tpl1589006439594.png", record_pos=(0.278, 0.147), resolution=(1031, 936)))
+    touch(Template(r"tpl1596435022477.png", record_pos=(0.278, 0.143), resolution=(1024, 940)))
     sleep(2.0)
     snapshot(msg="Should be in BIOS configuration page now.")
 
@@ -90,8 +90,8 @@ def boot_to_shell():
 
     else:
         boot_to_setup()
-        wait(Template(r"tpl1588735698091.png", record_pos=(1.118, -0.064), resolution=(1042, 940)), 90)
-        touch(Template(r"tpl1589266174268.png", record_pos=(-0.01, -0.154), resolution=(1031, 932)))
+        wait(Template(r"tpl1596435041034.png", record_pos=(-0.307, -0.13), resolution=(1024, 940)), 90)
+        touch(Template(r"tpl1596435056745.png", record_pos=(-0.02, -0.126), resolution=(1024, 940)))
         touch(Template(r"tpl1589266229955.png", record_pos=(-0.337, -0.055), resolution=(1031, 932)))
         keyevent("{ENTER}")
         
@@ -101,16 +101,16 @@ def boot_to_shell():
     
 def password_setting():
         
-    if exists(Template(r"tpl1589006414567.png", record_pos=(-0.015, 0.018), resolution=(1031, 936))):
-        touch(Template(r"tpl1589006439594.png", record_pos=(0.278, 0.147), resolution=(1031, 936)))
+    if exists(Template(r"tpl1596434993798.png", record_pos=(-0.001, 0.033), resolution=(1024, 940))):
+        touch(Template(r"tpl1596435022477.png", record_pos=(0.278, 0.143), resolution=(1024, 940)))
     else:
         boot_to_setup()
         sleep(3.0)
-        touch(Template(r"tpl1589006439594.png", record_pos=(0.278, 0.147), resolution=(1031, 936)))
+        touch(Template(r"tpl1596435022477.png", record_pos=(0.278, 0.143), resolution=(1024, 940)))
     keyevent("{ENTER}")
-    wait(Template(r"tpl1589006859333.png", record_pos=(-0.296, -0.17), resolution=(1031, 936)))
-    touch(Template(r"tpl1589011209290.png", record_pos=(-0.267, -0.233), resolution=(1031, 936)))
-    touch(Template(r"tpl1589011209290.png", record_pos=(-0.267, -0.233), resolution=(1031, 936)))
+    wait(Template(r"tpl1596435197439.png", record_pos=(-0.296, -0.167), resolution=(1024, 940)))
+    touch(Template(r"tpl1596435210019.png", record_pos=(-0.268, -0.235), resolution=(1024, 940)))
+    touch(Template(r"tpl1596435210019.png", record_pos=(-0.268, -0.235), resolution=(1024, 940)))
 
 
 def boot_to_bootmanager():
@@ -125,7 +125,7 @@ def boot_to_bootmanager():
     input_password()
     sleep(3)
     
-    if exists(Template(r"tpl1589178358928.png", record_pos=(-0.346, -0.188), resolution=(1031, 933))):
+    if exists(Template(r"tpl1596435771883.png", record_pos=(-0.354, -0.163), resolution=(1024, 940))):
         print("Boot to Boot manager by hotkey: PASS")
         return True
     else:
@@ -160,25 +160,25 @@ def sp_boot():
     
 def switch_to_legacy():
     boot_to_setup()
-    if exists(Template(r"tpl1592906251630.png", record_pos=(-0.152, 0.182), resolution=(1031, 935))):
+    if exists(Template(r"tpl1596436273059.png", record_pos=(-0.167, 0.208), resolution=(1024, 940))):
         print("Already in legacy mode")
-        touch(Template(r"tpl1592907179693.png", record_pos=(-0.305, -0.153), resolution=(1031, 935)))
+        touch(Template(r"tpl1596435969204.png", record_pos=(-0.309, -0.124), resolution=(1024, 940)))
         keyevent("{ENTER}")
         return
     else:
         sleep(3.0)
-        touch(Template(r"tpl1589006439594.png", record_pos=(0.278, 0.147), resolution=(1031, 936)))
+        touch(Template(r"tpl1596435980556.png", record_pos=(0.278, 0.148), resolution=(1024, 940)))
         sleep(2.0)
         snapshot(msg="Should be in BIOS configuration page now.")
 
         keyevent("{ENTER}")
-        wait(Template(r"tpl1589006859333.png", record_pos=(-0.296, -0.17), resolution=(1031, 936)))
-        touch(Template(r"tpl1590143311059.png", record_pos=(-0.205, -0.264), resolution=(1043, 946)))
-        touch(Template(r"tpl1590143311059.png", record_pos=(-0.205, -0.264), resolution=(1043, 946)))
-        wait(Template(r"tpl1590143370584.png", record_pos=(-0.174, -0.247), resolution=(1043, 946)))
+        wait(Template(r"tpl1596436037907.png", record_pos=(-0.295, -0.172), resolution=(1024, 940)))
+        touch(Template(r"tpl1596436048573.png", record_pos=(-0.208, -0.238), resolution=(1024, 940)))
+        touch(Template(r"tpl1596436048573.png", record_pos=(-0.208, -0.238), resolution=(1024, 940)))
+        wait(Template(r"tpl1596436088600.png", record_pos=(-0.198, -0.214), resolution=(1024, 940)))
         keyevent("{ENTER}")
         sleep(2)
-        touch(Template(r"tpl1590143446657.png", record_pos=(-0.012, 0.063), resolution=(1043, 946)))
+        touch(Template(r"tpl1596436129566.png", record_pos=(-0.019, 0.094), resolution=(1024, 940)))
         keyevent("{ENTER}")
         sleep(2)
         keyevent("{F10}")
@@ -189,11 +189,12 @@ def switch_to_legacy():
 def reset_default():
     boot_to_bios_configuration()
     keyevent("{F9}")
-    touch(Template(r"tpl1592905427091.png", record_pos=(-0.071, 0.067), resolution=(1031, 935)))
+    touch(Template(r"tpl1596436957759.png", record_pos=(-0.068, 0.07), resolution=(1024, 940)))
     sleep(20.0)
     keyevent("{F10}")
-    touch(Template(r"tpl1592905427091.png", record_pos=(-0.071, 0.067), resolution=(1031, 935)))
+    touch(Template(r"tpl1596437010511.png", record_pos=(-0.068, 0.07), resolution=(1024, 940)))
     keyevent("{Y}")
+    sleep(20.0)
 
     return
     

@@ -19,12 +19,11 @@ def test_case():
     except Exception as e:
         print(e)
         print("[FAIL] Boot to setup fail.")     
-    if exists(Template(r"tpl1589263493143.png", record_pos=(-0.306, -0.157), resolution=(1031, 932))):
+    if exists(Template(r"tpl1596435041034.png", record_pos=(-0.307, -0.13), resolution=(1024, 940))):
         print("[PASS] Boot to setup successfully")
         return True
     else:
         return False
- 
 
 if __name__ == '__main__':
     print('-'*80)

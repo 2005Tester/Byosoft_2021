@@ -33,7 +33,7 @@ def test_case():
     print("Legacy boot pass, now switch back to UEFI mode.")
     try:
         HaiYan5Common.reset_default()
-        wait(Template(r"tpl1593339773774.png", record_pos=(-0.215, 0.046), resolution=(1031, 935)), timeout=60, interval=5)
+        wait(Template(r"tpl1596435468383.png", record_pos=(-0.395, -0.222), resolution=(1024, 940)), timeout=60, interval=5)
     except Exception as e:
         print(e)
         return False

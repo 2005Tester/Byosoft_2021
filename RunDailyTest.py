@@ -23,13 +23,7 @@ device = "\"Windows:///?title_re=iBMC*\""
 
 
 def update_bios():
-    if argv[1] == "RUNONCE":
-        status = STATUS_PASS  # force get_test_image() success to test local image
-    elif argv[1] == "LOOP":
-        status = common.get_test_image(BINARY_DIR)
-    else:
-        print("Usage: RUNONCE or LOOP")
-
+    status = common.get_test_image(BINARY_DIR)
     if status == STATUS_PASS:
         if not updatebios.upload_bios(daily.TEST_DIR + '\\bios\\RP001.bin'):
             return STATUS_FAIL
@@ -98,10 +92,10 @@ def loop_test_py(tc_list):
                 if tc['exec'] == 1:
                     overall_log = 'tmp\\' + tc['name']+'.txt'
                     log = "\"" + log_dir + "\\" + tc['name'] + "\""
-                    print(log)
+                    print("Running tets case: %s" % tc['name'])
                     run_airtest_py(tc['script'], device, log, overall_log)
                     report.update_result(common.TestRunInfo, tc["id"], overall_log)
-                    print("-"*50)  
+                    # print("-"*50)  
             report.update_overview(common.TestRunInfo)
             report.gen_html('report\\template', 'tmp\\report.html')
             os.system('copy tmp\*.* ' + log_dir)
