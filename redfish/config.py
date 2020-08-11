@@ -14,8 +14,17 @@ REGISTRY_FILE = ".\\baseline\\registry.json"
 HIDDEN_LIST = ".\\baseline\\hidden.txt"
 CURR_SET_JSON = ".\\baseline\\currentvalue.json"
 
+# request settings to communicate with BMC
 GET_URL = "https://192.168.2.100/redfish/v1/Systems/1/Bios/"
 PATCH_URL = "https://192.168.2.100/redfish/v1/Systems/1/Bios/Settings/"
+POST_RUL = "https://192.168.2.100/redfish/v1/Systems/1/Bios/Actions/Bios.ResetBios"
+
+headers = {
+    'If-Match': 'W/"584db857"',
+    'Authorization': 'Basic QWRtaW5pc3RyYXRvcjpBZG1pbkA5MDAw',
+    'Content-Type': 'application/json'
+    }
+
 
 # log setting
 TEST_RESULT_DIR = "C:\\redfishtest"

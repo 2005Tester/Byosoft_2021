@@ -41,9 +41,10 @@ def registry_file_value_test():
     log.logger.info("Testing all supported values for all options")
     errors = []
     payloads = testcase.gen_payload_list()
+    dep_for = testcase.get_varnames_dep()[1]
     for payload in payloads:
         key = list(payload["Attributes"].keys())[0]
-        if key not in config.EXELUDE_TEST:
+        if (key not in config.EXELUDE_TEST) and (key not in dep_for):
             value = payload["Attributes"][key]
             log.logger.info("%s : %s" % (str(key), str(value)))
             payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%s\" \r\n    }\r\n}" % (key, value)
@@ -52,11 +53,11 @@ def registry_file_value_test():
             if 'error' in res:
                 errors.append(payload)
                 log.logger.info("_"*60)
-                log.logger.info(payload)
+                # log.logger.info(payload)
                 log.logger.info('%s depends on: %s' % (key,testcase.get_dep_info(key)))
-                log.logger.info(testcase.get_error_details(res))
+                log.logger.error(testcase.get_error_details(res))
                 log.logger.info("_"*60)
-        log.logger.info("Errors: %d" % len(errors))
+    log.logger.info("Errors: %d" % len(errors))
 
 
 def gen_dep_tc():
@@ -337,7 +338,7 @@ def test_registry_file(baseline):
 if __name__ == "__main__":
     if len(argv) == 2:
         if argv[1] == "debug":
-            print(testcase.get_dep_info('partialmirrorsad0'))
+            print(testcase.post(config.POST_URL))
 
         elif argv[1] == "gendeptc":
             log.logger.info("generating dependency test case")

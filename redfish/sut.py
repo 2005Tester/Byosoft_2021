@@ -77,11 +77,7 @@ def rebootsut():
 
 
 def get(url):
-    headers = {
-    'If-Match': 'W/"492eb2b8"',
-    'Authorization': 'Basic QWRtaW5pc3RyYXRvcjpBZG1pbkA5MDAw',
-    'Content-Type': 'application/json'
-    }
+    headers = config.headers
     response = requests.request("GET", url, headers=headers, verify=False)
     result = response.text
     response.close()
@@ -92,11 +88,7 @@ def get(url):
 def patch_tc_file(testcase_file, url):
     with open(testcase_file, 'r') as fp:
         payload = json.load(fp)
-    headers = {
-    'If-Match': 'W/"584db857"',
-    'Authorization': 'Basic QWRtaW5pc3RyYXRvcjpBZG1pbkA5MDAw',
-    'Content-Type': 'application/json'
-    }
+    headers = config.headers
     response = requests.request("GET", url, headers=headers, verify=False)
     etag = response.headers['ETag']
     headers['If-Match'] = etag
@@ -113,12 +105,7 @@ def patch_single_payload(payload, url):
     #    payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%d\" \r\n    }\r\n}" %(key, value)
     #else:
     #    payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%s\" \r\n    }\r\n}" %(key, value)
-    headers = {
-    'If-Match': 'W/"584db857"',
-    'Authorization': 'Basic QWRtaW5pc3RyYXRvcjpBZG1pbkA5MDAw',
-    'Content-Type': 'application/json'
-    }
-
+    headers = config.headers
     response = requests.request("GET", url, headers=headers, verify=False)
     etag = response.headers['ETag']
     headers['If-Match'] = etag
@@ -126,3 +113,9 @@ def patch_single_payload(payload, url):
     response.close()
     return response.text.encode('utf8')
 
+def post_req(url):
+    headers = config.headers
+    response = requests.request("POST", url, headers=headers, verify=False)
+    result = response.text
+    response.close()
+    return result
