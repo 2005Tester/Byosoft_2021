@@ -1,6 +1,6 @@
 {
 "Language":"en",
-"RegistryVersion":"V0.17",
+"RegistryVersion":"V0.18",
 "RegistryEntries":
 {
 "Attributes":[
@@ -11742,6 +11742,89 @@
 "ValueExpression":null
 },
 {
+"AttributeName":"PerfPlimitDifferential",
+"Type":"Integer",
+"DisplayName":"Perf P-Limit Differential",
+"HelpText":"Parameter used to tune how far below local socket frequency remote socket frequency is allowed to be. Also impacts rate at which frequency drops when feature disengages. ",
+"DefaultValue":1,
+"DisplayOrder":0,
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPUPStateControl/PerfPLimit",
+"ReadOnly":false,
+"WriteOnly":false,
+"GrayOut":false,
+"Hidden":false,
+"Immutable":false,
+"IsSystemUniqueProperty":true,
+"ScalarIncrement":0,
+"UpperBound":7,
+"LowerBound":0,
+"ValueExpression":null
+},
+{
+"AttributeName":"PerfPLimitClipC",
+"Type":"Integer",
+"DisplayName":"Perf P-Limit Clip",
+"HelpText":"Maximum value the floor is allowed to be set to for perf P-limit.",
+"DefaultValue":31,
+"DisplayOrder":0,
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPUPStateControl/PerfPLimit",
+"ReadOnly":false,
+"WriteOnly":false,
+"GrayOut":false,
+"Hidden":false,
+"Immutable":false,
+"IsSystemUniqueProperty":true,
+"ScalarIncrement":0,
+"UpperBound":31,
+"LowerBound":0,
+"ValueExpression":null
+},
+{
+"AttributeName":"PerfPLmtThshld",
+"Type":"Integer",
+"DisplayName":"Perf P-Limit Threshold",
+"HelpText":"Uncore frequency threshold above which this socket will trigger the feature and start trying to raise frequency of other sockets.",
+"DefaultValue":15,
+"DisplayOrder":0,
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPUPStateControl/PerfPLimit",
+"ReadOnly":false,
+"WriteOnly":false,
+"GrayOut":false,
+"Hidden":false,
+"Immutable":false,
+"IsSystemUniqueProperty":true,
+"ScalarIncrement":0,
+"UpperBound":31,
+"LowerBound":0,
+"ValueExpression":null
+},
+{
+"AttributeName":"PerfPLimitEn",
+"Type":"Enumeration",
+"Value":[
+{
+"ValueName":"Disabled",
+"DisplayName":"Disabled"
+},
+{
+"ValueName":"Enabled",
+"DisplayName":"Enabled"
+}
+],
+"DisplayName":"Perf P Limit",
+"HelpText":"Enable/Disable Performance P-Limit",
+"DefaultValue":"Enabled",
+"DisplayOrder":0,
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPUPStateControl/PerfPLimit",
+"ReadOnly":false,
+"WriteOnly":false,
+"GrayOut":false,
+"Hidden":false,
+"Immutable":false,
+"IsSystemUniqueProperty":true,
+"ValueExpression":null
+},
+{
 "AttributeName":"DramRaplEnable",
 "Type":"Enumeration",
 "Value":[
@@ -12860,6 +12943,14 @@
 "ReadOnly":false,
 "GrayOut":false,
 "MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPUAdvancedPMTuning/EnergyPerfBIAS"
+},
+{
+"MenuName":"PerfPLimit",
+"DisplayName":"Perf P-Limit",
+"DisplayOrder":0,
+"ReadOnly":false,
+"GrayOut":false,
+"MenuPath":"./Advanced/CPUConfiguration/AdvancedPowerMgmtConfiguration/CPUPStateControl/PerfPLimit"
 },
 {
 "MenuName":"DRAMRAPLConfiguration",
