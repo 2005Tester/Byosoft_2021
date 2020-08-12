@@ -19,16 +19,21 @@ def load(tc_file):
 # 改变testcase 文件中选项的值为非默认（随机）
 def change_value(tc_file):
     testscope = load(tc_file)
+    dep_include = list(config.INCLUDE_LIST.keys())
     for key in testscope:
         values = supported_value(key)
-        if len(values) == 1:
+        if isinstance(values,int):
+            testscope[key] = values
+        elif len(values) == 1:
             pass
         else:
             values.remove(testscope[key])
             desired_value = random.choice(values)
             testscope[key] = desired_value
-        with open(tc_file, 'w') as fp:
-            json.dump(testscope, fp, indent=1)
+    for key in dep_include:
+        testscope[key] = config.INCLUDE_LIST[key]
+    with open(tc_file, 'w') as fp:
+        json.dump(testscope, fp, indent=1)
 
 
 # 读取registry.json，返回registry字典
@@ -79,7 +84,7 @@ def get_varnames_dep():
     return varnames_dep, dependency_for
 
 
-# 遍历registry.json, 找到所有无联动关系的选项所支持的value
+# 遍历registry.json, 找到所有选项所支持的value
 def gen_payload_list():
     payload_list = []
     all_options = get_all_varnames()
@@ -90,6 +95,20 @@ def gen_payload_list():
         for value in values:
             payload = {"Attributes": {option: value}}
             payload_list.append(payload)
+    return payload_list
+
+
+# 遍历registry.json, assgin random value to all options
+def gen_payload_list_random_value():
+    payload_list = []
+    all_options = get_all_varnames()
+    for option in all_options:
+        if isinstance(supported_value(option), int):
+            value = supported_value(option)
+        else:
+            value = random.choice(supported_value(option))
+        payload = {"Attributes": {option: value}}
+        payload_list.append(payload)
     return payload_list
 
 
@@ -148,7 +167,7 @@ def supported_value(varname):
                 try:
                     return [val["ValueName"] for val in item["Value"]]  # val为描述所有支持的value的dict
                 except Exception as e:
-                    return ["Value is Null"]
+                    return item["DefaultValue"]
     else:
         print(varname + " is not supported.")
 

@@ -40,14 +40,19 @@ def registry_file_value_test():
     log.logger.info("-"*60)
     log.logger.info("Testing all supported values for all options")
     errors = []
-    payloads = testcase.gen_payload_list()
+    #payloads = testcase.gen_payload_list() # go through all values
+    payloads = testcase.gen_payload_list_random_value()  # randown value for each option
     dep_for = testcase.get_varnames_dep()[1]
+    hidden_options = testcase.get_hidden_options()
     for payload in payloads:
         key = list(payload["Attributes"].keys())[0]
-        if (key not in config.EXELUDE_TEST) and (key not in dep_for):
+        if (key not in config.EXELUDE_TEST) and (key not in dep_for) and (key not in hidden_options):
             value = payload["Attributes"][key]
             log.logger.info("%s : %s" % (str(key), str(value)))
-            payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%s\" \r\n    }\r\n}" % (key, value)
+            if isinstance(value, int):
+                payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": %d \r\n    }\r\n}" % (key, value)
+            else:
+                payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%s\" \r\n    }\r\n}" % (key, value)
             res = sut.patch_single_payload(payload, config.PATCH_URL).decode('utf-8')
             res = json.loads(res)
             if 'error' in res:
@@ -107,11 +112,13 @@ def gen_dep_tc():
 
 def gen_nondep_tc():
     dependency_options = testcase.get_varnames_dep()[0]
+    dep_include = list(config.INCLUDE_LIST.keys())
+    hidden_options = testcase.get_hidden_options()
     with open(config.CURR_SET_JSON, "r") as fp:
         allcase = json.load(fp)
     alloptions = list(allcase.keys())
     for key in alloptions:
-        if key in dependency_options:
+        if key in hidden_options:
             allcase.pop(key)
             print("remove: " + key)
     tc_file = os.path.join(config.TEST_RESULT_DIR, "remove_dep.json")
@@ -197,7 +204,8 @@ def run_test_one_by_one(payload):
     res = sut.patch_single_payload(payload, config.PATCH_URL).decode('utf-8')
     res = json.loads(res)
     if 'error' in res:
-        log.logger.info(res['error'])
+        # log.logger.info(res['error'])
+        log.logger.error(testcase.get_error_details(res))
         tc_result = "Error"
         log.logger.info('-'*60)
     else:
@@ -220,14 +228,14 @@ def auto_test(testcase_file):
     test_status = load_test_status(testcase_file)
 
     payloads = testcase.load(testcase_file)
-
+ 
     for key in payloads:
         if (key not in test_status["Completed"]) and (key not in config.EXELUDE_TEST):
-            if isinstance(payloads["Attributes"][key], int):
-                payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": %d \r\n    }\r\n}" % (key, payloads["Attributes"][key])
+            if isinstance(payloads[key], int):
+                payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": %d \r\n    }\r\n}" % (key, payloads[key])
             else:
-                payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%s\" \r\n    }\r\n}" % (key, payloads["Attributes"][key])
-            log.logger.info(key + " Value to set: " + str(payloads["Attributes"][key]))
+                payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%s\" \r\n    }\r\n}" % (key, payloads[key])
+            log.logger.info(key + " Value to set: " + str(payloads[key]))
             tc_result = run_test_one_by_one(payload)
             test_status["Completed"].append(key)
             if tc_result == "Error":

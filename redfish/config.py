@@ -1,4 +1,5 @@
 # -*- encoding=utf8 -*-
+import datetime
 
 # SSH Configuration
 sut = '192.168.2.100'
@@ -7,7 +8,8 @@ username = 'Administrator'
 password = 'Admin@9000'
 PING_CMD = 'ping 192.168.100.156'
 
-EXELUDE_TEST = ['serialDebugMsgLvl', 'PowerOnPassword', 'MemChannelEnable[0]', 'MemChannelEnable[6]', 'PchUsbHsPort[8]']
+EXELUDE_TEST = ['serialDebugMsgLvl', 'PowerOnPassword', 'MemChannelEnable[1]', 'MemChannelEnable[6]', 'PchUsbHsPort[8]']
+#EXELUDE_TEST = ['MemChannelEnable[1]']
 BIOS = "C:\\UpdateTool\\HY5V018_candidate1.bin"
 BIOS_CODE = "D:\\Code\\HY5\\Intel\\WhitleyRpPkg001"
 REGISTRY_FILE = ".\\baseline\\registry.json"
@@ -27,8 +29,9 @@ headers = {
 
 
 # log setting
+timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 TEST_RESULT_DIR = "C:\\redfishtest"
-LOG_FILE = "C:\\redfishtest\\redfishtest.log"
+LOG_FILE = "C:\\redfishtest\\redfishtest_%s.log" % (timestamp)
 INIT_STATUS = {"Completed": [], "Passed": [], "Error": [], "Failed": []}
 
 help_msg = """
@@ -38,3 +41,19 @@ python redfish.py [directoryname] --Find all the json files in specified directo
 python redfish.py [checkregistry] --check whether registry.json and setup baseline is aligned
 python redfish.py [init]     --cleanup teststatus
 """
+
+# list of options that is dependent by oters
+INCLUDE_LIST = {
+    "BootFailPolicy":"Boot Retry",
+    "PcieCorErrLimitEn":"Enabled",
+    "SvrMngmntFrb2Enable":"Enabled",
+    "OSBootWDTimer":"Enabled",
+    "MemBootHealthCheck":"Manual",
+    "EnableBiosSsaRMT":"Enabled",
+    "BiosSsaStepSizeOverride":"Enabled",
+    "leakyBktTimeWindow":"Enabled",
+    "StaticTurbo":"Manual",
+    "PartialMirrorUefi":"Enabled",
+    "NetworkProtocol":"UEFI:IPv4/IPv6",
+    "PwrPerfTuning":"BIOS Controls EPB"
+}
