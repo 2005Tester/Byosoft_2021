@@ -13,7 +13,7 @@ STATUS_SKIP = 2
 
 VER_TESTED = []
 
-TestRunInfo = daily.RESULT_TEMPLATE
+
 
 
 prt = PrintColor.PrintColor()
@@ -56,6 +56,7 @@ RESULT_TEMPLATE = {"testPass": 1,
     "beginTime":'',
     "totalTime":0}
 
+TestRunInfo = RESULT_TEMPLATE
 
 def get_test_image(path):
     bios_dir = os.path.join(daily.TEST_DIR, 'bios')
