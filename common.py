@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 import shutil
 import json
-from comm import printcolor
+from Common import PrintColor
 from HY5 import daily
 
 STATUS_FAIL = 0
@@ -19,7 +19,7 @@ VER_TESTED = []
 TestRunInfo = daily.RESULT_TEMPLATE
 
 
-prt = printcolor.PrintColor()
+prt = PrintColor.PrintColor()
 
 
 def get_test_image(path):

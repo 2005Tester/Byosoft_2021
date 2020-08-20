@@ -4,7 +4,7 @@ import datetime
 import time
 import re
 import common
-from comm import ssh
+from Common import ssh
 
 STATUS_FAIL = 0
 STATUS_PASS = 1
