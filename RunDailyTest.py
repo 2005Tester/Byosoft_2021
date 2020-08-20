@@ -6,7 +6,7 @@ import shutil
 import json
 import common
 import updatebios
-import report
+from Report import GenDailyReport
 from sys import argv
 from HY5 import daily
 
@@ -70,10 +70,10 @@ def loop_test(tc_list):
                     log = "\"" + log_dir + "\\" + tc['name'] + "\""
                     print(log)
                     run_airtest(tc['script'], device, log, overall_log)
-                    report.update_result(common.TestRunInfo, tc["id"], overall_log)
+                    GenDailyReport.update_result(common.TestRunInfo, tc["id"], overall_log)
                     print("-"*50)  
-            report.update_overview(common.TestRunInfo)
-            report.gen_html('report\\template', 'tmp\\report.html')
+            GenDailyReport.update_overview(common.TestRunInfo)
+            GenDailyReport.gen_html('report\\template', 'tmp\\report.html')
             os.system('copy tmp\*.* ' + log_dir)
             print("Tested Version: ",common.VER_TESTED)
         else:
@@ -94,10 +94,10 @@ def loop_test_py(tc_list):
                     log = "\"" + log_dir + "\\" + tc['name'] + "\""
                     print("Running tets case: %s" % tc['name'])
                     run_airtest_py(tc['script'], device, log, overall_log)
-                    report.update_result(common.TestRunInfo, tc["id"], overall_log)
+                    GenDailyReport.update_result(common.TestRunInfo, tc["id"], overall_log)
                     # print("-"*50)  
-            report.update_overview(common.TestRunInfo)
-            report.gen_html('report\\template', 'tmp\\report.html')
+            GenDailyReport.update_overview(common.TestRunInfo)
+            GenDailyReport.gen_html('report\\template', 'tmp\\report.html')
             os.system('copy tmp\*.* ' + log_dir)
             print("Tested Version: ",common.VER_TESTED)
         else:
