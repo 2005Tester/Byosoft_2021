@@ -3,8 +3,8 @@ import paramiko
 import datetime
 import time
 import re
-import common
 from Common import ssh
+from Common import PrintColor
 
 STATUS_FAIL = 0
 STATUS_PASS = 1
@@ -12,11 +12,12 @@ SUT = "192.168.2.100"
 USERNAME = "Administrator"
 PW = "Admin@9000"
 
+prt = PrintColor.PrintColor()
 
 def print_rawmsg(msg):
-    common.prt.print_red_text('*'*50)
-    common.prt.print_red_text(msg)
-    common.prt.print_red_text('*'*50)
+    prt.print_red_text('*'*50)
+    prt.print_red_text(msg)
+    prt.print_red_text('*'*50)
 
 
 def upload_bios(src):
@@ -45,7 +46,7 @@ def upload_bios(src):
         if re.search("67108864", str(res)):
             print("BIOS image (bin) uploaded to iBMC SFTP.")
             transport.close()
-            common.prt.print_green_text("Upload bios to iBMC: PASS")
+            prt.print_green_text("Upload bios to iBMC: PASS")
             return STATUS_PASS
         else:
             print("Failed to upload BIOS image to iBMC SFTP.")
@@ -61,7 +62,7 @@ def upload_bios(src):
         if re.search("rw", str(res)):
             print("HPM image uploaded to iBMC SFTP.")
             transport.close()
-            common.prt.print_green_text("Upload bios to iBMC: PASS")
+            prt.print_green_text("Upload bios to iBMC: PASS")
             return STATUS_PASS
         else:
             print("Failed to upload hpm image to iBMC SFTP.")
@@ -143,7 +144,7 @@ def program_flash():
         if re.search("load bios succefully", res.decode('utf-8')):
             op.close()
             s.close()
-            common.prt.print_green_text("Load bios to iBMC: PASS")
+            prt.print_green_text("Load bios to iBMC: PASS")
             return True
         else:
             print("iBMC Failed to attach upgrade")
@@ -191,7 +192,7 @@ def program_flash2():
             print("Porgraming Flash Device Timeout!!!")
             status = False
         if re.search("load bios succefully", res.decode('utf-8')):
-            common.prt.print_green_text("Load bios to iBMC: PASS")
+            prt.print_green_text("Load bios to iBMC: PASS")
             status = True
     return status
 
@@ -213,7 +214,7 @@ def poweron_sut():
             print("Power on successfully.")
             ssh.send_command(cmd_fan_manual_mode, op) # tune fan speed
             ssh.send_command(cmd_fan_40, op)
-            common.prt.print_green_text("Power On SUT: PASS")
+            prt.print_green_text("Power On SUT: PASS")
             return STATUS_PASS
         else:
             print("Failed to power on SUT.")

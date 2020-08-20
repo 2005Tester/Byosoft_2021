@@ -2,9 +2,6 @@
 import time
 import os
 import subprocess
-import shutil
-import json
-import common
 import updatebios
 from Report import GenDailyReport
 from sys import argv
@@ -23,7 +20,7 @@ device = "\"Windows:///?title_re=iBMC*\""
 
 
 def update_bios():
-    status = common.get_test_image(BINARY_DIR)
+    status = daily.get_test_image(BINARY_DIR)
     if status == STATUS_PASS:
         if not updatebios.upload_bios(daily.TEST_DIR + '\\bios\\RP001.bin'):
             return STATUS_FAIL
@@ -63,19 +60,19 @@ def loop_test(tc_list):
         status = update_bios()
         if status == STATUS_PASS:
             os.system("del /f /q tmp\*.*")
-            log_dir = common.create_log_dir()       
+            log_dir = daily.create_log_dir()       
             for tc in tc_list: 
                 if tc['exec'] == 1:
                     overall_log = 'tmp\\' + tc['name']+'.txt'
                     log = "\"" + log_dir + "\\" + tc['name'] + "\""
                     print(log)
                     run_airtest(tc['script'], device, log, overall_log)
-                    GenDailyReport.update_result(common.TestRunInfo, tc["id"], overall_log)
+                    GenDailyReport.update_result(daily.TestRunInfo, tc["id"], overall_log)
                     print("-"*50)  
-            GenDailyReport.update_overview(common.TestRunInfo)
+            GenDailyReport.update_overview(daily.TestRunInfo)
             GenDailyReport.gen_html('report\\template', 'tmp\\report.html')
             os.system('copy tmp\*.* ' + log_dir)
-            print("Tested Version: ",common.VER_TESTED)
+            print("Tested Version: ",daily.VER_TESTED)
         else:
             print("Will check update in 30 minutes")
             time.sleep(1800)
@@ -87,19 +84,19 @@ def loop_test_py(tc_list):
         #status = 1
         if status == STATUS_PASS:
             os.system("del /f /q tmp\*.*")
-            log_dir = common.create_log_dir()       
+            log_dir = daily.create_log_dir()       
             for tc in tc_list: 
                 if tc['exec'] == 1:
                     overall_log = 'tmp\\' + tc['name']+'.txt'
                     log = "\"" + log_dir + "\\" + tc['name'] + "\""
                     print("Running tets case: %s" % tc['name'])
                     run_airtest_py(tc['script'], device, log, overall_log)
-                    GenDailyReport.update_result(common.TestRunInfo, tc["id"], overall_log)
+                    GenDailyReport.update_result(daily.TestRunInfo, tc["id"], overall_log)
                     # print("-"*50)  
-            GenDailyReport.update_overview(common.TestRunInfo)
+            GenDailyReport.update_overview(daily.TestRunInfo)
             GenDailyReport.gen_html('report\\template', 'tmp\\report.html')
             os.system('copy tmp\*.* ' + log_dir)
-            print("Tested Version: ",common.VER_TESTED)
+            print("Tested Version: ",daily.VER_TESTED)
         else:
             print("Will check update in 30 minutes")
             time.sleep(1800)

@@ -1,6 +1,6 @@
 import re
 import json
-import common
+from HY5 import daily
 
 
 def update_result(data, id, log):  #data = TestRunInfo, id: test case id, result: pass/fail/skip, read from log, time: test execution time, read from log, log: path of overall log
@@ -32,10 +32,10 @@ def update_overview(data):
     test_pass = 0
     test_fail = 0
     test_skip = 0
-    if not common.VER_TESTED:
+    if not daily.VER_TESTED:
         test_name = "NA"
     else:
-        test_name = common.VER_TESTED[-1]
+        test_name = daily.VER_TESTED[-1]
     data["totalTime"] = 0
 
     # update overall pass/fail number
@@ -59,11 +59,11 @@ def update_overview(data):
     data["testName"] = test_name
 
     with open('tmp\\result.json','w') as f:
-        json.dump(common.TestRunInfo, f)
+        json.dump(daily.TestRunInfo, f)
 
 def gen_html(template, dst):
     old = "ResultDict"
-    new = str(common.TestRunInfo)
+    new = str(daily.TestRunInfo)
 
     with open (template, 'r', encoding = 'utf-8') as f:
         content = f.read()

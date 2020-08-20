@@ -1,12 +1,8 @@
 # -*- encoding=utf8 -*-
-import time
 import datetime
-import re
-import updatebios
 import os
 from pathlib import Path
 import shutil
-import json
 from Common import PrintColor
 from HY5 import daily
 
