@@ -12,9 +12,9 @@ EXELUDE_TEST = ['serialDebugMsgLvl', 'PowerOnPassword', 'MemChannelEnable[1]', '
 #EXELUDE_TEST = ['MemChannelEnable[1]']
 BIOS = "C:\\UpdateTool\\HY5V018_candidate1.bin"
 BIOS_CODE = "D:\\Code\\HY5\\Intel\\WhitleyRpPkg001"
-REGISTRY_FILE = ".\\baseline\\registry.json"
-HIDDEN_LIST = ".\\baseline\\hidden.txt"
-CURR_SET_JSON = ".\\baseline\\currentvalue.json"
+REGISTRY_FILE = ".\\RedFish\\baseline\\registry.json"
+HIDDEN_LIST = ".\\RedFish\\baseline\\hidden.txt"
+CURR_SET_JSON = ".\\RedFish\\baseline\\currentvalue.json"
 
 # request settings to communicate with BMC
 GET_URL = "https://192.168.2.100/redfish/v1/Systems/1/Bios/"

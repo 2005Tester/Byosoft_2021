@@ -1,6 +1,0 @@
-*.bin
-*.log
-.idea
-testcase
-dep
-temp

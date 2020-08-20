@@ -1,15 +1,18 @@
+import sys
 import requests
 import json
 import time
 import os
 from sys import argv
-import logger
+from Common import Logger
 import updatebios
-import config
-import sut
-import testcase
+sys.path.append('RedFish')
+from RedFish import config
+from RedFish import sut
+from RedFish import testcase
 
-log = logger.Logger(config.LOG_FILE, level="info")
+
+log = Logger.Logger(config.LOG_FILE, level="info")
 requests.packages.urllib3.disable_warnings()
 
 
