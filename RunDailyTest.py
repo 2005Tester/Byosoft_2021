@@ -2,7 +2,7 @@
 import time
 import os
 import subprocess
-import updatebios
+from HY5 import updatebios
 from Report import GenDailyReport
 from sys import argv
 from HY5 import daily
