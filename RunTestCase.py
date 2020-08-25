@@ -67,12 +67,12 @@ def read_data():
             data = ser.session.read(256).decode("utf-8")
             print(data)
 
-def check_result():
+def check_result(str):
     print("Receiving data from SUT...")
     while True:
         if ser.session.in_waiting:
             data = ser.session.read(256).decode("utf-8")
-            if re.search("BIOS boot completed.", data):
+            if re.search(str, data):
                     print("BIOS Boot Successful.")
                     return
 
@@ -88,7 +88,13 @@ def daily_test():
     if not updatebios.poweron_sut():
         return
 
-    check_result()
+    if not check_result("BIOS boot completed."):
+        return
+
+    if not ser.hotkey_F11():
+        return
+    else:
+        check_result("Boot Manager Menu")
     
 
 if __name__ == "__main__":
