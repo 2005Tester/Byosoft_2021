@@ -5,7 +5,9 @@ import re
 from Common import SutSsh
 from Common import SutSerial
 from RedFish import config
-
+import configparser
+from HY5 import daily
+from HY5 import updatebios
 
 ser = SutSerial.SutControl("com3", 115200, 0.5)
 
@@ -66,11 +68,34 @@ def read_data():
             print(data)
 
 
-if __name__ == "__main__":
+def daily_test():
+    if not daily.get_test_image():
+        return
+    if not updatebios.upload_bios(daily.TEST_DIR + '\\bios\\RP001.bin'):
+        return
 
+    if not updatebios.program_flash2():
+        return
+       
+    if not updatebios.poweron_sut():
+        return
+
+    if not ser.check_boot_success():
+        print("Boot failed...")
+    else:
+        print("Boot Successful...")
+    
+
+    
+
+if __name__ == "__main__":
+    daily_test()
+
+"""
     for i in range(2):
         print("Test count: %d" % i)
         try:
             testcase(key_f6)
         except Exception as e:
             print(e)
+"""
