@@ -67,9 +67,17 @@ def read_data():
             data = ser.session.read(256).decode("utf-8")
             print(data)
 
+def check_result():
+    print("Receiving data from SUT...")
+    while True:
+        if ser.session.in_waiting:
+            data = ser.session.read(256).decode("utf-8")
+            if re.search("BIOS boot completed.", data):
+                    print("BIOS Boot Successful.")
+                    return
 
 def daily_test():
-    if not daily.get_test_image():
+    if not daily.get_test_image('\\\\172.16.0.73\\HY5_Binary'):
         return
     if not updatebios.upload_bios(daily.TEST_DIR + '\\bios\\RP001.bin'):
         return
@@ -80,12 +88,7 @@ def daily_test():
     if not updatebios.poweron_sut():
         return
 
-    if not ser.check_boot_success():
-        print("Boot failed...")
-    else:
-        print("Boot Successful...")
-    
-
+    check_result()
     
 
 if __name__ == "__main__":
