@@ -28,6 +28,13 @@ class SutControl():
     def receive_data(self, size):
         self.session.read(size)
 
+    def is_timeout(self, t_start, timeout):
+        now = time.time()
+        spent_time =(now - t_start)
+        if spent_time > timeout:
+            print("Time out, probably boot fail.")
+            return True
+
     def check_boot_success(self):
         start_time = time.time()
         while True:
@@ -46,7 +53,6 @@ class SutControl():
             spent_time =(now - start_time)
             if spent_time > 600:
                 print("Time out, probably boot fail.")
-                print(spent_time)
                 self.close_session()
                 break
 
@@ -54,7 +60,8 @@ class SutControl():
         for char in key:
             self.send_data(char)
 
-    def send_hotkey(self, key):
+    def send_hotkey(self, key, msg, timeout):
+        start_time = time.time()
         print("Receiving data from SUT...")
         while True:
             try:
@@ -71,27 +78,35 @@ class SutControl():
                         self.send_data(chr(0x0D))  # Send Enter
                         self.send_data(chr(0x0D))  # Send Enter
                         print("Send password...")
-                    if re.search("BIOS boot completed.", data):
+                    if re.search(msg, data):
                         print("BIOS Boot Successful.")
-                        SutSsh.rebootsut()
-                        return
+                        return True
             except Exception as e:
                 print(e)
                 print("Please check whether COM port is in use.")
                 break
 
+            if self.is_timeout(start_time, timeout):
+                break
+
+
+
     def hotkey_del(self):
         key_del = [chr(0x7F)]
-        self.send_hotkey(key_del)
+        msg = "none"
+        self.send_hotkey(key_del, msg, 300)
 
     def hotkey_F6(self):
         key_f6 = [chr(0x1b),chr(0x5b),chr(0x31),chr(0x37),chr(0x7e)]
-        self.send_hotkey(key_f6)
+        msg = "BIOSsss boot completed."
+        self.send_hotkey(key_f6, msg, 300)
 
     def hotkey_F11(self):
         key_f11 = [chr(0x1b),chr(0x5b),chr(0x32),chr(0x33),chr(0x7e)]
-        self.send_hotkey(key_f11)    
+        msg = "Boot Manager Menu"
+        self.send_hotkey(key_f11, msg, 300)    
 
     def hotkey_F12(self):
         key_f12 = [chr(0x1b),chr(0x5b),chr(0x32),chr(0x34),chr(0x7e)]
-        self.send_hotkey(key_f12)  
+        msg = "none"
+        self.send_hotkey(key_f12, msg, 300)

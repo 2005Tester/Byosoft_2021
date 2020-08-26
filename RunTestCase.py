@@ -3,13 +3,17 @@ import random
 import sys
 import re
 from Common import SutSsh
+from Common import ssh
 from Common import SutSerial
 from RedFish import config
 import configparser
 from HY5 import daily
 from HY5 import updatebios
+import Hy5Config
 
 ser = SutSerial.SutControl("com3", 115200, 0.5)
+
+ssh = ssh.SshConnection()
 
 key_del = [chr(0x7F)]
 key_f6 = [chr(0x1b), chr(0x5b), chr(0x31), chr(0x37), chr(0x7e)]
@@ -72,6 +76,7 @@ def check_result(str):
     while True:
         if ser.session.in_waiting:
             data = ser.session.read(256).decode("utf-8")
+            #print(data)
             if re.search(str, data):
                     print("BIOS Boot Successful.")
                     return
@@ -82,22 +87,39 @@ def daily_test():
     if not updatebios.upload_bios(daily.TEST_DIR + '\\bios\\RP001.bin'):
         return
 
-    if not updatebios.program_flash2():
+    if not updatebios.program_flash():
         return
        
     if not updatebios.poweron_sut():
         return
+    check_result("BIOS boot completed.")   
+    run_ssh_cmds(["dmidecode", "lspci", "dmesg"]) 
+    SutSsh.rebootsut()
+    ret = ser.hotkey_F11()
+    SutSsh.rebootsut()
+    ret = ser.hotkey_F6()
 
-    if not check_result("BIOS boot completed."):
-        return
+def run_ssh_cmds(cmd):
+    if ssh.login(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD):
+        ssh.execute_command(cmd, Hy5Config.LOG_DIR)
+        ssh.close_session()
 
-    if not ser.hotkey_F11():
-        return
-    else:
-        check_result("Boot Manager Menu")
-    
+def run_interact_cmds(cmds, strs):
+    if ssh.login(Hy5Config.OS_IP, 'byosoft', 'byo@123'):
+        ssh.interaction(cmds, strs)
+        ssh.close_session()
+
 
 if __name__ == "__main__":
+    """
+    commands = ["sudo su\n", "byo@123\n"]
+    strs = ["password", "root"]
+    while True:
+        run_interact_cmds(commands, strs)
+    """
+
+#    ssh.close_session()
+
     daily_test()
 
 """

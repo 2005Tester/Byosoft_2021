@@ -25,7 +25,7 @@ def update_bios():
         if not updatebios.upload_bios(daily.TEST_DIR + '\\bios\\RP001.bin'):
             return STATUS_FAIL
 
-        if not updatebios.program_flash2():
+        if not updatebios.program_flash():
             return STATUS_FAIL
        
         if not updatebios.poweron_sut():
