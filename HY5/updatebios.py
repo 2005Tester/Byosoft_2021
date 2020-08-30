@@ -5,6 +5,10 @@ import time
 import re
 from Common import ssh
 from Common import PrintColor
+#from Common import Logger
+#import logging
+
+#logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(levelname)s: %(message)s')
 
 STATUS_FAIL = 0
 STATUS_PASS = 1
@@ -180,6 +184,13 @@ def poweron_sut():
     op.close()
     s.close()
 
+
+def perform_update(bios):
+    if not upload_bios(bios):
+        print("Upload BIOS image failed")
+    if not program_flash():
+        print("Program flash failed")
+    poweron_sut()
 
 if __name__ == '__main__':
     upload_bios()

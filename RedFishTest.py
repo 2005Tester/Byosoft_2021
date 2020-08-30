@@ -5,11 +5,14 @@ import time
 import os
 from sys import argv
 from Common import Logger
+from Common import SutSerial
 sys.path.append('RedFish')
 from RedFish import config
-from RedFish import sut
+from HY5 import sut
 from RedFish import testcase
-from RedFish import updatebios
+from HY5 import updatebios
+
+
 
 
 log = Logger.Logger(config.LOG_FILE, level="info")
@@ -113,7 +116,7 @@ def gen_dep_tc():
     log.logger.info("-"*60)
 
 
-def gen_nondep_tc():
+def gen_testcase():
     dependency_options = testcase.get_varnames_dep()[0]
     dep_include = list(config.INCLUDE_LIST.keys())
     hidden_options = testcase.get_hidden_options()
@@ -267,8 +270,10 @@ def auto_test_dir(tc_dir):
                 iscomplete = True
             if not iscomplete:
                 updatebios.perform_update(config.BIOS)
-                log.logger.info("Rebooting SUT, test will continue in 5 minutes")
-                time.sleep(500)
+                ser = SutSerial.SutControl("com3", 115200, 0.5)
+                ser.check_boot_success()
+                #log.logger.info("Rebooting SUT, test will continue in 5 minutes")
+                #time.sleep(500)
         else:
             print("%s is not a json file, skip test" % tc_file)
 
@@ -362,9 +367,9 @@ if __name__ == "__main__":
         elif argv[1] == "valuetest":
             registry_file_value_test()
 
-        elif argv[1] == "gennondeptc":
+        elif argv[1] == "gentestcase":
             log.logger.info("generating non-dependency test case")
-            testcase.change_value(gen_nondep_tc())  # 使用postman get, 把所有current value存为json文件
+            testcase.change_value(gen_testcase())  # 使用postman get, 把所有current value存为json文件
 
         elif argv[1] == "checkregistry":
             log.logger.info("Testing registry file...")

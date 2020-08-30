@@ -6,7 +6,7 @@ pip install paramiko
 pip install pyserial  
 
 
-# Linux OS allow root login from SSH  
+# Allow root login from SSH in Linux  
 ## Ubuntu Instructions  
 sudo apt install openssh-server  
 sudo passwd root  
@@ -19,6 +19,8 @@ sudo systemctl restart sshd
 ## Prepare Test
 1. Update BIOS, dump registry.json and currentvalue.json from BMC web, override the same files in RedFish\baseline
 2. update RedFish\baseline\baseline.txt based on  
+3. Redfish\config.py must be updated  
+    BIOS = "C:\\UpdateTool\\HY5V020_candidate1.bin"
 
 
 ### Value Test

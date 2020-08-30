@@ -6,8 +6,10 @@ import time
 import subprocess
 import json
 import config
-import updatebios
-#from common import SutSerial
+from HY5 import updatebios
+from Common import SutSerial
+
+
 
 
 def ping_sut():
@@ -32,6 +34,7 @@ def ping_sut():
                 print(e)
 
 def rebootsut():
+    ser = SutSerial.SutControl("com3", 115200, 0.5)
     cmd_shutdown = 'ipmcset -d powerstate -v 2\n'
     cmd_power_on = 'ipmcset -d powerstate -v 1\n'
     cmd_confirm = 'Y\n'
@@ -59,19 +62,19 @@ def rebootsut():
     if re.search("Do you want to continue", res.decode('utf-8')):
         res = send_cmd(cmd_confirm)  # confirm shutdown
         if re.search("Control fru0 forced power off successfully", res.decode('utf-8')):
-            print("Shutdown command sent to SUT.")
+            log.logger.info("Shutdown command sent to SUT.")
             time.sleep(10)
             res = send_cmd(cmd_power_on)
             if re.search("Do you want to continue", res.decode('utf-8')):
                 res = send_cmd(cmd_confirm)  # confirm power on
                 if re.search("Control fru0 power on successfully", res.decode('utf-8')):
-                    print("Power on command sent to SUT.")
+                    log.logger.info("Power on command sent to SUT.")
                     send_cmd(cmd_fan_manual_mode)  # tune fan speed
                     send_cmd(cmd_fan_40)
                     print("Booting SUT...")
                     time.sleep(30)
-                    #SutSerial.check_boot_success()
-                    ping_sut()
+                    ser.check_boot_success()
+                    #ping_sut()
     op.close()
     s.close()
     return

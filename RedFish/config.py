@@ -10,7 +10,7 @@ PING_CMD = 'ping 192.168.100.107'
 
 EXELUDE_TEST = ['serialDebugMsgLvl', 'PowerOnPassword', 'MemChannelEnable[1]', 'MemChannelEnable[6]', 'PchUsbHsPort[8]']
 #EXELUDE_TEST = ['MemChannelEnable[1]']
-BIOS = "C:\\UpdateTool\\HY5V018_candidate1.bin"
+BIOS = "C:\\UpdateTool\\HY5V020_candidate1.bin"
 BIOS_CODE = "D:\\Code\\HY5\\Intel\\WhitleyRpPkg001"
 REGISTRY_FILE = ".\\RedFish\\baseline\\registry.json"
 HIDDEN_LIST = ".\\RedFish\\baseline\\hidden.txt"
