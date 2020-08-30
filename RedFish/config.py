@@ -6,7 +6,7 @@ sut = '192.168.2.100'
 port = '22'
 username = 'Administrator'
 password = 'Admin@9000'
-PING_CMD = 'ping 192.168.100.156'
+PING_CMD = 'ping 192.168.100.107'
 
 EXELUDE_TEST = ['serialDebugMsgLvl', 'PowerOnPassword', 'MemChannelEnable[1]', 'MemChannelEnable[6]', 'PchUsbHsPort[8]']
 #EXELUDE_TEST = ['MemChannelEnable[1]']

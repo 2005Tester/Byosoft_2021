@@ -5,11 +5,11 @@ import time
 import os
 from sys import argv
 from Common import Logger
-import updatebios
 sys.path.append('RedFish')
 from RedFish import config
 from RedFish import sut
 from RedFish import testcase
+from RedFish import updatebios
 
 
 log = Logger.Logger(config.LOG_FILE, level="info")
@@ -368,7 +368,7 @@ if __name__ == "__main__":
 
         elif argv[1] == "checkregistry":
             log.logger.info("Testing registry file...")
-            test_registry_file(".\\baseline\\baseline_v0.03_0802.txt")
+            test_registry_file(".\\RedFish\\baseline\\baseline_830.txt")
 
         elif os.path.isfile(argv[1]):
             log.logger.info("Run test for %s" % argv[1])

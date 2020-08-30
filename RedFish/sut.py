@@ -7,6 +7,7 @@ import subprocess
 import json
 import config
 import updatebios
+#from common import SutSerial
 
 
 def ping_sut():
@@ -29,7 +30,6 @@ def ping_sut():
                 start_time = time.time()
             except Exception as e:
                 print(e)
-
 
 def rebootsut():
     cmd_shutdown = 'ipmcset -d powerstate -v 2\n'
@@ -70,6 +70,7 @@ def rebootsut():
                     send_cmd(cmd_fan_40)
                     print("Booting SUT...")
                     time.sleep(30)
+                    #SutSerial.check_boot_success()
                     ping_sut()
     op.close()
     s.close()
