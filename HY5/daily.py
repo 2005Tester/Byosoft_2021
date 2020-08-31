@@ -6,15 +6,10 @@ from pathlib import Path
 import shutil
 from Common import PrintColor
 from HY5 import daily
+import logging
 
-STATUS_FAIL = 0
-STATUS_PASS = 1
-STATUS_SKIP = 2
-
+SKIP_TEST = 2
 VER_TESTED = []
-
-
-
 
 prt = PrintColor.PrintColor()
 
@@ -66,10 +61,10 @@ def get_test_image(path):
         versions = os.listdir(path)
         versions.sort(reverse=True)
         latest_version = versions[1]
-        print("Latest Version is: %s" % (latest_version))
+        logging.info("Latest Version is: %s" % (latest_version))
         if latest_version in VER_TESTED:
             print("%s has been tested" %(latest_version))
-            return STATUS_SKIP      
+            return SKIP_TEST      
     else:
         print("BIOS image directroy can't be accessed, please check VPN conection. ")
         return STATUS_FAIL
@@ -90,10 +85,12 @@ def get_test_image(path):
         if os.path.exists(dst):
             VER_TESTED.append(latest_version)
             prt.print_green_text("Check Wheter Image is copied to local HDD: PASS")
-            return STATUS_PASS
+            return True
         else:
-            print("Failed to copy BIOS image.")
-            return STATUS_FAIL
+            logging.error("Failed to copy BIOS image.")
+            return
+
+
 
 
 def create_log_dir():
@@ -104,4 +101,4 @@ def create_log_dir():
         Path(log_dir).mkdir(parents=True, exist_ok=True)
         return log_dir
     except Exception as e:
-        print("Failed to create log directory.")
+        logging.error("Failed to create log directory.")

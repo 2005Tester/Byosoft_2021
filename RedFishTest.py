@@ -4,17 +4,16 @@ import json
 import time
 import os
 from sys import argv
-from Common import Logger
 from Common import SutSerial
 sys.path.append('RedFish')
 from RedFish import config
 from HY5 import sut
 from RedFish import testcase
 from HY5 import updatebios
+from Common import LogConfig
+import logging.config
 
 
-
-log = Logger.Logger(config.LOG_FILE, level="info")
 requests.packages.urllib3.disable_warnings()
 
 
@@ -26,12 +25,12 @@ def load_test_status(testcase_file):
         
     with open(status_file, 'r') as f:
         status = json.load(f)
-    log.logger.info("Load test status from %s" % status_file)
-    log.logger.info("Complted: " + str(len(status["Completed"])))
-    log.logger.info("Error: " + str(len(status["Error"])))
-    log.logger.info("Passed: " + str(len(status["Passed"])))
-    log.logger.info("Failed: " + str(len(status["Failed"])))
-    log.logger.info("-"*60)
+    logging.info("Load test status from %s" % status_file)
+    logging.info("Complted: " + str(len(status["Completed"])))
+    logging.info("Error: " + str(len(status["Error"])))
+    logging.info("Passed: " + str(len(status["Passed"])))
+    logging.info("Failed: " + str(len(status["Failed"])))
+    logging.info("-"*60)
     return status
 
 
@@ -42,8 +41,8 @@ def update_test_status(test_status, status_file):
 
 # 遍历所有选项支持的值, set但是不重启, 看有没有patch不成功的
 def registry_file_value_test():
-    log.logger.info("-"*60)
-    log.logger.info("Testing all supported values for all options")
+    logging.info("-"*60)
+    logging.info("Testing all supported values for all options")
     errors = []
     #payloads = testcase.gen_payload_list() # go through all values
     payloads = testcase.gen_payload_list_random_value()  # randown value for each option
@@ -53,7 +52,7 @@ def registry_file_value_test():
         key = list(payload["Attributes"].keys())[0]
         if (key not in config.EXELUDE_TEST) and (key not in dep_for) and (key not in hidden_options):
             value = payload["Attributes"][key]
-            log.logger.info("%s : %s" % (str(key), str(value)))
+            logging.info("%s : %s" % (str(key), str(value)))
             if isinstance(value, int):
                 payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": %d \r\n    }\r\n}" % (key, value)
             else:
@@ -62,20 +61,20 @@ def registry_file_value_test():
             res = json.loads(res)
             if 'error' in res:
                 errors.append(payload)
-                log.logger.info("_"*60)
-                # log.logger.info(payload)
-                log.logger.info('%s depends on: %s' % (key,testcase.get_dep_info(key)))
-                log.logger.error(testcase.get_error_details(res))
-                log.logger.info("_"*60)
-    log.logger.info("Errors: %d" % len(errors))
+                logging.info("_"*60)
+                # logging.info(payload)
+                logging.info('%s depends on: %s' % (key,testcase.get_dep_info(key)))
+                logging.error(testcase.get_error_details(res))
+                logging.info("_"*60)
+    logging.info("Errors: %d" % len(errors))
 
 
 def gen_dep_tc():
     output_dir = os.path.join(config.TEST_RESULT_DIR, 'dep')
     if not os.path.isdir(output_dir):
         os.makedirs(output_dir)
-    log.logger.info("-"*60)
-    log.logger.info("Generateing dependency test cases...")
+    logging.info("-"*60)
+    logging.info("Generateing dependency test cases...")
     dependency_options = {}
     multi_dep = []
     # 生成有依赖关系的dict
@@ -90,7 +89,7 @@ def gen_dep_tc():
         for dep in dep_list:
             if (dep["DependencyFor"] == key) and (dep["Dependency"]["MapToAttribute"] not in dependency_options[key]):
                 dependency_options[key].append(dep["Dependency"]["MapToAttribute"])
-    # log.logger.info(dependency_options)
+    # logging.info(dependency_options)
     dep_overview = os.path.join(output_dir, "dep_overview.json")
     with open(dep_overview, "w") as f:
         json.dump(dependency_options, f, indent=1)
@@ -111,8 +110,8 @@ def gen_dep_tc():
             tc_dep["Attributes"][opt] = ""
             with open(file_name, 'w') as f:
                 json.dump(tc_dep, f, indent=1)
-    log.logger.info(multi_dep)
-    log.logger.info("-"*60)
+    logging.info(multi_dep)
+    logging.info("-"*60)
 
 
 def gen_testcase():
@@ -158,12 +157,12 @@ def compare_one(payload, result):
     tc = json.loads(payload)
     for key in tc["Attributes"]:
         if not tc["Attributes"][key] == result["Attributes"][key]:
-            log.logger.info(key + " : Failed")
+            logging.info(key + " : Failed")
             tc_result = "Failed"
         else:
-            log.logger.info(key + " : Pass")
+            logging.info(key + " : Pass")
             tc_result = "Passed"
-    log.logger.info('-'*60)
+    logging.info('-'*60)
     return tc_result
 
 
@@ -191,45 +190,46 @@ def run_test_one_by_one(payload):
     try:
         test_item = json.loads(payload)
     except json.decoder.JSONDecodeError:
-        log.logger.error("Payload decode error")
-        log.logger.error("-"*60)
+        logging.error("Payload decode error")
+        logging.error("-"*60)
         tc_result = "Error"
         return tc_result
     
     try:
         for key in test_item["Attributes"]:
-            log.logger.info(key + " default value: " + str(current_all["Attributes"][key]))
-            log.logger.info("Path: " + testcase.get_setup_path(key))
+            logging.info(key + " default value: " + str(current_all["Attributes"][key]))
+            logging.info("Path: " + testcase.get_setup_path(key))
     except Exception as e:
-        log.logger.error(e)
-        log.logger.error("-"*60)
+        logging.error(e)
+        logging.error("-"*60)
         tc_result = "Error"
         return tc_result
 
     res = sut.patch_single_payload(payload, config.PATCH_URL).decode('utf-8')
     res = json.loads(res)
     if 'error' in res:
-        # log.logger.info(res['error'])
-        log.logger.error(testcase.get_error_details(res))
+        # logging.info(res['error'])
+        logging.error(testcase.get_error_details(res))
         tc_result = "Error"
-        log.logger.info('-'*60)
+        logging.info('-'*60)
     else:
-        log.logger.info("Patch Successfully")
+        logging.info("Patch Successfully")
+        logging.info("Rebooting sut...")
         sut.rebootsut()
         try:
             result = json.loads(sut.get(config.GET_URL))
             tc_result = compare_one(payload, result)
         except Exception as e:
-            log.logger.error(e)
+            logging.error(e)
             tc_result = "Error"
     return tc_result
 
 
 def auto_test(testcase_file):
     tc_executed = 0
-    log.logger.info("*"*60)
-    log.logger.info("Start test with %s" % testcase_file)
-    log.logger.info("*"*60)
+    logging.info("*"*60)
+    logging.info("Start test with %s" % testcase_file)
+    logging.info("*"*60)
     test_status = load_test_status(testcase_file)
 
     payloads = testcase.load(testcase_file)
@@ -240,7 +240,7 @@ def auto_test(testcase_file):
                 payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": %d \r\n    }\r\n}" % (key, payloads[key])
             else:
                 payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%s\" \r\n    }\r\n}" % (key, payloads[key])
-            log.logger.info(key + " Value to set: " + str(payloads[key]))
+            logging.info(key + " Value to set: " + str(payloads[key]))
             tc_result = run_test_one_by_one(payload)
             test_status["Completed"].append(key)
             if tc_result == "Error":
@@ -252,7 +252,7 @@ def auto_test(testcase_file):
             update_test_status(test_status, (testcase_file + '.status'))
             tc_executed += 1
     if tc_executed == 0:
-        log.logger.info("Test for %s is already done." % testcase_file)
+        logging.info("Test for %s is already done." % testcase_file)
         return True
 
 
@@ -262,16 +262,16 @@ def auto_test_dir(tc_dir):
         if tc_file.split(".")[-1] == 'json':
             try:
                 iscomplete = auto_test(os.path.join(tc_dir, tc_file))
-                log.logger.info("Test completed for %s" % tc_file)
-                log.logger.info("#"*60)
+                logging.info("Test completed for %s" % tc_file)
+                logging.info("#"*60)
             except Exception as e:
-                log.logger.info(e)
+                logging.info(e)
                 iscomplete = True
             if not iscomplete:
                 updatebios.perform_update(config.BIOS)
                 ser = SutSerial.SutControl("com3", 115200, 0.5)
                 ser.check_boot_success(config.SERIAL_LOG)
-                #log.logger.info("Rebooting SUT, test will continue in 5 minutes")
+                #logging.info("Rebooting SUT, test will continue in 5 minutes")
                 #time.sleep(500)
         else:
             print("%s is not a json file, skip test" % tc_file)
@@ -299,14 +299,14 @@ def test_menu_path():
     result_file = os.path.join(config.TEST_RESULT_DIR, "menupath_result.json")
     with open(result_file, "w") as f:
         json.dump(result, f, indent=1)
-    log.logger.info("Test result dumpped to menupath_result.json")
+    logging.info("Test result dumpped to menupath_result.json")
 
 
 def test_registry_file(baseline):
     # case1: 检查registry.json, 测试之前需要更新registry.json, baseline.txt与setup基线文档一致
     # case2：检查dependiecies描述里面不存在不支持redfish的选项
     # case3：需要最新的registry.json和BIOS code, 在config.BIOS_CODE 中指定路径，输出检查menpath和HFR中获取的路径
-    log.logger.info("Test case 1: compare registery.json with %s" % baseline)
+    logging.info("Test case 1: compare registery.json with %s" % baseline)
     exclude = ['', 'NA', '\n']
     baseline_lst = []
     with open(baseline, 'r') as f:
@@ -317,12 +317,12 @@ def test_registry_file(baseline):
     registry_lst = testcase.get_all_varnames()
     for option in baseline_lst:
         if option not in registry_lst:
-            log.logger.info(option + ": missed in registry.json.")
+            logging.info(option + ": missed in registry.json.")
     for option in registry_lst:
         if option not in baseline_lst:
-            log.logger.info(option + ": not listed in setup baseline xlsx.")
-    log.logger.info("-" * 60)
-    log.logger.info("Test case 2: Check whetehr all items in dependencies are also in attributes")
+            logging.info(option + ": not listed in setup baseline xlsx.")
+    logging.info("-" * 60)
+    logging.info("Test case 2: Check whetehr all items in dependencies are also in attributes")
     reg = testcase.load_registry_file()
     dep_list = reg["RegistryEntries"]["Dependencies"]
     map_from_list = []
@@ -331,55 +331,60 @@ def test_registry_file(baseline):
         map_to = dep["Dependency"]["MapToAttribute"]
         if map_to not in map_to_list:
             map_to_list.append(dep["Dependency"]["MapToAttribute"])
-    log.logger.info("Checking MapToAttribute list...")
+    logging.info("Checking MapToAttribute list...")
     for setup in map_to_list:
         if setup not in registry_lst:
-            log.logger.info("[MapToAttribute]: %s is not supported by redfish" % setup)
+            logging.info("[MapToAttribute]: %s is not supported by redfish" % setup)
 
     for dep in dep_list:
         for i in range(0, len(dep["Dependency"]["MapFrom"])):
             map_from = dep["Dependency"]["MapFrom"][i]["MapFromAttribute"]
             if map_from not in map_from_list:
                 map_from_list.append(dep["Dependency"]["MapFrom"][i]["MapFromAttribute"])
-    log.logger.info("Checking map from list...")
+    logging.info("Checking map from list...")
     for setup in map_from_list:
         if setup not in registry_lst:
-            log.logger.info("[MapFromAttribute]: %s is not supported by redfish" % setup)
+            logging.info("[MapFromAttribute]: %s is not supported by redfish" % setup)
 
-    log.logger.info("Test case 3: Dump menupath from registry.json and .hfr and .vfr")
+    logging.info("Test case 3: Dump menupath from registry.json and .hfr and .vfr")
     test_menu_path()
 
 
 if __name__ == "__main__":
+    # Init log setting
+    log_format = LogConfig.gen_config(config.TEST_RESULT_DIR)
+    logging.config.dictConfig(log_format)
+    logging.getLogger("paramiko").setLevel(logging.WARNING)
+
     if len(argv) == 2:
         if argv[1] == "debug":
             print(testcase.post(config.POST_URL))
 
         elif argv[1] == "gendeptc":
-            log.logger.info("generating dependency test case")
+            logging.info("generating dependency test case")
             gen_dep_tc()   # 把最新dump的registry.json放入baseline目录, 运行会生成tc_dep 前缀的json文件和dep_overview.json.
 
         elif argv[1] == "genalltc":
-            log.logger.info("generating test case with all the supported setup options.")
+            logging.info("generating test case with all the supported setup options.")
             testcase.gen_all_tc()
 
         elif argv[1] == "valuetest":
             registry_file_value_test()
 
         elif argv[1] == "gentestcase":
-            log.logger.info("generating non-dependency test case")
+            logging.info("generating non-dependency test case")
             testcase.change_value(gen_testcase())  # 使用postman get, 把所有current value存为json文件
 
         elif argv[1] == "checkregistry":
-            log.logger.info("Testing registry file...")
+            logging.info("Testing registry file...")
             test_registry_file(".\\RedFish\\baseline\\baseline_830.txt")
 
         elif os.path.isfile(argv[1]):
-            log.logger.info("Run test for %s" % argv[1])
+            logging.info("Run test for %s" % argv[1])
             auto_test(argv[1])
 
         elif os.path.isdir(argv[1]):
-            log.logger.info("Run multiple files in directory %s" % argv[1])
+            logging.info("Run multiple files in directory %s" % argv[1])
             auto_test_dir(argv[1])
 
         else:

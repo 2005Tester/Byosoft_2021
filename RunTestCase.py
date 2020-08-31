@@ -84,11 +84,7 @@ def check_result(str):
                     return
 
 def daily_test():
-    logging.info("Rebooting sut")
-    SutSsh.rebootsut()
-    logging.info("Reboot sut done")
 
-    """
     if not daily.get_test_image('\\\\172.16.0.73\\HY5_Binary'):
         return
     logging.info("Get test image")
@@ -108,7 +104,7 @@ def daily_test():
     SutSsh.rebootsut()
     logging.info("Test Hotkey F6")
     ret = ser.hotkey_F6()
-    """
+
 
 
 def run_ssh_cmds(cmd):

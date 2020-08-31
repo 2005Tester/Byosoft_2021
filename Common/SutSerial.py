@@ -1,6 +1,7 @@
 import serial
 import time
 import re
+import logging
 from Common import SutSsh
 
 #logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(levelname)s: %(message)s')
@@ -45,7 +46,7 @@ class SutControl():
                     with open(log, 'a') as f:
                         f.write(data)
                     if re.search("BIOS boot completed.", data):
-                        print("check_boot_success: BIOS Boot Successful.")
+                        logging.info("check_boot_success: pass")
                         self.close_session()
                         return
             except Exception as e:
@@ -53,7 +54,7 @@ class SutControl():
             now = time.time()
             spent_time =(now - start_time)
             if spent_time > 600:
-                print("check_boot_success: Time out, probably boot fail.")
+                logging.info("check_boot_success: fail")
                 self.close_session()
                 break
 

@@ -5,10 +5,7 @@ import time
 import re
 from Common import ssh
 from Common import PrintColor
-#from Common import Logger
-#import logging
 
-#logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(levelname)s: %(message)s')
 
 STATUS_FAIL = 0
 STATUS_PASS = 1
