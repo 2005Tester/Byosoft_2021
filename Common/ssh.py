@@ -1,11 +1,13 @@
 # -*- encoding=utf8 -*-
 import paramiko
+import logging
 import time
 import re
 from paramiko import AuthenticationException
 from paramiko.ssh_exception import NoValidConnectionsError
 import sys
 import os
+
 
 class SshConnection():
     def __init__(self):

@@ -1,8 +1,10 @@
 # -*- encoding=utf8 -*-
+import os
 
 
 # Enviroment settigs
 LOG_DIR = 'c:\\daily\\autolog'
+SERIAL_LOG = os.path.join(LOG_DIR, 'serial.log')
 
 # BMC Configuration
 BMC_IP = '192.168.2.100'

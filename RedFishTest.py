@@ -14,7 +14,6 @@ from HY5 import updatebios
 
 
 
-
 log = Logger.Logger(config.LOG_FILE, level="info")
 requests.packages.urllib3.disable_warnings()
 
@@ -271,7 +270,7 @@ def auto_test_dir(tc_dir):
             if not iscomplete:
                 updatebios.perform_update(config.BIOS)
                 ser = SutSerial.SutControl("com3", 115200, 0.5)
-                ser.check_boot_success()
+                ser.check_boot_success(config.SERIAL_LOG)
                 #log.logger.info("Rebooting SUT, test will continue in 5 minutes")
                 #time.sleep(500)
         else:

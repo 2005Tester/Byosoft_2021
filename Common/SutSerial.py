@@ -36,13 +36,13 @@ class SutControl():
             print("Time out, probably boot fail.")
             return True
 
-    def check_boot_success(self):
+    def check_boot_success(self, log):
         start_time = time.time()
         while True:
             try:
                 if self.session.in_waiting:
                     data = self.session.read(256).decode("utf-8")
-                    with open('serial.log', 'a') as f:
+                    with open(log, 'a') as f:
                         f.write(data)
                     if re.search("BIOS boot completed.", data):
                         print("check_boot_success: BIOS Boot Successful.")

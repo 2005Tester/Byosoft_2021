@@ -2,6 +2,7 @@
 import re
 import sys
 import requests
+import logging
 import paramiko
 import time
 import subprocess

@@ -62,18 +62,18 @@ def rebootsut():
     if re.search("Do you want to continue", res.decode('utf-8')):
         res = send_cmd(cmd_confirm)  # confirm shutdown
         if re.search("Control fru0 forced power off successfully", res.decode('utf-8')):
-            log.logger.info("Shutdown command sent to SUT.")
+            print("Shutdown command sent to SUT.")
             time.sleep(10)
             res = send_cmd(cmd_power_on)
             if re.search("Do you want to continue", res.decode('utf-8')):
                 res = send_cmd(cmd_confirm)  # confirm power on
                 if re.search("Control fru0 power on successfully", res.decode('utf-8')):
-                    log.logger.info("Power on command sent to SUT.")
+                    print("Power on command sent to SUT.")
                     send_cmd(cmd_fan_manual_mode)  # tune fan speed
                     send_cmd(cmd_fan_40)
                     print("Booting SUT...")
                     time.sleep(30)
-                    ser.check_boot_success()
+                    ser.check_boot_success(config.SERIAL_LOG)
                     #ping_sut()
     op.close()
     s.close()

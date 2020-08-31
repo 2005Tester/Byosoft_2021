@@ -32,6 +32,7 @@ headers = {
 timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 TEST_RESULT_DIR = "C:\\redfishtest"
 LOG_FILE = "C:\\redfishtest\\redfishtest_%s.log" % (timestamp)
+SERIAL_LOG = "C:\\redfishtest\\serial.log"
 INIT_STATUS = {"Completed": [], "Passed": [], "Error": [], "Failed": []}
 
 help_msg = """
