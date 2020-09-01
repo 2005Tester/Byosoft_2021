@@ -1,11 +1,5 @@
 # -*- encoding=utf8 -*-
-import re
-import sys
 import requests
-import logging
-import paramiko
-import time
-import subprocess
 import json
 
 headers = {
@@ -36,11 +30,11 @@ def patch_tc_file(testcase_file, url):
 
 def patch_single_payload(payload, url):
     # Payload 格式: payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%s\" \r\n    }\r\n}" %(key, value)
-    #key = list(payload["Attributes"].keys())[0]
-    #value = payload["Attributes"][key]
-    #if isinstance(value, int):
+    # key = list(payload["Attributes"].keys())[0]
+    # value = payload["Attributes"][key]
+    # if isinstance(value, int):
     #    payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%d\" \r\n    }\r\n}" %(key, value)
-    #else:
+    # else:
     #    payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%s\" \r\n    }\r\n}" %(key, value)
     response = requests.request("GET", url, headers=headers, verify=False)
     etag = response.headers['ETag']
@@ -48,6 +42,7 @@ def patch_single_payload(payload, url):
     response = requests.request("PATCH", url, headers=headers, data=payload, verify=False)
     response.close()
     return response.text.encode('utf8')
+
 
 def post_req(url):
     response = requests.request("POST", url, headers=headers, verify=False)

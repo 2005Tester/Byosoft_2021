@@ -16,7 +16,7 @@ class SutControl():
         except Exception as e:
             print(e)
 
-    def open_sesion(self):
+    def open_session(self):
         self.session.open()
 
     def close_session(self):

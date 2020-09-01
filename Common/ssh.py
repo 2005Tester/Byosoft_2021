@@ -8,25 +8,25 @@ from paramiko.ssh_exception import NoValidConnectionsError
 import sys
 import os
 
+
 class sftp():
     def __init__(self, host_ip, username, password):
         self.host_ip = host_ip
         self.username = username
         self.password = password
 
-    def login():
+    def login(self):
         try:
             self.transport = paramiko.Transport(self.host_ip, 22)
             self.transport.banner_timeout = 120
             self.transport.connect(username = self.username, password = self.password)
             self.sftp = paramiko.SFTPClient.from_transport(self.transport)
         except:
-            logining.error("sftp_login: {0}".format(e))
+            logging.error("sftp_login: {0}".format(e))
 
-    def ls_dir():
+    def ls_dir(self):
         return self.sftp.listdir()
 
-  
 
 class SshConnection():
     def __init__(self):
@@ -66,7 +66,7 @@ class SshConnection():
         for i in range(0, len(cmds)):
             res = self.execute_command_interaction(cmds[i], op)
             logging.info('Sending command: {0}'.format(cmds[i]))
-            #print(res.decode('utf-8'))
+            # print(res.decode('utf-8'))
             start_time = time.time()
             while not re.search(strs[i], res.decode('utf-8')):
                 logging.info("Checking Status...")
@@ -74,7 +74,7 @@ class SshConnection():
                 logging.info(res.decode('utf-8'))
                 now = time.time()
                 if re.search(strs[i], res.decode('utf-8')):
-                    #print("Command %s executed successfully" %(cmds[i]))
+                    # print("Command %s executed successfully" %(cmds[i]))
                     status = True
                 if (now - start_time) > 600:
                     logging.error("Run command {0} timeout.".format(cmds[i]))
@@ -88,7 +88,7 @@ class SshConnection():
         op = self.ssh_client.invoke_shell()
         start_time = time.time()
         print("Sending command: %s" % cmd)
-        #res = self.execute_command_interaction(cmd, op)
+        # res = self.execute_command_interaction(cmd, op)
         op.send(cmd)
         time.sleep(5)
         res = op.recv(1024)
@@ -109,7 +109,6 @@ class SshConnection():
         op.close()
         return status
 
-  
     def close_session(self):
         self.ssh_client.close()
 
