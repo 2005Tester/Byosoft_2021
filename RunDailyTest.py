@@ -6,8 +6,9 @@ from HY5 import updatebios
 from Report import GenDailyReport
 from sys import argv
 from HY5 import daily
-import Hy5Config
+from HY5 import Hy5Config
 import logging.config
+from Common import LogConfig
 
 STATUS_FAIL = 0
 STATUS_PASS = 1
@@ -22,7 +23,6 @@ def update_bios():
     #image_dir = "C:\\daily\\image"
     image_dir = Hy5Config.BINARY_DIR
     image = updatebios.get_test_image(image_dir)
-    print(image)
     if image:
         if not updatebios.upload_bios(image):
             return

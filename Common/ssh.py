@@ -65,23 +65,19 @@ class SshConnection():
         op = self.ssh_client.invoke_shell()
         for i in range(0, len(cmds)):
             res = self.execute_command_interaction(cmds[i], op)
-            print('Sending command: {0}'.format(cmds[i]))
+            logging.info('Sending command: {0}'.format(cmds[i]))
             #print(res.decode('utf-8'))
             start_time = time.time()
             while not re.search(strs[i], res.decode('utf-8')):
-                print("Checking Status...")
+                logging.info("Checking Status...")
                 res = op.recv(1024)
-                print(res.decode('utf-8'))
+                logging.info(res.decode('utf-8'))
                 now = time.time()
                 if re.search(strs[i], res.decode('utf-8')):
                     #print("Command %s executed successfully" %(cmds[i]))
                     status = True
-                else:
-                    logging.error("Command {0} not executed successfully.".format(cmds[i]))
-                    logging.error(res.decode('utf-8'))
-                    return
                 if (now - start_time) > 600:
-                    print("Run command %s timeout." %(cmds[i]))
+                    logging.error("Run command {0} timeout.".format(cmds[i]))
                     status = False
                     return
         op.close()

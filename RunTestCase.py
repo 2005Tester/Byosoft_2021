@@ -3,7 +3,7 @@ import random
 import sys
 import re
 import logging.config
-from Common import SutSsh
+from Common 
 from Common import ssh
 from Common import SutSerial
 from Common import LogConfig
@@ -11,7 +11,7 @@ from RedFish import config
 import configparser
 from HY5 import daily
 from HY5 import updatebios
-import Hy5Config
+from HY5 import import Hy5Config
 import time
 
 ser = SutSerial.SutControl("com3", 115200, 0.5)

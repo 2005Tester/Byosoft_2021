@@ -9,6 +9,8 @@ from pathlib import Path
 from Common import ssh
 from Common import PrintColor
 from HY5 import daily
+from HY5 import Hy5Config
+
 
 
 SUT = "192.168.2.100"
@@ -54,9 +56,9 @@ def upload_bios(src):
     # Upload BIOS image (.bin. .hpm) to SUT
     bin_file = 'rp001.bin'
     hpm_file = 'bios.hpm'
-    transport = paramiko.Transport(SUT, 22)
+    transport = paramiko.Transport(Hy5Config.BMC_IP, 22)
     transport.banner_timeout = 30  # Increase timeout value to fix connection issue
-    transport.connect(username=USERNAME, password=PW)
+    transport.connect(username=Hy5Config.BMC_USER, password=Hy5Config.BMC_PASSWORD)
     sftp = paramiko.SFTPClient.from_transport(transport)
     res = sftp.listdir()
     # print(res)
@@ -77,7 +79,6 @@ def upload_bios(src):
         if re.search("67108864", str(res)):
             logging.info("BIOS image (bin) uploaded to iBMC SFTP.")
             transport.close()
-            prt.print_green_text("Upload bios to iBMC: PASS")
             return True
         else:
             print("Failed to upload BIOS image to iBMC SFTP.")
@@ -93,7 +94,6 @@ def upload_bios(src):
         if re.search("rw", str(res)):
             print("HPM image uploaded to iBMC SFTP.")
             transport.close()
-            prt.print_green_text("Upload bios to iBMC: PASS")
             return True
         else:
             print("Failed to upload hpm image to iBMC SFTP.")

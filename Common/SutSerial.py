@@ -2,7 +2,6 @@ import serial
 import time
 import re
 import logging
-from Common import SutSsh
 
 
 class SutControl(): 

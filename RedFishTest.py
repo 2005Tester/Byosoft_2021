@@ -5,9 +5,10 @@ import time
 import os
 from sys import argv
 from Common import SutSerial
+from Common import RedFish
 sys.path.append('RedFish')
 from RedFish import config
-from HY5 import sut
+from HY5 import Hy5TcLib
 from RedFish import testcase
 from HY5 import updatebios
 from Common import LogConfig
@@ -57,7 +58,7 @@ def registry_file_value_test():
                 payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": %d \r\n    }\r\n}" % (key, value)
             else:
                 payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%s\" \r\n    }\r\n}" % (key, value)
-            res = sut.patch_single_payload(payload, config.PATCH_URL).decode('utf-8')
+            res = RedFish.patch_single_payload(payload, config.PATCH_URL).decode('utf-8')
             res = json.loads(res)
             if 'error' in res:
                 errors.append(payload)
@@ -168,25 +169,25 @@ def compare_one(payload, result):
 
 def run_test(test_case_file):
     # Precheck: 比较test case 和 当前值, 打印改变的选项.
-    current_value = json.loads(sut.get(config.GET_URL))
+    current_value = json.loads(RedFish.get(config.GET_URL))
     compare(test_case_file, current_value)
     os.system('pause')
     # patch request 设置 test case中的值
-    res = sut.patch_tc_file(test_case_file, config.PATCH_URL).decode('utf-8')
+    res = RedFish.patch_tc_file(test_case_file, config.PATCH_URL).decode('utf-8')
     res = json.loads(res)
     if 'error' in res:
         print(res['error'])
     else:
         print("Patch Successfully")
 
-        sut.rebootsut()
-        result = sut.get(config.GET_URL)
+        Hy5TcLib.rebootsut()
+        result = RedFish.get(config.GET_URL)
         result = json.loads(result)
         compare(test_case_file, result)
 
 
 def run_test_one_by_one(payload):
-    current_all = json.loads(sut.get(config.GET_URL))
+    current_all = json.loads(RedFish.get(config.GET_URL))
     try:
         test_item = json.loads(payload)
     except json.decoder.JSONDecodeError:
@@ -205,7 +206,7 @@ def run_test_one_by_one(payload):
         tc_result = "Error"
         return tc_result
 
-    res = sut.patch_single_payload(payload, config.PATCH_URL).decode('utf-8')
+    res = RedFish.patch_single_payload(payload, config.PATCH_URL).decode('utf-8')
     res = json.loads(res)
     if 'error' in res:
         # logging.info(res['error'])
@@ -215,9 +216,9 @@ def run_test_one_by_one(payload):
     else:
         logging.info("Patch Successfully")
         logging.info("Rebooting sut...")
-        sut.rebootsut()
+        Hy5TcLib.rebootsut()
         try:
-            result = json.loads(sut.get(config.GET_URL))
+            result = json.loads(RedFish.get(config.GET_URL))
             tc_result = compare_one(payload, result)
         except Exception as e:
             logging.error(e)
@@ -271,8 +272,7 @@ def auto_test_dir(tc_dir):
                 updatebios.perform_update(config.BIOS)
                 ser = SutSerial.SutControl("com3", 115200, 0.5)
                 ser.check_boot_success(config.SERIAL_LOG)
-                #logging.info("Rebooting SUT, test will continue in 5 minutes")
-                #time.sleep(500)
+
         else:
             print("%s is not a json file, skip test" % tc_file)
 
