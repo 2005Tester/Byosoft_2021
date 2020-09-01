@@ -7,6 +7,7 @@ import shutil
 from Common import PrintColor
 from HY5 import daily
 import logging
+import Hy5Config
 
 SKIP_TEST = 2
 VER_TESTED = []
@@ -67,7 +68,7 @@ def get_test_image(path):
             return SKIP_TEST      
     else:
         print("BIOS image directroy can't be accessed, please check VPN conection. ")
-        return STATUS_FAIL
+        return
 
     current_image_dir = os.path.join(path, latest_version)
     p = Path(current_image_dir)   # remote image dir of current version
@@ -77,7 +78,7 @@ def get_test_image(path):
         rp001_image.append(b)
     if not rp001_image:
         print("Image for %s not found, please check whether build is finished." %(latest_version))
-        return STATUS_FAIL
+        return
     else:
         print("BIOS image for test: %s" %(rp001_image[0])) 
         print("Copying bios image to test directory...")
@@ -91,8 +92,6 @@ def get_test_image(path):
             return
 
 
-
-
 def create_log_dir():
     timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
     TestRunInfo['beginTime'] = timestamp
@@ -102,3 +101,4 @@ def create_log_dir():
         return log_dir
     except Exception as e:
         logging.error("Failed to create log directory.")
+

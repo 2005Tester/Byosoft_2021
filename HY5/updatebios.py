@@ -2,13 +2,15 @@
 import paramiko
 import datetime
 import time
+import logging
+import os
 import re
+from pathlib import Path
 from Common import ssh
 from Common import PrintColor
+from HY5 import daily
 
 
-STATUS_FAIL = 0
-STATUS_PASS = 1
 SUT = "192.168.2.100"
 USERNAME = "Administrator"
 PW = "Admin@9000"
@@ -22,6 +24,31 @@ def print_rawmsg(msg):
     prt.print_red_text(msg)
     prt.print_red_text('*'*50)
 
+# Obtain the path of latest bios image from CI build backup directory
+def get_test_image(path):
+    if os.path.exists(path):
+        versions = os.listdir(path)
+        versions.sort(reverse=True)
+        latest_version = versions[1]
+        logging.info("Latest Version is: %s" % (latest_version))
+        if latest_version in daily.VER_TESTED:
+            logging.info("%s has been tested" %(latest_version))
+            return
+    else:
+        logging.error("BIOS image directroy can't be accessed, please check VPN conection. ")
+        return
+
+    current_image_dir = os.path.join(path, latest_version)
+    p = Path(current_image_dir)   # remote image dir of current version
+    rp001_image = []
+    for b in p.rglob('HY5*.bin'):
+        rp001_image.append(b)
+    if not rp001_image:
+        logging.info("Image for %s not found, please check whether build is finished." %(latest_version))
+        return
+    else:
+        logging.info("BIOS image for test: %s" %(rp001_image[0])) 
+        return rp001_image[0]
 
 def upload_bios(src):
     # Upload BIOS image (.bin. .hpm) to SUT
@@ -35,46 +62,47 @@ def upload_bios(src):
     # print(res)
     for item in res:
         if re.search(".bin", item):
-            print("Deleting old .bin image...")
+            logging.info("Deleting old .bin image...")
             sftp.remove(item)
         elif re.search(".hpm", item):
-            print("Deleting old .hpm image...")
+            logging.info("Deleting old .hpm image...")
             sftp.remove(item)
-    if re.search('.bin', src):
+    if re.search('.bin', str(src)):
         try:
+            logging.info("Uploading image to BMC...")
             res = sftp.put(src, bin_file)
         except OSError:
-            print("Skip due to SSH connection error.")
-            return STATUS_FAIL
+            logging.error("Skip due to SSH connection error.")
+            return
         if re.search("67108864", str(res)):
-            print("BIOS image (bin) uploaded to iBMC SFTP.")
+            logging.info("BIOS image (bin) uploaded to iBMC SFTP.")
             transport.close()
             prt.print_green_text("Upload bios to iBMC: PASS")
-            return STATUS_PASS
+            return True
         else:
             print("Failed to upload BIOS image to iBMC SFTP.")
             print_rawmsg(res)
             transport.close()
-            return STATUS_FAIL
-    elif re.search('.hpm', src):
+            return
+    elif re.search('.hpm', str(src)):
         try:
             res = sftp.put(src, hpm_file)
         except OSError:
             print("Skip due to SSH connection error.")
-            return STATUS_FAIL
+            return
         if re.search("rw", str(res)):
             print("HPM image uploaded to iBMC SFTP.")
             transport.close()
             prt.print_green_text("Upload bios to iBMC: PASS")
-            return STATUS_PASS
+            return True
         else:
             print("Failed to upload hpm image to iBMC SFTP.")
             print_rawmsg(res)
             transport.close()
-            return STATUS_FAIL
+            return
     else:
         print("Invalid image type, please check source file...")
-        return STATUS_FAIL
+        return
 
 
 def hpm_update():
@@ -91,13 +119,13 @@ def hpm_update():
         print("HPM Uploaded successfully, upgrade on next reboot")
         op.close()
         s.close()
-        return STATUS_PASS  
+        return True
     else:
         print("Failed to perform HPM upgrade")
         print_rawmsg(res)
         op.close()
         s.close()
-        return STATUS_FAIL  
+        return  
 
 
 def program_flash():
@@ -111,76 +139,29 @@ def program_flash():
     cmd_upgrade_mode = 'attach upgrade\n'
     ret_upgrade_mode = 'Success'
     cmd_load = 'load_bios_bin /tmp/rp001.bin\n'
+    ret_load = 'load bios succefully'
     cmds = [cmd_shutdown, cmd_confirm, cmd_maint_mode, cmd_upgrade_mode, cmd_load]
-    rets = [ret_shutdown, ret_confirm, ret_maint_mode, ret_upgrade_mode, "load bios succefully"]
+    rets = [ret_shutdown, ret_confirm, ret_maint_mode, ret_upgrade_mode, ret_load]
     
     if sshconn.login(SUT, USERNAME, PW):
         return(sshconn.interaction(cmds, rets))
         
-    #    if sshconn.is_command_success(cmd_load, "load bios succefully"):
-    #        return True
-
-    """    
-    s = paramiko.SSHClient()
-    s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    try:
-        s.connect(SUT, 22, USERNAME, PW)
-    except Exception as e:
-        print("Error in connecting SUT...")
-        return False
-
-    op = s.invoke_shell()
-    if not ssh.call_commands(cmds, rets, op):
-        op.close()
-        s.close()
-        return False
-    res = ssh.send_command(cmd_load, op)  # Load bios to SUT
-    print(res.decode('utf-8'))
-    print("Sending command: %s" % cmd_load)
-    start_time = time.time()
-    while not re.search("load bios succefully", res.decode('utf-8')):
-        print("Checking Status...")
-        res = op.recv(1024)
-        print(res.decode('utf-8'))
-        now = time.time()
-        if (now - start_time) > 60:
-            print("Porgraming Flash Device Timeout!!!")
-            status = False
-        if re.search("load bios succefully", res.decode('utf-8')):
-            prt.print_green_text("Load bios to iBMC: PASS")
-            status = True
-    return status
-    """
-   
   
 def poweron_sut():
     cmd_power_on = 'ipmcset -d powerstate -v 1\n'
-    cmd_fan_manual_mode = 'ipmcset -d fanmode -v 1 0\n'
-    cmd_fan_40 = 'ipmcset -d fanlevel -v 40\n'
+    ret_power_on = 'Do you want to continue'
     cmd_confirm = 'Y\n'
+    ret_confirm = 'Control fru0 power on successfully'
+    cmd_fan_manual_mode = 'ipmcset -d fanmode -v 1 0\n'
+    ret_fan_manual_mode = 'Set fan mode successfully'
+    cmd_fan_40 = 'ipmcset -d fanlevel -v 40\n'
+    ret_fan_40 = 'Set fan level successfully'
+    cmds = [cmd_power_on, cmd_confirm, cmd_fan_manual_mode, cmd_fan_40]
+    rets = [ret_power_on, ret_confirm, ret_fan_manual_mode, ret_fan_40]
 
-    s = paramiko.SSHClient()
-    s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    s.connect(SUT, 22, USERNAME, PW)
-    op = s.invoke_shell()
-    res = ssh.send_command(cmd_power_on, op)
-    if re.search("Do you want to continue", res.decode('utf-8')):
-        print("Power on command sent to SUT.")
-        res = ssh.send_command(cmd_confirm, op) # confirm power on
-        if re.search("Control fru0 power on successfully", res.decode('utf-8')):
-            print("Power on successfully.")
-            ssh.send_command(cmd_fan_manual_mode, op) # tune fan speed
-            ssh.send_command(cmd_fan_40, op)
-            prt.print_green_text("Power On SUT: PASS")
-            return STATUS_PASS
-        else:
-            print("Failed to power on SUT.")
-            print_rawmsg(res.decode('utf-8'))
-            return STATUS_FAIL
-
-    op.close()
-    s.close()
-
+    if sshconn.login(SUT, USERNAME, PW):
+        return(sshconn.interaction(cmds, rets))
+    
 
 def perform_update(bios):
     if not upload_bios(bios):

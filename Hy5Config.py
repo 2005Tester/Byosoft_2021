@@ -5,6 +5,7 @@ import os
 # Enviroment settigs
 LOG_DIR = 'c:\\daily\\autolog'
 SERIAL_LOG = os.path.join(LOG_DIR, 'serial.log')
+BINARY_DIR = '\\\\172.16.0.73\\HY5_Binary'
 
 # BMC Configuration
 BMC_IP = '192.168.2.100'

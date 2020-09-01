@@ -12,6 +12,7 @@ import configparser
 from HY5 import daily
 from HY5 import updatebios
 import Hy5Config
+import time
 
 ser = SutSerial.SutControl("com3", 115200, 0.5)
 
@@ -85,9 +86,9 @@ def check_result(str):
 
 def daily_test():
 
-    if not daily.get_test_image('\\\\172.16.0.73\\HY5_Binary'):
-        return
-    logging.info("Get test image")
+#    if not daily.get_test_image('\\\\172.16.0.73\\HY5_Binary'):
+#        return
+#    logging.info("Get test image")
     if not updatebios.upload_bios(daily.TEST_DIR + '\\bios\\RP001.bin'):
         return
     logging.info("BIOS uploaded to BMC")
@@ -98,14 +99,20 @@ def daily_test():
         return
     logging.info("Power on successful")
     check_result("BIOS boot completed.")   
-    run_ssh_cmds(["dmidecode", "lspci", "dmesg"]) 
+    cmds = ["dmidecode", "lspci", "dmesg"]
+    for cmd in cmds:
+        run_ssh_cmds(cmd) 
     SutSsh.rebootsut()
     ret = ser.hotkey_F11()
     SutSsh.rebootsut()
     logging.info("Test Hotkey F6")
     ret = ser.hotkey_F6()
 
-
+def me_error():
+    logging.info("Rebooting...")
+    SutSsh.rebootsut()
+    ser.check_boot_success(Hy5Config.SERIAL_LOG)
+#    time.sleep(150)
 
 def run_ssh_cmds(cmd):
     if ssh.login(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD):
@@ -124,6 +131,9 @@ if __name__ == "__main__":
     logging.config.dictConfig(log_format)
     logging.getLogger("paramiko").setLevel(logging.WARNING)
 
+    while True:
+        me_error()
+
     """
     commands = ["sudo su\n", "byo@123\n"]
     strs = ["password", "root"]
@@ -133,7 +143,7 @@ if __name__ == "__main__":
 
 #    ssh.close_session()
 
-    daily_test()
+#    daily_test()
 
 """
     for i in range(2):

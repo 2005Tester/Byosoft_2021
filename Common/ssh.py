@@ -8,6 +8,25 @@ from paramiko.ssh_exception import NoValidConnectionsError
 import sys
 import os
 
+class sftp():
+    def __init__(self, host_ip, username, password):
+        self.host_ip = host_ip
+        self.username = username
+        self.password = password
+
+    def login():
+        try:
+            self.transport = paramiko.Transport(self.host_ip, 22)
+            self.transport.banner_timeout = 120
+            self.transport.connect(username = self.username, password = self.password)
+            self.sftp = paramiko.SFTPClient.from_transport(self.transport)
+        except:
+            logining.error("sftp_login: {0}".format(e))
+
+    def ls_dir():
+        return self.sftp.listdir()
+
+  
 
 class SshConnection():
     def __init__(self):
@@ -27,7 +46,7 @@ class SshConnection():
             print("Unexpected Error:", sys.exc_info()[0])
             return
         return True
- 
+    
     def execute_command(self, command, log_dir):
         log = os.path.join(log_dir, ''.join((command, '.log')))
         stdin, stdout, stderr = self.ssh_client.exec_command(command)
@@ -46,14 +65,8 @@ class SshConnection():
         op = self.ssh_client.invoke_shell()
         for i in range(0, len(cmds)):
             res = self.execute_command_interaction(cmds[i], op)
-            print('Sending command: %s' % cmds[i])
+            print('Sending command: {0}'.format(cmds[i]))
             #print(res.decode('utf-8'))
-            """    
-            if not re.search(strs[i], res.decode('utf-8')):
-                print('Command: %s failed to execute.' % cmds[i])
-                return
-        return True
-            """
             start_time = time.time()
             while not re.search(strs[i], res.decode('utf-8')):
                 print("Checking Status...")
@@ -61,12 +74,16 @@ class SshConnection():
                 print(res.decode('utf-8'))
                 now = time.time()
                 if re.search(strs[i], res.decode('utf-8')):
-                    print("Command %s executed successfully" %(cmds[i]))
+                    #print("Command %s executed successfully" %(cmds[i]))
                     status = True
+                else:
+                    logging.error("Command {0} not executed successfully.".format(cmds[i]))
+                    logging.error(res.decode('utf-8'))
+                    return
                 if (now - start_time) > 600:
                     print("Run command %s timeout." %(cmds[i]))
                     status = False
-                    break
+                    return
         op.close()
         status = True
         return status

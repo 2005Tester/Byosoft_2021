@@ -4,7 +4,6 @@ import re
 import logging
 from Common import SutSsh
 
-#logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(levelname)s: %(message)s')
 
 class SutControl(): 
     def __init__(self, port, baudrate, timeout):
@@ -47,15 +46,16 @@ class SutControl():
                         f.write(data)
                     if re.search("BIOS boot completed.", data):
                         logging.info("check_boot_success: pass")
-                        self.close_session()
+                        #self.close_session()
                         return
             except Exception as e:
-                print(e)
+                logging.error("check_boot_success:{0}".format(e))
+                break
             now = time.time()
             spent_time =(now - start_time)
             if spent_time > 600:
                 logging.info("check_boot_success: fail")
-                self.close_session()
+                #self.close_session()
                 break
 
     def send_key(sef, key):
@@ -90,8 +90,6 @@ class SutControl():
 
             if self.is_timeout(start_time, timeout):
                 break
-
-
 
     def hotkey_del(self):
         key_del = [chr(0x7F)]

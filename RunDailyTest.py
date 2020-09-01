@@ -6,13 +6,12 @@ from HY5 import updatebios
 from Report import GenDailyReport
 from sys import argv
 from HY5 import daily
+import Hy5Config
+import logging.config
 
 STATUS_FAIL = 0
 STATUS_PASS = 1
 STATUS_SKIP = 2
-
-
-BINARY_DIR = '\\\\172.16.0.73\\HY5_Binary'
 
 
 # define parametres for airtest
@@ -20,21 +19,21 @@ device = "\"Windows:///?title_re=iBMC*\""
 
 
 def update_bios():
-    status = daily.get_test_image(BINARY_DIR)
-    if status == STATUS_PASS:
-        if not updatebios.upload_bios(daily.TEST_DIR + '\\bios\\RP001.bin'):
-            return STATUS_FAIL
+    #image_dir = "C:\\daily\\image"
+    image_dir = Hy5Config.BINARY_DIR
+    image = updatebios.get_test_image(image_dir)
+    print(image)
+    if image:
+        if not updatebios.upload_bios(image):
+            return
 
         if not updatebios.program_flash():
-            return STATUS_FAIL
+            return
        
         if not updatebios.poweron_sut():
-            return STATUS_FAIL
-
-        return status
-
-    elif status == STATUS_SKIP:
-        return status
+            return
+    
+        return True
 
 
 def run_airtest(script, device, log, overall):
@@ -77,7 +76,6 @@ def loop_test(tc_list):
             print("Will check update in 30 minutes")
             time.sleep(1800)
 
-
 def loop_test_py(tc_list):
     while True:
         status = update_bios()
@@ -103,6 +101,9 @@ def loop_test_py(tc_list):
 
 
 if __name__ == '__main__':
+    log_format = LogConfig.gen_config(Hy5Config.LOG_DIR)
+    logging.config.dictConfig(log_format)
+    logging.getLogger("paramiko").setLevel(logging.WARNING)
     loop_test_py(daily.TEST_SCOPE)
     
   
