@@ -5,9 +5,9 @@ import paramiko
 import time
 import subprocess
 import json
-import config
 from HY5 import updatebios
 from Common import SutSerial
+from RedFish import config
 
 
 def ping_sut():

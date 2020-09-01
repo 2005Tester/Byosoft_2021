@@ -3,7 +3,6 @@ import random
 import sys
 import re
 import logging.config
-from Common 
 from Common import ssh
 from Common import SutSerial
 from Common import LogConfig
@@ -11,7 +10,8 @@ from RedFish import config
 import configparser
 from HY5 import daily
 from HY5 import updatebios
-from HY5 import import Hy5Config
+from HY5 import Hy5Config
+from HY5 import Hy5TcLib
 import time
 
 ser = SutSerial.SutControl("com3", 115200, 0.5)
@@ -110,7 +110,7 @@ def daily_test():
 
 def me_error():
     logging.info("Rebooting...")
-    SutSsh.rebootsut()
+    Hy5TcLib.rebootsut()
     ser.check_boot_success(Hy5Config.SERIAL_LOG)
 #    time.sleep(150)
 
