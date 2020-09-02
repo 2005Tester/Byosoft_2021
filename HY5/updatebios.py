@@ -7,24 +7,9 @@ import os
 import re
 from pathlib import Path
 from Common import ssh
-from Common import PrintColor
 from HY5 import daily
 from HY5 import Hy5Config
 
-
-
-SUT = "192.168.2.100"
-USERNAME = "Administrator"
-PW = "Admin@9000"
-
-prt = PrintColor.PrintColor()
-
-sshconn = ssh.SshConnection()
-
-def print_rawmsg(msg):
-    prt.print_red_text('*'*50)
-    prt.print_red_text(msg)
-    prt.print_red_text('*'*50)
 
 # Obtain the path of latest bios image from CI build backup directory
 def get_test_image(path):
@@ -37,7 +22,7 @@ def get_test_image(path):
             logging.info("%s has been tested" %(latest_version))
             return
     else:
-        logging.error("BIOS image directroy can't be accessed, please check VPN conection. ")
+        logging.error("BIOS image directroy can't be accessed, please check VPN connection.")
         return
 
     current_image_dir = os.path.join(path, latest_version)
@@ -51,6 +36,7 @@ def get_test_image(path):
     else:
         logging.info("BIOS image for test: %s" %(rp001_image[0])) 
         return rp001_image[0]
+
 
 def upload_bios(src):
     # Upload BIOS image (.bin. .hpm) to SUT
@@ -82,7 +68,7 @@ def upload_bios(src):
             return True
         else:
             print("Failed to upload BIOS image to iBMC SFTP.")
-            print_rawmsg(res)
+            print(res)
             transport.close()
             return
     elif re.search('.hpm', str(src)):
@@ -97,7 +83,7 @@ def upload_bios(src):
             return True
         else:
             print("Failed to upload hpm image to iBMC SFTP.")
-            print_rawmsg(res)
+            print(res)
             transport.close()
             return
     else:
@@ -109,11 +95,11 @@ def hpm_update():
     cmd_hpmupdate = 'ipmcset -d upgrade -v /tmp/bios.hpm\n'
     s = paramiko.SSHClient()
     s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    s.connect(SUT,22,USERNAME,PW)
-    op=s.invoke_shell()
+    s.connect(Hy5Config.BMC_IP, 22, Hy5Config.BMC_USER,PW)
+    op = s.invoke_shell()
     op.send(cmd_hpmupdate)
     time.sleep(5)
-    res=op.recv(1024)
+    res = op.recv(1024)
     if re.search('successfully',res.decode('utf-8')):
         # print_rawmsg(res)
         print("HPM Uploaded successfully, upgrade on next reboot")
@@ -122,13 +108,14 @@ def hpm_update():
         return True
     else:
         print("Failed to perform HPM upgrade")
-        print_rawmsg(res)
+        print(res)
         op.close()
         s.close()
         return  
 
 
 def program_flash():
+    sshconn = ssh.SshConnection()
     # Program flash procedure: power off->maint mode->attach upgrade ->load bin
     cmd_shutdown = 'ipmcset -d powerstate -v 2\n'
     ret_shutdown = 'Do you want to continue'
@@ -143,11 +130,12 @@ def program_flash():
     cmds = [cmd_shutdown, cmd_confirm, cmd_maint_mode, cmd_upgrade_mode, cmd_load]
     rets = [ret_shutdown, ret_confirm, ret_maint_mode, ret_upgrade_mode, ret_load]
     
-    if sshconn.login(SUT, USERNAME, PW):
-        return(sshconn.interaction(cmds, rets))
+    if sshconn.login(Hy5Config.BMC_IP, Hy5Config.BMC_USER, Hy5Config.BMC_PASSWORD):
+        return sshconn.interaction(cmds, rets)
         
   
 def poweron_sut():
+    sshconn = ssh.SshConnection()
     cmd_power_on = 'ipmcset -d powerstate -v 1\n'
     ret_power_on = 'Do you want to continue'
     cmd_confirm = 'Y\n'
@@ -159,16 +147,28 @@ def poweron_sut():
     cmds = [cmd_power_on, cmd_confirm, cmd_fan_manual_mode, cmd_fan_40]
     rets = [ret_power_on, ret_confirm, ret_fan_manual_mode, ret_fan_40]
 
-    if sshconn.login(SUT, USERNAME, PW):
-        return(sshconn.interaction(cmds, rets))
+    if sshconn.login(Hy5Config.BMC_IP, Hy5Config.BMC_USER, Hy5Config.BMC_PASSWORD):
+        return sshconn.interaction(cmds, rets)
     
 
-def perform_update(bios):
+def update_specific_img(bios):
     if not upload_bios(bios):
         print("Upload BIOS image failed")
+        return
     if not program_flash():
         print("Program flash failed")
-    poweron_sut()
+        return
+    if not poweron_sut():
+        logging.error("power on su fail")
+        return
+    return True
+
+
+# Update BIOS to latest CI build
+def update_bios_ci():
+    image = get_test_image(Hy5Config.BINARY_DIR)
+    update_specific_img(image)
+
 
 if __name__ == '__main__':
     upload_bios()

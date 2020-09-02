@@ -269,7 +269,7 @@ def auto_test_dir(tc_dir):
                 logging.info(e)
                 iscomplete = True
             if not iscomplete:
-                updatebios.perform_update(config.BIOS)
+                updatebios.update_specific_img(config.BIOS)
                 ser = SutSerial.SutControl("com3", 115200, 0.5)
                 ser.check_boot_success(config.SERIAL_LOG)
 

@@ -57,7 +57,7 @@ class SshConnection():
 
     def execute_command_interaction(self, cmd, op):
         op.send(cmd)
-        time.sleep(2)
+        time.sleep(4)
         ret = op.recv(1024)
         return ret
 
@@ -71,14 +71,14 @@ class SshConnection():
             while not re.search(strs[i], res.decode('utf-8')):
                 logging.info("Checking Status...")
                 res = op.recv(1024)
+                # print(res.decode('utf-8'))
                 logging.info(res.decode('utf-8'))
                 now = time.time()
                 if re.search(strs[i], res.decode('utf-8')):
-                    # print("Command %s executed successfully" %(cmds[i]))
-                    status = True
+                    print("Any chnace to reach here ?")
+                    break
                 if (now - start_time) > 600:
                     logging.error("Run command {0} timeout.".format(cmds[i]))
-                    status = False
                     return
         op.close()
         status = True

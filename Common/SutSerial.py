@@ -4,17 +4,19 @@ import re
 import logging
 
 
-class SutControl(): 
-    def __init__(self, port, baudrate, timeout):
+class SutControl:
+    def __init__(self, port, baudrate, timeout, log):
         self.port = port
         self.baudrate = baudrate
         self.timeout = timeout
+        self.log = log
         try:
             self.session = serial.Serial(self.port, self.baudrate, timeout=self.timeout)
             if (self.session.is_open):
                 Ret = True
         except Exception as e:
-            print(e)
+            logging.error(e)
+            logging.info("SutControl: init failed.")
 
     def open_session(self):
         self.session.open()
@@ -30,9 +32,9 @@ class SutControl():
 
     def is_timeout(self, t_start, timeout):
         now = time.time()
-        spent_time =(now - t_start)
+        spent_time = (now - t_start)
         if spent_time > timeout:
-            print("Time out, probably boot fail.")
+            logging.info("Time out, probably boot fail.")
             return True
 
     def check_boot_success(self, log):
@@ -40,72 +42,68 @@ class SutControl():
         while True:
             try:
                 if self.session.in_waiting:
+                    logging.info("check_boot_success: receiving data from serial port...")
                     data = self.session.read(256).decode("utf-8")
-                    with open(log, 'a') as f:
+                    with open(self.log, 'a') as f:
                         f.write(data)
                     if re.search("BIOS boot completed.", data):
                         logging.info("check_boot_success: pass")
-                        #self.close_session()
                         return
             except Exception as e:
                 logging.error("check_boot_success:{0}".format(e))
                 break
             now = time.time()
-            spent_time =(now - start_time)
+            spent_time = (now - start_time)
             if spent_time > 600:
                 logging.info("check_boot_success: fail")
-                #self.close_session()
                 break
 
-    def send_key(sef, key):
-        for char in key:
-            self.send_data(char)
-
-    def send_hotkey(self, key, msg, timeout):
+    def send_hotkey(self, key, msg, timeout, log):
         start_time = time.time()
-        print("Receiving data from SUT...")
+        logging.info("Receiving data from SUT...")
         while True:
             try:
                 if self.session.in_waiting:
                     data = self.session.read(256).decode("utf-8")
-                    with open('serial.log', 'a') as f:
+                    with open(self.log, 'a') as f:
                         f.write(data)
                     if re.search("Press Del go to Setup Utility", data):
                         for char in key:
                             self.send_data(char)
-                        print("Hot Key sent")
+                        logging.info("Hot Key sent")
                     if re.search("Press F2", data):
                         self.send_data("Admin@9000")
                         self.send_data(chr(0x0D))  # Send Enter
                         self.send_data(chr(0x0D))  # Send Enter
-                        print("Send password...")
+                        logging.info("Send password...")
                     if re.search(msg, data):
-                        print("BIOS Boot Successful.")
+                        logging.info("BIOS Boot Successful.")
                         return True
             except Exception as e:
-                print(e)
-                print("Please check whether COM port is in use.")
+                logging.error(e)
+                logging.info("Please check whether COM port is in use.")
                 break
 
             if self.is_timeout(start_time, timeout):
                 break
+        return True
 
     def hotkey_del(self):
         key_del = [chr(0x7F)]
         msg = "none"
-        self.send_hotkey(key_del, msg, 300)
+        return self.send_hotkey(key_del, msg, 300, self.log)
 
-    def hotkey_F6(self):
-        key_f6 = [chr(0x1b),chr(0x5b),chr(0x31),chr(0x37),chr(0x7e)]
+    def hotkey_f6(self):
+        key_f6 = [chr(0x1b), chr(0x5b), chr(0x31), chr(0x37), chr(0x7e)]
         msg = "BIOS boot completed."
-        self.send_hotkey(key_f6, msg, 300)
+        return self.send_hotkey(key_f6, msg, 300, self.log)
 
-    def hotkey_F11(self):
-        key_f11 = [chr(0x1b),chr(0x5b),chr(0x32),chr(0x33),chr(0x7e)]
+    def hotkey_f11(self):
+        key_f11 = [chr(0x1b), chr(0x5b), chr(0x32), chr(0x33), chr(0x7e)]
         msg = "Boot Manager Menu"
-        self.send_hotkey(key_f11, msg, 300)    
+        return self.send_hotkey(key_f11, msg, 300, self.log)
 
-    def hotkey_F12(self):
-        key_f12 = [chr(0x1b),chr(0x5b),chr(0x32),chr(0x34),chr(0x7e)]
+    def hotkey_f12(self):
+        key_f12 = [chr(0x1b), chr(0x5b), chr(0x32), chr(0x34), chr(0x7e)]
         msg = "none"
-        self.send_hotkey(key_f12, msg, 300)
+        return self.send_hotkey(key_f12, msg, 300, self.log)

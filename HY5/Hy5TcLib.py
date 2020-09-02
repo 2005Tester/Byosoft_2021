@@ -1,13 +1,46 @@
 # -*- encoding=utf8 -*-
-import re
-import requests
-import paramiko
 import time
 import subprocess
-import json
+import logging
 from HY5 import updatebios
-from Common import SutSerial
+from HY5 import Hy5Config
 from RedFish import config
+
+
+def dc_cycling(ssh, serial, n):
+    for i in range(n):
+        try:
+            logging.info("Test cycle: {0}".format(n))
+            rebootsut(ssh)
+            serial.check_boot_success(serial)
+        except Exception as e:
+            logging.error(e)
+
+
+def boot_manager(serial, ssh):
+    logging.info("HaiYan5 Common Test Lib: boot to boot manager")
+    logging.info("Rebooting SUT...")
+    if not rebootsut(ssh):
+        logging.info("Rebooting SUT Failed.")
+        return
+    logging.info("Booting to boot manager")
+    if not serial.hotkey_f11():
+        logging.info("Booting to boot manager failed.")
+        return
+    return True
+
+
+def sp_boot(serial, ssh):
+    logging.info("HaiYan5 Common Test Lib: sp_boot")
+    logging.info("Rebooting SUT...")
+    if not rebootsut(ssh):
+        logging.info("Rebooting SUT Failed.")
+        return
+    logging.info("Booting to SP...")
+    if not serial.hotkey_f6():
+        logging.info("Booting to SP Failed.")
+        return
+    return True
 
 
 def ping_sut():
@@ -19,60 +52,31 @@ def ping_sut():
         output = stdoutput.decode()
         now = time.time()
         time_spent = (now-start_time)
-        if output.find("TTL=") >=0:
+        if output.find("TTL=") >= 0:
             print("SUT is online now")
             break
         if time_spent > 900:
             print("Lost SUT for %s seconds, refresh BIOS image" % time_spent)
             try:
-                updatebios.perform_update(config.BIOS)
+                updatebios.update_specific_img(config.BIOS)
                 time.sleep(300)
                 start_time = time.time()
             except Exception as e:
                 print(e)
 
-def rebootsut():
-    ser = SutSerial.SutControl("com3", 115200, 0.5)
+
+def rebootsut(ssh):
     cmd_shutdown = 'ipmcset -d powerstate -v 2\n'
+    ret_shutdown = 'Do you want to continue'
     cmd_power_on = 'ipmcset -d powerstate -v 1\n'
+    ret_power_on = 'Do you want to continue'
     cmd_confirm = 'Y\n'
-    cmd_fan_manual_mode = 'ipmcset -d fanmode -v 1 0\n'
-    cmd_fan_40 = 'ipmcset -d fanlevel -v 40\n'
-    s = paramiko.SSHClient()
-    s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    try:
-        s.connect(config.sut, config.port, config.username, config.password, banner_timeout=150)
-    except Exception as e:
-        print("Error in connecting SUT...")
-        time.sleep(300)
-        rebootsut()
+    ret_confirm_off = 'Control fru0 forced power off successfully'
+    ret_confirm_on = 'Control fru0 power on successfully'
+    cmds = [cmd_shutdown, cmd_confirm, cmd_power_on, cmd_confirm]
+    rets = [ret_shutdown, ret_confirm_off, ret_power_on, ret_confirm_on]
+    if ssh.login(Hy5Config.BMC_IP, Hy5Config.BMC_USER, Hy5Config.BMC_PASSWORD):
+        return ssh.interaction(cmds, rets)
+    else:
+        logging.error("HY5 Common TC: reboot sut failed")
         return
-
-    op = s.invoke_shell()
-
-    def send_cmd(cmd):
-        op.send(cmd)
-        time.sleep(5)
-        ret = op.recv(1024)
-        return ret
-
-    res = send_cmd(cmd_shutdown)  # shutdown SUT
-    if re.search("Do you want to continue", res.decode('utf-8')):
-        res = send_cmd(cmd_confirm)  # confirm shutdown
-        if re.search("Control fru0 forced power off successfully", res.decode('utf-8')):
-            print("Shutdown command sent to SUT.")
-            time.sleep(10)
-            res = send_cmd(cmd_power_on)
-            if re.search("Do you want to continue", res.decode('utf-8')):
-                res = send_cmd(cmd_confirm)  # confirm power on
-                if re.search("Control fru0 power on successfully", res.decode('utf-8')):
-                    print("Power on command sent to SUT.")
-                    send_cmd(cmd_fan_manual_mode)  # tune fan speed
-                    send_cmd(cmd_fan_40)
-                    print("Booting SUT...")
-                    time.sleep(30)
-                    ser.check_boot_success(config.SERIAL_LOG)
-                    #ping_sut()
-    op.close()
-    s.close()
-    return

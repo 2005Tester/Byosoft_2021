@@ -1,10 +1,13 @@
 # -*- encoding=utf8 -*-
 import os
+import datetime
+
+timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 
 
 # Enviroment settigs
 LOG_DIR = 'c:\\daily\\autolog'
-SERIAL_LOG = os.path.join(LOG_DIR, 'serial.log')
+SERIAL_LOG = os.path.join(LOG_DIR, '{0}_serial.log'.format(timestamp))
 BINARY_DIR = '\\\\172.16.0.73\\HY5_Binary'
 
 # BMC Configuration
