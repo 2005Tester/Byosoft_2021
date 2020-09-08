@@ -7,6 +7,21 @@ from HY5 import Hy5Config
 from RedFish import config
 
 
+def dump_smbios(ssh):
+    if ssh.login(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD):
+        logging.info("Dumping smbios table...")
+        return ssh.execute_command('dmidecode', Hy5Config.LOG_DIR)
+
+def lspci(ssh):
+    if ssh.login(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD):
+        logging.info("Dumping pci info...")
+        return ssh.execute_command('lspci', Hy5Config.LOG_DIR)
+
+def dmesg(ssh):
+    if ssh.login(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD):
+        logging.info("Dumping dmesg...")
+        return ssh.execute_command('dmesg', Hy5Config.LOG_DIR)
+
 def dc_cycling(ssh, serial, n):
     for i in range(n):
         try:
@@ -16,6 +31,8 @@ def dc_cycling(ssh, serial, n):
         except Exception as e:
             logging.error(e)
 
+def check_log():
+    pass
 
 def boot_manager(serial, ssh):
     logging.info("HaiYan5 Common Test Lib: boot to boot manager")
@@ -36,10 +53,11 @@ def sp_boot(serial, ssh):
     if not rebootsut(ssh):
         logging.info("Rebooting SUT Failed.")
         return
-    logging.info("Booting to SP...")
+    logging.info("SP boot by F6: testing")
     if not serial.hotkey_f6():
-        logging.info("Booting to SP Failed.")
+        logging.info("TC-SP Boot by F6: Fail.")
         return
+    logging.info("TC-SP Boot by F6: Pass")
     return True
 
 
@@ -54,8 +72,8 @@ def ping_sut():
         time_spent = (now-start_time)
         if output.find("TTL=") >= 0:
             print("SUT is online now")
-            break
-        if time_spent > 900:
+            return True
+        if time_spent > 600:
             print("Lost SUT for %s seconds, refresh BIOS image" % time_spent)
             try:
                 updatebios.update_specific_img(config.BIOS)
@@ -80,3 +98,26 @@ def rebootsut(ssh):
     else:
         logging.error("HY5 Common TC: reboot sut failed")
         return
+
+def boot_ubuntu(serial, ssh):
+    key_down = [chr(0x1b), chr(0x5b), chr(0x42)]
+    if not boot_manager(serial, ssh):
+        return
+    for char in key_down:
+        serial.send_data(char)
+    serial.send_data(chr(0x0D))
+    if not serial.is_msg_present('byosoft-2488H-V6 login'):
+        logging.info("TC-Boot to UEFI Ubuntu: Fail")
+        return
+    logging.info("TC-Boot to UEFI Ubuntu: Pass")
+    return True
+
+def boot_windows(serial, ssh):
+    if not rebootsut(ssh):
+        logging.info("Rebooting SUT Failed.")
+        return
+    if not serial.is_msg_present('Computer is booting, SAC started and initialized'):
+        logging.info("TC-Boot to UEFI windows: Fail")
+        return
+    logging.info("TC-Boot to UEFI windows: Pass")
+    return True

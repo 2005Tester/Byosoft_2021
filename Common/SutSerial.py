@@ -13,7 +13,7 @@ class SutControl:
         try:
             self.session = serial.Serial(self.port, self.baudrate, timeout=self.timeout)
             if self.session.is_open:
-                Ret = True
+                logging.info("Serial port opened.")
         except Exception as e:
             logging.error(e)
             logging.info("SutControl: init failed.")
@@ -57,8 +57,30 @@ class SutControl:
             if spent_time > 600:
                 logging.info("check_boot_success: timeout")
                 break
-
-    def send_hotkey(self, key, msg, timeout, log):
+    
+    def is_msg_present(self, msg):
+        start_time = time.time()
+        logging.info("is_msg_present: receiving data from serial port...")
+        while True:
+            try:
+                if self.session.in_waiting:
+                    data = self.session.read(256).decode("utf-8")
+                    with open(self.log, 'a') as f:
+                        f.write(data)
+                    if re.search(msg, data):
+                        logging.info("is_msg_present: found:{0}".format(msg))
+                        return True
+            except Exception as e:
+                logging.error("is_msg_present:{0}".format(e))
+                break
+            now = time.time()
+            spent_time = (now - start_time)
+            if spent_time > 600:
+                logging.info("is_msg_present: timeout")
+                break
+    
+    # boot with hotkey pressed, and check whether boot is successful
+    def boot_with_hotkey(self, key, msg, timeout):
         start_time = time.time()
         logging.info("Receiving data from SUT...")
         while True:
@@ -91,19 +113,19 @@ class SutControl:
     def hotkey_del(self):
         key_del = [chr(0x7F)]
         msg = "none"
-        return self.send_hotkey(key_del, msg, 300, self.log)
+        return self.boot_with_hotkey(key_del, msg, 300)
 
     def hotkey_f6(self):
         key_f6 = [chr(0x1b), chr(0x5b), chr(0x31), chr(0x37), chr(0x7e)]
         msg = "BIOS boot completed."
-        return self.send_hotkey(key_f6, msg, 300, self.log)
+        return self.boot_with_hotkey(key_f6, msg, 300)
 
     def hotkey_f11(self):
         key_f11 = [chr(0x1b), chr(0x5b), chr(0x32), chr(0x33), chr(0x7e)]
         msg = "Boot Manager Menu"
-        return self.send_hotkey(key_f11, msg, 300, self.log)
+        return self.boot_with_hotkey(key_f11, msg, 300)
 
     def hotkey_f12(self):
         key_f12 = [chr(0x1b), chr(0x5b), chr(0x32), chr(0x34), chr(0x7e)]
         msg = "none"
-        return self.send_hotkey(key_f12, msg, 300, self.log)
+        return self.boot_with_hotkey(key_f12, msg, 300)

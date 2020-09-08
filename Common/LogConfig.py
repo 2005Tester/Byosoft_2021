@@ -4,7 +4,7 @@ import os
 
 def gen_config(log_dir):
     timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    log = "%s.log" % timestamp
+    log = "test.log"
     log_file = os.path.join(log_dir, log)
     logger_config = {
         'version': 1,

@@ -33,17 +33,22 @@ class SshConnection():
         self.ssh_client = paramiko.SSHClient()
  
     def login(self, host_ip, username, password):
+        logging.info("SSH login: {0}".format(host_ip))
         try:
             self.ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             self.ssh_client.connect(host_ip, port=22, username=username, password=password)
         except AuthenticationException:
-            print('Incorrect Username or Password.')
+            logging.error('Error in ssh connection: Incorrect Username or Password.')
             return
         except NoValidConnectionsError:
-            print('Connection timeout...')
+            logging.error('Error in ssh connection: timeout...')
             return
+        except TimeoutError:
+            logging.info("Timeout..., retry aftre 10 seconds...")
+            time.sleep(10)
+            self.login(host_ip, username, password)
         except:
-            print("Unexpected Error:", sys.exc_info()[0])
+            logging.error("Error in ssh connection:", sys.exc_info()[0])
             return
         return True
     
@@ -51,7 +56,6 @@ class SshConnection():
         log = os.path.join(log_dir, ''.join((command, '.log')))
         stdin, stdout, stderr = self.ssh_client.exec_command(command)
         res = stdout.read().decode()
-        print(res)
         with open(log, 'w') as f:
             f.write(res)
 
@@ -60,7 +64,7 @@ class SshConnection():
         time.sleep(4)
         ret = op.recv(1024)
         return ret
-
+        
     def interaction(self, cmds, strs):
         op = self.ssh_client.invoke_shell()
         for i in range(0, len(cmds)):
@@ -77,7 +81,7 @@ class SshConnection():
                 if re.search(strs[i], res.decode('utf-8')):
                     # Will reach here if command returns result after a while
                     break
-                if (now - start_time) > 600:
+                if (now - start_time) > 300:
                     logging.error("Run command {0} timeout.".format(cmds[i]))
                     return
         op.close()
@@ -113,21 +117,4 @@ class SshConnection():
 
     def close_session(self):
         self.ssh_client.close()
-
-
-def send_command(command, op):
-    op.send(command)
-    time.sleep(5)
-    ret = op.recv(1024)
-    return ret
-
-
-def call_commands(cmds, strs, op):
-    for i in range(0, len(cmds)):
-        res = send_command(cmds[i], op)  # confirm shutdown
-        if not re.search(strs[i], res.decode('utf-8')):
-            print('Command: %s failed to execute.' % cmds[i])
-            return False
-        print('Sending command: %s' % cmds[i])
-    return True
 
