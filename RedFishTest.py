@@ -271,7 +271,7 @@ def auto_test_dir(tc_dir):
             if not iscomplete:
                 updatebios.update_specific_img(config.BIOS)
                 ser = SutSerial.SutControl("com3", 115200, 0.5)
-                ser.check_boot_success(config.SERIAL_LOG)
+                ser.is_boot_success(config.SERIAL_LOG)
 
         else:
             print("%s is not a json file, skip test" % tc_file)

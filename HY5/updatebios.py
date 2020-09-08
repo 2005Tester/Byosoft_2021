@@ -151,7 +151,7 @@ def poweron_sut():
         return sshconn.interaction(cmds, rets)
     
 
-def update_specific_img(bios):
+def update_specific_img(bios, serial):
     if not upload_bios(bios):
         print("Upload BIOS image failed")
         return
@@ -159,15 +159,17 @@ def update_specific_img(bios):
         print("Program flash failed")
         return
     if not poweron_sut():
-        logging.error("power on su fail")
+        logging.error("power on sut fail")
+        return
+    if not serial.is_boot_success():
         return
     return True
 
 
 # Update BIOS to latest CI build
-def update_bios_ci():
+def update_bios_ci(serial):
     image = get_test_image(Hy5Config.BINARY_DIR)
-    update_specific_img(image)
+    update_specific_img(image, serial)
 
 
 if __name__ == '__main__':

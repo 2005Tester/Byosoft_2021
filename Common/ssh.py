@@ -19,7 +19,7 @@ class sftp():
         try:
             self.transport = paramiko.Transport(self.host_ip, 22)
             self.transport.banner_timeout = 120
-            self.transport.connect(username = self.username, password = self.password)
+            self.transport.connect(username=self.username, password=self.password)
             self.sftp = paramiko.SFTPClient.from_transport(self.transport)
         except:
             logging.error("sftp_login: {0}".format(e))
@@ -75,12 +75,13 @@ class SshConnection():
                 logging.info(res.decode('utf-8'))
                 now = time.time()
                 if re.search(strs[i], res.decode('utf-8')):
-                    print("Any chnace to reach here ?")
+                    # Will reach here if command returns result after a while
                     break
                 if (now - start_time) > 600:
                     logging.error("Run command {0} timeout.".format(cmds[i]))
                     return
         op.close()
+        self.ssh_client.close()
         status = True
         return status
 
@@ -107,6 +108,7 @@ class SshConnection():
                 status = False
                 break
         op.close()
+        self.ssh_client.close()
         return status
 
     def close_session(self):

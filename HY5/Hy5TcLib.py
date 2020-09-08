@@ -10,9 +10,9 @@ from RedFish import config
 def dc_cycling(ssh, serial, n):
     for i in range(n):
         try:
-            logging.info("Test cycle: {0}".format(n))
+            logging.info("Test cycle: {0}".format(i))
             rebootsut(ssh)
-            serial.check_boot_success(serial)
+            serial.is_boot_success()
         except Exception as e:
             logging.error(e)
 

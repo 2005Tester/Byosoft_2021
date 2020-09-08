@@ -12,7 +12,7 @@ class SutControl:
         self.log = log
         try:
             self.session = serial.Serial(self.port, self.baudrate, timeout=self.timeout)
-            if (self.session.is_open):
+            if self.session.is_open:
                 Ret = True
         except Exception as e:
             logging.error(e)
@@ -37,25 +37,25 @@ class SutControl:
             logging.info("Time out, probably boot fail.")
             return True
 
-    def check_boot_success(self, log):
+    def is_boot_success(self):
         start_time = time.time()
+        logging.info("check_boot_success: receiving data from serial port...")
         while True:
             try:
                 if self.session.in_waiting:
-                    logging.info("check_boot_success: receiving data from serial port...")
                     data = self.session.read(256).decode("utf-8")
                     with open(self.log, 'a') as f:
                         f.write(data)
                     if re.search("BIOS boot completed.", data):
                         logging.info("check_boot_success: pass")
-                        return
+                        return True
             except Exception as e:
                 logging.error("check_boot_success:{0}".format(e))
                 break
             now = time.time()
             spent_time = (now - start_time)
             if spent_time > 600:
-                logging.info("check_boot_success: fail")
+                logging.info("check_boot_success: timeout")
                 break
 
     def send_hotkey(self, key, msg, timeout, log):
