@@ -68,7 +68,7 @@ class SutControl:
                     with open(self.log, 'a') as f:
                         f.write(data)
                     if re.search(msg, data):
-                        logging.info("is_msg_present: found:{0}".format(msg))
+                        logging.debug("is_msg_present: found:{0}".format(msg))
                         return True
             except Exception as e:
                 logging.error("is_msg_present:{0}".format(e))
@@ -76,7 +76,7 @@ class SutControl:
             now = time.time()
             spent_time = (now - start_time)
             if spent_time > 600:
-                logging.info("is_msg_present: timeout")
+                logging.error("is_msg_present: timeout")
                 break
     
     # boot with hotkey pressed, and check whether boot is successful

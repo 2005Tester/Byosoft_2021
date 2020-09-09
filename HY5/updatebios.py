@@ -43,7 +43,7 @@ def upload_bios(src):
     bin_file = 'rp001.bin'
     hpm_file = 'bios.hpm'
     transport = paramiko.Transport(Hy5Config.BMC_IP, 22)
-    transport.banner_timeout = 30  # Increase timeout value to fix connection issue
+    transport.banner_timeout = 90  # Increase timeout value to fix connection issue
     transport.connect(username=Hy5Config.BMC_USER, password=Hy5Config.BMC_PASSWORD)
     sftp = paramiko.SFTPClient.from_transport(transport)
     res = sftp.listdir()
@@ -64,11 +64,13 @@ def upload_bios(src):
             return
         if re.search("67108864", str(res)):
             logging.info("BIOS image (bin) uploaded to iBMC SFTP.")
+            sftp.close()
             transport.close()
             return True
         else:
             print("Failed to upload BIOS image to iBMC SFTP.")
             print(res)
+            sftp.close()
             transport.close()
             return
     elif re.search('.hpm', str(src)):
@@ -79,11 +81,13 @@ def upload_bios(src):
             return
         if re.search("rw", str(res)):
             print("HPM image uploaded to iBMC SFTP.")
+            sftp.close()
             transport.close()
             return True
         else:
             print("Failed to upload hpm image to iBMC SFTP.")
             print(res)
+            sftp.close()
             transport.close()
             return
     else:

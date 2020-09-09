@@ -26,7 +26,7 @@ def gen_config(log_dir):
                 'formatter': 'normal',
                 'filename': log_file,
                 'mode': 'a',
-                'level': 'INFO',
+                'level': 'DEBUG',
             },
 
         },
@@ -39,7 +39,7 @@ def gen_config(log_dir):
         },
         'root': {
             'handlers': ['file', 'console'],
-            'level': 'INFO',
+            'level': 'DEBUG',
         }
     }
 

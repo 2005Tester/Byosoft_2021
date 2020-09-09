@@ -33,7 +33,7 @@ class SshConnection():
         self.ssh_client = paramiko.SSHClient()
  
     def login(self, host_ip, username, password):
-        logging.info("SSH login: {0}".format(host_ip))
+        logging.debug("SSH login: {0}".format(host_ip))
         try:
             self.ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             self.ssh_client.connect(host_ip, port=22, username=username, password=password)
@@ -44,8 +44,8 @@ class SshConnection():
             logging.error('Error in ssh connection: timeout...')
             return
         except TimeoutError:
-            logging.info("Timeout..., retry aftre 10 seconds...")
-            time.sleep(10)
+            logging.info("Timeout..., retry aftre 15 seconds...")
+            time.sleep(15)
             self.login(host_ip, username, password)
         except:
             logging.error("Error in ssh connection:", sys.exc_info()[0])
@@ -64,16 +64,17 @@ class SshConnection():
         time.sleep(4)
         ret = op.recv(1024)
         return ret
-        
+
+    # send commands one by one through ssh in interactive mode    
     def interaction(self, cmds, strs):
         op = self.ssh_client.invoke_shell()
         for i in range(0, len(cmds)):
             res = self.execute_command_interaction(cmds[i], op)
-            logging.info('Sending command: {0}'.format(cmds[i]))
+            logging.debug('Sending command: {0}'.format(cmds[i]))
             # print(res.decode('utf-8'))
             start_time = time.time()
             while not re.search(strs[i], res.decode('utf-8')):
-                logging.info("Checking Status...")
+                logging.info("Checking BIOS update status...")
                 res = op.recv(1024)
                 # print(res.decode('utf-8'))
                 logging.info(res.decode('utf-8'))
