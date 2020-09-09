@@ -8,23 +8,26 @@ from HY5 import Hy5Config
 from HY5 import Hy5TcLib
 from HY5 import updatebios
 
+# Init log setting
+log_format = LogConfig.gen_config(Hy5Config.LOG_DIR)
+logging.config.dictConfig(log_format)
+logging.getLogger("paramiko").setLevel(logging.WARNING)
+
+# init seril
+ser = SutSerial.SutControl("com3", 115200, 0.5, Hy5Config.SERIAL_LOG)
+# init ssh
+sshins = ssh.SshConnection()
+
 
 def check_ci_update():
     dir = Hy5Config.BINARY_DIR
 
 
+def debug():
+    ser.is_boot_success()
+
 
 def test_run():
-    # Init log setting
-    log_format = LogConfig.gen_config(Hy5Config.LOG_DIR)
-    logging.config.dictConfig(log_format)
-    logging.getLogger("paramiko").setLevel(logging.WARNING)
-
-    # init seril
-    ser = SutSerial.SutControl("com3", 115200, 0.5, Hy5Config.SERIAL_LOG)
-    # init ssh
-    sshins = ssh.SshConnection()
-
     updatebios.update_bios_ci(ser)
     Hy5TcLib.sp_boot(ser, sshins)
     if Hy5TcLib.boot_ubuntu(ser, sshins):
@@ -36,7 +39,9 @@ def test_run():
 
 if __name__ == "__main__":
     while True:
-        test_run()
+        Hy5TcLib.dc_cycling(sshins, ser, 5)
+        #debug()
+
 
     
     

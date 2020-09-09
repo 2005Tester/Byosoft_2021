@@ -12,27 +12,32 @@ def dump_smbios(ssh):
         logging.info("Dumping smbios table...")
         return ssh.execute_command('dmidecode', Hy5Config.LOG_DIR)
 
+
 def lspci(ssh):
     if ssh.login(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD):
         logging.info("Dumping pci info...")
         return ssh.execute_command('lspci', Hy5Config.LOG_DIR)
+
 
 def dmesg(ssh):
     if ssh.login(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD):
         logging.info("Dumping dmesg...")
         return ssh.execute_command('dmesg', Hy5Config.LOG_DIR)
 
+
 def dc_cycling(ssh, serial, n):
     for i in range(n):
         try:
             logging.info("Test cycle: {0}".format(i))
-            rebootsut(ssh)
+            force_power_cycle(ssh)
             serial.is_boot_success()
         except Exception as e:
             logging.error(e)
 
+
 def check_log():
     pass
+
 
 def boot_manager(serial, ssh):
     logging.info("HaiYan5 Common Test Lib: boot to boot manager")
@@ -83,6 +88,36 @@ def ping_sut():
                 print(e)
 
 
+def force_reset(ssh):
+    logging.info("Force system reset.")
+    cmd_reset = 'ipmcset -d frucontrol -v 0\n'
+    ret_reset = 'Do you want to continue'
+    cmd_confirm = 'Y\n'
+    ret_confirm = 'successfully'
+    cmds = [cmd_reset, cmd_confirm]
+    rets = [ret_reset, ret_confirm]
+    if ssh.login(Hy5Config.BMC_IP, Hy5Config.BMC_USER, Hy5Config.BMC_PASSWORD):
+        return ssh.interaction(cmds, rets)
+    else:
+        logging.error("HY5 Common TC: force system reset failed")
+        return
+
+
+def force_power_cycle(ssh):
+    logging.info("Force power cycle.")
+    cmd_powercycle = 'ipmcset -d frucontrol -v 2\n'
+    ret_powercycle = 'Do you want to continue'
+    cmd_confirm = 'Y\n'
+    ret_confirm = 'successfully'
+    cmds = [cmd_powercycle, cmd_confirm]
+    rets = [ret_powercycle, ret_confirm]
+    if ssh.login(Hy5Config.BMC_IP, Hy5Config.BMC_USER, Hy5Config.BMC_PASSWORD):
+        return ssh.interaction(cmds, rets)
+    else:
+        logging.error("HY5 Common TC: force powercycle failed")
+        return
+
+
 def rebootsut(ssh):
     cmd_shutdown = 'ipmcset -d powerstate -v 2\n'
     ret_shutdown = 'Do you want to continue'
@@ -99,6 +134,7 @@ def rebootsut(ssh):
         logging.error("HY5 Common TC: reboot sut failed")
         return
 
+
 def boot_ubuntu(serial, ssh):
     key_down = [chr(0x1b), chr(0x5b), chr(0x42)]
     if not boot_manager(serial, ssh):
@@ -111,6 +147,7 @@ def boot_ubuntu(serial, ssh):
         return
     logging.info("TC-Boot to UEFI Ubuntu: Pass")
     return True
+
 
 def boot_windows(serial, ssh):
     if not rebootsut(ssh):

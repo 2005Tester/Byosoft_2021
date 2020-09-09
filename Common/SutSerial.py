@@ -14,6 +14,7 @@ class SutControl:
             self.session = serial.Serial(self.port, self.baudrate, timeout=self.timeout)
             if self.session.is_open:
                 logging.info("Serial port opened.")
+                
         except Exception as e:
             logging.error(e)
             logging.info("SutControl: init failed.")
@@ -45,6 +46,7 @@ class SutControl:
                 if self.session.in_waiting:
                     data = self.session.read(256).decode("utf-8")
                     with open(self.log, 'a') as f:
+                        f.write("is_boot_success")
                         f.write(data)
                     if re.search("BIOS boot completed.", data):
                         logging.info("check_boot_success: pass")
@@ -66,6 +68,7 @@ class SutControl:
                 if self.session.in_waiting:
                     data = self.session.read(256).decode("utf-8")
                     with open(self.log, 'a') as f:
+                        f.write("is_msg_present")
                         f.write(data)
                     if re.search(msg, data):
                         logging.debug("is_msg_present: found:{0}".format(msg))
@@ -88,6 +91,7 @@ class SutControl:
                 if self.session.in_waiting:
                     data = self.session.read(256).decode("utf-8")
                     with open(self.log, 'a') as f:
+                        f.write("boot_with_hotkey")
                         f.write(data)
                     if re.search("Press Del go to Setup Utility", data):
                         for char in key:

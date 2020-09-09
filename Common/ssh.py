@@ -71,12 +71,11 @@ class SshConnection():
         for i in range(0, len(cmds)):
             res = self.execute_command_interaction(cmds[i], op)
             logging.debug('Sending command: {0}'.format(cmds[i]))
-            # print(res.decode('utf-8'))
+            logging.debug(res.decode('utf-8'))
             start_time = time.time()
             while not re.search(strs[i], res.decode('utf-8')):
-                logging.info("Checking BIOS update status...")
+                logging.info("Checking command status...")
                 res = op.recv(1024)
-                # print(res.decode('utf-8'))
                 logging.info(res.decode('utf-8'))
                 now = time.time()
                 if re.search(strs[i], res.decode('utf-8')):

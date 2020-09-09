@@ -17,9 +17,9 @@ def get_test_image(path):
         versions = os.listdir(path)
         versions.sort(reverse=True)
         latest_version = versions[1]
-        logging.info("Latest Version is: %s" % (latest_version))
+        logging.info("Latest Version is: {0}".format(latest_version))
         if latest_version in daily.VER_TESTED:
-            logging.info("%s has been tested" %(latest_version))
+            logging.info("{0} has been tested".format(latest_version))
             return
     else:
         logging.error("BIOS image directroy can't be accessed, please check VPN connection.")
@@ -31,7 +31,7 @@ def get_test_image(path):
     for b in p.rglob('HY5*.bin'):
         rp001_image.append(b)
     if not rp001_image:
-        logging.info("Image for %s not found, please check whether build is finished." %(latest_version))
+        logging.info("Image for {0} not found, please check whether build is finished.".format(latest_version))
         return
     else:
         logging.info("BIOS image for test: %s" %(rp001_image[0])) 
@@ -99,7 +99,7 @@ def hpm_update():
     cmd_hpmupdate = 'ipmcset -d upgrade -v /tmp/bios.hpm\n'
     s = paramiko.SSHClient()
     s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    s.connect(Hy5Config.BMC_IP, 22, Hy5Config.BMC_USER,PW)
+    s.connect(Hy5Config.BMC_IP, 22, Hy5Config.BMC_USER, Hy5Config.BMC_PW)
     op = s.invoke_shell()
     op.send(cmd_hpmupdate)
     time.sleep(5)
