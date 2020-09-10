@@ -38,6 +38,18 @@ class SutControl:
             logging.info("Time out, probably boot fail.")
             return True
 
+    def capture_data(self):
+        logging.info("capture data from serial port")
+        while True:
+            try:
+                if self.session.in_waiting:
+                    data = self.session.read(256).decode("utf-8")
+                    with open(self.log, 'a') as f:
+                        f.write(data)
+            except Exception as e:
+                logging.error(e)
+                break
+
     def is_boot_success(self):
         start_time = time.time()
         logging.info("check_boot_success: receiving data from serial port...")
@@ -46,7 +58,6 @@ class SutControl:
                 if self.session.in_waiting:
                     data = self.session.read(256).decode("utf-8")
                     with open(self.log, 'a') as f:
-                        f.write("is_boot_success")
                         f.write(data)
                     if re.search("BIOS boot completed.", data):
                         logging.info("check_boot_success: pass")
@@ -67,8 +78,9 @@ class SutControl:
             try:
                 if self.session.in_waiting:
                     data = self.session.read(256).decode("utf-8")
+                    # data.replace(r'[\x00-\x1F]\[\d\d;\d\dH', '')
+                    # print(data)
                     with open(self.log, 'a') as f:
-                        f.write("is_msg_present")
                         f.write(data)
                     if re.search(msg, data):
                         logging.debug("is_msg_present: found:{0}".format(msg))
@@ -78,7 +90,11 @@ class SutControl:
                 break
             now = time.time()
             spent_time = (now - start_time)
-            if spent_time > 600:
+            if spent_time > 90:
+                keys = [chr(0x1b), chr(0x5b), chr(0x42), chr(0x1b), chr(0x5b), chr(0x41)]
+                for char in keys:
+                    serial.send_data(char)
+            if spent_time > 300:
                 logging.error("is_msg_present: timeout")
                 break
     
@@ -91,7 +107,6 @@ class SutControl:
                 if self.session.in_waiting:
                     data = self.session.read(256).decode("utf-8")
                     with open(self.log, 'a') as f:
-                        f.write("boot_with_hotkey")
                         f.write(data)
                     if re.search("Press Del go to Setup Utility", data):
                         for char in key:
@@ -116,7 +131,7 @@ class SutControl:
 
     def hotkey_del(self):
         key_del = [chr(0x7F)]
-        msg = "none"
+        msg = "Boot From File"
         return self.boot_with_hotkey(key_del, msg, 300)
 
     def hotkey_f6(self):

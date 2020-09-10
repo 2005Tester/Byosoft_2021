@@ -35,14 +35,23 @@ def dc_cycling(ssh, serial, n):
             logging.error(e)
 
 
-def check_log():
-    pass
+def boot_to_setup(serial, ssh):
+    logging.info("HaiYan5 Common Test Lib: boot to setup")
+    logging.info("Rebooting SUT...")
+    if not force_reset(ssh):
+        logging.info("Rebooting SUT Failed.")
+        return
+    logging.info("Booting to setup")
+    if not serial.hotkey_del():
+        logging.info("Boot to setup failed.")
+        return
+    return True
 
 
 def boot_manager(serial, ssh):
     logging.info("HaiYan5 Common Test Lib: boot to boot manager")
     logging.info("Rebooting SUT...")
-    if not rebootsut(ssh):
+    if not force_reset(ssh):
         logging.info("Rebooting SUT Failed.")
         return
     logging.info("Booting to boot manager")
@@ -55,7 +64,7 @@ def boot_manager(serial, ssh):
 def sp_boot(serial, ssh):
     logging.info("HaiYan5 Common Test Lib: sp_boot")
     logging.info("Rebooting SUT...")
-    if not rebootsut(ssh):
+    if not force_reset(ssh):
         logging.info("Rebooting SUT Failed.")
         return
     logging.info("SP boot by F6: testing")
@@ -150,7 +159,7 @@ def boot_ubuntu(serial, ssh):
 
 
 def boot_windows(serial, ssh):
-    if not rebootsut(ssh):
+    if not force_reset(ssh):
         logging.info("Rebooting SUT Failed.")
         return
     if not serial.is_msg_present('Computer is booting, SAC started and initialized'):
@@ -158,3 +167,29 @@ def boot_windows(serial, ssh):
         return
     logging.info("TC-Boot to UEFI windows: Pass")
     return True
+
+
+def me_configuration(serial, ssh):
+    keys = [chr(0x1b), chr(0x5b), chr(0x43), chr(0x1b), chr(0x5b), chr(0x43), chr(0x1b), chr(0x5b), chr(0x42),
+            chr(0x0D), chr(0x1b), chr(0x5b), chr(0x43), chr(0x1b), chr(0x5b), chr(0x42), chr(0x1b), chr(0x5b),
+            chr(0x42), chr(0x1b), chr(0x5b), chr(0x42), chr(0x1b), chr(0x5b), chr(0x42), chr(0x1b), chr(0x5b),
+            chr(0x42), chr(0x0D)]
+    keys_state = [chr(0x1b), chr(0x5b), chr(0x42), chr(0x1b), chr(0x5b), chr(0x42), chr(0x1b), chr(0x5b),
+                  chr(0x42), chr(0x1b), chr(0x5b), chr(0x42), chr(0x1b), chr(0x5b), chr(0x42)]
+    if not boot_to_setup(serial, ssh):
+        return
+    for char in keys:
+        serial.send_data(char)
+        time.sleep(0.2)
+    if not serial.is_msg_present('firmware selected to run'):
+        logging.info("TC-Boot to ME Configuration: Fail")
+        return
+    logging.info("TC-Boot to ME Configuration: Pass")
+    for char in keys_state:
+        serial.send_data(char)
+        time.sleep(0.2)
+    if not serial.is_msg_present('MEFS1'):
+        logging.info("Check ME State in operational mode: Fail")
+    logging.info("Check ME State in operational mode: Pass")
+    return True
+
