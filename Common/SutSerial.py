@@ -28,14 +28,19 @@ class SutControl:
     def send_data(self, data):
         self.session.write(data.encode())
 
+    def send_keys(self, keys):
+        for char in keys:
+            self.send_data(char)
+
     def receive_data(self, size):
         self.session.read(size)
 
-    def is_timeout(self, t_start, timeout):
+    @ staticmethod
+    def is_timeout(t_start, timeout):
         now = time.time()
         spent_time = (now - t_start)
         if spent_time > timeout:
-            logging.info("Time out, probably boot fail.")
+            logging.info("Check message in serial output time out.")
             return True
 
     def capture_data(self):
@@ -50,30 +55,33 @@ class SutControl:
                 logging.error(e)
                 break
 
+    @staticmethod
+    def find_msg(msg, data):
+        if re.search(msg, data):
+            logging.info("Found message: \"{0}\"".format(msg))
+            return True
+
     def is_boot_success(self):
         start_time = time.time()
-        logging.info("check_boot_success: receiving data from serial port...")
+        logging.debug("check_boot_success: receiving data from serial port...")
         while True:
             try:
                 if self.session.in_waiting:
                     data = self.session.read(256).decode("utf-8")
                     with open(self.log, 'a') as f:
                         f.write(data)
-                    if re.search("BIOS boot completed.", data):
-                        logging.info("check_boot_success: pass")
+                    if self.find_msg("BIOS boot completed.", data):
                         return True
             except Exception as e:
                 logging.error("check_boot_success:{0}".format(e))
                 break
-            now = time.time()
-            spent_time = (now - start_time)
-            if spent_time > 600:
-                logging.info("check_boot_success: timeout")
+            if self.is_timeout(start_time, 600):
+                logging.debug("is_boot_success: timeout")
                 break
     
     def is_msg_present(self, msg):
         start_time = time.time()
-        logging.info("is_msg_present: receiving data from serial port...")
+        logging.debug("is_msg_present: receiving data from serial port...")
         while True:
             try:
                 if self.session.in_waiting:
@@ -82,20 +90,16 @@ class SutControl:
                     # print(data)
                     with open(self.log, 'a') as f:
                         f.write(data)
-                    if re.search(msg, data):
-                        logging.debug("is_msg_present: found:{0}".format(msg))
+                    if self.find_msg(msg, data):
                         return True
+                    #else:
+                    #    keys = [chr(0x1b), chr(0x5b), chr(0x42), chr(0x1b), chr(0x5b), chr(0x41)]
+                    #    self.send_keys(keys)
             except Exception as e:
                 logging.error("is_msg_present:{0}".format(e))
                 break
-            now = time.time()
-            spent_time = (now - start_time)
-            if spent_time > 90:
-                keys = [chr(0x1b), chr(0x5b), chr(0x42), chr(0x1b), chr(0x5b), chr(0x41)]
-                for char in keys:
-                    serial.send_data(char)
-            if spent_time > 300:
-                logging.error("is_msg_present: timeout")
+            if self.is_timeout(start_time, 300):
+                logging.debug("is_msg_present: timeout")
                 break
     
     # boot with hotkey pressed, and check whether boot is successful
@@ -108,17 +112,15 @@ class SutControl:
                     data = self.session.read(256).decode("utf-8")
                     with open(self.log, 'a') as f:
                         f.write(data)
-                    if re.search("Press Del go to Setup Utility", data):
-                        for char in key:
-                            self.send_data(char)
+                    if self.find_msg("Press Del go to Setup Utility", data):
+                        self.send_keys(key)
                         logging.info("Hot Key sent")
-                    if re.search("Press F2", data):
+                    if self.find_msg("Press F2", data):
                         self.send_data("Admin@9000")
                         self.send_data(chr(0x0D))  # Send Enter
                         self.send_data(chr(0x0D))  # Send Enter
                         logging.info("Send password...")
-                    if re.search(msg, data):
-                        logging.info("BIOS Boot Successful.")
+                    if self.find_msg(msg, data):
                         return True
             except Exception as e:
                 logging.error(e)

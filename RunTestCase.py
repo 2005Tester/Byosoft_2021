@@ -31,16 +31,17 @@ def test():
 
 
 def test_run():
-    updatebios.update_bios_ci(ser)
+#    updatebios.update_bios_ci(ser)
     Hy5TcLib.sp_boot(ser, sshins)
     if Hy5TcLib.boot_ubuntu(ser, sshins):
         Hy5TcLib.dump_smbios(sshins)
         Hy5TcLib.lspci(sshins)
         Hy5TcLib.dmesg(sshins)
     Hy5TcLib.boot_windows(ser, sshins)
+    Hy5TcLib.check_me_state(ser, sshins)
 
 
 if __name__ == "__main__":
     while True:
-        test()
+        test_run()
 

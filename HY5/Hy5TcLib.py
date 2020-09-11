@@ -62,6 +62,7 @@ def boot_manager(serial, ssh):
 
 
 def sp_boot(serial, ssh):
+    logging.info("[*TC Start] SP Boot")
     logging.info("HaiYan5 Common Test Lib: sp_boot")
     logging.info("Rebooting SUT...")
     if not force_reset(ssh):
@@ -69,9 +70,9 @@ def sp_boot(serial, ssh):
         return
     logging.info("SP boot by F6: testing")
     if not serial.hotkey_f6():
-        logging.info("TC-SP Boot by F6: Fail.")
+        logging.info("[*TC Result] SP Boot by F6: Fail.")
         return
-    logging.info("TC-SP Boot by F6: Pass")
+    logging.info("[*TC Result] SP Boot by F6: Pass")
     return True
 
 
@@ -145,31 +146,32 @@ def rebootsut(ssh):
 
 
 def boot_ubuntu(serial, ssh):
-    key_down = [chr(0x1b), chr(0x5b), chr(0x42)]
+    logging.info("[*TC Start] Boot to UEFI Ubuntu")
+    key_down = [chr(0x1b), chr(0x5b), chr(0x42), chr(0x0D)]
     if not boot_manager(serial, ssh):
         return
-    for char in key_down:
-        serial.send_data(char)
-    serial.send_data(chr(0x0D))
+    serial.send_keys(key_down)
     if not serial.is_msg_present('byosoft-2488H-V6 login'):
-        logging.info("TC-Boot to UEFI Ubuntu: Fail")
+        logging.info("[*TC Result] Boot to UEFI Ubuntu: Fail")
         return
-    logging.info("TC-Boot to UEFI Ubuntu: Pass")
+    logging.info("[*TC Result] Boot to UEFI Ubuntu: Pass")
     return True
 
 
 def boot_windows(serial, ssh):
+    logging.info("[*TC Start] Boot to UEFI windows")
     if not force_reset(ssh):
         logging.info("Rebooting SUT Failed.")
         return
     if not serial.is_msg_present('Computer is booting, SAC started and initialized'):
-        logging.info("TC-Boot to UEFI windows: Fail")
+        logging.info("[*TC Result] Boot to UEFI windows: Fail")
         return
-    logging.info("TC-Boot to UEFI windows: Pass")
+    logging.info("[*TC Result] Boot to UEFI windows: Pass")
     return True
 
 
-def me_configuration(serial, ssh):
+def check_me_state(serial, ssh):
+    logging.info("[*TC Start] Check ME State")
     keys = [chr(0x1b), chr(0x5b), chr(0x43), chr(0x1b), chr(0x5b), chr(0x43), chr(0x1b), chr(0x5b), chr(0x42),
             chr(0x0D), chr(0x1b), chr(0x5b), chr(0x43), chr(0x1b), chr(0x5b), chr(0x42), chr(0x1b), chr(0x5b),
             chr(0x42), chr(0x1b), chr(0x5b), chr(0x42), chr(0x1b), chr(0x5b), chr(0x42), chr(0x1b), chr(0x5b),
@@ -178,18 +180,15 @@ def me_configuration(serial, ssh):
                   chr(0x42), chr(0x1b), chr(0x5b), chr(0x42), chr(0x1b), chr(0x5b), chr(0x42)]
     if not boot_to_setup(serial, ssh):
         return
-    for char in keys:
-        serial.send_data(char)
-        time.sleep(0.2)
+    serial.send_keys(keys)
     if not serial.is_msg_present('firmware selected to run'):
-        logging.info("TC-Boot to ME Configuration: Fail")
+        logging.info("Boot to ME Configuration Menu Failed")
         return
-    logging.info("TC-Boot to ME Configuration: Pass")
-    for char in keys_state:
-        serial.send_data(char)
-        time.sleep(0.2)
+    logging.info("Boot to ME Configuration Pass")
+    serial.send_keys(keys_state)
     if not serial.is_msg_present('MEFS1'):
-        logging.info("Check ME State in operational mode: Fail")
-    logging.info("Check ME State in operational mode: Pass")
+        logging.info("[*TC Result] Check ME State in operational mode: Fail")
+        return
+    logging.info("[*TC Result] Check ME State in operational mode: Pass")
     return True
 
