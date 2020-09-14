@@ -65,7 +65,7 @@ class SutControl:
 
     @staticmethod
     def cleanup_data(data):
-        pat1 = '[\x00-\x1F]\[\d+;\d+H'
+        pat1 = '[\x00-\x1F]\[\d+;\d+[mH]*'
         pat2 = '[\x00-\x1F]\[\d+[mJ]'
         data = re.sub(pat1, '', data)
         data = re.sub(pat2, '', data)
@@ -102,7 +102,6 @@ class SutControl:
                     with open(self.log, 'a') as f:
                         f.write(data)
                     if self.find_msg(msg, data):
-                        print(data)
                         return True
                     #else:
                     #    keys = [chr(0x1b), chr(0x5b), chr(0x42), chr(0x1b), chr(0x5b), chr(0x41)]

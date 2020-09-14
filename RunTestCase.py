@@ -9,6 +9,7 @@ from Common import LogConfig
 from HY5 import Hy5Config
 from HY5 import Hy5TcLib
 from HY5 import updatebios
+from HY5 import SetUp
 
 
 # Init log setting
@@ -27,7 +28,7 @@ def check_ci_update():
 
 
 def test():
-    ser.is_msg_present("Operat")
+    SetUp.disable_full_debug_msg(ser, sshins)
 
 
 def test_run():
@@ -38,10 +39,10 @@ def test_run():
         Hy5TcLib.lspci(sshins)
         Hy5TcLib.dmesg(sshins)
     Hy5TcLib.boot_windows(ser, sshins)
-    Hy5TcLib.check_me_state(ser, sshins)
+    SetUp.check_me_state(ser, sshins)
 
 
 if __name__ == "__main__":
-    while True:
-        test()
+    #while True:
+    test_run()
 
