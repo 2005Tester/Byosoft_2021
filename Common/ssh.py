@@ -71,7 +71,7 @@ class SshConnection():
         for i in range(0, len(cmds)):
             res = self.execute_command_interaction(cmds[i], op)
             logging.debug('Sending command: {0}'.format(cmds[i]))
-            logging.debug(res.decode('utf-8'))
+            # logging.debug(res.decode('utf-8'))
             start_time = time.time()
             while not re.search(strs[i], res.decode('utf-8')):
                 logging.info("Checking command status...")

@@ -28,13 +28,13 @@ def get_test_image(path):
     current_image_dir = os.path.join(path, latest_version)
     p = Path(current_image_dir)   # remote image dir of current version
     rp001_image = []
-    for b in p.rglob('HY5*.bin'):
+    for b in p.rglob('HY5*_byo.bin'):
         rp001_image.append(b)
     if not rp001_image:
         logging.info("Image for {0} not found, please check whether build is finished.".format(latest_version))
         return
     else:
-        logging.info("BIOS image for test: %s" %(rp001_image[0])) 
+        logging.info("BIOS image for test: %s" %(rp001_image[0]))
         return rp001_image[0]
 
 

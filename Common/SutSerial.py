@@ -1,3 +1,4 @@
+# -*- encoding=utf8 -*-
 import serial
 import time
 import re
@@ -49,6 +50,7 @@ class SutControl:
             try:
                 if self.session.in_waiting:
                     data = self.session.read(256).decode("utf-8")
+                    data = self.cleanup_data(data)
                     with open(self.log, 'a') as f:
                         f.write(data)
             except Exception as e:
@@ -61,6 +63,15 @@ class SutControl:
             logging.info("Found message: \"{0}\"".format(msg))
             return True
 
+    @staticmethod
+    def cleanup_data(data):
+        pat1 = '[\x00-\x1F]\[\d+;\d+H'
+        pat2 = '[\x00-\x1F]\[\d+[mJ]'
+        data = re.sub(pat1, '', data)
+        data = re.sub(pat2, '', data)
+        # print(data)
+        return data
+
     def is_boot_success(self):
         start_time = time.time()
         logging.debug("check_boot_success: receiving data from serial port...")
@@ -68,6 +79,7 @@ class SutControl:
             try:
                 if self.session.in_waiting:
                     data = self.session.read(256).decode("utf-8")
+                    data = self.cleanup_data(data)
                     with open(self.log, 'a') as f:
                         f.write(data)
                     if self.find_msg("BIOS boot completed.", data):
@@ -86,11 +98,11 @@ class SutControl:
             try:
                 if self.session.in_waiting:
                     data = self.session.read(256).decode("utf-8")
-                    # data.replace(r'[\x00-\x1F]\[\d\d;\d\dH', '')
-                    # print(data)
+                    data = self.cleanup_data(data)
                     with open(self.log, 'a') as f:
                         f.write(data)
                     if self.find_msg(msg, data):
+                        print(data)
                         return True
                     #else:
                     #    keys = [chr(0x1b), chr(0x5b), chr(0x42), chr(0x1b), chr(0x5b), chr(0x41)]
@@ -110,6 +122,7 @@ class SutControl:
             try:
                 if self.session.in_waiting:
                     data = self.session.read(256).decode("utf-8")
+                    data = self.cleanup_data(data)
                     with open(self.log, 'a') as f:
                         f.write(data)
                     if self.find_msg("Press Del go to Setup Utility", data):

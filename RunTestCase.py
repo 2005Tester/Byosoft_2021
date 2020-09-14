@@ -27,11 +27,11 @@ def check_ci_update():
 
 
 def test():
-    Hy5TcLib.me_configuration(ser, sshins)
+    ser.is_msg_present("Operat")
 
 
 def test_run():
-#    updatebios.update_bios_ci(ser)
+    updatebios.update_bios_ci(ser)
     Hy5TcLib.sp_boot(ser, sshins)
     if Hy5TcLib.boot_ubuntu(ser, sshins):
         Hy5TcLib.dump_smbios(sshins)
@@ -43,5 +43,5 @@ def test_run():
 
 if __name__ == "__main__":
     while True:
-        test_run()
+        test()
 

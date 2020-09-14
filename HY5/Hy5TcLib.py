@@ -169,6 +169,17 @@ def boot_windows(serial, ssh):
     logging.info("[*TC Result] Boot to UEFI windows: Pass")
     return True
 
+def boot_to_bios_config(serial, ssh):
+    keys = Hy5Config.RIGHT*2 + Hy5Config.DOWN + Hy5Config.ENTER
+    if not boot_to_setup(serial, ssh):
+        return
+    serial.send_keys(keys)
+    if not serial.is_msg_present('System Time'):
+        logging.info("Boot to BIOS Configuration Failed")
+        return
+    logging.info("Boot to BIOS Configuration Pass")
+    return True
+
 
 def check_me_state(serial, ssh):
     logging.info("[*TC Start] Check ME State")
@@ -186,9 +197,34 @@ def check_me_state(serial, ssh):
         return
     logging.info("Boot to ME Configuration Pass")
     serial.send_keys(keys_state)
-    if not serial.is_msg_present('MEFS1'):
+    if not serial.is_msg_present('Operational'):
         logging.info("[*TC Result] Check ME State in operational mode: Fail")
         return
     logging.info("[*TC Result] Check ME State in operational mode: Pass")
     return True
 
+
+def enable_full_debug_msg(serial, ssh):
+    logging.info("[*TC Start] Set full debug message.")
+    keys_enable_full_debug = Hy5Config.RIGHT + Hy5Config.DOWN + Hy5Config.ENTER + Hy5Config.DOWN*6 + Hy5Config.F5 + Hy5Config.F10 + Hy5Config.Y
+
+    if not boot_to_bios_config(serial, ssh):
+        return
+    serial.send_keys(keys_enable_full_debug)
+    if not serial.is_msg_present('BIOS boot completed.'):
+        logging.info("[*TC Start] Boot failed.")
+        return
+    return True
+    
+
+def disable_full_debug_msg(serial, ssh):
+    logging.info("[*TC Start] Set full debug message.")
+    keys_enable_full_debug = Hy5Config.RIGHT + Hy5Config.DOWN + Hy5Config.ENTER + Hy5Config.DOWN*6 + Hy5Config.F6 + Hy5Config.F10 + Hy5Config.Y
+
+    if not boot_to_bios_config(serial, ssh):
+        return
+    serial.send_keys(keys_enable_full_debug)
+    if not serial.is_msg_present('BIOS boot completed.'):
+        logging.info("[*TC Start] Boot failed.")
+        return
+    return True
