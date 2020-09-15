@@ -20,6 +20,7 @@ RIGHT = [chr(0x1b), chr(0x5b), chr(0x43)]
 Y = [chr(0x59)]
 
 
+# Boot to setup home page
 def boot_to_setup(serial, ssh):
     logging.info("HaiYan5 Common Test Lib: boot to setup")
     logging.info("Rebooting SUT...")
@@ -33,6 +34,7 @@ def boot_to_setup(serial, ssh):
     return True
 
 
+# Boot to BIOS configuration page
 def boot_to_bios_config(serial, ssh):
     keys = RIGHT*2 + DOWN + ENTER
     if not boot_to_setup(serial, ssh):
@@ -45,6 +47,20 @@ def boot_to_bios_config(serial, ssh):
     return True
 
 
+# Reset BIOS setup to default by pressing F9
+def reset_default(serial, ssh):
+    keys = F9 + Y + F10 + Y
+    if not boot_to_bios_config(serial, ssh):
+        return
+    serial.send_keys(keys)
+    if not serial.is_msg_present('BIOS boot completed.'):
+        logging.info("Boot failed aftet reset dafault")
+        return
+    logging.info("Boot successful after reset dfault.")
+    return True
+
+
+# check whether ME is working in operational state
 def check_me_state(serial, ssh):
     logging.info("[*TC Start] Check ME State")
     keys = RIGHT*2 + DOWN + ENTER + RIGHT + DOWN*5 + ENTER
@@ -64,6 +80,7 @@ def check_me_state(serial, ssh):
     return True
 
 
+# Enable full debug message
 def enable_full_debug_msg(serial, ssh):
     logging.info("[*TC Start] Set full debug message.")
     keys_enable_full_debug = RIGHT + DOWN + ENTER + DOWN * 6 + F5 + F10 + Y
@@ -75,7 +92,7 @@ def enable_full_debug_msg(serial, ssh):
     logging.info("Boot in full debug message mode.")
     return True
 
-
+# Disable full debug message
 def disable_full_debug_msg(serial, ssh):
     logging.info("[*TC Start] Set full debug message.")
     keys_enable_full_debug = RIGHT + DOWN + ENTER + DOWN * 6 + F6 + F10 + Y
