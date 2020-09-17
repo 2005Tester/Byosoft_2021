@@ -82,24 +82,28 @@ def check_me_state(serial, ssh):
 
 # Enable full debug message
 def enable_full_debug_msg(serial, ssh):
-    logging.info("[*TC Start] Set full debug message.")
+    logging.info("[*TC Start] Enable full debug message.")
     keys_enable_full_debug = RIGHT + DOWN + ENTER + DOWN * 6 + F5 + F10 + Y
     if not boot_to_bios_config(serial, ssh):
         return
     serial.send_keys(keys_enable_full_debug)
     if not serial.is_msg_present('InstallProtocolInterface.'):
         return
-    logging.info("Boot in full debug message mode.")
+    if not serial.is_msg_present('BIOS boot completed.'):
+        logging.info("[*TC Result] Enable full debug message Failed.")
+        return
+    logging.info("[*TC Result] Enable full debug message Pass.")
     return True
 
 # Disable full debug message
 def disable_full_debug_msg(serial, ssh):
-    logging.info("[*TC Start] Set full debug message.")
+    logging.info("[*TC Start] Disable full debug message.")
     keys_enable_full_debug = RIGHT + DOWN + ENTER + DOWN * 6 + F6 + F10 + Y
     if not boot_to_bios_config(serial, ssh):
         return
     serial.send_keys(keys_enable_full_debug)
     if not serial.is_msg_present('BIOS boot completed.'):
-        logging.info("[*TC Start] Boot failed.")
+        logging.info("[*TC Result] Disable full debug message failed.")
         return
+    logging.info("[*TC Result] Disable full debug message Pass.")
     return True

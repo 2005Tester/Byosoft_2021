@@ -60,7 +60,7 @@ class SutControl:
     @staticmethod
     def find_msg(msg, data):
         if re.search(msg, data):
-            logging.info("Found message: \"{0}\"".format(msg))
+            logging.info("Found string: \"{0}\"".format(msg))
             return True
 
     @staticmethod
@@ -92,6 +92,7 @@ class SutControl:
                 break
     
     def is_msg_present(self, msg):
+        logging.info("Waiting for string:\"{0}\"".format(msg))
         start_time = time.time()
         logging.debug("is_msg_present: receiving data from serial port...")
         while True:

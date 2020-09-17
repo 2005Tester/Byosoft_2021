@@ -53,7 +53,7 @@ class SshConnection():
         return True
     
     def execute_command(self, command, log_dir):
-        log = os.path.join(log_dir, ''.join((command, '.log')))
+        log = os.path.join(log_dir, ''.join((command.split('/')[-1], '.log')))
         stdin, stdout, stderr = self.ssh_client.exec_command(command)
         res = stdout.read().decode()
         with open(log, 'w') as f:

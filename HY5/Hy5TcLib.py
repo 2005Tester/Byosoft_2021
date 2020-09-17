@@ -25,6 +25,12 @@ def dmesg(ssh):
         return ssh.execute_command('dmesg', Hy5Config.LOG_DIR)
 
 
+def cpuinfo(ssh):
+    if ssh.login(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD):
+        logging.info("Dumping cpuinfo...")
+        return ssh.execute_command('cat /proc/cpuinfo', Hy5Config.LOG_DIR)
+
+
 def dc_cycling(ssh, serial, n):
     for i in range(n):
         try:
