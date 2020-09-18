@@ -54,21 +54,6 @@ def boot_manager(serial, ssh):
     return True
 
 
-def sp_boot(serial, ssh):
-    logging.info("[*TC Start] SP Boot")
-    logging.info("HaiYan5 Common Test Lib: sp_boot")
-    logging.info("Rebooting SUT...")
-    if not force_reset(ssh):
-        logging.info("Rebooting SUT Failed.")
-        return
-    logging.info("SP boot by F6: testing")
-    if not serial.hotkey_f6():
-        logging.info("[*TC Result] SP Boot by F6: Fail.")
-        return
-    logging.info("[*TC Result] SP Boot by F6: Pass")
-    return True
-
-
 def ping_sut():
     cmd_update_bios = r'python C:\UpdateTool\updatebios.py ' + config.BIOS
     start_time = time.time()
@@ -138,26 +123,41 @@ def rebootsut(ssh):
         return
 
 
+def sp_boot(serial, ssh):
+    logging.info("[TC001][SP Boot by F6]:Start")
+    logging.info("HaiYan5 Common Test Lib: sp_boot")
+    logging.info("Rebooting SUT...")
+    if not force_reset(ssh):
+        logging.info("Rebooting SUT Failed.")
+        return
+    logging.info("SP boot by F6: testing")
+    if not serial.hotkey_f6():
+        logging.info("[TC001][SP Boot by F6]:Fail")
+        return
+    logging.info("[TC001][SP Boot by F6]:Pass")
+    return True
+
+
 def boot_ubuntu(serial, ssh):
-    logging.info("[*TC Start] Boot to UEFI Ubuntu")
+    logging.info("[TC002][Boot to UEFI Ubuntu]:Start")
     key_down = [chr(0x1b), chr(0x5b), chr(0x42), chr(0x0D)]
     if not boot_manager(serial, ssh):
         return
     serial.send_keys(key_down)
     if not serial.is_msg_present('byosoft-2488H-V6 login'):
-        logging.info("[*TC Result] Boot to UEFI Ubuntu: Fail")
+        logging.info("[TC002][Boot to UEFI Ubuntu]:Fail")
         return
-    logging.info("[*TC Result] Boot to UEFI Ubuntu: Pass")
+    logging.info("[TC002][Boot to UEFI Ubuntu]:Pass")
     return True
 
 
 def boot_windows(serial, ssh):
-    logging.info("[*TC Start] Boot to UEFI windows")
+    logging.info("[TC003][Boot to UEFI windows]:Start")
     if not force_reset(ssh):
         logging.info("Rebooting SUT Failed.")
         return
     if not serial.is_msg_present('Computer is booting, SAC started and initialized'):
-        logging.info("[*TC Result] Boot to UEFI windows: Fail")
+        logging.info("[TC003][Boot to UEFI windows]:Fail")
         return
-    logging.info("[*TC Result] Boot to UEFI windows: Pass")
+    logging.info("[TC003][Boot to UEFI windows]:Pass")
     return True

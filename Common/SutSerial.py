@@ -82,6 +82,11 @@ class SutControl:
                     data = self.cleanup_data(data)
                     with open(self.log, 'a') as f:
                         f.write(data)
+                    if self.find_msg("Press F2", data):
+                        self.send_data("Admin@9000")
+                        self.send_data(chr(0x0D))  # Send Enter
+                        self.send_data(chr(0x0D))  # Send Enter
+                        logging.info("Send password...")
                     if self.find_msg("BIOS boot completed.", data):
                         return True
             except Exception as e:
@@ -102,6 +107,11 @@ class SutControl:
                     data = self.cleanup_data(data)
                     with open(self.log, 'a') as f:
                         f.write(data)
+                    if self.find_msg("Press F2", data):
+                        self.send_data("Admin@9000")
+                        self.send_data(chr(0x0D))  # Send Enter
+                        self.send_data(chr(0x0D))  # Send Enter
+                        logging.info("Send password...")
                     if self.find_msg(msg, data):
                         return True
                     #else:

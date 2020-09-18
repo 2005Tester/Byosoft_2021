@@ -3,6 +3,7 @@ import logging.config
 import re
 from pathlib import Path
 import time
+import os
 from Common import ssh
 from Common import SutSerial
 from Common import LogConfig
@@ -13,7 +14,8 @@ from HY5 import SetUp
 from Report.ReportGen import ReportGenerator
 
 # Init log setting
-log_format = LogConfig.gen_config(Hy5Config.LOG_DIR)
+log_dir = Hy5Config.LOG_DIR
+log_format = LogConfig.gen_config(log_dir)
 logging.config.dictConfig(log_format)
 logging.getLogger("paramiko").setLevel(logging.WARNING)
 
@@ -33,6 +35,10 @@ def test():
     Hy5TcLib.dmesg(sshins)
     Hy5TcLib.cpuinfo(sshins)
 
+def gen_report():
+    report = ReportGenerator(os.path.join(log_dir, "test.log"), os.path.join(log_dir, "report.html"))
+    report.collect_test_result()
+    report.write_to_html()
 
 def test_run():
     updatebios.update_bios_ci(ser)
@@ -47,18 +53,18 @@ def test_run():
     SetUp.check_me_state(ser, sshins)
     SetUp.enable_full_debug_msg(ser, sshins)
     SetUp.disable_full_debug_msg(ser, sshins)
+    gen_report()
+
 
 
 if __name__ == "__main__":
-    report = ReportGenerator("c:\daily\log.txt")
-    report.collect_test_result()
 
-"""
-if __name__ == "__main__":
+ 
     cycle = 1
     while True:
         logging.info("-"*50  + "\n" + " "*45 + "Test Cycle:{0}".format(cycle))
         logging.info("-"*50)
         test_run()
         cycle +=1
-"""
+
+    

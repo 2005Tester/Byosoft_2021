@@ -70,7 +70,7 @@ class SshConnection():
         op = self.ssh_client.invoke_shell()
         for i in range(0, len(cmds)):
             res = self.execute_command_interaction(cmds[i], op)
-            logging.debug('Sending command: {0}'.format(cmds[i]))
+            logging.debug('Sending command: {0}'.format(cmds[i].strip("\n")))
             # logging.debug(res.decode('utf-8'))
             start_time = time.time()
             while not re.search(strs[i], res.decode('utf-8')):
@@ -82,8 +82,9 @@ class SshConnection():
                     # Will reach here if command returns result after a while
                     break
                 if (now - start_time) > 300:
-                    logging.error("Run command {0} timeout.".format(cmds[i]))
+                    logging.error("Run command {0} timeout.".format(cmds[i].strip("\n")))
                     return
+            logging.info('command successful:{0}'.format(cmds[i].strip("\n")))
         op.close()
         self.ssh_client.close()
         status = True

@@ -157,10 +157,10 @@ def poweron_sut():
 
 def update_specific_img(bios, serial):
     if not upload_bios(bios):
-        print("Upload BIOS image failed")
+        logging.info("Upload BIOS image failed")
         return
     if not program_flash():
-        print("Program flash failed")
+        logging.info("Program flash failed")
         return
     if not poweron_sut():
         logging.error("power on sut fail")
@@ -172,8 +172,16 @@ def update_specific_img(bios, serial):
 
 # Update BIOS to latest CI build
 def update_bios_ci(serial):
+    logging.info("[TC000][Update BIOS by BMC]:Start")
     image = get_test_image(Hy5Config.BINARY_DIR)
-    update_specific_img(image, serial)
+    if not image:
+        logging.info("[TC000][Update BIOS by BMC]:Skip")
+        return
+    if not update_specific_img(image, serial):
+        logging.info("[TC000][Update BIOS by BMC]:Fail")
+        return
+    logging.info("[TC000][Update BIOS by BMC]:Pass")
+    return True
 
 
 if __name__ == '__main__':
