@@ -59,7 +59,7 @@ def test_run():
 
 if __name__ == "__main__":
 
- 
+
     cycle = 1
     while True:
         logging.info("-"*50  + "\n" + " "*45 + "Test Cycle:{0}".format(cycle))
@@ -67,4 +67,3 @@ if __name__ == "__main__":
         test_run()
         cycle +=1
 
-    

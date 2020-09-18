@@ -32,19 +32,19 @@ class ReportGenerator:
         return tc_ids
 
 
-    def get_spendtime(self, id):
+    def get_tc_duration(self, id):
         for line in self.load_test_log():
             if re.search("\[{0}\].+:Start".format(id), line):
                 start_time = re.findall("(.+)\sINFO.+:Start", line)[0]
-            if re.search("\[{0}\].+:[Pass, Fail]".format(id), line):
-                end_time = re.findall("(.+)\sINFO.+:[Pass, Fail]", line)[0]
+            if re.search("\[{0}\]\[.+\]:Pass|\[{0}\]\[.+\]:Fail|\[{0}\]\[.+\]:Skip".format(id), line):
+                end_time = re.findall("(.+)\sINFO.+:[PFS]", line)[0]
         duration = self.convert_time(end_time) - self.convert_time(start_time)
         return duration
 
 
     def get_status(self, tcid):
         for line in self.load_test_log():
-            if re.search("\[{0}\]\[.+\]:[Pass,Fail]".format(tcid), line):
+            if re.search("\[{0}\]\[.+\]:Pass|\[{0}\]\[.+\]:Fail|\[{0}\]\[.+\]:Skip".format(tcid), line):
                 return re.findall("\[{0}\]\[.+\]:(.+)".format(tcid), line)[0]
 
 
@@ -54,7 +54,7 @@ class ReportGenerator:
         for line in all_log:
             if re.search("\[{0}\]\[.+\]:Start".format(tcid), line):
                 start_index = all_log.index(line)
-            if re.search("\[{0}\]\[.+\]:[Pass, Fail]".format(tcid), line):
+            if re.search("\[{0}\]\[.+\]:Pass|\[{0}\]\[.+\]:Fail|\[{0}\]\[.+\]:Skip".format(tcid), line):
                 end_index = all_log.index(line)
         for i in range(start_index, end_index+1):
             log.append(all_log[i])
@@ -81,6 +81,8 @@ class ReportGenerator:
                 pass_num +=1
             if re.search("\[TC\d+\]\[.+\]:Fail", line):
                 fail_num +=1
+            if re.search("\[TC\d+\]\[.+\]:Skip", line):
+                skip_num +=1
         return (pass_num, fail_num, skip_num)
 
         
@@ -95,7 +97,7 @@ class ReportGenerator:
                     id = re.findall("(TC\d+)", line)[0]
                     tcResult['tcName'] = self.get_tcname(line)
                     tcResult['description'] = self.get_des()
-                    tcResult['spendTime'] = self.get_spendtime(id)
+                    tcResult['spendTime'] = self.get_tc_duration(id)
                     tcResult['status'] = self.get_status(id)
                     tcResult['log'] = self.get_tc_log(id)
                     alltcResult.append(tcResult.copy())
@@ -108,16 +110,16 @@ class ReportGenerator:
         testReport['beginTime'] = "begintime"
         testReport['totalTime'] = "10 min"
         return testReport
-        
+
 
     def write_to_html(self):
         old = "ResultDict"
         new = str(self.collect_test_result())
         template = "C:\\autotest\\Report\\template_Moc"
-        dst = "c:\\daily\\report.html"
+        dst = self.report
 
         with open (template, 'r', encoding = 'utf-8') as f:
             content = f.read()
-            self.report = content.replace(old, new)
+            data = content.replace(old, new)
             with open (dst, 'w', encoding = 'utf-8') as new:
-                new.write(self.report)
+                new.write(data)

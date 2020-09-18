@@ -167,6 +167,7 @@ def update_specific_img(bios, serial):
         return
     if not serial.is_boot_success():
         return
+    time.sleep(15)
     return True
 
 
