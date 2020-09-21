@@ -36,6 +36,7 @@ def test():
     Hy5TcLib.cpuinfo(sshins)
 
 def gen_report():
+    #log_dir = "C:\\daily\\autolog\\2020-09-21_11-32-44"
     report = ReportGenerator(os.path.join(log_dir, "test.log"), os.path.join(log_dir, "report.html"))
     report.collect_test_result()
     report.write_to_html()
@@ -49,8 +50,8 @@ def test_run():
         Hy5TcLib.lspci(sshins)
         Hy5TcLib.dmesg(sshins)
         Hy5TcLib.cpuinfo(sshins)
-    Hy5TcLib.boot_windows(ser, sshins)
     SetUp.check_me_state(ser, sshins)
+    Hy5TcLib.boot_windows(ser, sshins)
     SetUp.enable_full_debug_msg(ser, sshins)
     SetUp.disable_full_debug_msg(ser, sshins)
     gen_report()
@@ -60,10 +61,10 @@ def test_run():
 if __name__ == "__main__":
 
 
-    cycle = 1
-    while True:
-        logging.info("-"*50  + "\n" + " "*45 + "Test Cycle:{0}".format(cycle))
-        logging.info("-"*50)
-        test_run()
-        cycle +=1
+    #cycle = 1
+    #while True:
+    #logging.info("-"*50 + "\n" + " "*45 + "Test Cycle:{0}".format(cycle))
+    #logging.info("-"*50)
+    test_run()
+    #    cycle +=1
 
