@@ -35,11 +35,13 @@ def test():
     Hy5TcLib.dmesg(sshins)
     Hy5TcLib.cpuinfo(sshins)
 
+
 def gen_report():
     #log_dir = "C:\\daily\\autolog\\2020-09-21_11-32-44"
     report = ReportGenerator(os.path.join(log_dir, "test.log"), os.path.join(log_dir, "report.html"))
     report.collect_test_result()
     report.write_to_html()
+
 
 def test_run():
     updatebios.update_bios_ci(ser)
@@ -57,10 +59,7 @@ def test_run():
     gen_report()
 
 
-
 if __name__ == "__main__":
-
-
     #cycle = 1
     #while True:
     #logging.info("-"*50 + "\n" + " "*45 + "Test Cycle:{0}".format(cycle))

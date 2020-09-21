@@ -2,12 +2,11 @@
 import re
 import time
 
+
 class ReportGenerator:
     def __init__(self, log, report):
-    #    self.result_template = result_template
         self.report = report
         self.log = log
-
 
     # load test log to list
     def load_test_log(self):
@@ -18,6 +17,7 @@ class ReportGenerator:
         return log_lines
 
     # Convert time string from log to timestamp
+    @staticmethod
     def convert_time(self, str):
         time_arr = time.strptime(str, "%Y-%m-%d %H:%M:%S")
         ts = int(time.mktime(time_arr))
@@ -31,7 +31,6 @@ class ReportGenerator:
                 if re.search("\[TC\d+\]\[.+]:Start", line):
                     tc_ids.append(re.findall("(TC\d+)", line))
         return tc_ids
-
 
     # get test duration for a single test case by tese case if
     def get_tc_duration(self, id):
@@ -55,14 +54,13 @@ class ReportGenerator:
         m, s = divmod(total_time, 60)
         h, m = divmod(m, 60)
         total_time = "%02d:%02d:%02d" %(h, m, s)
-        return (start_time, total_time)
+        return start_time, total_time
 
     # get test result by test case id
     def get_status(self, tcid):
         for line in self.load_test_log():
             if re.search("\[{0}\]\[.+\]:Pass|\[{0}\]\[.+\]:Fail|\[{0}\]\[.+\]:Skip".format(tcid), line):
                 return re.findall("\[{0}\]\[.+\]:(.+)".format(tcid), line)[0]
-
 
     # get test log for a single test case by test case id
     def get_tc_log(self, tcid):
@@ -77,11 +75,10 @@ class ReportGenerator:
             log.append(all_log[i])           
         return log
 
-    
     # get testcase description
+    @staticmethod
     def get_des(self):
         return "description"
-
 
     # get number of pass, fail, skip test cases
     def get_result_count(self):
@@ -96,8 +93,7 @@ class ReportGenerator:
                 fail_num +=1
             if re.search("\[TC\d+\]\[.+\]:Skip", line):
                 skip_num +=1
-        return (pass_num, fail_num, skip_num)
-
+        return pass_num, fail_num, skip_num
 
     # get code verion of test image
     def get_code_version(self):
@@ -131,7 +127,6 @@ class ReportGenerator:
         testReport['totalTime'] = self.get_total_time()[1]
         return testReport
 
-
     # write test result dict to html report
     def write_to_html(self):
         old = "ResultDict"
@@ -139,8 +134,8 @@ class ReportGenerator:
         template = "C:\\autotest\\Report\\template_Moc"
         dst = self.report
 
-        with open (template, 'r', encoding = 'utf-8') as f:
+        with open(template, 'r', encoding='utf-8') as f:
             content = f.read()
             data = content.replace(old, new)
-            with open (dst, 'w', encoding = 'utf-8') as new:
+            with open(dst, 'w', encoding='utf-8') as new:
                 new.write(data)
