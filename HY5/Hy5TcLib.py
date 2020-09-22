@@ -54,7 +54,6 @@ def boot_manager(serial, ssh):
 
 
 def ping_sut():
-    cmd_update_bios = r'python C:\UpdateTool\updatebios.py ' + config.BIOS
     start_time = time.time()
     while True:
         p = subprocess.Popen(args=config.PING_CMD, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -146,7 +145,7 @@ def boot_ubuntu(serial, ssh):
     if not serial.is_msg_present('byosoft-2488H-V6 login'):
         logging.info("<TC002><Result>Boot to UEFI Ubuntu:Fail")
         return
-    logging.info("<TC002><Resut>Boot to UEFI Ubuntu:Pass")
+    logging.info("<TC002><Result>Boot to UEFI Ubuntu:Pass")
     return True
 
 

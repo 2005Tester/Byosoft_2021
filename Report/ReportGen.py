@@ -1,6 +1,7 @@
 # -*- encoding=utf8 -*-
 import re
 import time
+import logging
 
 
 class ReportGenerator:
@@ -34,16 +35,19 @@ class ReportGenerator:
 
     # get test duration for a single test case by tese case if
     def get_tc_duration(self, id):
+        duration = 0
         for line in self.load_test_log():
             if re.search("<{0}><Tittle>.+:Start".format(id), line):
                 start_time = re.findall("(.+)\sINFO.+:Start", line)[0]
             if re.search("<{0}><Result>.+:.+".format(id), line):
                 end_time = re.findall("(.+)\sINFO.+", line)[0]
-
-        duration = self.convert_time(end_time) - self.convert_time(start_time)
-        m, s = divmod(duration, 60)
-        h, m = divmod(m, 60)
-        duration = "%02d:%02d:%02d" %(h, m, s)
+        try:
+            duration = self.convert_time(end_time) - self.convert_time(start_time)
+            m, s = divmod(duration, 60)
+            h, m = divmod(m, 60)
+            duration = "%02d:%02d:%02d" %(h, m, s)
+        except UnboundLocalError:
+            logging.debug("get_tc_duration: failed to get start or end time, <{0}><Tittle>.+:Start or <{0}><Result>.+:.+ not found".format(id))
         return duration
 
     # get start time and total time spent in a test cycle
@@ -59,9 +63,11 @@ class ReportGenerator:
 
     # get test result by test case id
     def get_status(self, tcid):
+        status = "NA"
         for line in self.load_test_log():
             if re.search("<{0}><Result>.+:.+".format(tcid), line):
-                return re.findall("<{0}><Result>.+:(.+)".format(tcid), line)[0]
+                status = re.findall("<{0}><Result>.+:(.+)".format(tcid), line)[0]
+        return status
 
     # get test log for a single test case by test case id
     def get_tc_log(self, tcid):
@@ -72,16 +78,21 @@ class ReportGenerator:
                 start_index = all_log.index(line)
             if re.search("<{0}><Result>.+:.+".format(tcid), line):
                 end_index = all_log.index(line)
-        for i in range(start_index, end_index+1):
-            log.append(all_log[i])           
+        try: 
+            for i in range(start_index, end_index+1):
+                log.append(all_log[i])  
+        except UnboundLocalError:
+            logging.debug("get_tc_log: failed to get index, <{0}><Tittle>.+:Start or <{0}><Result>.+:.+ not found".format(tcid))
         return log
 
 
     # get testcase description
     def get_des(self, tcid):
+        des = "NA"
         for line in self.load_test_log():
             if re.search("<{0}><Description>.+".format(tcid), line):
-                return re.findall("<{0}><Description>(.+)".format(tcid), line)[0]
+                des = re.findall("<{0}><Description>(.+)".format(tcid), line)[0]
+        return des
 
 
     # get number of pass, fail, skip test cases
