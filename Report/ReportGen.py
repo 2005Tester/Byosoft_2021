@@ -18,8 +18,8 @@ class ReportGenerator:
 
     # Convert time string from log to timestamp
     @staticmethod
-    def convert_time(self, str):
-        time_arr = time.strptime(str, "%Y-%m-%d %H:%M:%S")
+    def convert_time(time_str):
+        time_arr = time.strptime(time_str, "%Y-%m-%d %H:%M:%S")
         ts = int(time.mktime(time_arr))
         return ts
 
@@ -28,17 +28,18 @@ class ReportGenerator:
         tc_ids = []
         with open(self.log, 'r') as f:
             for line in f.readlines():
-                if re.search("\[TC\d+\]\[.+]:Start", line):
+                if re.search("<TC\d+><Tittle>.+:Start", line):
                     tc_ids.append(re.findall("(TC\d+)", line))
         return tc_ids
 
     # get test duration for a single test case by tese case if
     def get_tc_duration(self, id):
         for line in self.load_test_log():
-            if re.search("\[{0}\].+:Start".format(id), line):
+            if re.search("<{0}><Tittle>.+:Start".format(id), line):
                 start_time = re.findall("(.+)\sINFO.+:Start", line)[0]
-            if re.search("\[{0}\]\[.+\]:Pass|\[{0}\]\[.+\]:Fail|\[{0}\]\[.+\]:Skip".format(id), line):
-                end_time = re.findall("(.+)\sINFO.+:[PFS]", line)[0]
+            if re.search("<{0}><Result>.+:.+".format(id), line):
+                end_time = re.findall("(.+)\sINFO.+", line)[0]
+
         duration = self.convert_time(end_time) - self.convert_time(start_time)
         m, s = divmod(duration, 60)
         h, m = divmod(m, 60)
@@ -59,26 +60,29 @@ class ReportGenerator:
     # get test result by test case id
     def get_status(self, tcid):
         for line in self.load_test_log():
-            if re.search("\[{0}\]\[.+\]:Pass|\[{0}\]\[.+\]:Fail|\[{0}\]\[.+\]:Skip".format(tcid), line):
-                return re.findall("\[{0}\]\[.+\]:(.+)".format(tcid), line)[0]
+            if re.search("<{0}><Result>.+:.+".format(tcid), line):
+                return re.findall("<{0}><Result>.+:(.+)".format(tcid), line)[0]
 
     # get test log for a single test case by test case id
     def get_tc_log(self, tcid):
         log = []
         all_log = self.load_test_log()
         for line in all_log:
-            if re.search("\[{0}\]\[.+\]:Start".format(tcid), line):
+            if re.search("<{0}><Tittle>.+:Start".format(tcid), line):
                 start_index = all_log.index(line)
-            if re.search("\[{0}\]\[.+\]:Pass|\[{0}\]\[.+\]:Fail|\[{0}\]\[.+\]:Skip".format(tcid), line):
+            if re.search("<{0}><Result>.+:.+".format(tcid), line):
                 end_index = all_log.index(line)
         for i in range(start_index, end_index+1):
             log.append(all_log[i])           
         return log
 
+
     # get testcase description
-    @staticmethod
-    def get_des(self):
-        return "description"
+    def get_des(self, tcid):
+        for line in self.load_test_log():
+            if re.search("<{0}><Description>.+".format(tcid), line):
+                return re.findall("<{0}><Description>(.+)".format(tcid), line)[0]
+
 
     # get number of pass, fail, skip test cases
     def get_result_count(self):
@@ -87,11 +91,11 @@ class ReportGenerator:
         skip_num = 0
 
         for line in self.load_test_log():
-            if re.search("\[TC\d+\]\[.+\]:Pass", line):
+            if re.search("<TC\d+><Result>.+:Pass", line):
                 pass_num +=1
-            if re.search("\[TC\d+\]\[.+\]:Fail", line):
+            if re.search("<TC\d+><Result>.+:Fail", line):
                 fail_num +=1
-            if re.search("\[TC\d+\]\[.+\]:Skip", line):
+            if re.search("<TC\d+><Result>.+:Skip", line):
                 skip_num +=1
         return pass_num, fail_num, skip_num
 
@@ -109,13 +113,15 @@ class ReportGenerator:
         tcResult = {}
         with open(self.log, 'r') as f:
             for line in f.readlines():
-                if re.search("\[TC\d+\]\[.+]:Start", line):
+                if re.search("<TC\d+><Tittle>.+:Start", line):
                     id = re.findall("(TC\d+)", line)[0]
-                    tcResult['tcName'] = re.findall("\[TC\d+\]\[(.+)\]:Start", line)[0]
-                    tcResult['description'] = self.get_des()
+                    tcResult['tcName'] = re.findall("<TC\d+><Tittle>(.+):Start", line)[0]
+                    tcResult['description'] = self.get_des(id)
                     tcResult['spendTime'] = self.get_tc_duration(id)
                     tcResult['status'] = self.get_status(id)
                     tcResult['log'] = self.get_tc_log(id)
+                    # tcResult['log'] = []
+                    # print(tcResult)
                     alltcResult.append(tcResult.copy())
         testReport['testResult'] = alltcResult
         testReport['testVersion'] = self.get_code_version()

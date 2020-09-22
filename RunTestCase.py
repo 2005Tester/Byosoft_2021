@@ -37,7 +37,7 @@ def test():
 
 
 def gen_report():
-    #log_dir = "C:\\daily\\autolog\\2020-09-21_11-32-44"
+    log_dir = "C:\\daily\\autolog\\2020-09-22_09-51-56"
     report = ReportGenerator(os.path.join(log_dir, "test.log"), os.path.join(log_dir, "report.html"))
     report.collect_test_result()
     report.write_to_html()
@@ -60,10 +60,11 @@ def test_run():
 
 
 if __name__ == "__main__":
-    #cycle = 1
-    #while True:
-    #logging.info("-"*50 + "\n" + " "*45 + "Test Cycle:{0}".format(cycle))
-    #logging.info("-"*50)
-    test_run()
-    #    cycle +=1
+#    cycle = 1
+#    while True:
+#        logging.info("-"*50 + "\n" + " "*45 + "Test Cycle:{0}".format(cycle))
+#        logging.info("-"*50)
+#   test_run()
+    gen_report()
+#        cycle +=1
 

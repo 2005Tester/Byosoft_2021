@@ -173,15 +173,16 @@ def update_specific_img(bios, serial):
 
 # Update BIOS to latest CI build
 def update_bios_ci(serial):
-    logging.info("[TC000][Update BIOS by BMC]:Start")
+    logging.info("<TC000><Tittle>Update BIOS by BMC:Start")
+    logging.info("<TC000><Description>Outband BIOS update")
     image = get_test_image(Hy5Config.BINARY_DIR)
     if not image:
-        logging.info("[TC000][Update BIOS by BMC]:Skip")
+        logging.info("<TC000><Result>Update BIOS by BMC:Skip")
         return
     if not update_specific_img(image, serial):
-        logging.info("[TC000][Update BIOS by BMC]:Fail")
+        logging.info("<TC000><Result>Update BIOS by BMC:Fail")
         return
-    logging.info("[TC000][Update BIOS by BMC]:Pass")
+    logging.info("<TC000><Result>Update BIOS by BMC:Pass")
     return True
 
 

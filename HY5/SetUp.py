@@ -49,21 +49,23 @@ def boot_to_bios_config(serial, ssh):
 
 # Reset BIOS setup to default by pressing F9
 def reset_default(serial, ssh):
-    logging.info("[TC004][Reset dafault by F9]:Start")
+    logging.info("<TC004><Tittle>Reset dafault by F9:Start")
+    logging.info("<TC004><Description>Reset dafault by F9:Start")
     keys = F9 + Y + F10 + Y
     if not boot_to_bios_config(serial, ssh):
         return
     serial.send_keys(keys)
     if not serial.is_msg_present('BIOS boot completed.'):
-        logging.info("[TC004][Reset dafault by F9]:Fail")
+        logging.info("<TC004><Result>Reset dafault by F9:Fail")
         return
-    logging.info("[TC004][Reset dafault by F9]:Pass")
+    logging.info("<TC004><Result>Reset dafault by F9:Pass")
     return True
 
 
 # check whether ME is working in operational state
 def check_me_state(serial, ssh):
-    logging.info("[TC005][Check ME State]:Start")
+    logging.info("<TC005><Tittle>Check ME State:Start")
+    logging.info("<TC005><Description>Verify ME in operational mode")
     keys = RIGHT*2 + DOWN + ENTER + RIGHT + DOWN*5 + ENTER
     keys_state = DOWN*5
     if not boot_to_setup(serial, ssh):
@@ -75,15 +77,16 @@ def check_me_state(serial, ssh):
     logging.info("Boot to ME Configuration Pass")
     serial.send_keys(keys_state)
     if not serial.is_msg_present('Operational'):
-        logging.info("[TC005][Check ME State]:Fail")
+        logging.info("<TC005><Result>Check ME State:Fail")
         return
-    logging.info("[TC005][Check ME State]:Pass")
+    logging.info("<TC005><Result>Check ME State:Pass")
     return True
 
 
 # Enable full debug message
 def enable_full_debug_msg(serial, ssh):
-    logging.info("[TC006][Enable full debug message]:Start")
+    logging.info("<TC006><Tittle>Enable full debug message:Start")
+    logging.info("<TC006><Description>Enable serial full debug message")
     keys_enable_full_debug = RIGHT + DOWN + ENTER + DOWN * 6 + F5 + F10 + Y
     if not boot_to_bios_config(serial, ssh):
         return
@@ -91,20 +94,21 @@ def enable_full_debug_msg(serial, ssh):
     if not serial.is_msg_present('InstallProtocolInterface.'):
         return
     if not serial.is_msg_present('BIOS boot completed.'):
-        logging.info("[TC006][Enable full debug message]:Fail")
+        logging.info("<TC006><Result>Enable full debug message:Fail")
         return
-    logging.info("[TC006][Enable full debug message]:Pass")
+    logging.info("<TC006><Result>Enable full debug message:Pass")
     return True
 
 # Disable full debug message
 def disable_full_debug_msg(serial, ssh):
-    logging.info("[TC007][Disable full debug message]:Start")
+    logging.info("<TC007><Tittle>Disable full debug message:Start")
+    logging.info("<TC007><Description>Disable serial full debug message")
     keys_enable_full_debug = RIGHT + DOWN + ENTER + DOWN * 6 + F6 + F10 + Y
     if not boot_to_bios_config(serial, ssh):
         return
     serial.send_keys(keys_enable_full_debug)
     if not serial.is_msg_present('BIOS boot completed.'):
-        logging.info("[TC007][Disable full debug message]:Fail")
+        logging.info("<TC007><Result>Disable full debug message:Fail")
         return
-    logging.info("[TC007][Disable full debug message]:Pass")
+    logging.info("<TC007><Result>Disable full debug message:Pass")
     return True
