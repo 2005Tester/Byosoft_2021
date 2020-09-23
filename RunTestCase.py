@@ -25,7 +25,7 @@ ser = SutSerial.SutControl("com3", 115200, 0.5, Hy5Config.SERIAL_LOG)
 # init ssh
 sshins = ssh.SshConnection()
 
-log_dir = "C:\\daily\\autolog\\2020-09-22_15-23-59"
+#log_dir = "C:\\daily\\autolog\\2020-09-22_15-23-59"
 
 def check_log():
     log = LogAnalyzer(log_dir)
@@ -72,8 +72,8 @@ if __name__ == "__main__":
 #    while True:
 #        logging.info("-"*50 + "\n" + " "*45 + "Test Cycle:{0}".format(cycle))
 #        logging.info("-"*50)
-#   test_run()
-    check_log()
-    gen_report()
+    test_run()
+#    check_log()
+#    gen_report()
 #        cycle +=1
 

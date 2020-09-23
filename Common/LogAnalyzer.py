@@ -53,21 +53,14 @@ class LogAnalyzer:
         data = self.load_log(smbios_log)
         for line in data:
             if re.search("UUID: E1C5D866-0018-83C3-B211-D21D464C6424", line):
-                logging.info("UUID checked: {0}".format(line))
+                logging.info("UUID checked:{0}".format(line.strip("\n")))
                 passed_test +=1
 
             if re.search("Product Name: 2488H V6", line):
-                logging.info("Product Name checked: {0}".format(line))
+                logging.info("Product Name checked: {0}".format(line.strip("\n")))
                 passed_test +=1
             
         if passed_test == 2:
             return True
 
 
-
-
-
-
-if __name__ == "__main__":
-    loganalyze = LogAnalyzer(r"C:\daily\autolog\2020-09-21_17-55-47-overnight")
-    loganalyze.check_bios_log()
