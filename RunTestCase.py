@@ -4,6 +4,7 @@ import re
 from pathlib import Path
 import time
 import os
+from sys import argv
 from Common import ssh
 from Common import SutSerial
 from Common import LogConfig
@@ -45,10 +46,18 @@ def check_log():
 
 
 def gen_report():
-    report = ReportGenerator(os.path.join(log_dir, "test.log"), os.path.join(log_dir, "report.html"))
+    template = Hy5Config.REPORT_TEMPLATE
+    report = ReportGenerator(template, os.path.join(log_dir, "test.log"), os.path.join(log_dir, "report.html"))
     report.collect_test_result()
     report.write_to_html()
 
+
+def debug_run():
+    SetUp.reset_default(ser, sshins)
+    SetUp.change_cpu_cores(ser, sshins, 14, 4)
+
+#    check_log()
+    gen_report()
 
 def test_run():
     updatebios.update_bios_ci(ser)
@@ -61,19 +70,27 @@ def test_run():
         Hy5TcLib.cpuinfo(sshins)
     SetUp.check_me_state(ser, sshins)
     Hy5TcLib.boot_windows(ser, sshins)
-    SetUp.enable_full_debug_msg(ser, sshins)
-    SetUp.disable_full_debug_msg(ser, sshins)
+    if SetUp.enable_full_debug_msg(ser, sshins):
+        SetUp.disable_full_debug_msg(ser, sshins)
+    if SetUp.enable_legacy_boot(ser, sshins):
+        SetUp.disable_legacy_boot(ser, sshins)  
     check_log()
     gen_report()
 
 
 if __name__ == "__main__":
-#    cycle = 1
-#    while True:
-#        logging.info("-"*50 + "\n" + " "*45 + "Test Cycle:{0}".format(cycle))
-#        logging.info("-"*50)
-    test_run()
-#    check_log()
-#    gen_report()
-#        cycle +=1
+    if argv[1] == "loop":
+        cycle = 1
+        while True:
+            logging.info("-"*50 + "\n" + " "*45 + "Test Cycle:{0}".format(cycle))
+            logging.info("-"*50)
+            test_run()
+            cycle +=1
+    elif argv[1] == "debug":
+        debug_run()
+
+    elif argv[1] == "latest":
+        test_run()
+
+
 

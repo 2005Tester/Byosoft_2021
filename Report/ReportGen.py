@@ -5,10 +5,10 @@ import logging
 
 
 class ReportGenerator:
-    def __init__(self, log, report):
-        self.report = report
+    def __init__(self, template, log, report):
+        self.template = template
         self.log = log
-
+        self.report = report
     # load test log to list
     def load_test_log(self):
         log_lines = []
@@ -112,6 +112,7 @@ class ReportGenerator:
 
     # get code verion of test image
     def get_code_version(self):
+        version = "NA"
         for line in self.load_test_log():
             if re.search("Latest Version is:", line):
                 version = re.findall("Latest Version is: (\d+)", line)
@@ -148,10 +149,9 @@ class ReportGenerator:
     def write_to_html(self):
         old = "ResultDict"
         new = str(self.collect_test_result())
-        template = "C:\\autotest\\Report\\template_Moc"
         dst = self.report
 
-        with open(template, 'r', encoding='utf-8') as f:
+        with open(self.template, 'r', encoding='utf-8') as f:
             content = f.read()
             data = content.replace(old, new)
             with open(dst, 'w', encoding='utf-8') as new:

@@ -4,9 +4,11 @@ import datetime
 
 timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 
+#Report Setting
+REPORT_TEMPLATE = "C:\\autotest\\Report\\template_HY5"
 
 # Enviroment settigs
-LOG_DIR = 'c:\\daily\\autolog\\{0}'.format(timestamp)
+LOG_DIR = 'c:\\daily\\HY5\\{0}'.format(timestamp)
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 SERIAL_LOG = os.path.join(LOG_DIR, 'serial.log')

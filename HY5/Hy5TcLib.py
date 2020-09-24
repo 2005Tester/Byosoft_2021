@@ -2,6 +2,7 @@
 import time
 import subprocess
 import logging
+import re
 from HY5 import updatebios
 from HY5 import Hy5Config
 from RedFish import config
@@ -10,26 +11,40 @@ from RedFish import config
 def dump_smbios(ssh):
     if ssh.login(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD):
         logging.info("Dumping smbios table...")
-        return ssh.execute_command('dmidecode', Hy5Config.LOG_DIR)
+        return ssh.dump_info('dmidecode', Hy5Config.LOG_DIR)
 
 
 def lspci(ssh):
     if ssh.login(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD):
         logging.info("Dumping pci info...")
-        return ssh.execute_command('lspci', Hy5Config.LOG_DIR)
+        return ssh.dump_info('lspci', Hy5Config.LOG_DIR)
 
 
 def dmesg(ssh):
     if ssh.login(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD):
         logging.info("Dumping dmesg...")
-        return ssh.execute_command('dmesg', Hy5Config.LOG_DIR)
+        return ssh.dump_info('dmesg', Hy5Config.LOG_DIR)
 
 
 def cpuinfo(ssh):
     if ssh.login(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD):
         logging.info("Dumping cpuinfo...")
-        return ssh.execute_command('cat /proc/cpuinfo', Hy5Config.LOG_DIR)
+        return ssh.dump_info('cat /proc/cpuinfo', Hy5Config.LOG_DIR)
 
+# Check whether cpu core count is eqal to "num" in OS
+def verify_cpucore_count(ssh, num):
+    if ssh.login(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD):
+        logging.info("Checking cpu core count...")
+        cpuinfo = ssh.execute_command('cat /proc/cpuinfo | grep "cpu cores" | uniq')
+        logging.debug(cpuinfo)
+        if re.search(str(num), cpuinfo):
+            logging.info("Core count is correct")
+            return True
+        else:
+            logging.info("Core count is not correct.")
+            return
+
+        
 
 def dc_cycling(ssh, serial, n):
     for i in range(n):

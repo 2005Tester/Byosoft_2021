@@ -52,7 +52,14 @@ class SshConnection():
             return
         return True
     
-    def execute_command(self, command, log_dir):
+    # execute command on SUT
+    def execute_command(self, command):
+        stdin, stdout, stderr = self.ssh_client.exec_command(command)
+        res = stdout.read().decode()
+        return res
+
+    # dumm information to a log file
+    def dump_info(self, command, log_dir):
         log = os.path.join(log_dir, ''.join((command.split('/')[-1], '.log')))
         stdin, stdout, stderr = self.ssh_client.exec_command(command)
         res = stdout.read().decode()

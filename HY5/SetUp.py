@@ -49,23 +49,22 @@ def boot_to_bios_config(serial, ssh):
 
 # Reset BIOS setup to default by pressing F9
 def reset_default(serial, ssh):
-    logging.info("<TC004><Tittle>Reset dafault by F9:Start")
-    logging.info("<TC004><Description>Reset dafault by F9:Start")
+    logging.info("Reset BIOS to dafault by F9")
     keys = F9 + Y + F10 + Y
     if not boot_to_bios_config(serial, ssh):
         return
     serial.send_keys(keys)
     if not serial.is_msg_present('BIOS boot completed.'):
-        logging.info("<TC004><Result>Reset dafault by F9:Fail")
+        logging.info("Reset dafault by F9:Fail")
         return
-    logging.info("<TC004><Result>Reset dafault by F9:Pass")
+    logging.info("Reset dafault by F9:Pass")
     return True
 
 
 # check whether ME is working in operational state
 def check_me_state(serial, ssh):
     logging.info("<TC005><Tittle>Check ME State:Start")
-    logging.info("<TC005><Description>Verify ME in operational mode")
+    logging.info("<TC005><Description>Verify ME state in operational mode")
     keys = RIGHT*2 + DOWN + ENTER + RIGHT + DOWN*5 + ENTER
     keys_state = DOWN*5
     if not boot_to_setup(serial, ssh):
@@ -91,7 +90,7 @@ def enable_full_debug_msg(serial, ssh):
     if not boot_to_bios_config(serial, ssh):
         return
     serial.send_keys(keys_enable_full_debug)
-    if not serial.is_msg_present('InstallProtocolInterface.'):
+    if not serial.is_msg_present('^InstallProtocolInterface.'):
         return
     if not serial.is_msg_present('BIOS boot completed.'):
         logging.info("<TC006><Result>Enable full debug message:Fail")
@@ -107,8 +106,59 @@ def disable_full_debug_msg(serial, ssh):
     if not boot_to_bios_config(serial, ssh):
         return
     serial.send_keys(keys_enable_full_debug)
-    if not serial.is_msg_present('BIOS boot completed.'):
+    if not serial.is_msg_not_present('^InstallProtocolInterface.','BIOS boot completed.'):
         logging.info("<TC007><Result>Disable full debug message:Fail")
         return
     logging.info("<TC007><Result>Disable full debug message:Pass")
+    return True
+
+# Enable legacy boot
+def enable_legacy_boot(serial, ssh):
+    logging.info("<TC008><Tittle>Enable Legacy Boot:Start")
+    logging.info("<TC008><Description>Enable Legacy Boot")
+    keys = RIGHT*4 + F5 + F10 + Y
+    if not boot_to_bios_config(serial, ssh):
+        return
+    serial.send_keys(keys)
+    if not serial.is_msg_present('Start of legacy boot'):
+        logging.info("<TC008><Result>Enable Legacy boot:Fail")
+        return
+    logging.info("<TC008><Result>Enable Legacy boot:Pass")
+    return True
+
+# Disable legacy boot
+def disable_legacy_boot(serial, ssh):
+    logging.info("<TC009><Tittle>Disable Legacy Boot:Start")
+    logging.info("<TC009><Description>Disable Legacy Boot")
+    keys = RIGHT*4 + F6 + F10 + Y
+    if not boot_to_bios_config(serial, ssh):
+        return
+    serial.send_keys(keys)
+    if not serial.is_msg_not_present('Start of legacy boot','BIOS boot completed.'):
+        logging.info("<TC009><Result>Disable Legacy boot:Fail")
+        return
+    logging.info("<TC009><Result>Disable Legacy boot:Pass")
+    return True
+
+
+# Chnage CPU Cores to specific number, n is times of change value hotkey pressed, not core number
+def change_cpu_cores(serial, ssh, n, num):
+    logging.info("<TC010><Tittle>Change CPU Cores:Start")
+    logging.info("<TC010><Description>Change CPU Core counts in setup and verify in OS")
+    keys_cpu_core = RIGHT*1 + DOWN*8 + ENTER*2 + F6*n + F10 + Y
+    if not boot_to_bios_config(serial, ssh):
+        return
+    logging.info("Changing cpu core counts")
+    serial.send_keys(keys_cpu_core)
+    logging.info("Booting to boot manager")
+    serial.hotkey_f11()  # boot to boot manager
+    logging.info("Booting to Ubuntu")
+    serial.send_keys(DOWN + ENTER) # boot to ubuntu
+    if not serial.is_msg_present('byosoft-2488H-V6 login'):
+        logging.info("Boot to UEFI Ubuntu:Fail")
+        return
+    if not Hy5TcLib.verify_cpucore_count(ssh, num):
+        logging.info("<TC010><Result>Change CPU Cores:Fail")
+        return
+    logging.info("<TC010><Result>Change CPU Cores:Pass")
     return True

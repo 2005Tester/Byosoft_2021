@@ -6997,7 +6997,7 @@
                                 <div class="form-group">
                                     <label class="col-sm-2 control-label text-black">SVN Version:</label>
                                     <div class="col-sm-5">
-                                        <span class="form-control" id="testName"></span>
+                                        <span class="form-control" id="testVersion"></span>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -7084,7 +7084,7 @@
                     <table class="table table-bordered">
                         <thead>
                         <tr>
-                            <th>ID</th><th>Test Case Name</th><th>Test Case ID</th><th>Description</th><th>Time</th><th>Result</th><th>Log</th>
+                            <th>ID</th><th>Test Case Name</th><th>Description</th><th>Time</th><th>Result</th><th>Log</th>
                         </tr>
                         </thead>
                         <tbody id="detailBody">
@@ -7166,7 +7166,7 @@
 
     }
     $(function () {
-        $("#testName").text(resultData["testName"]);
+        $("#testVersion").text(resultData["testVersion"]);
         $("#testPass").text(resultData["testPass"]);
         $("#testFail").text(resultData["testFail"]);
         $("#testSkip").text(resultData["testSkip"]);
@@ -7177,18 +7177,18 @@
         $("#filterOk").text(resultData["testPass"]);
         $("#filterFail").text(resultData["testFail"]);
         $("#filterSkip").text(resultData["testSkip"]);
-        var classNames = [];
+        var tcNames = [];
         var results = [];
         $.each(resultData["testResult"], function (i, n) {
-            if (classNames.indexOf(n["className"]) == -1) {
-                classNames.push(n["className"]);
+            if (tcNames.indexOf(n["tcName"]) == -1) {
+                tcNames.push(n["tcName"]);
             }
             if (results.indexOf(n["status"]) == -1) {
                 results.push(n["status"]);
             }
         });
 
-        $.each(classNames, function (i, n) {
+        $.each(tcNames, function (i, n) {
             $("#filterClass").append("<option value='" + n + "' hassubinfo='true'>" + n + "</option>");
         });
         $.each(results, function (i, n) {
@@ -7198,14 +7198,14 @@
         $("#filterClass").chosen({search_contains: true});
         $("#filterResult").chosen({search_contains: true});
 
-        function generateResult(className, caseResult) {
+        function generateResult(tcName, caseResult) {
             $("#detailBody").children().remove();
             var filterAll = 0;
             var filterOk = 0;
             var filterFail = 0;
             var filterSkip = 0;
             $.each(resultData["testResult"], function (i, n) {
-                if ((className == "" || n["className"] == className) && (caseResult == "" || n["status"] == caseResult)) {
+                if ((tcName == "" || n["tcName"] == tcName) && (caseResult == "" || n["status"] == caseResult)) {
                     filterAll += 1;
                     var status = "";
                     if (n["status"] == 'Pass') {
@@ -7222,8 +7222,8 @@
                     }
                     var tr = "<tr style='font-family: Consolas'>" +
                         "<td>" + (i + 1) + "</td>" +
-                        "<td>" + n["className"] + "</td>" +
-                        "<td>" + n["methodName"] + "</td>" +
+                        "<td>" + n["tcName"] + "</td>" +
+                    //    "<td>" + n["methodName"] + "</td>" +
                         "<td>" + n["description"] + "</td>" +
                         "<td>" + n["spendTime"] + "</td>" +
                         status + "<td><button type='button' onclick='details(this)' buttonIndex='" + i + "' class='btn btn-primary btn-xs' style='margin-bottom: 0px'>Details</button></td></tr>"
@@ -7239,15 +7239,15 @@
         generateResult("", "");
 
         $("#filterClass").on('change', function () {
-            var className = $("#filterClass").val();
+            var tcName = $("#filterClass").val();
             var caseResult = $("#filterResult").val();
-            generateResult(className, caseResult);
+            generateResult(tcName, caseResult);
         });
 
         $("#filterResult").on('change', function () {
-            var className = $("#filterClass").val();
+            var tcName = $("#filterClass").val();
             var caseResult = $("#filterResult").val();
-            generateResult(className, caseResult);
+            generateResult(tcName, caseResult);
         });
 
         //$(".chosen-select").trigger("chosen:updated");

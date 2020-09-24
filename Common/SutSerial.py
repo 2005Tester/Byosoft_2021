@@ -123,7 +123,38 @@ class SutControl:
             if self.is_timeout(start_time, 300):
                 logging.debug("is_msg_present: timeout")
                 break
-    
+
+
+    # verify specified message (msg1) should not appeare in serial log, but msg2 should be present
+    def is_msg_not_present(self, msg1, msg2):
+        logging.info("Waiting for:\"{0}\" not \"{1}\"".format(msg2, msg1))
+        start_time = time.time()
+        logging.debug("is_msg_not_present: receiving data from serial port...")
+        while True:
+            try:
+                if self.session.in_waiting:
+                    data = self.session.read(256).decode("utf-8")
+                    data = self.cleanup_data(data)
+                    with open(self.log, 'a') as f:
+                        f.write(data)
+                    if self.find_msg("Press F2", data):
+                        self.send_data("Admin@9000")
+                        self.send_data(chr(0x0D))  # Send Enter
+                        self.send_data(chr(0x0D))  # Send Enter
+                        logging.info("Send password...")
+                    if self.find_msg(msg1, data):
+                        logging.info("String \"{0}\" should not occur in BIOS log.".format(msg1))
+                        return
+                    if self.find_msg(msg2, data):
+                        return True
+            except Exception as e:
+                logging.error("is_msg_not_present:{0}".format(e))
+                break
+            if self.is_timeout(start_time, 300):
+                logging.debug("is_msg_not_present: timeout")
+                break
+
+
     # boot with hotkey pressed, and check whether boot is successful
     def boot_with_hotkey(self, key, msg, timeout):
         start_time = time.time()
