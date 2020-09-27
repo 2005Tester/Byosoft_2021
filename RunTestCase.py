@@ -26,7 +26,7 @@ ser = SutSerial.SutControl("com3", 115200, 0.5, Hy5Config.SERIAL_LOG)
 # init ssh
 sshins = ssh.SshConnection()
 
-#log_dir = "C:\\daily\\autolog\\2020-09-22_15-23-59"
+#log_dir = "C:\\daily\\HY5\\2020-09-23_17-50-23"
 
 def check_log():
     log = LogAnalyzer(log_dir)
@@ -44,6 +44,15 @@ def check_log():
     else:
         logging.info("<TC901><Result>SMBIOS Test:Fail")
 
+    logging.info("<TC902><Tittle>Verify Default CPU Core counts:Start")
+    logging.info("<TC902><Description>Check whether Default CPU Core count is correct")
+    if log.check_cpuinfo(18):
+        logging.info("<TC902><Result>Verify Default CPU Core counts:Pass")
+    else:
+        logging.info("<TC902><Result>Verify Default CPU Core counts:Fail")
+    
+
+
 
 def gen_report():
     template = Hy5Config.REPORT_TEMPLATE
@@ -53,11 +62,9 @@ def gen_report():
 
 
 def debug_run():
-    SetUp.reset_default(ser, sshins)
-    SetUp.change_cpu_cores(ser, sshins, 14, 4)
+    while True:
+        SetUp.change_cpu_cores(ser, sshins, 14, 4)
 
-#    check_log()
-    gen_report()
 
 def test_run():
     updatebios.update_bios_ci(ser)
@@ -73,7 +80,8 @@ def test_run():
     if SetUp.enable_full_debug_msg(ser, sshins):
         SetUp.disable_full_debug_msg(ser, sshins)
     if SetUp.enable_legacy_boot(ser, sshins):
-        SetUp.disable_legacy_boot(ser, sshins)  
+        SetUp.disable_legacy_boot(ser, sshins)
+#    SetUp.change_cpu_cores(ser, sshins, 14, 4)
     check_log()
     gen_report()
 

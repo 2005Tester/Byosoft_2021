@@ -27,11 +27,11 @@ class LogAnalyzer:
         bios_log = os.path.join(self.log_dir, "serial.log")
         data = self.load_log(bios_log)
         for line in data:
-            if re.search("assert", line):
+            if re.search("_assert", line, re.IGNORECASE):
                 logging.info("Assert found in line {0}".format(data.index(line)+1))
                 logging.info(line)
                 ast +=1
-            if re.search("Exception", line):
+            if re.search("Exception", line, re.IGNORECASE):
                 logging.info("Exception found in line {0}".format(data.index(line)+1))
                 logging.info(line)
                 exception +=1
@@ -44,8 +44,20 @@ class LogAnalyzer:
             return True
 
 
-    def check_errors(self):
-        pass
+    def check_cpuinfo(self, cores):
+        cpuinfo_log = os.path.join(self.log_dir, "cpuinfo.log")
+        with open(cpuinfo_log, 'r') as f:
+            data = f.read()
+        corenumbers = re.findall("cpu cores\s+:\s+(\d+)", data)
+        for num in corenumbers:
+            if num == str(cores):
+                pass
+            else:
+                logging.info("Core count is incorrect")
+                return 
+        logging.info("Core count is correct")
+        return True
+
 
     def check_smbios(self):
         passed_test = 0

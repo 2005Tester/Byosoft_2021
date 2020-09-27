@@ -33,6 +33,13 @@ class SutControl:
         for char in keys:
             self.send_data(char)
 
+
+    def send_keys_with_delay(self, keys):
+        for char in keys:
+            self.send_data(char)
+            time.sleep(0.2)
+ 
+ 
     def receive_data(self, size):
         self.session.read(size)
 
@@ -183,7 +190,6 @@ class SutControl:
 
             if self.is_timeout(start_time, timeout):
                 break
-        return True
 
     def hotkey_del(self):
         key_del = [chr(0x7F)]

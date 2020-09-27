@@ -1,5 +1,6 @@
 # -*- encoding=utf8 -*-
 import logging
+import time
 from HY5 import Hy5TcLib
 from HY5 import Hy5Config
 
@@ -20,7 +21,7 @@ RIGHT = [chr(0x1b), chr(0x5b), chr(0x43)]
 Y = [chr(0x59)]
 
 
-# Boot to setup home page
+# Boot to setup home page after a force reset
 def boot_to_setup(serial, ssh):
     logging.info("HaiYan5 Common Test Lib: boot to setup")
     logging.info("Rebooting SUT...")
@@ -31,6 +32,16 @@ def boot_to_setup(serial, ssh):
     if not serial.hotkey_del():
         logging.info("Boot to setup failed.")
         return
+    return True
+
+
+# Boot to boot manager without a force reset
+def continue_to_bootmanager(serial):
+    logging.info("HaiYan5 Common TC: continue boot to bootmanager")
+    if not serial.hotkey_f11():
+        logging.info("Continue boot to bootmanager failed.")
+        return
+    logging.info("HaiYan5 Common TC: Boot to bootmanager successful")
     return True
 
 
@@ -145,13 +156,17 @@ def disable_legacy_boot(serial, ssh):
 def change_cpu_cores(serial, ssh, n, num):
     logging.info("<TC010><Tittle>Change CPU Cores:Start")
     logging.info("<TC010><Description>Change CPU Core counts in setup and verify in OS")
-    keys_cpu_core = RIGHT*1 + DOWN*8 + ENTER*2 + F6*n + F10 + Y
-    if not boot_to_bios_config(serial, ssh):
+    keys_cpu_core = RIGHT*1 + DOWN*8 + ENTER*2
         return
     logging.info("Changing cpu core counts")
-    serial.send_keys(keys_cpu_core)
-    logging.info("Booting to boot manager")
-    serial.hotkey_f11()  # boot to boot manager
+    serial.send_keys_with_delay(keys_cpu_core)
+    serial.send_keys(F6*14 + F10 + Y)
+    time.sleep(5)
+
+
+    """
+    if not continue_to_bootmanager(serial):
+        return
     logging.info("Booting to Ubuntu")
     serial.send_keys(DOWN + ENTER) # boot to ubuntu
     if not serial.is_msg_present('byosoft-2488H-V6 login'):
@@ -162,3 +177,4 @@ def change_cpu_cores(serial, ssh, n, num):
         return
     logging.info("<TC010><Result>Change CPU Cores:Pass")
     return True
+    """
