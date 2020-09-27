@@ -1,9 +1,9 @@
 # Byo Automation Test Tool
 
 ## Enviroment Setup
-python 3.8  
-pip install paramiko  
-pip install pyserial  
+1. Install python 3.8  
+2. pip install paramiko  
+3. pip install pyserial  
 
 
 # Allow root login from SSH in Linux  

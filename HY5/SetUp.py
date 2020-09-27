@@ -157,6 +157,7 @@ def change_cpu_cores(serial, ssh, n, num):
     logging.info("<TC010><Tittle>Change CPU Cores:Start")
     logging.info("<TC010><Description>Change CPU Core counts in setup and verify in OS")
     keys_cpu_core = RIGHT*1 + DOWN*8 + ENTER*2
+    if not boot_to_bios_config(serial, ssh):
         return
     logging.info("Changing cpu core counts")
     serial.send_keys_with_delay(keys_cpu_core)
