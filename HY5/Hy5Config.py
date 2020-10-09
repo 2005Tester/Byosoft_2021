@@ -25,7 +25,7 @@ BIOS_USER = 'Admin@9000'
 BIOS_PASSWORD = 'Admin@9000'
 
 # OS Configuration
-OS_IP = '192.168.100.120'
+OS_IP = '192.168.100.132'
 OS_USER = 'root'
 OS_PASSWORD = 'byo@123'
 

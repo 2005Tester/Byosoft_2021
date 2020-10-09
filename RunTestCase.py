@@ -70,17 +70,17 @@ def test_run():
     updatebios.update_bios_ci(ser)
     SetUp.reset_default(ser, sshins)
     Hy5TcLib.sp_boot(ser, sshins)
-    if Hy5TcLib.boot_ubuntu(ser, sshins):
-        Hy5TcLib.dump_smbios(sshins)
-        Hy5TcLib.lspci(sshins)
-        Hy5TcLib.dmesg(sshins)
-        Hy5TcLib.cpuinfo(sshins)
     SetUp.check_me_state(ser, sshins)
     Hy5TcLib.boot_windows(ser, sshins)
     if SetUp.enable_full_debug_msg(ser, sshins):
         SetUp.disable_full_debug_msg(ser, sshins)
     if SetUp.enable_legacy_boot(ser, sshins):
         SetUp.disable_legacy_boot(ser, sshins)
+    if Hy5TcLib.boot_ubuntu(ser, sshins):
+        Hy5TcLib.dump_smbios(sshins)
+        Hy5TcLib.lspci(sshins)
+        Hy5TcLib.dmesg(sshins)
+        Hy5TcLib.cpuinfo(sshins)
 #    SetUp.change_cpu_cores(ser, sshins, 14, 4)
     check_log()
     gen_report()
