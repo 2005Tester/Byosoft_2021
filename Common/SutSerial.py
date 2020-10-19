@@ -102,6 +102,28 @@ class SutControl:
             if self.is_timeout(start_time, 600):
                 logging.debug("is_boot_success: timeout")
                 break
+
+    def is_msg_present_general(self, msg):
+        logging.info("Waiting for string:\"{0}\"".format(msg))
+        start_time = time.time()
+        logging.debug("is_msg_present_general: receiving data from serial port...")
+        while True:
+            if self.session.in_waiting:
+                try:
+                    data = self.session.read(256).decode("utf-8")
+                    data = self.cleanup_data(data)
+                except:
+                    pass               
+                with open(self.log, 'a') as f:
+                    f.write(data)
+                    
+                if self.find_msg(msg, data):
+                    return True
+
+            if self.is_timeout(start_time, 300):
+                logging.debug("is_msg_present_general: timeout")
+                break
+
     
     def is_msg_present(self, msg):
         logging.info("Waiting for string:\"{0}\"".format(msg))
@@ -161,6 +183,31 @@ class SutControl:
                 logging.debug("is_msg_not_present: timeout")
                 break
 
+    # boot with hotkey pressed, and check whether boot is successful
+    # key: the hotkey to be sent
+    # flag: message from SUT, which indicates it's time to press hotkey
+    # msg: message you expect to verify that SUT enters corresponding menu after hotky sent
+    # timeout: time to wait if msg not captured, will return None
+    def boot_with_hotkey_general(self, key, flag, msg, timeout):
+        start_time = time.time()
+        logging.info("Receiving data from SUT...")
+        while True:
+            if self.session.in_waiting:
+                try:
+                    data = self.session.read(256).decode("utf-8")
+                    data = self.cleanup_data(data)
+                except:
+                    pass
+                with open(self.log, 'a') as f:
+                    f.write(data)
+                if self.find_msg(flag, data):
+                    self.send_keys(key)
+                    logging.info("Hot Key sent")
+                if self.find_msg(msg, data):
+                    return True
+            if self.is_timeout(start_time, timeout):
+                break
+
 
     # boot with hotkey pressed, and check whether boot is successful
     def boot_with_hotkey(self, key, msg, timeout):
@@ -210,3 +257,5 @@ class SutControl:
         key_f12 = [chr(0x1b), chr(0x5b), chr(0x32), chr(0x34), chr(0x7e)]
         msg = "none"
         return self.boot_with_hotkey(key_f12, msg, 300)
+
+
