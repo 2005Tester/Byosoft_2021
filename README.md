@@ -32,3 +32,10 @@ sudo systemctl restart sshd
 
 
 ### gen nondeptc
+
+
+### CMD Windows Setting
+1. Close all active CMD Windows
+2. Open a CMD Windows with administrator priv and run the following command:
+    reg add HKEY_CURRENT_USER\Console /v QuickEdit /t REG_DWORD /d 00000000 /f
+3. Open a new CMD Windows to execute the AT sctipt
