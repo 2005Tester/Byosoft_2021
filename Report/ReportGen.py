@@ -152,6 +152,30 @@ class ReportGenerator:
         testReport['totalTime'] = self.get_total_time()[1]
         return testReport
 
+    # collect and update test case result for email
+    def collect_test_result_email_format(self):
+        testReport = {}
+        alltcResult = []
+        tcResult = {}
+        testReport['Version'] = self.get_code_version()
+        testReport['All'] = len(alltcResult)
+        testReport['Pass'] = self.get_result_count()[0]
+        testReport['Fail'] = self.get_result_count()[1]
+        testReport['Skip'] = self.get_result_count()[2]
+        testReport['Start Time'] = self.get_total_time()[0]
+        testReport['Complete Time'] = self.get_total_time()[1]
+        with open(self.log, 'r') as f:
+            for line in f.readlines():
+                if re.search("<TC\d+><Tittle>.+:Start", line):
+                    id = re.findall("(TC\d+)", line)[0]
+                    tcResult['Name'] = re.findall("<TC\d+><Tittle>(.+):Start", line)[0]
+                    tcResult['Description'] = self.get_des(id)
+                    tcResult['Duration'] = self.get_tc_duration(id)
+                    tcResult['Result'] = self.get_status(id)
+                    alltcResult.append(tcResult.copy())
+        testReport['Result'] = alltcResult
+        return testReport
+
     # write test result dict to html report
     def write_to_html(self):
         old = "ResultDict"
