@@ -9,6 +9,7 @@
 import re
 import time
 import logging
+from json2html import *
 
 
 class ReportGenerator:
@@ -152,6 +153,19 @@ class ReportGenerator:
         testReport['totalTime'] = self.get_total_time()[1]
         return testReport
 
+    # write test result dict to html report
+    def write_to_html(self):
+        old = "ResultDict"
+        new = str(self.collect_test_result())
+        dst = self.report
+
+        with open(self.template, 'r', encoding='utf-8') as f:
+            content = f.read()
+            data = content.replace(old, new)
+            with open(dst, 'w', encoding='utf-8') as new:
+                new.write(data)
+
+    
     # collect and update test case result for email
     def collect_test_result_email_format(self):
         testReport = {}
@@ -176,14 +190,19 @@ class ReportGenerator:
         testReport['Result'] = alltcResult
         return testReport
 
-    # write test result dict to html report
-    def write_to_html(self):
-        old = "ResultDict"
-        new = str(self.collect_test_result())
-        dst = self.report
-
-        with open(self.template, 'r', encoding='utf-8') as f:
-            content = f.read()
-            data = content.replace(old, new)
-            with open(dst, 'w', encoding='utf-8') as new:
-                new.write(data)
+        
+    # convert json format (collect_test_result_email_format()) to html
+    def gen_email_report(self):
+        data_html = json2html.convert(self.collect_test_result_email_format())
+        html_head = '''<!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>Title</title>
+        </head>
+        <body>
+        {}
+        </body>
+        </html>'''
+        result_html = html_head.format(data_html)
+        return result_html

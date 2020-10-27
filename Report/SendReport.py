@@ -7,65 +7,32 @@
 #  means without the express written consent of Byosoft Corporation.
 
 import smtplib
+import logging
 from email.mime.text import MIMEText
 from email.header import Header
-from json2html import *
-import json
 
 
-def json_to_html():
-    dict_str = open('result.json','r',encoding='utf-8').read()
-    data_dict = json.loads(dict_str)
-    data_xml = json2html.convert(data_dict)
-    # data_xml = json2html.convert(json=data_dict, table_attributes="id=\"info-table\" class=\"table table-bordered table-hover\"")
-    print("data_xml", data_xml)
-    html_head = '''<!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Title</title>
-    </head>
-    <body>
-    {}
-    </body>
-    </html>'''
-    result_html = html_head.format(data_xml)
-    return result_html
+class EmailReport():
+    def __init__(self, smtpserver, sender, receiver, pw):
+        self.smtpserver = smtpserver
+        self.sender = sender
+        self.receiver = receiver
+        self.pw = pw
 
+    def send_mail(self, html_report):
+        message = MIMEText(html_report, "html", "utf-8")
+        message['From'] = 'Byosoft Automation Test'
+        message['To'] = Header(self.receiver)
+        message['Subject'] = 'Haiyan5 Automation Test'
 
-def send_report():
-    from_addr = 'ci@byosoft.com.cn'
-    password = 'byosoft@ci123'
-    to_addr = 'gaojie@byosoft.com.cn'
-    report = json_to_html()
-
-    #print(report)
-    message = MIMEText(report, "html", "utf-8")
-    #print(message)
-
-    smtp_server = 'mail.byosoft.com.cn'
- 
-
-
-    message['From'] = 'Byosoft Automation Test'
-    message['To'] = Header(to_addr)
-    message['Subject'] = 'Haiyan5 Automation Test'
-
-
-
-    try:
-        smtpObj = smtplib.SMTP() 
-        smtpObj.connect(smtp_server,25)
-        smtpObj.login(from_addr,password) 
-        smtpObj.sendmail(from_addr,to_addr,message.as_string()) 
-        smtpObj.quit() 
-        print('success')
-    except smtplib.SMTPException as e:
-        print('error',e)
-
-
-if __name__ == '__main__':
-    send_report()
-
+        try:
+            smtpObj = smtplib.SMTP() 
+            smtpObj.connect(self.smtpserver,25)
+            smtpObj.login(self.sender,self.pw) 
+            smtpObj.sendmail(self.sender,self.receiver,message.as_string()) 
+            smtpObj.quit() 
+            logging.info('Email sent successfully.')
+        except smtplib.SMTPException as e:
+            logging.error('Failed to send email report.',e)
 
 

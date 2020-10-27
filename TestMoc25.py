@@ -15,6 +15,7 @@ from Moc25 import Moc25Config
 from Moc25 import Moc25TcLib
 from Moc25 import SetUp
 from Report.ReportGen import ReportGenerator
+from Report import SendReport
 from Common.LogAnalyzer import LogAnalyzer
 
 # Init log setting
@@ -25,7 +26,7 @@ logging.getLogger("paramiko").setLevel(logging.WARNING)
 
 
 # init seril
-ser = SutSerial.SutControl("com9", 115200, 0.5, Moc25Config.SERIAL_LOG)
+ser = SutSerial.SutControl("com5", 115200, 0.5, Moc25Config.SERIAL_LOG)
 
 # init BMC SSH interface
 ssh_bmc = ssh.SshConnection()
@@ -44,15 +45,19 @@ def check_log():
 def gen_report():
     template = Moc25Config.REPORT_TEMPLATE
     report = ReportGenerator(template, os.path.join(log_dir, "test.log"), os.path.join(log_dir, "report.html"))
-    report.collect_test_result()
     report.write_to_html()
-
+    mail_report = report.gen_email_report()
+    mail = SendReport.EmailReport(Moc25Config.MAIL_SERVER, Moc25Config.MAIL_FROM, Moc25Config.MAIL_TO, Moc25Config.MAIL_PW)
+    mail.send_mail(mail_report)
+    
 
 if __name__ == '__main__':
     #updatebios.get_test_image(Moc25Config.BINARY_DIR)
     SetUp.check_bios_version(ser, ssh_bmc)
-    Moc25TcLib.boot_AliOS(ser, ssh_bmc)
-    SetUp.boot_uefi_shell(ser, ssh_bmc)
+    #Moc25TcLib.boot_AliOS(ser, ssh_bmc)
+    SetUp.check_me_status(ser, ssh_bmc)
+    #SetUp.boot_uefi_shell(ser, ssh_bmc)
+    SetUp.check_cpu_info(ser, ssh_bmc)
     check_log()
     gen_report()
 
