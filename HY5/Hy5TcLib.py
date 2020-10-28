@@ -13,6 +13,7 @@ import re
 from HY5 import updatebios
 from HY5 import Hy5Config
 from RedFish import config
+import Common.ssh as SSH
 
 
 def dump_smbios(ssh):
@@ -182,3 +183,24 @@ def boot_windows(serial, ssh):
         return
     logging.info("<TC003><Result>Boot to UEFI windows:Pass")
     return True
+
+
+def bmc_dump(ssh, path, name):
+    cmd_diag = ["ipmcget -d diaginfo\n"]
+    rtn_diag = ["successfully"]
+    ssh.login(Hy5Config.BMC_IP, Hy5Config.BMC_USER, Hy5Config.BMC_PASSWORD)
+    SFTP = SSH.sftp(Hy5Config.BMC_IP, Hy5Config.BMC_USER, Hy5Config.BMC_PASSWORD)
+    SFTP.login()
+    files = SFTP.sftp.listdir("/tmp")
+    bin_files = [b for b in files if ".bin" in b]
+    if bin_files:
+        for bi in bin_files:
+            SFTP.sftp.remove(bi)
+            print("Remove {}!".format(bi))
+    print("Start BMC dump, Please wait...")
+    if ssh.interaction(cmd_diag, rtn_diag):  # this function will default close session, re-open in next step
+        print("Dump completed, Copy to {}".format(path))
+        SFTP.sftp.get("/tmp/dump_info.tar.gz", "{}/{}_dump_info.tar.gz".format(path, name))
+        print("Copy dump log completed!")
+        SFTP.sftp.close()
+        return True
