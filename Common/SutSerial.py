@@ -40,6 +40,7 @@ class SutControl:
     def send_keys(self, keys):
         for char in keys:
             self.send_data(char)
+        logging.info("key sent") 
 
 
     def send_keys_with_delay(self, keys):
@@ -56,7 +57,7 @@ class SutControl:
         now = time.time()
         spent_time = (now - t_start)
         if spent_time > timeout:
-            logging.info("Check message in serial output time out.")
+            #logging.info("Check message in serial output time out.")
             return True
 
     def capture_data(self):
@@ -80,11 +81,13 @@ class SutControl:
 
     @staticmethod
     def cleanup_data(data):
-        pat1 = '[\x00-\x1F]\[\d+;\d+[mH]*'
+        pat1 = '[\x00-\x1F]\[\d+;:*\d+[m*H]*'
         pat2 = '[\x00-\x1F]\[\d+[mJ]'
+        pat3 = '[\x00-\x1F]\[\d7m'
         data = re.sub(pat1, '', data)
         data = re.sub(pat2, '', data)
-        # print(data)
+        data = re.sub(pat3, '', data)
+
         return data
 
     def is_boot_success(self):
@@ -111,7 +114,7 @@ class SutControl:
                 logging.debug("is_boot_success: timeout")
                 break
 
-    def is_msg_present_general(self, msg):
+    def is_msg_present_general(self, msg, delay=150):
         logging.info("Waiting for string:\"{0}\"".format(msg))
         start_time = time.time()
         logging.debug("is_msg_present_general: receiving data from serial port...")
@@ -120,19 +123,21 @@ class SutControl:
                 try:
                     data = self.session.read(256).decode("utf-8")
                     data = self.cleanup_data(data)
-                except:
-                    pass               
+                except Exception as e:
+                    logging.info(e)
+                    logging.info("is_msg_present_general: error in reading serial data")
+                    return                
                 with open(self.log, 'a') as f:
                     f.write(data)
                     
                 if self.find_msg(msg, data):
                     return True
 
-            if self.is_timeout(start_time, 300):
-                logging.debug("is_msg_present_general: timeout")
+            if self.is_timeout(start_time, delay):
+                logging.info("is_msg_present_general: {0} not found after waiting {1} seconds".format(msg, delay))
                 break
 
-    
+   
     def is_msg_present(self, msg):
         logging.info("Waiting for string:\"{0}\"".format(msg))
         start_time = time.time()
@@ -210,7 +215,7 @@ class SutControl:
                     f.write(data)
                 if self.find_msg(flag, data):
                     self.send_keys(key)
-                    logging.info("Hot Key sent")
+                    #logging.info("Hot Key sent")
                 if self.find_msg(msg, data):
                     return True
             if self.is_timeout(start_time, timeout):

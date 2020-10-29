@@ -15,31 +15,31 @@ from Moc25 import Moc25Config
 
 
 def dump_smbios(ssh):
-    if ssh.login(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD):
+    if ssh.login(Moc25Config.OS_IP, Moc25Config.OS_USER, Moc25Config.OS_PASSWORD):
         logging.info("Dumping smbios table...")
-        return ssh.dump_info('dmidecode', Hy5Config.LOG_DIR)
+        return ssh.dump_info('dmidecode', Moc25Config.LOG_DIR)
 
 
 def lspci(ssh):
-    if ssh.login(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD):
+    if ssh.login(Moc25Config.OS_IP, Moc25Config.OS_USER, Moc25Config.OS_PASSWORD):
         logging.info("Dumping pci info...")
-        return ssh.dump_info('lspci', Hy5Config.LOG_DIR)
+        return ssh.dump_info('lspci', Moc25Config.LOG_DIR)
 
 
 def dmesg(ssh):
-    if ssh.login(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD):
+    if ssh.login(Moc25Config.OS_IP, Moc25Config.OS_USER, Moc25Config.OS_PASSWORD):
         logging.info("Dumping dmesg...")
-        return ssh.dump_info('dmesg', Hy5Config.LOG_DIR)
+        return ssh.dump_info('dmesg', Moc25Config.LOG_DIR)
 
 
 def cpuinfo(ssh):
-    if ssh.login(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD):
+    if ssh.login(Moc25Config.OS_IP, Moc25Config.OS_USER, Moc25Config.OS_PASSWORD):
         logging.info("Dumping cpuinfo...")
-        return ssh.dump_info('cat /proc/cpuinfo', Hy5Config.LOG_DIR)
+        return ssh.dump_info('cat /proc/cpuinfo', Moc25Config.LOG_DIR)
 
 # Check whether cpu core count is equal to "num" in OS
 def verify_cpucore_count(ssh, num):
-    if ssh.login(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD):
+    if ssh.login(Moc25Config.OS_IP, Moc25Config.OS_USER, Moc25Config.OS_PASSWORD):
         logging.info("Checking cpu core count...")
         cpuinfo = ssh.execute_command('cat /proc/cpuinfo | grep "cpu cores" | uniq')
         logging.debug(cpuinfo)
@@ -50,7 +50,6 @@ def verify_cpucore_count(ssh, num):
             logging.info("Core count is not correct.")
             return
 
-        
 
 def dc_cycling(ssh, serial, n):
     for i in range(n):
@@ -63,21 +62,13 @@ def dc_cycling(ssh, serial, n):
 
 
 def force_power_cycle(ssh):
-    logging.info("Force power cycle.")
-    cmd_powercycle = 'ipmcset -d frucontrol -v 2\n'
-    ret_powercycle = 'Do you want to continue'
-    cmd_confirm = 'Y\n'
-    ret_confirm = 'successfully'
-    cmds = [cmd_powercycle, cmd_confirm]
-    rets = [ret_powercycle, ret_confirm]
-    if ssh.login(Moc25Config.BMC_IP, Moc25Config.BMC_USER, Moc25Config.BMC_PASSWORD):
-        return ssh.interaction(cmds, rets)
-    else:
-        logging.error("HY5 Common TC: force powercycle failed")
-        return
+    pass
+
 
 def force_reset(ssh):
     logging.info("Force system reset.")
+    return True
+    """
     cmd_reset = 'ipmitool chassis power reset\n'
     ret_reset = 'Command not supported in present state'
     cmds = [cmd_reset]
@@ -87,6 +78,7 @@ def force_reset(ssh):
     else:
         logging.error("Moc25 Common TC: force system reset failed")
         return
+    """
 
 
 def rebootsut(ssh):
@@ -102,7 +94,7 @@ def rebootsut(ssh):
     if ssh.login(Moc25Config.BMC_IP, Moc25Config.BMC_USER, Moc25Config.BMC_PASSWORD):
         return ssh.interaction(cmds, rets)
     else:
-        logging.error("HY5 Common TC: reboot sut failed")
+        logging.error("Moc25 Common TC: reboot sut failed")
         return
 
 
@@ -112,7 +104,7 @@ def boot_AliOS(serial, ssh):
     if not force_reset(ssh):
         logging.info("Rebooting SUT Failed.")
         return
-    if not serial.is_msg_present_general('Alibaba Group Enterprise Linux Server release 7.2'):
+    if not serial.is_msg_present_general('Alibaba Group Enterprise Linux Server release 7.2', 120):
         logging.info("<TC001><Result>Boot to AliOS:Fail")
         return
     logging.info("<TC001><Result>Boot to AliOS:Pass")

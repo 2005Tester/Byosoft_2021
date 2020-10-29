@@ -172,12 +172,12 @@ class ReportGenerator:
         alltcResult = []
         tcResult = {}
         testReport['Version'] = self.get_code_version()
-        testReport['All'] = len(alltcResult)
+        testReport['All'] = 0
         testReport['Pass'] = self.get_result_count()[0]
         testReport['Fail'] = self.get_result_count()[1]
         testReport['Skip'] = self.get_result_count()[2]
         testReport['Start Time'] = self.get_total_time()[0]
-        testReport['Complete Time'] = self.get_total_time()[1]
+        testReport['Total Time'] = self.get_total_time()[1]
         with open(self.log, 'r') as f:
             for line in f.readlines():
                 if re.search("<TC\d+><Tittle>.+:Start", line):
@@ -187,22 +187,20 @@ class ReportGenerator:
                     tcResult['Duration'] = self.get_tc_duration(id)
                     tcResult['Result'] = self.get_status(id)
                     alltcResult.append(tcResult.copy())
+        testReport['All'] = len(alltcResult)
         testReport['Result'] = alltcResult
         return testReport
 
         
     # convert json format (collect_test_result_email_format()) to html
-    def gen_email_report(self):
+    def gen_email_report(self, template):
         data_html = json2html.convert(self.collect_test_result_email_format())
-        html_head = '''<!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <title>Title</title>
-        </head>
-        <body>
-        {}
-        </body>
-        </html>'''
-        result_html = html_head.format(data_html)
-        return result_html
+        data_html = data_html.replace(r'<td>Pass</td>', r'<td><span class="text-navy">Pass</span></td>')
+        data_html = data_html.replace(r'<td>Fail</td>', r'<td><span class="text-danger">Fail</span></td>')
+        data_html = data_html.replace(r'<td>Skip</td>', r'<td><span class="text-warning">Skip</span></td>')
+        old = "ResultDict"
+        new = str(data_html)
+        with open(template, 'r', encoding='utf-8') as f:
+            content = f.read()
+            data = content.replace(old, new)
+        return data

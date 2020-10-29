@@ -8,28 +8,39 @@
 
 import smtplib
 import logging
+import os
 from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication
 from email.header import Header
 
 
 class EmailReport():
-    def __init__(self, smtpserver, sender, receiver, pw):
+    def __init__(self, smtpserver, sender, receiver, pw, _subtype='octet-stream'):
         self.smtpserver = smtpserver
         self.sender = sender
         self.receiver = receiver
         self.pw = pw
 
-    def send_mail(self, html_report):
-        message = MIMEText(html_report, "html", "utf-8")
+    def send_mail(self, html_report, attachment):
+        message = MIMEMultipart('alternative')
+        message_html = MIMEText(html_report, "html", "utf-8")
+        message.attach(message_html)
         message['From'] = 'Byosoft Automation Test'
         message['To'] = Header(self.receiver)
         message['Subject'] = 'Haiyan5 Automation Test'
+        if os.path.exists(attachment):
+            logging.info("Adding attachment")
+            with open(attachment,'rb') as f:
+                attachfile = MIMEApplication(f.read())
+                attachfile.add_header('Content-Disposition', 'attachment', filename=attachment)
+                message.attach(attachfile)
 
         try:
             smtpObj = smtplib.SMTP() 
             smtpObj.connect(self.smtpserver,25)
             smtpObj.login(self.sender,self.pw) 
-            smtpObj.sendmail(self.sender,self.receiver,message.as_string()) 
+            smtpObj.sendmail(self.sender,self.receiver.split(','),message.as_string()) 
             smtpObj.quit() 
             logging.info('Email sent successfully.')
         except smtplib.SMTPException as e:

@@ -11,8 +11,13 @@ import datetime
 
 timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 
+
+#BIOS Information
+BIOS_VERSION = '2.0.ID.AL.E.004.01'
+BMC_VERSION = '5.34'
+
 #Report Setting
-REPORT_TEMPLATE = "C:\\autotest\\Report\\template_Moc"
+REPORT_TEMPLATE = "Report\\template_Moc"
 
 # Enviroment settigs
 LOG_DIR = 'c:\\daily\\Moc25\\{0}'.format(timestamp)
@@ -37,4 +42,9 @@ OS_USER = 'root'
 OS_PASSWORD = 'alibaba1688'
 
 
-
+# Email report settings
+MAIL_SERVER = 'mail.byosoft.com.cn'
+MAIL_FROM = 'ci@byosoft.com.cn'
+MAIL_PW = 'byosoft@ci123'
+MAIL_TO = 'gaojie@byosoft.com.cn,ci@byosoft.com.cn'
+MAIL_TEMPLATE = 'Report\\email_template_Moc'

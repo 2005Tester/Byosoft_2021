@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>Report</title>
+        </head>
+
+        <style>
+            .text-navy {
+            color: #00FF00;
+            }
+            .text-danger {
+            color: #FF0000;
+            }
+            .text-warning {
+            color: #f8ac59;
+            }
+            body {
+                background-color: rgb(239, 243, 245)
+            }
+            div {
+                margin-left: 5%;
+                margin-right: 5%;
+                background-color: white
+            }
+            h2 {
+                text-align: center;
+                font-size: 15pt;
+                font-weight: bolder;
+            }
+            a   {text-decoration: none}
+            table, tr, th, td {
+                font-family: Intel Clear;
+                }
+            table {
+                width: 100%;
+                }
+            th {
+                background: linear-gradient(to bottom, rgba(32, 129, 202, 1) , rgba(118, 171, 223, 1));
+                color: rgb(0,0,0);
+                text-align: left;
+                padding-top: 2px;
+                padding-bottom: 2px;
+                font-size: 14px;
+                border-radius: 4px;
+                 }
+            td {
+                word-break: break-all;
+                height: 24px;
+                font-size: 14px;
+                text-align: left;
+                padding-top: 1px;
+                padding-bottom: 0.1px;
+                }
+            table {
+                background-color: rgb(217, 230, 253);
+            }
+            </style>
+        <body>
+            <div>
+                <h2>Ali Moc25 Automation Test Report</h2>
+        ResultDict
+            <div>
+        </body>
+        </html>
