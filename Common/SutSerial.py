@@ -115,26 +115,26 @@ class SutControl:
                 break
 
     def is_msg_present_general(self, msg, delay=150):
-        logging.info("Waiting for string:\"{0}\"".format(msg))
+        logging.info("Looking for:\"{0}\"".format(msg))
         start_time = time.time()
         logging.debug("is_msg_present_general: receiving data from serial port...")
         while True:
             if self.session.in_waiting:
                 try:
-                    data = self.session.read(256).decode("utf-8")
+                    data = self.session.read(512).decode("utf-8")
                     data = self.cleanup_data(data)
                 except Exception as e:
-                    logging.info(e)
-                    logging.info("is_msg_present_general: error in reading serial data")
-                    return                
+                    logging.debug(e)
+                    logging.debug("is_msg_present_general: error in reading serial data")
+                    data = ''              
                 with open(self.log, 'a') as f:
-                    f.write(data)
-                    
+                    f.write(data)                   
                 if self.find_msg(msg, data):
                     return True
 
             if self.is_timeout(start_time, delay):
-                logging.info("is_msg_present_general: {0} not found after waiting {1} seconds".format(msg, delay))
+                if not delay == 0:
+                    logging.info("is_msg_present_general: {0} not found after waiting {1} seconds".format(msg, delay))
                 break
 
    
@@ -271,4 +271,17 @@ class SutControl:
         msg = "none"
         return self.boot_with_hotkey(key_f12, msg, 300)
 
+    # Navigate in a setup page and verify whether multiple setup options are correct
+    def navigate_and_verify(self, key, setup_options, try_counts):
+        for i in range(0, try_counts):
+            self.send_keys(key)
+            time.sleep(2)
+            for option in setup_options:
+                if self.is_msg_present_general(option, 0):
+                    setup_options.pop(setup_options.index(option))
+                    if len(setup_options) == 0:
+                        logging.info("All the setup options are verified")
+                        return True
+        for option in setup_options:
+            logging.info("{0} not verified".format(option)) 
 
