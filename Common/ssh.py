@@ -79,6 +79,8 @@ class SshConnection():
         op.send(cmd)
         time.sleep(4)
         ret = op.recv(1024)
+        op.close()
+        self.ssh_client.close()
         return ret
 
     # send commands one by one through ssh in interactive mode    
