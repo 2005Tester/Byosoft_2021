@@ -23,7 +23,7 @@ class EmailReport():
         self.pw = pw
 
     def send_mail(self, html_report, attachment):
-        message = MIMEMultipart('alternative')
+        message = MIMEMultipart()
         message_html = MIMEText(html_report, "html", "utf-8")
         message.attach(message_html)
         message['From'] = 'Byosoft Automation Test'

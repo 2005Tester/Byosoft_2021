@@ -14,6 +14,9 @@ from Moc25 import updatebios
 from Moc25 import Moc25Config
 
 
+CTRL_ALT_DELETE = '\33R\33r\33R'
+ENTER = [chr(0x0D)]
+
 def dump_smbios(ssh):
     if ssh.login(Moc25Config.OS_IP, Moc25Config.OS_USER, Moc25Config.OS_PASSWORD):
         logging.info("Dumping smbios table...")
@@ -50,6 +53,62 @@ def verify_cpucore_count(ssh, num):
             logging.info("Core count is not correct.")
             return
 
+def force_reset(serial):
+    logging.info("Sending CTRL+ALT+DEL to reboot SUT")
+    serial.send_data(CTRL_ALT_DELETE)
+    if serial.is_msg_present_general("Install PPI", 20):
+        logging.info("Reboot by CTRL+ALT+DEL successfully")
+        return True
+    logging.info("Try login os and reboot by command")
+    if not reset_in_os(serial):
+        logging.info("failed to reboot by command")
+        return 
+    return True   
+
+
+def login_os(serial):
+    serial.send_keys(ENTER*3)
+    if serial.is_msg_present_general("localhost.localdomain", 10):
+        logging.info("Logining successful")
+        return True
+    serial.send_data(Moc25Config.OS_USER + "\n")  
+    if not serial.is_msg_present_general("Password", 10):
+        logging.info("Login fail, no password prompt")
+        return
+    serial.send_data(Moc25Config.OS_PASSWORD + "\n")  
+    if not serial.is_msg_present_general("localhost.localdomain", 10): 
+        logging.info("Failed to login")
+        return
+    logging.info("Logining successful")
+    return True
+
+
+def reset_in_os(serial):
+    serial.send_keys(ENTER*3)
+    if not serial.is_msg_present_general("localhost login:", 15):
+        serial.send_data("shutdown -r now\n")
+        logging.info("Reboot command sent")
+        if serial.is_msg_present_general("Install PPI", 20):
+            return True
+    
+    serial.send_data(Moc25Config.OS_USER + "\n")  
+    if not serial.is_msg_present_general("Password", 10):
+        return
+
+    serial.send_data(Moc25Config.OS_PASSWORD + "\n")  
+    if not serial.is_msg_present_general("localhost.localdomain", 10):  
+        return
+
+    serial.send_data("shutdown -r now\n")
+    logging.info("Reboot command sent") 
+    if not serial.is_msg_present_general("Install PPI", 20):
+        return
+    
+    logging.info("shutdown command sent successfully")
+    return True
+
+
+
 
 def dc_cycling(ssh, serial, n):
     for i in range(n):
@@ -64,11 +123,11 @@ def dc_cycling(ssh, serial, n):
 def force_power_cycle(ssh):
     pass
 
-
+    """
 def force_reset(ssh):
     logging.info("Force system reset.")
     return True
-    """
+
     cmd_reset = 'ipmitool chassis power reset\n'
     ret_reset = 'Command not supported in present state'
     cmds = [cmd_reset]
@@ -98,16 +157,30 @@ def rebootsut(ssh):
         return
 
 
-def boot_AliOS(serial, ssh):
+def boot_AliOS(serial):
     logging.info("<TC001><Tittle>Boot to AliOS:Start")
     logging.info("<TC001><Description>Boot to AliOS")
-    if not force_reset(ssh):
+    if not force_reset(serial):
         logging.info("Rebooting SUT Failed.")
         return
     if not serial.is_msg_present_general('Alibaba Group Enterprise Linux Server release 7.2', 120):
         logging.info("<TC001><Result>Boot to AliOS:Fail")
         return
+    if not login_os(serial):
+        logging.info("<TC001><Result>Boot to AliOS:Fail")
+        return
     logging.info("<TC001><Result>Boot to AliOS:Pass")
     return True
 
+
+# Verify interface type is KCS
+def verify_bmc_ch_init(serial):
+    logging.info("<TC007><Tittle>Verify BMC init Channel:Start")
+    logging.info("<TC007><Description>Verify Whether BMC channel interface type is KCS")
+    serial.send_data("dmidecode -t 38\n")
+    if not serial.is_msg_present_general("Interface Type: KCS", 10):
+        logging.info("<TC007><Result>Verify BMC init Channel:Fail")
+        return
+    logging.info("<TC007><Result>Verify BMC init Channel:Pass")
+    return True    
 

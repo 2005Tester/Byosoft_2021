@@ -37,38 +37,55 @@ class Gitlab():
                 break
         return latest_job
 
-
-    def download_image(self, job):
-        if not job:
-            return
+    @staticmethod
+    def print_msg(job):
         print("JobID:{0}".format(job['id']))
         print("JobName:{0}".format(job['name']))
         print("Branch:{0}".format(job['ref']))
         print("Author:{0}".format(job['commit']['author_name']))
         print("Commit: {0}".format(job['commit']['short_id']))
         print("BuildFinishedTime:{0}".format(job['finished_at']))
+
+
+    def download_image(self, job, dir):
+        img_zip = os.path.join(dir, "artifacts.zip")
+        if os.path.exists(img_zip):
+            os.remove(img_zip)
+        if not job:
+            return
+
+        self.print_msg(job)
+
         artifact_url = self.jobs_url + '/' + str(job['id']) + '/artifacts'
-        cmd = "curl --output ..\\artifacts.zip --header \"PRIVATE-TOKEN: {0}\" {1}".format(self.access_token, artifact_url)      
+        cmd = "curl --output {0} --header \"PRIVATE-TOKEN: {1}\" {2}".format(img_zip, self.access_token, artifact_url)      
         if os.system(cmd) == 0:
             print("Download image successfully")
-            return True
+            image_path = self.unzip(img_zip, dir)
+            os.remove(img_zip)
+            return image_path
         else:
             print("Download image fail")
       
     
-    def download_latest_image_master(self):
+    def download_latest_image_master(self, dir):
         latest_job = self.get_latest_job_master()
-        if self.download_image(latest_job):
-            return True
-            
-        
+        return self.download_image(latest_job, dir)
 
-    def fetch_latest_image():
-        pass
-
+    @staticmethod        
+    def unzip(file, dst):
+        uz = zipfile.ZipFile(file, 'r')
+        for file in uz.namelist():
+            if '.bin' in file:
+                file_path =  os.path.join(dst, file.replace("/", "\\"))
+                if os.path.exists(file_path):
+                    print("Delete old file")
+                    os.remove(file_path)
+                uz.extract(file, dst)
+                return os.path.join(dst, file_path)
 
 
 
 if __name__ == '__main__':
+    dir = "c:\\daily"
     gitlab_icx = Gitlab(12, 'PbLqm_njsnGxCQBtHoMG')
-    print(gitlab_icx.download_latest_image_master())
+    print(gitlab_icx.download_latest_image_master(dir))

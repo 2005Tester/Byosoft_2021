@@ -28,6 +28,11 @@
                 font-size: 15pt;
                 font-weight: bolder;
             }
+			h3 {
+                text-align: left;
+                font-size: 12pt;
+				font-style: italic;
+            }
             a   {text-decoration: none}
             table, tr, th, td {
                 font-family: Intel Clear;
@@ -60,6 +65,7 @@
             <div>
                 <h2>Ali Moc25 Automation Test Report</h2>
         ResultDict
+                <h3>Byosoft Automation Test Team</h3>
             <div>
         </body>
         </html>
