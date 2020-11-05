@@ -98,14 +98,14 @@ def ping_sut():
 
 
 # update by arthur,
-def power_status(ssh):
+def is_power_off(ssh):
     logging.info("Check power status...")
     cmd_on = 'ipmcget -d powerstate'
     ret_confirm = 'Off'
     if ssh.login(Hy5Config.BMC_IP, Hy5Config.BMC_USER, Hy5Config.BMC_PASSWORD):
         ret = ssh.execute_command_interaction(cmd_on)
         # print(ret)
-        if ret_confirm in ret:
+        if ret_confirm in ret.decode():
             return True
         else:
             return False
@@ -128,7 +128,7 @@ def power_on(ssh):
 
 
 def force_reset(ssh):
-    if power_status(ssh):
+    if is_power_off(ssh):
         print('Current power state is Off, power on first')  # updated by arthur,
         if power_on(ssh):
             return True
