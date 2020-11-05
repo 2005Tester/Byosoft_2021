@@ -85,7 +85,9 @@ class SshConnection():
     def interaction(self, cmds, strs):
         op = self.ssh_client.invoke_shell()
         for i in range(0, len(cmds)):
-            res = self.execute_command_interaction(cmds[i])
+            op.send(cmds[i])
+            time.sleep(4)
+            res = op.recv(1024)
             logging.debug('Sending command: {0}'.format(cmds[i].strip("\n")))
             # logging.debug(res.decode('utf-8'))
             start_time = time.time()
