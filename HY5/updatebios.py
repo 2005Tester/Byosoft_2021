@@ -44,6 +44,33 @@ def get_test_image(path):
         logging.info("BIOS image for test: %s" %(rp001_image[0]))
         return rp001_image[0]
 
+   
+# For downgrade bios test, (updated by arthur)
+def get_previous_test_image(path):
+    if os.path.exists(path):
+        versions = os.listdir(path)
+        versions.sort(reverse=True)
+        previous_version = versions[2]
+        logging.info("Previous Version is: {0}".format(previous_version))
+        if previous_version in daily.VER_TESTED:
+            logging.info("{0} has been tested".format(previous_version))
+            return
+    else:
+        logging.error("BIOS image directroy can't be accessed, please check VPN connection.")
+        return
+
+    current_image_dir = os.path.join(path, previous_version)
+    p = Path(current_image_dir)   # remote image dir of current version
+    rp001_image = []
+    for b in p.rglob('HY5*_byo.bin'):
+        rp001_image.append(b)
+    if not rp001_image:
+        logging.info("Image for {0} not found, please check whether build is finished.".format(previous_version))
+        return
+    else:
+        logging.info("BIOS image for test: %s" %(rp001_image[0]))
+        return rp001_image[0]
+
 
 def upload_bios(src):
     # Upload BIOS image (.bin. .hpm) to SUT

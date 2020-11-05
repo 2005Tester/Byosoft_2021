@@ -97,9 +97,24 @@ def ping_sut():
                 print(e)
 
 
-def force_reset(ssh):
-    logging.info("Force system reset.")
-    cmd_reset = 'ipmcset -d frucontrol -v 0\n'
+# update by arthur,
+def power_status(ssh):
+    logging.info("Check power status...")
+    cmd_on = 'ipmcget -d powerstate'
+    ret_confirm = 'Off'
+    if ssh.login(Hy5Config.BMC_IP, Hy5Config.BMC_USER, Hy5Config.BMC_PASSWORD):
+        ret = ssh.execute_command_interaction(cmd_on)
+        # print(ret)
+        if ret_confirm in ret:
+            return True
+        else:
+            return False
+
+
+# updated by arthur,
+def power_on(ssh):
+    logging.info("Power on system.")
+    cmd_reset = 'ipmcset -d powerstate -v 1\n'
     ret_reset = 'Do you want to continue'
     cmd_confirm = 'Y\n'
     ret_confirm = 'successfully'
@@ -108,8 +123,28 @@ def force_reset(ssh):
     if ssh.login(Hy5Config.BMC_IP, Hy5Config.BMC_USER, Hy5Config.BMC_PASSWORD):
         return ssh.interaction(cmds, rets)
     else:
-        logging.error("HY5 Common TC: force system reset failed")
+        logging.error("HY5 Common TC: Power on failed")
         return
+
+
+def force_reset(ssh):
+    if power_status(ssh):
+        print('Current power state is Off, power on first')  # updated by arthur,
+        if power_on(ssh):
+            return True
+    else:
+        logging.info("Current power state is On, force system reset.")  # updated by arthur,
+        cmd_reset = 'ipmcset -d frucontrol -v 0\n'
+        ret_reset = 'Do you want to continue'
+        cmd_confirm = 'Y\n'
+        ret_confirm = 'successfully'
+        cmds = [cmd_reset, cmd_confirm]
+        rets = [ret_reset, ret_confirm]
+        if ssh.login(Hy5Config.BMC_IP, Hy5Config.BMC_USER, Hy5Config.BMC_PASSWORD):
+            return ssh.interaction(cmds, rets)
+        else:
+            logging.error("HY5 Common TC: force system reset failed")
+            return
 
 
 def force_power_cycle(ssh):

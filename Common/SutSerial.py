@@ -196,6 +196,43 @@ class SutControl:
                 logging.debug("is_msg_not_present: timeout")
                 break
 
+    # workaround: fix the captured string printed twice, (updated by arthur)
+    def waitString(self, msg, timeout=10, regex=False):
+        """
+        Read data from Console Redirection port, and wait specified string
+        :param msg: String to be captured
+        :param timeout: Timeout of wait duration
+        :return: True, if get specified string from COM port
+                 False, script has not capture specified string after timeout
+        """
+        t_start = time.time()
+        self.buffer = ""
+        logging.info("Waiting for string:\"{0}\"".format(msg))
+        logging.debug("wait_for_msg: receiving data from serial port...")
+        while True:
+            try:
+                count = self.session.inWaiting()  # Serial port buffer data
+                if count != 0:
+                    rev = self.session.read(count).decode('utf-8')
+                    self.buffer += rev
+                    rev = self.cleanup_data(self.buffer)
+                    if not regex:
+                        if msg in rev:
+                            logging.info("Find string:{0}".format(msg))
+                            return True
+                    else:
+                        if re.search(msg, rev, re.M):
+                            logging.debug("Find string:{0}".format(msg))
+                            return True
+                time.sleep(0.1)
+            except Exception as e:
+                logging.error("Error:{0}".format(e))
+            now = time.time()
+            spent_time = (now - t_start)
+            if spent_time > timeout:
+                logging.info("Can not find string(timeout):{0}".format(msg))
+                return False
+
     # boot with hotkey pressed, and check whether boot is successful
     # key: the hotkey to be sent
     # flag: message from SUT, which indicates it's time to press hotkey
