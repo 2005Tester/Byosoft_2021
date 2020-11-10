@@ -28,7 +28,8 @@
         }
 
         h3 {
-            font-size: 16px
+            font-size: 16px;
+			text-align: right;
         }
 
         h4 {
@@ -7303,5 +7304,8 @@
     });
 
 </script>
+    <div class="ibox-title">
+		<h3>Byosoft Automation Test Team</h3>
+
 </body>
 </html>

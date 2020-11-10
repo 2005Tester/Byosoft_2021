@@ -133,7 +133,7 @@ class SutControl:
                     return True
 
             if self.is_timeout(start_time, delay):
-                if not delay == 0:
+                if delay > 5:
                     logging.info("is_msg_present_general: {0} not found after waiting {1} seconds".format(msg, delay))
                 break
 
@@ -310,15 +310,18 @@ class SutControl:
 
     # Navigate in a setup page and verify whether multiple setup options are correct
     def navigate_and_verify(self, key, setup_options, try_counts):
-        for i in range(0, try_counts):
+        #for i in range(0, try_counts):
+        while setup_options and try_counts:
             self.send_keys(key)
+            try_counts -=1
             time.sleep(2)
             for option in setup_options:
-                if self.is_msg_present_general(option, 0):
+                if self.is_msg_present_general(option, 3):
                     setup_options.pop(setup_options.index(option))
-                    if len(setup_options) == 0:
-                        logging.info("All the setup options are verified")
-                        return True
-        for option in setup_options:
-            logging.info("{0} not verified".format(option)) 
+        if len(setup_options) == 0:
+            logging.info("All the setup options are verified")
+            return True
+        else:
+            for option in setup_options:
+                logging.info("{0} not verified".format(option)) 
 
