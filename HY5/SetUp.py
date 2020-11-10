@@ -8,8 +8,7 @@
 # -*- encoding=utf8 -*-
 import logging
 import time
-from HY5 import Hy5TcLib
-from HY5 import Hy5Config
+from HY5 import Hy5TcLib, Hy5Config, Hy5BasicFunc
 
 # Key mapping
 ENTER = [chr(0x0D)]
@@ -186,3 +185,254 @@ def change_cpu_cores(serial, ssh, n, num):
     logging.info("<TC010><Result>Change CPU Cores:Pass")
     return True
     """
+    
+# Setup: Load default and setting saving
+def Load_Default_Test(serial, ssh):
+    logging.info("<TC013><Tittle>Load default and setting saving Test:Start")
+    logging.info("<TC013><Description>BIOS Load default Test")
+    option_bfo = ['<UEFI Boot Type>', '<Boot Retry>']
+    option_aft = ['<Legacy Boot Type>', '<Cold Boot>']
+    key1 = Key.RIGHT * 2 + Key.DOWN + Key.ENTER
+    key2 = Key.RIGHT * 4
+    key3 = Key.F9 + Key.Y + Key.F10 + Key.Y
+    if not toBIOS(serial, ssh):
+        return
+    serial.send_keys_with_delay(key1)
+    if not serial.waitString('System Time', timeout=15):
+        logging.info("<TC013><Result>Load default and setting saving Test:Fail")
+        return
+    serial.send_keys_with_delay(key2)
+    if not verify_setup_options_down(serial, option_bfo, 14):
+        logging.info("<TC013><Result>Load default and setting saving Test:Fail")
+        return
+    serial.send_keys_with_delay(Key.LEFT + Key.RIGHT)
+    serial.send_keys_with_delay(Key.ENTER + Key.DOWN + Key.ENTER)
+    serial.send_keys_with_delay(Key.DOWN * 2 + Key.ENTER + Key.DOWN + Key.ENTER)
+    # if not verify_setup_options(serial, options_new, 12):
+    #     return
+    serial.send_keys(Key.F10 + Key.Y)
+    if not toBIOSnp(serial):
+        logging.info("<TC013><Result>Load default and setting saving Test:Fail")
+        return
+    serial.send_keys_with_delay(key1)
+    if not serial.waitString('System Time', timeout=15):
+        logging.info("<TC013><Result>Load default and setting saving Test:Fail")
+        return
+    serial.send_keys_with_delay(key2)
+    if not verify_setup_options_down(serial, option_aft, 14):
+        logging.info("<TC013><Result>Load default and setting saving Test:Fail")
+        if not reset_default(serial, ssh):
+            return
+    serial.send_keys(key3)
+    if not toBIOSnp(serial):
+        logging.info("<TC013><Result>Load default and setting saving Test:Fail")
+        if not reset_default(serial, ssh):
+            return
+    serial.send_keys_with_delay(key1)
+    if not serial.waitString('System Time', timeout=15):
+        logging.info("<TC013><Result>Load default and setting saving Test:Fail")
+        return
+    serial.send_keys_with_delay(key2)
+    time.sleep(1)
+    if not verify_setup_options_down(serial, option_bfo, 14):
+        logging.info("<TC013><Result>Load default and setting saving Test:Fail")
+        if not reset_default(serial, ssh):
+            return
+    logging.info("<TC013><Result>Load default and setting saving Test:Pass")
+    return True
+
+
+# updated by arthur, Testcase_Static_Turbo_001
+def staticTurbo(serial, ssh):
+    logging.info("<TC021><Tittle>静态Turbo默认值测试:Start")
+    logging.info("<TC021><Description>支持静态turbo")
+    key1 = RIGHT * 2 + DOWN + ENTER
+    key2 = RIGHT + DOWN * 8 + ENTER + DOWN * 6 + ENTER
+    if not Hy5BasicFunc.toBIOS(serial, ssh):
+        logging.info("<TC021><Result>静态Turbo默认值测试:Fail")
+        return
+    serial.send_keys_with_delay(key1)
+    if not serial.waitString('System Time', timeout=15):
+        logging.info("<TC021><Result>静态Turbo默认值测试:Fail")
+        return
+    serial.send_keys_with_delay(key2)
+    if not Hy5BasicFunc.verify_setup_options_down(serial, ['Static Turbo\s+<Disabled>'], 5):
+        logging.info("<TC021><Result>静态Turbo默认值测试:Fail")
+        return
+    serial.send_keys_with_delay(Hy5BasicFunc.Key.ESC)
+    serial.send_keys_with_delay(ENTER)
+    serial.send_keys_with_delay(DOWN + ENTER + UP)
+    if not serial.waitString('Manual', timeout=10):
+        logging.info("<TC021><Result>静态Turbo默认值测试:Fail")
+        return
+    serial.send_keys_with_delay(UP)
+    if not serial.waitString('Auto', timeout=10):
+        logging.info("<TC021><Result>静态Turbo默认值测试:Fail")
+        return
+    logging.info("<TC021><Result>静态Turbo默认值测试:Pass")
+    return True
+
+
+# Testcase_UFS_001
+def ufs(serial, ssh):
+    logging.info("<TC022><Tittle>UFS默认值测试:Start")
+    logging.info("<TC022><Description>支持UFS设置")
+    key1 = RIGHT * 2 + DOWN + ENTER
+    key2 = RIGHT + DOWN * 8 + ENTER + DOWN * 6 + ENTER
+    key3 = DOWN * 2 + ENTER
+    key4 = F9 + Y + F10 + Y
+    if not boot_to_bios_config(serial, ssh):
+        logging.info("<TC022><Result>UFS默认值测试:Fail")
+        return
+    serial.send_keys(key4)
+    if not Hy5BasicFunc.toBIOSnp(serial):
+        logging.info("<TC022><Result>UFS默认值测试:Fail")
+        return
+    serial.send_keys_with_delay(key1)
+    if not serial.waitString('System Time', timeout=15):
+        logging.info("<TC022><Result>UFS默认值测试:Fail")
+        return
+    serial.send_keys_with_delay(key2)
+    serial.send_keys_with_delay(key3)
+    if not Hy5BasicFunc.verify_setup_options_up(serial, ['<Enabled>\s+UFS'], 4):
+        logging.info("<TC022><Result>UFS默认值测试:Fail")
+        return
+    serial.send_keys_with_delay(Hy5BasicFunc.Key.ESC)
+    serial.send_keys_with_delay(ENTER)
+    serial.send_keys_with_delay(ENTER + DOWN)
+    if not serial.waitString('Disabled_Max', timeout=10):
+        logging.info("<TC022><Result>UFS默认值测试:Fail")
+        return
+    serial.send_keys_with_delay(DOWN)
+    if not serial.waitString('Disabled_Min', timeout=10):
+        logging.info("<TC022><Result>UFS默认值测试:Fail")
+        return
+    logging.info("<TC022><Result>UFS默认值测试:Pass")
+    return True
+
+# Testcase_RRQIRQ_001
+def rrQIRQ(serial, ssh):
+    logging.info("<TC023><Tittle>Setup菜单RRQ和IRQ选项默认值测试:Start")
+    logging.info("<TC023><Description>支持RRQ&IRQ设置")
+    key1 = RIGHT * 2 + DOWN + ENTER
+    key2 = RIGHT + DOWN * 8 + ENTER + DOWN * 2 + ENTER * 2
+    key3 = DOWN * 8 + ENTER + DOWN * 4 + ENTER
+    key4 = DOWN * 9 + ENTER
+    if not Hy5BasicFunc.toBIOS(serial, ssh):
+        logging.info("<TC023><Result>Setup菜单RRQ和IRQ选项默认值测试:Fail")
+        return
+    serial.send_keys_with_delay(key1)
+    if not serial.waitString('System Time', timeout=15):
+        logging.info("<TC023><Result>Setup菜单RRQ和IRQ选项默认值测试:Fail")
+        return
+    serial.send_keys_with_delay(key2)
+    if not Hy5BasicFunc.verify_setup_options_down(serial, ['Local/Remote Threshold\s+<Auto>'], 12):
+        logging.info("<TC023><Result>Setup菜单RRQ和IRQ选项默认值测试:Fail")
+        return
+    serial.send_keys_with_delay(Hy5BasicFunc.Key.ESC)
+    serial.send_keys_with_delay(ENTER)
+    serial.send_keys_with_delay(key3)
+    if not Hy5BasicFunc.verify_setup_options_down(serial, ['\[7\]\s+IRQ Threshold', '\[7\]\s+RRQ Threshold'], 12):
+        logging.info("<TC023><Result>Setup菜单RRQ和IRQ选项默认值测试:Fail")
+        return
+    serial.send_keys_with_delay(Hy5BasicFunc.Key.ESC)
+    serial.send_keys_with_delay(ENTER)
+    serial.send_keys_with_delay(key4)
+    serial.send_data('10')
+    serial.send_keys_with_delay(ENTER + DOWN + ENTER)
+    serial.send_data('20')
+    serial.send_keys_with_delay(ENTER)
+    serial.send_keys(F10 + Y)
+    if not Hy5BasicFunc.toBIOSnp(serial):
+        logging.info("<TC023><Result>Setup菜单RRQ和IRQ选项默认值测试:Fail")
+        return
+    serial.send_keys_with_delay(key2)
+    if not Hy5BasicFunc.verify_setup_options_down(serial, ['\[10\]\s+IRQ Threshold', '\[20\]\s+RRQ Threshold'], 12):
+        logging.info("<TC023><Result>Setup菜单RRQ和IRQ选项默认值测试:Fail")
+        return
+    logging.info("<TC023><Result>Setup菜单RRQ和IRQ选项默认值测试:Pass")
+    return True
+
+# Testcase_DRAM_RAPL_001
+def dramRAPL(serial, ssh):
+    logging.info("<TC024><Tittle>菜单项DRAM RAPL选单检查:Start")
+    logging.info("<TC024><Description>支持DRAM RAPL设置")
+    key1 = RIGHT * 2 + DOWN + ENTER
+    key2 = RIGHT + DOWN * 8 + ENTER + DOWN * 6 + ENTER
+    key3 = DOWN * 11 + ENTER * 2
+    key4 = ENTER + DOWN + ENTER + UP
+    if not Hy5BasicFunc.toBIOS(serial, ssh):
+        logging.info("<TC024><Result>菜单项DRAM RAPL选单检查:Fail")
+        return
+    serial.send_keys_with_delay(key1)
+    if not serial.waitString('System Time', timeout=15):
+        logging.info("<TC024><Result>菜单项DRAM RAPL选单检查:Fail")
+        return
+    serial.send_keys_with_delay(key2)
+    serial.send_keys_with_delay(key3)
+    if not Hy5BasicFunc.verify_setup_options_up(serial, ['DRAM RAPL\s+<Enabled>'], 4):
+        logging.info("<TC024><Result>菜单项DRAM RAPL选单检查:Fail")
+        return
+    serial.send_keys_with_delay(Hy5BasicFunc.Key.ESC)
+    serial.send_keys_with_delay(key4)
+    if not serial.waitString('Disabled', timeout=10):
+        logging.info("<TC024><Result>菜单项DRAM RAPL选单检查:Fail")
+        return
+    logging.info("<TC024><Result>菜单项DRAM RAPL选单检查:Pass")
+    return True
+
+# updated by arthur, press Delete
+def pressDel(serial, ssh):
+    if not Hy5TcLib.force_reset(ssh):
+        return
+    if not serial.waitString('Press Del go to Setup Utility', timeout=100):
+        return
+    serial.send_keys(DEL)
+    if not serial.waitString("Press F2", timeout=15):
+        return
+    return True
+
+# Testcase_BiosPasswordSecurity_012, 013, 014
+# 输入错误密码次数测试_阈值内输入错误密码, 输入错误密码次数测试_阈值内连续输入错误密码后输入正确密码和输入错误密码次数测试_超出阈值不影响下一次登录
+def pwdSecurity(serial, ssh):
+    logging.info("<TC025><Tittle>输入错误密码次数测试:Start")
+    logging.info("<TC025><Description>输入错误密码次数测试包含密码错误，次数测试和超出阈值不影响下一次登录")
+    error_info = 'Enter incorrect password 3 times,System Locked'
+    if not pressDel(serial, ssh):
+        logging.info('<TC025><Result>输入错误密码次数测试:Fail')
+        return
+    for i in range(2):
+        logging.info("Send wrong password...")
+        serial.send_data("Admin@900X")
+        serial.send_data(chr(0x0D))  # Send Enter
+        if not serial.waitString('Invalid Password', timeout=10):
+            logging.info('<TC025><Result>输入错误密码次数测试:Fail')
+            return
+        serial.send_data(chr(0x0D))  # Send Enter
+    logging.info('Send the right password...')
+    serial.send_data('Admin@9000')
+    serial.send_data(chr(0x0D))
+    serial.send_data(chr(0x0D))
+    if not serial.waitString('BIOS Configuration', timeout=30):
+        logging.info('<TC025><Result>输入错误密码次数测试:Fail')
+        return
+    if not pressDel(serial, ssh):
+        logging.info('<TC025><Result>输入错误密码次数测试:Fail')
+        return
+    for i in range(3):
+        logging.info("Send wrong password...")
+        serial.send_data("Admin@900X")
+        serial.send_data(chr(0x0D))  # Send Enter
+        if not serial.waitString('Invalid Password', timeout=10):
+            logging.info('<TC025><Result>输入错误密码次数测试:Fail')
+            return
+        serial.send_data(chr(0x0D))  # Send Enter
+    if not serial.waitString(error_info, timeout=10):
+        logging.info('<TC025><Result>输入错误密码次数测试:Fail')
+        return
+    serial.send_keys(Hy5BasicFunc.Key.CTRL_ALT_DELETE)
+    if not Hy5BasicFunc.toBIOSnp(serial):
+        logging.info('<TC025><Result>输入错误密码次数测试:Fail')
+        return
+    logging.info('<TC025><Result>输入错误密码次数测试:Pass')
+    return True
