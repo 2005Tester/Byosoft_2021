@@ -69,8 +69,9 @@ def gen_report():
 
 
 def debug_run():
-    while True:
-        SetUp.change_cpu_cores(ser, sshins, 14, 4)
+    for i in range(100):
+        logging.info("Test count {0}".format(i))
+        SetUp.change_cpu_cores(ser, sshins)
 
 
 def test_run():

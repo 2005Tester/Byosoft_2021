@@ -10,17 +10,20 @@
 import os
 import datetime
 
-timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 
 #Report Setting
 REPORT_TEMPLATE = "C:\\autotest\\Report\\template_HY5"
 
 # Enviroment settigs
+timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 LOG_DIR = 'c:\\daily\\HY5\\{0}'.format(timestamp)
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 SERIAL_LOG = os.path.join(LOG_DIR, 'serial.log')
 BINARY_DIR = '\\\\172.16.0.73\\HY5_Binary'
+
+# Serial Port Configuration
+BIOS_SERIAL = "com3"
 
 # BMC Configuration
 BMC_IP = '192.168.2.100'

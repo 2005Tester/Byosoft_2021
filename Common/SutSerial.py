@@ -12,6 +12,7 @@ import time
 import re
 import logging
 
+ENTER = [chr(0x0D)]
 
 class SutControl:
     def __init__(self, port, baudrate, timeout, log):
@@ -325,3 +326,23 @@ class SutControl:
             for option in setup_options:
                 logging.info("{0} not verified".format(option)) 
 
+    def find_setup_option(self, key, setupoption, try_counts):
+        while try_counts:
+            self.send_keys(key)
+            try_counts -=1
+            time.sleep(2)
+            if self.is_msg_present_general(setupoption, 1):
+                logging.info("{0} found".format(setupoption))
+                self.send_keys(ENTER)
+                try_counts = 0
+                return True
+    
+    def enter_setup_menu(self, key, option_path, try_counts, confirm_msg):
+        for option in option_path:
+            if not self.find_setup_option(key, option, try_counts):
+                logging.info("{0} not found".format(option))
+                return
+        if not self.is_msg_present_general(confirm_msg):
+            return
+        logging.info("Enter {0} successfully".format(option_path[-1]))
+        return True

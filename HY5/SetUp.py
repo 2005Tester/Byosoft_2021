@@ -159,32 +159,20 @@ def disable_legacy_boot(serial, ssh):
 
 
 # Chnage CPU Cores to specific number, n is times of change value hotkey pressed, not core number
-def change_cpu_cores(serial, ssh, n, num):
+def change_cpu_cores(serial, ssh):
+    msg = "Memory RAS Configuration Setup"
+    option_path = [">CPU Configuration", ">Memory Configuration", ">Memory RAS Configuration"]
     logging.info("<TC010><Tittle>Change CPU Cores:Start")
     logging.info("<TC010><Description>Change CPU Core counts in setup and verify in OS")
-    keys_cpu_core = RIGHT*1 + DOWN*8 + ENTER*2
     if not boot_to_bios_config(serial, ssh):
         return
+    serial.send_keys(RIGHT)
     logging.info("Changing cpu core counts")
-    serial.send_keys_with_delay(keys_cpu_core)
-    serial.send_keys(F6*14 + F10 + Y)
-    time.sleep(5)
+    if not serial.enter_setup_menu(DOWN, option_path, 30, msg):
+        logging.info("Failed to Enter Memory RAS Configuration")
+        return
+    logging.info("Successful")
 
-
-    """
-    if not continue_to_bootmanager(serial):
-        return
-    logging.info("Booting to Ubuntu")
-    serial.send_keys(DOWN + ENTER) # boot to ubuntu
-    if not serial.is_msg_present('byosoft-2488H-V6 login'):
-        logging.info("Boot to UEFI Ubuntu:Fail")
-        return
-    if not Hy5TcLib.verify_cpucore_count(ssh, num):
-        logging.info("<TC010><Result>Change CPU Cores:Fail")
-        return
-    logging.info("<TC010><Result>Change CPU Cores:Pass")
-    return True
-    """
     
 # Setup: Load default and setting saving
 def Load_Default_Test(serial, ssh):
