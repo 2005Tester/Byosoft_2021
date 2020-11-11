@@ -3,9 +3,9 @@
 __author__ = 'arthur'
 
 import logging
-import time
 
 from HY5 import Hy5TcLib, updatebios, Hy5Config
+from HY5.Hy5Config import Key
 
 # Basic Function Test Case: Flash, POST, Boot, Setup, OS Installation, PM, Device, Chipsec Test and Source code cons.
 msg = 'Press Del go to Setup Utility'
@@ -22,22 +22,6 @@ pwd_info = 'The current password is the default password.Please update password!
 CPU_info = ['Processor ID\s+0005065B', 'Processor Frequency\s+2.500GHz', 'Microcode Revision\s+0700001E']
 DIMM_info = ['DIMM000\s+S0.CA.D0:2933MT/s Hynix DRx4 32GB RDIMM', 'DIMM100\s+S1.CA.D0:2933MT/s Hynix DRx4 32GB RDIMM']
 
-# Key mapping
-class Key:
-    ENTER = [chr(0x0D)]
-    DEL = [chr(0x7F)]
-    F6 = [chr(0x1b), chr(0x5b), chr(0x31), chr(0x37), chr(0x7e)]
-    F9 = [chr(0x1b), chr(0x5b), chr(0x32), chr(0x30), chr(0x7e)]
-    F10 = [chr(0x1b), chr(0x5b), chr(0x32), chr(0x31), chr(0x7e)]
-    F11 = [chr(0x1b), chr(0x5b), chr(0x32), chr(0x33), chr(0x7e)]
-    ESC = '\33' + ' '
-    F12 = '\33' + '[24~'
-    CTRL_ALT_DELETE = '\33R\33r\33R'
-    UP = [chr(0x1b), chr(0x5b), chr(0x41)]
-    DOWN = [chr(0x1b), chr(0x5b), chr(0x42)]
-    LEFT = [chr(0x1b), chr(0x5b), chr(0x44)]
-    RIGHT = [chr(0x1b), chr(0x5b), chr(0x43)]
-    Y = [chr(0x59)]
 
 # to BIOS with power action, for restore test Env,
 def toBIOS(serial, ssh):
@@ -45,7 +29,7 @@ def toBIOS(serial, ssh):
         logging.info("Rebooting SUT Failed.")
         return
     logging.info("Booting to setup")
-    if not serial.waitString(msg, timeout=100):
+    if not serial.waitString(msg, timeout=300):
         return
     serial.send_keys_with_delay(Key.DEL)
     logging.info("Hot Key sent")
@@ -65,7 +49,7 @@ def toBIOS(serial, ssh):
 # to BIOS without power action
 def toBIOSnp(serial):
     logging.info("HaiYan5 Common Test Lib: boot to setup")
-    if not serial.waitString(msg, timeout=150):
+    if not serial.waitString(msg, timeout=300):
         return
     serial.send_keys_with_delay(Key.DEL)
     logging.info("Hot Key sent")
@@ -86,7 +70,7 @@ def pressF12(serial, ssh):
         logging.info("Rebooting SUT Failed.")
         return
     logging.info("Booting to PXE")
-    if not serial.waitString(msg2, timeout=100):
+    if not serial.waitString(msg2, timeout=300):
         return
     serial.send_data(Key.F12)
     logging.info("Hot Key sent")
@@ -123,7 +107,7 @@ def verify_setup_options_down(serial, setup_options, try_count):
     if serial.navigate_and_verify(Key.UP, setup_options, try_count):
         return True
 
-# Flash: Upgrade flash, Parallel flash and Downgrade flash (TBD)
+# Flash: Upgrade flash, Parallel flash and Downgrade flash
 def Upgrade_Test(serial):
     logging.info("<TC010><Tittle>Update BIOS by BMC:Start")
     logging.info("<TC010><Description>Outband BIOS update")

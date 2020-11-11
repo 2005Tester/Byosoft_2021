@@ -41,4 +41,22 @@ OS_USER = 'root'
 OS_PASSWORD = 'byo@123'
 
 
+# Key mapping
+class Key:
+    ENTER = [chr(0x0D)]
+    DEL = [chr(0x7F)]
+    F6 = [chr(0x1b), chr(0x5b), chr(0x31), chr(0x37), chr(0x7e)]
+    F9 = [chr(0x1b), chr(0x5b), chr(0x32), chr(0x30), chr(0x7e)]
+    F10 = [chr(0x1b), chr(0x5b), chr(0x32), chr(0x31), chr(0x7e)]
+    F11 = [chr(0x1b), chr(0x5b), chr(0x32), chr(0x33), chr(0x7e)]
+    ESC = '\33' + ' '
+    F12 = '\33' + '[24~'
+    CTRL_ALT_DELETE = '\33R\33r\33R'
+    UP = [chr(0x1b), chr(0x5b), chr(0x41)]
+    DOWN = [chr(0x1b), chr(0x5b), chr(0x42)]
+    LEFT = [chr(0x1b), chr(0x5b), chr(0x44)]
+    RIGHT = [chr(0x1b), chr(0x5b), chr(0x43)]
+    Y = [chr(0x59)]
+
+
 
