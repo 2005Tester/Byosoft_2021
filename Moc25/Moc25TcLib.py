@@ -17,6 +17,7 @@ from Moc25 import Moc25Config
 CTRL_ALT_DELETE = '\33R\33r\33R'
 ENTER = [chr(0x0D)]
 
+
 def dump_smbios(ssh):
     if ssh.login(Moc25Config.OS_IP, Moc25Config.OS_USER, Moc25Config.OS_PASSWORD):
         logging.info("Dumping smbios table...")
@@ -40,6 +41,7 @@ def cpuinfo(ssh):
         logging.info("Dumping cpuinfo...")
         return ssh.dump_info('cat /proc/cpuinfo', Moc25Config.LOG_DIR)
 
+
 # Check whether cpu core count is equal to "num" in OS
 def verify_cpucore_count(ssh, num):
     if ssh.login(Moc25Config.OS_IP, Moc25Config.OS_USER, Moc25Config.OS_PASSWORD):
@@ -52,6 +54,7 @@ def verify_cpucore_count(ssh, num):
         else:
             logging.info("Core count is not correct.")
             return
+
 
 def force_reset(serial):
     logging.info("Sending CTRL+ALT+DEL to reboot SUT")
@@ -106,8 +109,6 @@ def reset_in_os(serial):
     
     logging.info("shutdown command sent successfully")
     return True
-
-
 
 
 def dc_cycling(ssh, serial, n):

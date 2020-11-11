@@ -17,7 +17,7 @@ import sys
 import os
 
 
-class sftp():
+class sftp:
     def __init__(self, host_ip, username, password):
         self.host_ip = host_ip
         self.username = username
@@ -36,7 +36,7 @@ class sftp():
         return self.sftp.listdir()
 
 
-class SshConnection():
+class SshConnection:
     def __init__(self):
         self.ssh_client = paramiko.SSHClient()
  
@@ -66,7 +66,7 @@ class SshConnection():
         res = stdout.read().decode()
         return res
 
-    # dumm information to a log file
+    # dump information to a log file
     def dump_info(self, command, log_dir):
         log = os.path.join(log_dir, ''.join((command.split('/')[-1], '.log')))
         stdin, stdout, stderr = self.ssh_client.exec_command(command)

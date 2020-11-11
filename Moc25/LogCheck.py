@@ -12,6 +12,7 @@ import logging
 from Common.LogAnalyzer import LogAnalyzer
 from Moc25 import Moc25Config
 
+
 # Test case for log analysis
 def check_log(log_dir):
     log = LogAnalyzer(log_dir)
@@ -21,6 +22,7 @@ def check_log(log_dir):
         logging.info("<TC900><Result>Check BIOS Log:Pass")
     else:
         logging.info("<TC900><Result>Check BIOS Log:Fail")
+
 
 # check post information
 def check_post_information(log_dir):

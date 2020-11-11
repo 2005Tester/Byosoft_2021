@@ -10,7 +10,9 @@ import json
 from HY5 import daily
 
 
-def update_result(data, id, log):  #data = TestRunInfo, id: test case id, result: pass/fail/skip, read from log, time: test execution time, read from log, log: path of overall log
+def update_result(data, id, log):
+    # data = TestRunInfo, id: test case id, result: pass/fail/skip, read from log,
+    # time: test execution time, read from log, log: path of overall log
     result = 'Skip'
     spend_time = '0s'
 
@@ -32,10 +34,8 @@ def update_result(data, id, log):  #data = TestRunInfo, id: test case id, result
     data["testResult"][id]["spendTime"] = spend_time
 
 
-
-
 def update_overview(data):
-#    test_all = 7
+    # test_all = 7
     test_pass = 0
     test_fail = 0
     test_skip = 0
@@ -67,6 +67,7 @@ def update_overview(data):
 
     with open('tmp\\result.json','w') as f:
         json.dump(daily.TestRunInfo, f)
+
 
 def gen_html(template, dst):
     old = "ResultDict"

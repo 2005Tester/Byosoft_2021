@@ -34,8 +34,6 @@ ser = SutSerial.SutControl("com5", 115200, 0.5, Moc25Config.SERIAL_LOG)
 ssh_bmc = ssh.SshConnection()
 
 
-
-
 def gen_report():
     template = Moc25Config.REPORT_TEMPLATE
     report = ReportGenerator(template, os.path.join(log_dir, "test.log"), os.path.join(log_dir, "report.html"))

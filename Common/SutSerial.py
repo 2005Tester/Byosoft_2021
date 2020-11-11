@@ -14,6 +14,7 @@ import logging
 
 ENTER = [chr(0x0D)]
 
+
 class SutControl:
     def __init__(self, port, baudrate, timeout, log):
         self.port = port
@@ -43,13 +44,11 @@ class SutControl:
             self.send_data(char)
         logging.info("key sent") 
 
-
     def send_keys_with_delay(self, keys):
         for char in keys:
             self.send_data(char)
             time.sleep(0.2)
- 
- 
+
     def receive_data(self, size):
         self.session.read(size)
 
@@ -58,7 +57,7 @@ class SutControl:
         now = time.time()
         spent_time = (now - t_start)
         if spent_time > timeout:
-            #logging.info("Check message in serial output time out.")
+            # logging.info("Check message in serial output time out.")
             return True
 
     def capture_data(self):
@@ -138,7 +137,6 @@ class SutControl:
                     logging.info("is_msg_present_general: {0} not found after waiting {1} seconds".format(msg, delay))
                 break
 
-   
     def is_msg_present(self, msg):
         logging.info("Waiting for string:\"{0}\"".format(msg))
         start_time = time.time()
@@ -157,7 +155,7 @@ class SutControl:
                         logging.info("Send password...")
                     if self.find_msg(msg, data):
                         return True
-                    #else:
+                    # else:
                     #    keys = [chr(0x1b), chr(0x5b), chr(0x42), chr(0x1b), chr(0x5b), chr(0x41)]
                     #    self.send_keys(keys)
             except Exception as e:
@@ -166,7 +164,6 @@ class SutControl:
             if self.is_timeout(start_time, 300):
                 logging.debug("is_msg_present: timeout")
                 break
-
 
     # verify specified message (msg1) should not appeare in serial log, but msg2 should be present
     def is_msg_not_present(self, msg1, msg2):
@@ -259,7 +256,6 @@ class SutControl:
             if self.is_timeout(start_time, timeout):
                 break
 
-
     # boot with hotkey pressed, and check whether boot is successful
     def boot_with_hotkey(self, key, msg, timeout):
         start_time = time.time()
@@ -311,7 +307,7 @@ class SutControl:
 
     # Navigate in a setup page and verify whether multiple setup options are correct
     def navigate_and_verify(self, key, setup_options, try_counts):
-        #for i in range(0, try_counts):
+        # for i in range(0, try_counts):
         while setup_options and try_counts:
             self.send_keys(key)
             try_counts -=1

@@ -27,7 +27,6 @@ class LogAnalyzer:
             logging.info("{0} doesn't exist".format(log))
         return log_list
 
-
     def check_bios_log(self):
         ast = 0
         exception = 0
@@ -51,7 +50,6 @@ class LogAnalyzer:
         if (ast + exception + error) == 0:    
             return True
 
-
     def check_cpuinfo(self, cores):
         cpuinfo_log = os.path.join(self.log_dir, "cpuinfo.log")
         with open(cpuinfo_log, 'r') as f:
@@ -65,7 +63,6 @@ class LogAnalyzer:
                 return 
         logging.info("Core count is correct")
         return True
-
 
     def check_smbios(self):
         passed_test = 0

@@ -11,10 +11,10 @@ import os
 import datetime
 
 
-#Report Setting
+# Report Setting
 REPORT_TEMPLATE = "C:\\autotest\\Report\\template_HY5"
 
-# Enviroment settigs
+# Environment settings
 timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 LOG_DIR = 'c:\\daily\\HY5\\{0}'.format(timestamp)
 if not os.path.exists(LOG_DIR):

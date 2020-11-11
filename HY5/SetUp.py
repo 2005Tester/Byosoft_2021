@@ -115,6 +115,7 @@ def enable_full_debug_msg(serial, ssh):
     logging.info("<TC006><Result>Enable full debug message:Pass")
     return True
 
+
 # Disable full debug message
 def disable_full_debug_msg(serial, ssh):
     logging.info("<TC007><Tittle>Disable full debug message:Start")
@@ -129,6 +130,7 @@ def disable_full_debug_msg(serial, ssh):
     logging.info("<TC007><Result>Disable full debug message:Pass")
     return True
 
+
 # Enable legacy boot
 def enable_legacy_boot(serial, ssh):
     logging.info("<TC008><Tittle>Enable Legacy Boot:Start")
@@ -142,6 +144,7 @@ def enable_legacy_boot(serial, ssh):
         return
     logging.info("<TC008><Result>Enable Legacy boot:Pass")
     return True
+
 
 # Disable legacy boot
 def disable_legacy_boot(serial, ssh):
@@ -173,7 +176,7 @@ def change_cpu_cores(serial, ssh):
         return
     logging.info("Successful")
 
-    
+
 # Setup: Load default and setting saving
 def Load_Default_Test(serial, ssh):
     logging.info("<TC013><Tittle>Load default and setting saving Test:Start")
@@ -298,6 +301,7 @@ def ufs(serial, ssh):
     logging.info("<TC022><Result>UFS默认值测试:Pass")
     return True
 
+
 # Testcase_RRQIRQ_001
 def rrQIRQ(serial, ssh):
     logging.info("<TC023><Tittle>Setup菜单RRQ和IRQ选项默认值测试:Start")
@@ -341,6 +345,7 @@ def rrQIRQ(serial, ssh):
     logging.info("<TC023><Result>Setup菜单RRQ和IRQ选项默认值测试:Pass")
     return True
 
+
 # Testcase_DRAM_RAPL_001
 def dramRAPL(serial, ssh):
     logging.info("<TC024><Tittle>菜单项DRAM RAPL选单检查:Start")
@@ -369,6 +374,7 @@ def dramRAPL(serial, ssh):
     logging.info("<TC024><Result>菜单项DRAM RAPL选单检查:Pass")
     return True
 
+
 # updated by arthur, press Delete
 def pressDel(serial, ssh):
     if not Hy5TcLib.force_reset(ssh):
@@ -379,6 +385,7 @@ def pressDel(serial, ssh):
     if not serial.waitString("Press F2", timeout=15):
         return
     return True
+
 
 # Testcase_BiosPasswordSecurity_012, 013, 014
 # 输入错误密码次数测试_阈值内输入错误密码, 输入错误密码次数测试_阈值内连续输入错误密码后输入正确密码和输入错误密码次数测试_超出阈值不影响下一次登录

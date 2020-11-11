@@ -39,6 +39,7 @@ def cpuinfo(ssh):
         logging.info("Dumping cpuinfo...")
         return ssh.dump_info('cat /proc/cpuinfo', Hy5Config.LOG_DIR)
 
+
 # Check whether cpu core count is equal to "num" in OS
 def verify_cpucore_count(ssh, num):
     if ssh.login(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD):
@@ -52,7 +53,6 @@ def verify_cpucore_count(ssh, num):
             logging.info("Core count is not correct.")
             return
 
-        
 
 def dc_cycling(ssh, serial, n):
     for i in range(n):

@@ -14,14 +14,14 @@ import zipfile
 import json
 import os
 
-class Gitlab():
+
+class Gitlab:
     def __init__(self, projectid, access_token):
         self.projectid = projectid
         self.access_token = access_token
         self.base_url = 'http://221.228.236.229:28090/api/v4/projects/'
         self.header = {'PRIVATE-TOKEN': self.access_token}
         self.jobs_url = ''
- 
 
     def get_latest_job_master(self):
         self.jobs_url = self.base_url + str(self.projectid) + '/jobs'
@@ -46,7 +46,6 @@ class Gitlab():
         print("Commit: {0}".format(job['commit']['short_id']))
         print("BuildFinishedTime:{0}".format(job['finished_at']))
 
-
     def download_image(self, job, dir):
         img_zip = os.path.join(dir, "artifacts.zip")
         if os.path.exists(img_zip):
@@ -65,7 +64,6 @@ class Gitlab():
             return image_path
         else:
             print("Download image fail")
-      
     
     def download_latest_image_master(self, dir):
         latest_job = self.get_latest_job_master()
@@ -84,8 +82,7 @@ class Gitlab():
                 return os.path.join(dst, file_path)
 
 
-
 if __name__ == '__main__':
-    dir = "c:\\daily"
+    dst = "c:\\daily"
     gitlab_icx = Gitlab(12, 'PbLqm_njsnGxCQBtHoMG')
-    print(gitlab_icx.download_latest_image_master(dir))
+    print(gitlab_icx.download_latest_image_master(dst))

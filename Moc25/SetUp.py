@@ -23,11 +23,13 @@ RIGHT = [chr(0x1b), chr(0x5b), chr(0x43)]
 
 Y = [chr(0x59)]
 
+
 # send multiple keys in a row with delay
 def send_keys_with_delay(serial, keys, delay):
     for key in keys:
         serial.send_keys(key)
         time.sleep(delay)
+
 
 # Navigate in a setup page and verify multiple setup options are correct
 def verify_setup_options(serial, setup_options, try_count):
@@ -74,6 +76,7 @@ def boot_to_setup(serial):
         return
     return True
 
+
 # Boot to PXE by hotkey
 def pxe_boot(serial):
     logging.info("<TC006><Tittle>PXE Boot by F12:Start")
@@ -84,6 +87,7 @@ def pxe_boot(serial):
         return
     logging.info("<TC006><Result>PXE Boot by F12:Pass")
     return True
+
 
 # boot to setup menu , socket configuration
 def boot_to_skt_config(serial):
@@ -97,6 +101,7 @@ def boot_to_skt_config(serial):
         return
     logging.info("Moc25 Common Test Lib: boot to socket configuration Pass")
     return True
+
 
 # Boot to UEFI Shell
 def boot_uefi_shell(serial):
@@ -156,6 +161,7 @@ def check_me_status(serial):
         return
     logging.info("<TC004><Result>Check ME Status:Pass")
     return True
+
 
 # check CPU configuration
 def check_cpu_info(serial):

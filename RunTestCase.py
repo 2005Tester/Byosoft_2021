@@ -59,8 +59,6 @@ def check_log():
         logging.info("<TC902><Result>Verify Default CPU Core counts:Fail")
     
 
-
-
 def gen_report():
     template = Hy5Config.REPORT_TEMPLATE
     report = ReportGenerator(template, os.path.join(log_dir, "test.log"), os.path.join(log_dir, "report.html"))

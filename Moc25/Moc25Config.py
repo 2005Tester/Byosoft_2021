@@ -12,14 +12,14 @@ import datetime
 timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 
 
-#BIOS Information
+# BIOS Information
 BIOS_VERSION = '2.0.ID.AL.E.005.01'
 BMC_VERSION = '5.34'
 
-#Report Setting
+# Report Setting
 REPORT_TEMPLATE = "Report\\template_Moc"
 
-# Enviroment settigs
+# Environment settings
 LOG_DIR = 'c:\\daily\\Moc25\\{0}'.format(timestamp)
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)

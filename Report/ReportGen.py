@@ -17,6 +17,7 @@ class ReportGenerator:
         self.template = template
         self.log = log
         self.report = report
+
     # load test log to list
     def load_test_log(self):
         log_lines = []
@@ -93,7 +94,6 @@ class ReportGenerator:
             logging.debug("get_tc_log: failed to get index, <{0}><Tittle>.+:Start or <{0}><Result>.+:.+ not found".format(tcid))
         return log
 
-
     # get testcase description
     def get_des(self, tcid):
         des = "NA"
@@ -101,7 +101,6 @@ class ReportGenerator:
             if re.search("<{0}><Description>.+".format(tcid), line):
                 des = re.findall("<{0}><Description>(.+)".format(tcid), line)[0]
         return des
-
 
     # get number of pass, fail, skip test cases
     def get_result_count(self):
@@ -165,7 +164,6 @@ class ReportGenerator:
             with open(dst, 'w', encoding='utf-8') as new:
                 new.write(data)
 
-    
     # collect and update test case result for email
     def collect_test_result_email_format(self):
         testReport = {}
@@ -191,7 +189,6 @@ class ReportGenerator:
         testReport['Result'] = alltcResult
         return testReport
 
-        
     # convert json format (collect_test_result_email_format()) to html
     def gen_email_report(self, template):
         data_html = json2html.convert(self.collect_test_result_email_format())
