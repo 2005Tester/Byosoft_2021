@@ -28,8 +28,25 @@ Y = [chr(0x59)]
 
 # set by arthur, a common key order
 key2Setup = RIGHT * 2 + DOWN + ENTER
+key2PWD = RIGHT * 3 + DOWN + ENTER  # to password page
+default_pwd = 'Admin@9000'
+new_pwd_9 = 'Admin@9001'
+new_pwd_8 = 'Admin@9!'
+new_pwd_16 = 'Admin@9001Admin@90'
+new_pwd_17 = 'Admin@9001Admin@900'
+simple_pwd = '11111'
+weak_pwd = 'Huawei@CLOUD8!'
+pwd_list1 = ['ADMIN123', 'admin123', 'admin###', 'ADMIN###', 'ADMINadm', '1234####']  # 新密码为2种字符类型，尝试各种组合（共6种组合）
+# System will be locked after send wrong pwd 3 times
+pwd_list2 = ['Administrator@', 'admin@123', 'Administrator1', 'ADMIN@123']  # 新密码为3种字符类型，尝试各种组合（共4种组合）
 # common error msg
+pwd_info_1 = 'Please type in your password'
+pwd_info_2 = 'Please type in your new password'
+pwd_info_3 = 'Please confirm your new password'
+pwd_info_4 = 'Changes have been saved after press'
+invalid_info = 'Invalid Password'
 error_info = 'Enter incorrect password 3 times,System Locked'
+simple_pwd_warning = 'The password fails the dictionary check - it is too simplistic/systematic'
 
 
 # Boot to setup home page after a force reset
@@ -413,27 +430,28 @@ def pwdSecurity(serial, ssh):
         return
     for i in range(2):
         logging.info("Send wrong password...")
-        serial.send_data("Admin@900X")
+        serial.send_data(new_pwd_9)
         serial.send_data(chr(0x0D))  # Send Enter
-        if not serial.waitString('Invalid Password', timeout=15):
+        if not serial.waitString(invalid_info, timeout=15):
             logging.info('<TC025><Result>输入错误密码次数测试:Fail')
             return
         serial.send_data(chr(0x0D))  # Send Enter
     logging.info('Send the right password...')
-    serial.send_data('Admin@9000')
+    serial.send_data(default_pwd)
     serial.send_data(chr(0x0D))
     serial.send_data(chr(0x0D))
     if not serial.waitString('BIOS Configuration', timeout=60):
         logging.info('<TC025><Result>输入错误密码次数测试:Fail')
         return
+    serial.send_keys(Hy5BasicFunc.Key.CTRL_ALT_DELETE)
     if not pressDel(serial, ssh):
         logging.info('<TC025><Result>输入错误密码次数测试:Fail')
         return
     for i in range(3):
         logging.info("Send wrong password...")
-        serial.send_data("Admin@900X")
+        serial.send_data(new_pwd_9)
         serial.send_data(chr(0x0D))  # Send Enter
-        if not serial.waitString('Invalid Password', timeout=15):
+        if not serial.waitString(invalid_info, timeout=15):
             logging.info('<TC025><Result>输入错误密码次数测试:Fail')
             return
         serial.send_data(chr(0x0D))  # Send Enter
@@ -466,3 +484,296 @@ def cnd(serial, ssh):
         return
     logging.info("<TC026><Result>菜单项DRAM RAPL选单检查:Pass")
     return True
+
+
+# set pwd common def function, only for set PWD, do not call it for other cases
+# pwd1 - previous password, pwd2 - new password
+def setPWD(serial, ssh, pwd1, pwd2):
+    if not Hy5BasicFunc.toBIOS(serial, ssh, new_pwd_9):
+        return
+    time.sleep(0.2)
+    serial.send_keys_with_delay(key2Setup)
+    if not serial.waitString('System Time', timeout=60):
+        return
+    serial.send_keys_with_delay(key2PWD)
+    if not serial.waitString(pwd_info_1, timeout=30):
+        return
+    serial.send_data(pwd1)
+    serial.send_data(chr(0x0D))
+    if not serial.waitString(pwd_info_2, timeout=30):
+        return
+    serial.send_data(pwd2)
+    serial.send_data(chr(0x0D))
+    time.sleep(0.2)
+    if not serial.waitString(pwd_info_3, timeout=30):
+        return
+    serial.send_data(pwd2)
+    serial.send_data(chr(0x0D))
+    if not serial.waitString(pwd_info_4, timeout=30):
+        return
+    time.sleep(0.2)
+    # serial.send_keys_with_delay(ENTER)
+    serial.send_keys(F10 + Y)
+    return True
+
+
+# set password with no power action first
+def setPWDnp(serial, pwd1, pwd2):
+    serial.send_data(chr(0x0D))
+    if not serial.waitString(pwd_info_1, timeout=30):
+        return
+    serial.send_data(pwd1)
+    serial.send_data(chr(0x0D))
+    if not serial.waitString(pwd_info_2, timeout=30):
+        return
+    serial.send_data(pwd2)
+    serial.send_data(chr(0x0D))
+    time.sleep(0.2)
+    if not serial.waitString(pwd_info_3, timeout=30):
+        return
+    serial.send_data(pwd2)
+    serial.send_data(chr(0x0D))
+    if not serial.waitString(pwd_info_4, timeout=30):
+        return
+    time.sleep(0.2)
+    # serial.send_keys_with_delay(ENTER)
+    serial.send_keys(F10 + Y)
+    return True
+
+
+# Testcase_BiosPasswordSecurity_007, 019, 020, 021, 022
+def pwdVerification1(serial, ssh):
+    logging.info("<TC027><Tittle>密码修改验证:Start")
+    logging.info("<TC027><Description>BIOS密码应满足产品网络安全要求")
+    if not Hy5BasicFunc.toBIOS(serial, ssh):
+        logging.info("<TC027><Result>密码修改验证:Fail")
+        return
+    serial.send_keys_with_delay(key2Setup)
+    if not serial.waitString('System Time', timeout=60):
+        logging.info("<TC027><Result>密码修改验证:Fail")
+        return
+    serial.send_keys_with_delay(key2PWD)
+    if not serial.waitString(pwd_info_1, timeout=30):
+        logging.info("<TC027><Result>密码修改验证:Fail")
+        return
+    # Testcase_BiosPasswordSecurity_002 新密码长度小于最少字符数要求（8）
+    serial.send_data(simple_pwd)
+    serial.send_data(chr(0x0D))
+    if not serial.waitString(invalid_info, timeout=15):
+        logging.info("<TC027><Result>密码修改验证:Fail")
+        return
+    serial.send_data(chr(0x0D))
+    serial.send_data(chr(0x0D))
+    if not serial.waitString(pwd_info_1, timeout=30):
+        logging.info("<TC027><Result>密码修改验证:Fail")
+        return
+    serial.send_data(default_pwd)
+    serial.send_data(chr(0x0D))
+    if not serial.waitString(pwd_info_2, timeout=30):
+        logging.info("<TC027><Result>密码修改验证:Fail")
+        return
+    serial.send_data(weak_pwd)
+    serial.send_data(chr(0x0D))
+    if not serial.waitString(pwd_info_3, timeout=30):
+        logging.info("<TC027><Result>密码修改验证:Fail")
+        return
+    serial.send_data(weak_pwd)
+    serial.send_data(chr(0x0D))
+    # 弱口令验证
+    if not serial.waitString(simple_pwd_warning, timeout=30):
+        logging.info("<TC027><Result>密码修改验证:Fail")
+        return
+    serial.send_data(chr(0x0D))
+    serial.send_data(chr(0x0D))
+    if not serial.waitString(pwd_info_1, timeout=30):
+        logging.info("<TC027><Result>密码修改验证:Fail")
+        return
+    serial.send_data(default_pwd)
+    serial.send_data(chr(0x0D))
+    # Testcase_BiosPasswordSecurity_004 新密码长度大于最少字符数要求（8）
+    serial.send_data(new_pwd_9)
+    serial.send_data(chr(0x0D))
+    if not serial.waitString(pwd_info_2, timeout=30):
+        logging.info("<TC027><Result>密码修改验证:Fail")
+        return
+    serial.send_data(new_pwd_9)
+    serial.send_data(chr(0x0D))
+    time.sleep(0.2)
+    if not serial.waitString(pwd_info_3, timeout=30):
+        logging.info("<TC027><Result>密码修改验证:Fail")
+        return
+    serial.send_data(new_pwd_9)
+    serial.send_data(chr(0x0D))
+    if not serial.waitString(pwd_info_4, timeout=30):
+        logging.info("<TC027><Result>密码修改验证:Fail")
+        return
+    time.sleep(0.2)
+    serial.send_keys(F10 + Y)
+    if not Hy5BasicFunc.toBIOSnp(serial, new_pwd_9):
+        # logging.info("New pwd has failed to be verified, start to restore the test Env - update bios")
+        # if not Hy5BasicFunc.Upgrade_Test(serial):
+        #     return
+        logging.info("<TC027><Result>密码修改验证:Fail")
+        return
+    logging.info("新密码验证成功，将在最后一个密码修改用例里恢复环境:更新BIOS")
+    # if not Hy5BasicFunc.Upgrade_Test(serial):
+    #     return
+    logging.info("<TC027><Result>密码修改验证:Pass")
+    return True
+
+
+# Testcase_BiosPasswordSecurity_003, 010 设置密码长度度测试_密码长度等于最少字符数(8)
+def pwdVerification2(serial, ssh):
+    logging.info("<TC028><Tittle>设置密码长度度测试:Start")
+    logging.info("<TC028><Description>BIOS密码应满足产品网络安全要求")
+    if not setPWD(serial, ssh, new_pwd_9, new_pwd_8):
+        logging.info("<TC028><Result>设置密码长度度测试:Fail")
+        return
+    if not Hy5BasicFunc.toBIOSnp(serial, new_pwd_8):
+        # logging.info("New pwd has failed to be verified, start to restore the test Env - update bios")
+        # if not Hy5BasicFunc.Upgrade_Test(serial):
+        #     return
+        logging.info("<TC028><Result>设置密码长度度测试:Fail")
+        return
+    logging.info("新密码验证成功，将在最后一个密码修改用例里恢复环境:更新BIOS")
+    # if not Hy5BasicFunc.Upgrade_Test(serial):
+    #     return
+    logging.info("<TC028><Result>设置密码长度度测试:Pass")
+    return True
+
+
+# Testcase_BiosPasswordSecurity_005, 006
+def pwdVerification3(serial, ssh):
+    logging.info("<TC029><Tittle>设置密码最大字符数测试:Start")
+    logging.info("<TC029><Description>BIOS密码应满足产品网络安全要求")
+    if not Hy5BasicFunc.toBIOS(serial, ssh, new_pwd_8):
+        logging.info("<TC029><Result>设置密码最大字符数测试:Fail")
+        return
+    serial.send_keys_with_delay(key2Setup)
+    if not serial.waitString('System Time', timeout=60):
+        return
+    serial.send_keys_with_delay(key2PWD)
+    if not serial.waitString(pwd_info_1, timeout=15):
+        return
+    serial.send_data(new_pwd_17)
+    serial.send_data(chr(0x0D))
+    if not serial.waitString(invalid_info, timeout=15):
+        logging.info("<TC029><Result>设置密码最大字符数测试:Fail")
+        return
+    serial.send_data(chr(0x0D))
+    if not setPWDnp(serial, new_pwd_8, new_pwd_16):
+        logging.info("<TC029><Result>设置密码最大字符数测试:Fail")
+        return
+    if not Hy5BasicFunc.toBIOSnp(serial, new_pwd_16):
+        # logging.info("New pwd has failed to be verified, start to restore the test Env - update bios")
+        # if not Hy5BasicFunc.Upgrade_Test(serial):
+        #     return
+        logging.info("<TC029><Result>设置密码最大字符数测试:Fail")
+        return
+    logging.info("新密码验证成功，将在最后一个密码修改用例里恢复环境:更新BIOS")
+    logging.info("<TC029><Result>设置密码最大字符数测试:Pass")
+    return True
+
+
+# Testcase_BiosPasswordSecurity_008, 009
+def pwdVerification4(serial, ssh):
+    logging.info("<TC030><Tittle>设置密码最大字符数测试:Start")
+    logging.info("<TC030><Description>BIOS密码应满足产品网络安全要求")
+    if not Hy5BasicFunc.toBIOS(serial, ssh, new_pwd_16):
+        logging.info("<TC030><Result>设置密码最大字符数测试:Fail")
+        return
+    serial.send_keys_with_delay(key2Setup)
+    if not serial.waitString('System Time', timeout=60):
+        logging.info("<TC030><Result>设置密码最大字符数测试:Fail")
+        return
+    serial.send_keys_with_delay(key2PWD)
+    if not serial.waitString(pwd_info_1, timeout=15):
+        logging.info("<TC030><Result>设置密码最大字符数测试:Fail")
+        return
+    i = 0
+    full_pwd_list = pwd_list1 + pwd_list2
+    while i < len(full_pwd_list):
+        # print(len(full_pwd_list), full_pwd_list)
+        # print(i)
+        serial.send_data(full_pwd_list[i])
+        serial.send_data(chr(0x0D))
+        logging.info('send the pwd:{0}'.format(full_pwd_list[i]))
+        if len(full_pwd_list) == 8:
+            if not serial.waitString(error_info, timeout=15):
+                logging.info("<TC030><Result>设置密码最大字符数测试:Fail")
+                return
+            full_pwd_list.remove(full_pwd_list[i])
+            i -= 1
+            serial.send_keys_with_delay(Hy5BasicFunc.Key.CTRL_ALT_DELETE)
+            if not Hy5BasicFunc.toBIOSnp(serial, new_pwd_16):
+                logging.info("<TC030><Result>设置密码最大字符数测试:Fail")
+                return
+            serial.send_keys_with_delay(key2Setup)
+            if not serial.waitString('System Time', timeout=60):
+                logging.info("<TC030><Result>设置密码最大字符数测试:Fail")
+                return
+            serial.send_keys_with_delay(key2PWD)
+            if not serial.waitString(pwd_info_1, timeout=15):
+                logging.info("<TC030><Result>设置密码最大字符数测试:Fail")
+                return
+        elif len(full_pwd_list) == 5:
+            if not serial.waitString(error_info, timeout=15):
+                logging.info("<TC030><Result>设置密码最大字符数测试:Fail")
+                return
+            full_pwd_list.remove(full_pwd_list[i])
+            i -= 1
+            serial.send_keys_with_delay(Hy5BasicFunc.Key.CTRL_ALT_DELETE)
+            if not Hy5BasicFunc.toBIOSnp(serial, new_pwd_16):
+                logging.info("<TC030><Result>设置密码最大字符数测试:Fail")
+                return
+            serial.send_keys_with_delay(key2Setup)
+            if not serial.waitString('System Time', timeout=60):
+                logging.info("<TC030><Result>设置密码最大字符数测试:Fail")
+                return
+            serial.send_keys_with_delay(key2PWD)
+            if not serial.waitString(pwd_info_1, timeout=15):
+                logging.info("<TC030><Result>设置密码最大字符数测试:Fail")
+                return
+        elif len(full_pwd_list) == 2:
+            if not serial.waitString(error_info, timeout=15):
+                logging.info("<TC030><Result>设置密码最大字符数测试:Fail")
+                return
+            full_pwd_list.remove(full_pwd_list[i])
+            i -= 1
+            serial.send_keys_with_delay(Hy5BasicFunc.Key.CTRL_ALT_DELETE)
+            if not Hy5BasicFunc.toBIOSnp(serial, new_pwd_16):
+                logging.info("<TC030><Result>设置密码最大字符数测试:Fail")
+                return
+            serial.send_keys_with_delay(key2Setup)
+            if not serial.waitString('System Time', timeout=60):
+                logging.info("<TC030><Result>设置密码最大字符数测试:Fail")
+                return
+            serial.send_keys_with_delay(key2PWD)
+            if not serial.waitString(pwd_info_1, timeout=15):
+                logging.info("<TC030><Result>设置密码最大字符数测试:Fail")
+                return
+        else:
+            if not serial.waitString(invalid_info, timeout=15):
+                logging.info("<TC030><Result>设置密码最大字符数测试:Fail")
+                return
+            full_pwd_list.remove(full_pwd_list[i])
+            i -= 1
+            serial.send_data(chr(0x0D))
+            serial.send_data(chr(0x0D))
+
+        i += 1
+
+    logging.info("密码组合验证完成，这是最后一个密码修改用例，开始恢复环境:更新BIOS")
+    if not Hy5BasicFunc.Upgrade_Test(serial):
+        return
+    logging.info("<TC030><Result>设置密码最大字符数测试:Pass")
+    return True
+
+# 整合密码测试
+def pwdSecurityTest(serial, ssh):
+    pwdSecurity(serial, ssh)
+    pwdVerification1(serial, ssh)
+    pwdVerification2(serial, ssh)
+    pwdVerification3(serial, ssh)
+    pwdVerification4(serial, ssh)
+    logging.info('All password cases have been verified')

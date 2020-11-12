@@ -3,6 +3,7 @@
 __author__ = 'arthur'
 
 import logging
+import time
 
 from HY5 import Hy5TcLib, updatebios, Hy5Config
 from HY5.Hy5Config import Key
@@ -24,7 +25,7 @@ DIMM_info = ['DIMM000\s+S0.CA.D0:2933MT/s Hynix DRx4 32GB RDIMM', 'DIMM100\s+S1.
 
 
 # to BIOS with power action, for restore test Env,
-def toBIOS(serial, ssh):
+def toBIOS(serial, ssh, pwd='Admin@9000'):
     if not Hy5TcLib.force_reset(ssh):
         logging.info("Rebooting SUT Failed.")
         return
@@ -35,19 +36,24 @@ def toBIOS(serial, ssh):
     logging.info("Hot Key sent")
     if not serial.waitString("Press F2", timeout=15):
         return
-    serial.send_data("Admin@9000")
-    serial.send_data(chr(0x0D))  # Send Enter
-    if not serial.waitString(pwd_info, timeout=15):
-        return
+    serial.send_data(pwd)
+    time.sleep(0.2)
     serial.send_data(chr(0x0D))  # Send Enter
     logging.info("Send password...")
-    if not serial.waitString('BIOS Configuration', timeout=60):
+    if serial.waitString(pwd_info):
+        serial.send_data(chr(0x0D))  # Send Enter
+    else:
+        # 新密码输入没有提示信息，无需按两次回车键
+        logging.info('The default pwd may be modified before, ignore it and try the new pwd next step')
+        serial.send_keys_with_delay(Key.RIGHT + Key.LEFT)
+        pass
+    if not serial.waitString('Continue', timeout=60):
         return
     logging.info("Booting to setup successfully")
     return True
 
 # to BIOS without power action
-def toBIOSnp(serial):
+def toBIOSnp(serial, pwd='Admin@9000'):
     logging.info("HaiYan5 Common Test Lib: boot to setup")
     if not serial.waitString(msg, timeout=300):
         return
@@ -55,11 +61,17 @@ def toBIOSnp(serial):
     logging.info("Hot Key sent")
     if not serial.waitString("Press F2", timeout=15):
         return
-    serial.send_data("Admin@9000")
-    serial.send_data(chr(0x0D))  # Send Enter
+    serial.send_data(pwd)
     serial.send_data(chr(0x0D))  # Send Enter
     logging.info("Send password...")
-    if not serial.waitString('BIOS Configuration', timeout=60):
+    if serial.waitString(pwd_info):
+        serial.send_data(chr(0x0D))  # Send Enter
+    else:
+        # 新密码输入没有提示信息，无需按两次回车键
+        logging.info('The default pwd may be modified before, ignore it and try the new pwd next step')
+        serial.send_keys_with_delay(Key.RIGHT + Key.LEFT)
+        pass
+    if not serial.waitString('Continue', timeout=60):
         return
     logging.info("Booting to setup successfully")
     return True
