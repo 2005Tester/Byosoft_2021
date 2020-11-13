@@ -512,7 +512,8 @@ def setPWD(serial, ssh, pwd1, pwd2):
     if not serial.waitString(pwd_info_4, timeout=30):
         return
     time.sleep(0.2)
-    # serial.send_keys_with_delay(ENTER)
+    serial.send_keys_with_delay(ENTER)
+    time.sleep(0.2)
     serial.send_keys(F10 + Y)
     return True
 
@@ -536,7 +537,8 @@ def setPWDnp(serial, pwd1, pwd2):
     if not serial.waitString(pwd_info_4, timeout=30):
         return
     time.sleep(0.2)
-    # serial.send_keys_with_delay(ENTER)
+    serial.send_keys_with_delay(ENTER)
+    time.sleep(0.2)
     serial.send_keys(F10 + Y)
     return True
 
@@ -615,7 +617,7 @@ def pwdVerification1(serial, ssh):
         #     return
         logging.info("<TC027><Result>密码修改验证:Fail")
         return
-    logging.info("新密码验证成功，将在最后一个密码修改用例里恢复环境:更新BIOS")
+    logging.info("新密码验证成功，将在最后一个密码修改用例里恢复环境")
     # if not Hy5BasicFunc.Upgrade_Test(serial):
     #     return
     logging.info("<TC027><Result>密码修改验证:Pass")
@@ -635,7 +637,7 @@ def pwdVerification2(serial, ssh):
         #     return
         logging.info("<TC028><Result>设置密码长度度测试:Fail")
         return
-    logging.info("新密码验证成功，将在最后一个密码修改用例里恢复环境:更新BIOS")
+    logging.info("新密码验证成功，将在最后一个密码修改用例里恢复环境")
     # if not Hy5BasicFunc.Upgrade_Test(serial):
     #     return
     logging.info("<TC028><Result>设置密码长度度测试:Pass")
@@ -670,7 +672,7 @@ def pwdVerification3(serial, ssh):
         #     return
         logging.info("<TC029><Result>设置密码最大字符数测试:Fail")
         return
-    logging.info("新密码验证成功，将在最后一个密码修改用例里恢复环境:更新BIOS")
+    logging.info("新密码验证成功，将在最后一个密码修改用例里恢复环境")
     logging.info("<TC029><Result>设置密码最大字符数测试:Pass")
     return True
 
@@ -762,15 +764,15 @@ def pwdVerification4(serial, ssh):
             serial.send_data(chr(0x0D))
 
         i += 1
-
+    logging.info("<TC030><Result>设置密码最大字符数测试:Pass")
     logging.info("密码组合验证完成，这是最后一个密码修改用例，开始恢复环境:更新BIOS")
     if not Hy5BasicFunc.Upgrade_Test(serial):
         return
-    logging.info("<TC030><Result>设置密码最大字符数测试:Pass")
+ 
     return True
 
 # 整合密码测试
-def pwdSecurityTest(serial, ssh):
+def pwdSecurityTest(serial, ssh, n):
     pwdSecurity(serial, ssh)
     pwdVerification1(serial, ssh)
     pwdVerification2(serial, ssh)
