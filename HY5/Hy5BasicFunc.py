@@ -55,11 +55,11 @@ def toBIOS(serial, ssh, pwd='Admin@9000'):
 # to BIOS without power action
 def toBIOSnp(serial, pwd='Admin@9000'):
     logging.info("HaiYan5 Common Test Lib: boot to setup")
-    if not serial.waitString(msg, timeout=300):
+    if not serial.waitString(msg, timeout=600):  # set to 600 开启全打印，启动时间较长
         return
     serial.send_keys_with_delay(Key.DEL)
     logging.info("Hot Key sent")
-    if not serial.waitString("Press F2", timeout=15):
+    if not serial.waitString("Press F2", timeout=30):  # 考虑全打印，延长15s
         return
     serial.send_data(pwd)
     serial.send_data(chr(0x0D))  # Send Enter
@@ -71,7 +71,7 @@ def toBIOSnp(serial, pwd='Admin@9000'):
         logging.info('The default pwd may be modified before, ignore it and try the new pwd next step')
         serial.send_keys_with_delay(Key.RIGHT + Key.LEFT)
         pass
-    if not serial.waitString('Continue', timeout=60):
+    if not serial.waitString('Continue', timeout=60):   # 考虑全打印，延长至1分钟
         return
     logging.info("Booting to setup successfully")
     return True
