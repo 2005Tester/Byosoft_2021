@@ -239,3 +239,19 @@ def bmc_dump(ssh, path, name):
         print("Copy dump log completed!")
         SFTP.sftp.close()
         return True
+
+        
+# clear CMOS on BMC side
+def clearCMOS(ssh):
+    logging.info("Clear CMOS")
+    cmd_clearcoms = 'ipmcset -d clearcmos\n'
+    ret_clearcmos = 'Do you want to continue'
+    cmd_confirm = 'Y\n'
+    ret_confirm = 'successfully'
+    cmds = [cmd_clearcoms, cmd_confirm]
+    rets = [ret_clearcmos, ret_confirm]
+    if ssh.login(Hy5Config.BMC_IP, Hy5Config.BMC_USER, Hy5Config.BMC_PASSWORD):
+        return ssh.interaction(cmds, rets)
+    else:
+        logging.error("HY5 Common TC: clear CMOS failed")
+        return

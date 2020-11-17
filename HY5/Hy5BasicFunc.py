@@ -148,19 +148,18 @@ def Downgrade_Test(serial):
 
 # POST: POST Log(TBD) and Information Check
 def POST_Test(serial, ssh):
-    pass
-    # logging.info("<TC012><Tittle>POST Information Test:Start")
-    # logging.info("<TC012><Description>POST Information Check")
-    # logging.info("Rebooting SUT...")
-    # if not Hy5TcLib.force_reset(ssh):
-    #     logging.info("Rebooting SUT Failed.")
-    #     return
-    # msg_list = [msg, msg1, msg2, msg3]
-    # if not serial.waitUntilList(msg_list, 100):
-    #     logging.info("<TC012><Result>POST Information Test:Fail")
-    #     return
-    # logging.info("<TC012><Result>POST Information Test:Pass")
-    # return True
+    logging.info("<TC012><Tittle>POST Information Test:Start")
+    logging.info("<TC012><Description>POST Information Check")
+    logging.info("Rebooting SUT...")
+    if not Hy5TcLib.force_reset(ssh):
+        logging.info("Rebooting SUT Failed.")
+        return
+    msg_list = [msg, msg1, msg2, msg3]
+    if not serial.waitStrings(msg_list, 100):
+        logging.info("<TC012><Result>POST Information Test:Fail")
+        return
+    logging.info("<TC012><Result>POST Information Test:Pass")
+    return True
 
 
 # PM: Warm reset n times, Cold reset n times and AC (TBD)

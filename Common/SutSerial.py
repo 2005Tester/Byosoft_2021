@@ -231,6 +231,40 @@ class SutControl:
                 logging.info("Can not find string(timeout):{0}".format(msg))
                 return False
 
+    # For e.g: post test, find more than 1 string, waitStrings
+    def waitStrings(self, msg_list=None, timeout=10):
+        """
+        Read data from Console Redirection port, and wait more than 1 string
+        :param msg_list: Multiple strings wait to be captured
+        :param timeout: Timeout of wait duration
+        :return: True, if all strings get from COM port
+                 False, script has not capture all strings after timeout
+        """
+        if msg_list is None:
+            msg_list = []
+        t_start = time.time()
+        self.buffer = ""
+        logging.info("Waiting for strings:\"{0}\"".format(msg_list))
+        logging.debug("wait_for_msg: receiving data from serial port...")
+        while True:
+            try:
+                count = self.session.inWaiting()  # Serial port buffer data
+                if count != 0:
+                    rev = self.session.read(count).decode('utf-8')
+                    self.buffer += rev
+                    rev = self.cleanup_data(self.buffer)
+                    if all(key in rev for key in msg_list):
+                        logging.info("Find strings:{0}".format(msg_list))
+                        return True
+                time.sleep(0.1)
+            except Exception as e:
+                logging.error("Error:{0}".format(e))
+            now = time.time()
+            spent_time = (now - t_start)
+            if spent_time > timeout:
+                logging.info("Can not find strings(timeout):{0}".format(msg_list))
+                return False
+
     # boot with hotkey pressed, and check whether boot is successful
     # key: the hotkey to be sent
     # flag: message from SUT, which indicates it's time to press hotkey
