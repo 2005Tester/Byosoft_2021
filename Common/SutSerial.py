@@ -78,6 +78,10 @@ class SutControl:
         if re.search(msg, data):
             logging.info("Found string: \"{0}\"".format(msg))
             return True
+    
+    def write_msg(self, msg):
+        with open(self.log, 'a') as f:
+            f.write(msg)
 
     @staticmethod
     def cleanup_data(data):
@@ -359,7 +363,7 @@ class SutControl:
     def find_setup_option(self, key, setupoption, try_counts):
         while try_counts:
             self.send_keys(key)
-            try_counts -=1
+            try_counts -= 1
             time.sleep(2)
             if self.is_msg_present_general(setupoption, 1):
                 logging.info("{0} found".format(setupoption))
