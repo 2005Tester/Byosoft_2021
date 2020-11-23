@@ -13,7 +13,7 @@ import logging
 import os
 import re
 from pathlib import Path
-from Common import ssh
+from Common import ssh, Misc
 from HY5 import daily
 from HY5 import Hy5Config
 
@@ -207,16 +207,16 @@ def update_specific_img(bios, serial):
 
 # Update BIOS to latest CI build
 def update_bios_ci(serial):
-    logging.info("<TC000><Tittle>Update BIOS by BMC:Start")
-    logging.info("<TC000><Description>Outband BIOS update")
+    tc = ('000', 'Update BIOS by BMC', 'Outband BIOS update')
+    result = Misc.LogHeaderResult(tc, serial)
     image = get_test_image(Hy5Config.BINARY_DIR)
     if not image:
-        logging.info("<TC000><Result>Update BIOS by BMC:Skip")
+        result.log_skip()
         return
     if not update_specific_img(image, serial):
-        logging.info("<TC000><Result>Update BIOS by BMC:Fail")
+        result.log_fail()
         return
-    logging.info("<TC000><Result>Update BIOS by BMC:Pass")
+    result.log_pass()
     return True
 
 

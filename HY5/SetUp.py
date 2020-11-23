@@ -9,6 +9,7 @@
 import logging
 import time
 from HY5 import Hy5TcLib, Hy5Config, Hy5BasicFunc
+from Common import Misc
 
 # Key mapping
 ENTER = [chr(0x0D)]
@@ -107,8 +108,8 @@ def reset_default(serial, ssh):
 
 # check whether ME is working in operational state
 def check_me_state(serial, ssh):
-    logging.info("<TC005><Tittle>Check ME State:Start")
-    logging.info("<TC005><Description>Verify ME state in operational mode")
+    tc = ('005', 'Check ME State', 'Verify ME state in operational mode')
+    result = Misc.LogHeaderResult(tc, serial)
     keys = RIGHT * 2 + DOWN + ENTER + RIGHT + DOWN * 5 + ENTER
     keys_state = DOWN * 5
     if not boot_to_setup(serial, ssh):
@@ -120,16 +121,16 @@ def check_me_state(serial, ssh):
     logging.info("Boot to ME Configuration Pass")
     serial.send_keys(keys_state)
     if not serial.is_msg_present('Operational'):
-        logging.info("<TC005><Result>Check ME State:Fail")
+        result.log_fail()
         return
-    logging.info("<TC005><Result>Check ME State:Pass")
+    result.log_pass()
     return True
 
 
 # Enable full debug message
 def enable_full_debug_msg(serial, ssh):
-    logging.info("<TC006><Tittle>Enable full debug message:Start")
-    logging.info("<TC006><Description>Enable serial full debug message")
+    tc = ('006', 'Enable full debug message', 'Enable serial full debug message')
+    result = Misc.LogHeaderResult(tc, serial)
     keys_enable_full_debug = RIGHT + DOWN + ENTER + DOWN * 6 + F5 + F10 + Y
     if not boot_to_bios_config(serial, ssh):
         return
@@ -137,54 +138,54 @@ def enable_full_debug_msg(serial, ssh):
     if not serial.is_msg_present('^InstallProtocolInterface.'):
         return
     if not serial.is_msg_present('BIOS boot completed.'):
-        logging.info("<TC006><Result>Enable full debug message:Fail")
+        result.log_fail()
         return
-    logging.info("<TC006><Result>Enable full debug message:Pass")
+    result.log_pass()
     return True
 
 
 # Disable full debug message
 def disable_full_debug_msg(serial, ssh):
-    logging.info("<TC007><Tittle>Disable full debug message:Start")
-    logging.info("<TC007><Description>Disable serial full debug message")
+    tc = ('007', 'Disable full debug message', 'Disable serial full debug message')
+    result = Misc.LogHeaderResult(tc, serial)
     keys_enable_full_debug = RIGHT + DOWN + ENTER + DOWN * 6 + F6 + F10 + Y
     if not boot_to_bios_config(serial, ssh):
         return
     serial.send_keys(keys_enable_full_debug)
     if not serial.is_msg_not_present('^InstallProtocolInterface.', 'BIOS boot completed.'):
-        logging.info("<TC007><Result>Disable full debug message:Fail")
+        result.log_fail()
         return
-    logging.info("<TC007><Result>Disable full debug message:Pass")
+    result.log_pass()
     return True
 
 
 # Enable legacy boot
 def enable_legacy_boot(serial, ssh):
-    logging.info("<TC008><Tittle>Enable Legacy Boot:Start")
-    logging.info("<TC008><Description>Enable Legacy Boot")
+    tc = ('008', 'Enable Legacy Boot', 'Enable Legacy Boot')
+    result = Misc.LogHeaderResult(tc, serial)
     keys = RIGHT * 4 + F5 + F10 + Y
     if not boot_to_bios_config(serial, ssh):
         return
     serial.send_keys(keys)
     if not serial.is_msg_present('Start of legacy boot'):
-        logging.info("<TC008><Result>Enable Legacy boot:Fail")
+        result.log_fail()
         return
-    logging.info("<TC008><Result>Enable Legacy boot:Pass")
+    result.log_pass()
     return True
 
 
 # Disable legacy boot
 def disable_legacy_boot(serial, ssh):
-    logging.info("<TC009><Tittle>Disable Legacy Boot:Start")
-    logging.info("<TC009><Description>Disable Legacy Boot")
+    tc = ('009', 'Disable Legacy Boot', 'Disable Legacy Boot')
+    result = Misc.LogHeaderResult(tc, serial)
     keys = RIGHT * 4 + F6 + F10 + Y
     if not boot_to_bios_config(serial, ssh):
         return
     serial.send_keys(keys)
     if not serial.is_msg_not_present('Start of legacy boot', 'BIOS boot completed.'):
-        logging.info("<TC009><Result>Disable Legacy boot:Fail")
+        result.log_fail()
         return
-    logging.info("<TC009><Result>Disable Legacy boot:Pass")
+    result.log_pass()
     return True
 
 

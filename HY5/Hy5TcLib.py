@@ -14,6 +14,7 @@ from HY5 import updatebios
 from HY5 import Hy5Config
 from RedFish import config
 import Common.ssh as SSH
+from Common import Misc
 
 
 def dump_smbios(ssh):
@@ -180,43 +181,43 @@ def rebootsut(ssh):
 
 
 def sp_boot(serial, ssh):
-    logging.info("<TC001><Tittle>SP Boot by F6:Start")
-    logging.info("<TC001><Description>SP Boot by Hotkkey")
+    tc = ('001', 'SP Boot by F6', 'SP Boot by Hotkkey')
+    result = Misc.LogHeaderResult(tc, serial)
     if not force_reset(ssh):
         logging.info("Rebooting SUT Failed.")
         return
     logging.info("SP boot by F6: testing")
     if not serial.hotkey_f6():
-        logging.info("<TC001><Result>SP Boot by F6:Fail")
+        result.log_fail()
         return
-    logging.info("<TC001><Result>SP Boot by F6:Pass")
+    result.log_pass()
     return True
 
 
 def boot_ubuntu(serial, ssh):
-    logging.info("<TC002><Tittle>Boot to UEFI Ubuntu:Start")
-    logging.info("<TC002><Description>Boot to UEFI Ubuntu 18.04")
+    tc = ('002', 'Boot to UEFI Ubuntu', 'Boot to UEFI Ubuntu 18.04')
+    result = Misc.LogHeaderResult(tc, serial)
     key_down = [chr(0x1b), chr(0x5b), chr(0x42), chr(0x0D)]
     if not boot_manager(serial, ssh):
         return
     serial.send_keys(key_down)
     if not serial.is_msg_present('byosoft-2488H-V6 login'):
-        logging.info("<TC002><Result>Boot to UEFI Ubuntu:Fail")
+        result.log_fail()
         return
-    logging.info("<TC002><Result>Boot to UEFI Ubuntu:Pass")
+    result.log_pass()
     return True
 
 
 def boot_windows(serial, ssh):
-    logging.info("<TC003><Tittle>Boot to UEFI windows:Start")
-    logging.info("<TC003><Description>Boot to UEFI Windows 2019")
+    tc = ('003', 'Boot to UEFI windows', 'Boot to UEFI Windows 2019')
+    result = Misc.LogHeaderResult(tc, serial)
     if not force_reset(ssh):
         logging.info("Rebooting SUT Failed.")
         return
     if not serial.is_msg_present('Computer is booting, SAC started and initialized'):
-        logging.info("<TC003><Result>Boot to UEFI windows:Fail")
+        result.log_fail()
         return
-    logging.info("<TC003><Result>Boot to UEFI windows:Pass")
+    result.log_pass()
     return True
 
 

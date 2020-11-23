@@ -15,6 +15,7 @@ from sys import argv
 from Common import ssh
 from Common import SutSerial
 from Common import LogConfig
+from Common import Misc
 from HY5 import Hy5Config
 from HY5 import Hy5TcLib
 from HY5 import updatebios
@@ -37,26 +38,26 @@ sshins = ssh.SshConnection()
 
 def check_log():
     log = LogAnalyzer(log_dir)
-    logging.info("<TC900><Tittle>Check BIOS Log:Start")
-    logging.info("<TC900><Description>Check whether there are asserts or exception in test")
+    tc900 = ('900', 'Check BIOS Log', 'Check whether there are asserts or exception in test')
+    res900 = Misc.LogHeaderResult(tc900)
     if log.check_bios_log():
-        logging.info("<TC900><Result>Check BIOS Log:Pass")
+        res900.log_pass()
     else:
-        logging.info("<TC900><Result>Check BIOS Log:Fail")
+        res900.log_fail()
 
-    logging.info("<TC901><Tittle>SMBIOS Test:Start")
-    logging.info("<TC901><Description>Check whether vendor information in SMBIOS is correct")
+    tc901 = ('901', 'SMBIOS Test', 'Check whether vendor information in SMBIOS is correct')
+    res901 = Misc.LogHeaderResult(tc901)
     if log.check_smbios():
-        logging.info("<TC901><Result>SMBIOS Test:Pass")
+        res901.log_pass()
     else:
-        logging.info("<TC901><Result>SMBIOS Test:Fail")
+        res901.log_fail()
 
-    logging.info("<TC902><Tittle>Verify Default CPU Core counts:Start")
-    logging.info("<TC902><Description>Check whether Default CPU Core count is correct")
+    tc902 = ('902', 'Verify Default CPU Core counts', 'Check whether Default CPU Core count is correct.')
+    res902 = Misc.LogHeaderResult(tc902)
     if log.check_cpuinfo(18):
-        logging.info("<TC902><Result>Verify Default CPU Core counts:Pass")
+        res902.log_pass()
     else:
-        logging.info("<TC902><Result>Verify Default CPU Core counts:Fail")
+        res902.log_fail()
     
 
 def gen_report():
