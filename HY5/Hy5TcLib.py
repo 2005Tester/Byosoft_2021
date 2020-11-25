@@ -71,7 +71,8 @@ def boot_manager(serial, ssh):
         logging.info("Rebooting SUT Failed.")
         return
     logging.info("Booting to boot manager")
-    if not serial.hotkey_f11():
+    msg = "Boot Manager Menu"
+    if not serial.boot_with_hotkey(Hy5Config.Key.F11, msg, 300):
         logging.info("Booting to boot manager failed.")
         return
     return True
@@ -187,7 +188,8 @@ def sp_boot(serial, ssh):
         logging.info("Rebooting SUT Failed.")
         return
     logging.info("SP boot by F6: testing")
-    if not serial.hotkey_f6():
+    msg = "BIOS boot completed."
+    if not serial.boot_with_hotkey(Hy5Config.Key.F6, msg, 300):
         result.log_fail()
         return
     result.log_pass()

@@ -68,9 +68,9 @@ def gen_report():
 
 
 def debug_run():
-    for i in range(100):
-        logging.info("Test count {0}".format(i))
-        SetUp.change_cpu_cores(ser, sshins)
+    if SetUp.enable_full_debug_msg(ser, sshins):
+        SetUp.disable_full_debug_msg(ser, sshins)
+    gen_report()
 
 
 def test_run():

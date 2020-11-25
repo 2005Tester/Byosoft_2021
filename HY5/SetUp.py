@@ -57,13 +57,14 @@ upi_state = ['Current UPI Link Speed\s+Fast', 'Current UPI Link Frequency\s+10\.
 
 # Boot to setup home page after a force reset
 def boot_to_setup(serial, ssh):
+    msg = "Boot From File"
     logging.info("HaiYan5 Common Test Lib: boot to setup")
     logging.info("Rebooting SUT...")
     if not Hy5TcLib.force_reset(ssh):
         logging.info("Rebooting SUT Failed.")
         return
     logging.info("Booting to setup")
-    if not serial.hotkey_del():
+    if not serial.boot_with_hotkey(DEL, msg, 300):
         logging.info("Boot to setup failed.")
         return
     return True
@@ -72,7 +73,8 @@ def boot_to_setup(serial, ssh):
 # Boot to boot manager without a force reset
 def continue_to_bootmanager(serial):
     logging.info("HaiYan5 Common TC: continue boot to bootmanager")
-    if not serial.hotkey_f11():
+    msg = "Boot Manager Menu"
+    if not serial.boot_with_hotkey(F11, msg, 300):
         logging.info("Continue boot to bootmanager failed.")
         return
     logging.info("HaiYan5 Common TC: Boot to bootmanager successful")
@@ -131,11 +133,12 @@ def check_me_state(serial, ssh):
 def enable_full_debug_msg(serial, ssh):
     tc = ('006', 'Enable full debug message', 'Enable serial full debug message')
     result = Misc.LogHeaderResult(tc, serial)
-    keys_enable_full_debug = RIGHT + DOWN + ENTER + DOWN * 6 + F5 + F10 + Y
+    keys_enable_full_debug = RIGHT + DOWN + ENTER + DOWN * 5 + F5 + F10 + Y
     if not boot_to_bios_config(serial, ssh):
         return
     serial.send_keys(keys_enable_full_debug)
     if not serial.is_msg_present('^InstallProtocolInterface.'):
+        result.log_fail()
         return
     if not serial.is_msg_present('BIOS boot completed.'):
         result.log_fail()
@@ -148,8 +151,9 @@ def enable_full_debug_msg(serial, ssh):
 def disable_full_debug_msg(serial, ssh):
     tc = ('007', 'Disable full debug message', 'Disable serial full debug message')
     result = Misc.LogHeaderResult(tc, serial)
-    keys_enable_full_debug = RIGHT + DOWN + ENTER + DOWN * 6 + F6 + F10 + Y
+    keys_enable_full_debug = RIGHT + DOWN + ENTER + DOWN * 5 + F6 + F10 + Y
     if not boot_to_bios_config(serial, ssh):
+        result.log_fail()
         return
     serial.send_keys(keys_enable_full_debug)
     if not serial.is_msg_not_present('^InstallProtocolInterface.', 'BIOS boot completed.'):

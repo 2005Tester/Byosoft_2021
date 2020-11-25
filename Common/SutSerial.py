@@ -323,26 +323,6 @@ class SutControl:
             if self.is_timeout(start_time, timeout):
                 break
 
-    def hotkey_del(self):
-        key_del = [chr(0x7F)]
-        msg = "Boot From File"
-        return self.boot_with_hotkey(key_del, msg, 300)
-
-    def hotkey_f6(self):
-        key_f6 = [chr(0x1b), chr(0x5b), chr(0x31), chr(0x37), chr(0x7e)]
-        msg = "BIOS boot completed."
-        return self.boot_with_hotkey(key_f6, msg, 300)
-
-    def hotkey_f11(self):
-        key_f11 = [chr(0x1b), chr(0x5b), chr(0x32), chr(0x33), chr(0x7e)]
-        msg = "Boot Manager Menu"
-        return self.boot_with_hotkey(key_f11, msg, 300)
-
-    def hotkey_f12(self):
-        key_f12 = [chr(0x1b), chr(0x5b), chr(0x32), chr(0x34), chr(0x7e)]
-        msg = "none"
-        return self.boot_with_hotkey(key_f12, msg, 300)
-
     # Navigate in a setup page and verify whether multiple setup options are correct
     def navigate_and_verify(self, key, setup_options, try_counts):
         # for i in range(0, try_counts):
