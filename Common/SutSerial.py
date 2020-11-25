@@ -85,13 +85,12 @@ class SutControl:
 
     @staticmethod
     def cleanup_data(data):
-        pat1 = '[\x00-\x1F]\[\d+;:*\d+[m*H]*'
-        pat2 = '[\x00-\x1F]\[\d+[mJ]'
-        pat3 = '[\x00-\x1F]\[\d7m'
-        data = re.sub(pat1, '', data)
-        data = re.sub(pat2, '', data)
-        data = re.sub(pat3, '', data)
-
+        pat1 = "\x1B[@-_][0-?]*[ -/]*[@-~]"
+        pat2 = "[-\+^]"
+        pat3 = "/\s+\\\\"
+        dic = {pat1: "", pat2: "", pat3:""}
+        for k, v in dic.items():
+            data = re.compile(k).sub(v, data)
         return data
 
     def is_boot_success(self):

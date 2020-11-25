@@ -68,8 +68,7 @@ def gen_report():
 
 
 def debug_run():
-    if SetUp.enable_full_debug_msg(ser, sshins):
-        SetUp.disable_full_debug_msg(ser, sshins)
+    SetUp.check_me_state(ser, sshins)
     gen_report()
 
 
