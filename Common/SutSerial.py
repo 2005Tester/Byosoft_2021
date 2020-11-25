@@ -380,3 +380,52 @@ class SutControl:
             return
         logging.info("Enter {0} successfully".format(option_path[-1]))
         return True
+
+    # debug, updated by arthur, the issue: can not to the first item, still need to be enhanced, TBD
+    # the result passed after stress, could be used to navigate to a option in boot manager page or a option in Setup,
+    def to_highlight_option(self, key, msg, timeout=15):
+        # pat1
+        pat1 = re.compile(msg)
+
+        # flush serial buffer in 5 sec
+        for i in range(0, 5):
+            self.readLines()
+            time.sleep(1)
+
+        s_time = time.time()  # set timeout flag
+        while True:
+            serial_data = ''
+            if time.time() - s_time > timeout:
+                print("to highlight option timeout")
+                return False
+
+            self.send_keys(key)
+
+            # read serial log in 2 sec
+            for i in range(0, 2):
+                data = self.readLines()
+                data = self.cleanup_data(data)
+                if data:
+                    serial_data += data
+                time.sleep(1)
+
+            pat1_res = pat1.findall(serial_data)
+            if not pat1_res:
+                continue
+            else:
+                logging.info('find the highlight option:{0}'.format(pat1_res))
+                return True
+
+        return False
+
+    # debug, to support to_highlight_option def,
+    def readLines(self, limit=None):
+        """
+        :param limit: most limit bytes to be read
+        :return: Data read from serial port
+        """
+        if limit is None:
+            read = self.session.readline()
+        else:
+            read = self.session.readline(limit)
+        return self.cleanup_data(read.decode())
