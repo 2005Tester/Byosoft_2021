@@ -7,6 +7,7 @@ import time
 
 from HY5 import Hy5TcLib, updatebios, Hy5Config
 from HY5.Hy5Config import Key
+from Common import Misc
 
 # Basic Function Test Case: Flash, POST, Boot, Setup, OS Installation, PM, Device, Chipsec Test and Source code cons.
 msg = 'Press Del go to Setup Utility'
@@ -76,24 +77,6 @@ def toBIOSnp(serial, pwd='Admin@9000'):
     logging.info("Booting to setup successfully")
     return True
 
-# press F12
-def pressF12(serial, ssh):
-    if not Hy5TcLib.force_reset(ssh):
-        logging.info("Rebooting SUT Failed.")
-        return
-    logging.info("Booting to PXE")
-    if not serial.waitString(msg2, timeout=300):
-        return
-    serial.send_data(Key.F12)
-    logging.info("Hot Key sent")
-    if not serial.waitString("Press F2", timeout=15):
-        logging.info('<TC015><Result>PXE Test:Fail')
-        return
-    serial.send_data("Admin@9000")
-    serial.send_data(chr(0x0D))  # Send Enter
-    serial.send_data(chr(0x0D))  # Send Enter
-    logging.info("Send password...")
-    return True
 
 def dcCycle(serial, ssh):
     if not toBIOS(serial, ssh):
@@ -202,31 +185,37 @@ def pxeTest(serial, ssh, n):
     logging.info("<TC015><Tittle>PXE Test:Start")
     logging.info("<TC015><Description>PXEv4 Test")
     for i in range(n):
-        if not pressF12(serial, ssh):
-            logging.info("<TC015><Description>PXEv4 Test")
+        if not Hy5TcLib.force_reset(ssh):
+            logging.info("Rebooting SUT Failed.")
+            return
+        logging.info("Booting to PXE")
+        if not serial.hotkey_f12():
+            logging.info("Booting to PXE failed.")
             return
         if not serial.waitString('Install', timeout=15):
             logging.info('<TC015><Result>PXE Test:Fail')
             return
-        serial.send_keys_with_delay(Key.DOWN)
     logging.info('<TC015><Result>PXE Test:Pass')
     return True
 
 
 # Https Test
-def httpsTest(serial, ssh):
+def httpsTest(serial, ssh, option=r'UEFI HTTPSv4: Network - Port00 SLOT1'):
     logging.info("<TC016><Tittle>Https Test:Start")
     logging.info("<TC016><Description>Https Test")
-    key1 = Key.RIGHT + Key.ENTER + Key.DOWN + Key.ENTER
+    key1 = Key.RIGHT + Key.ENTER
     if not toBIOS(serial, ssh):
-        return
-    serial.send_keys_with_delay(key1)
-    if not serial.waitString('Start HTTPS Boot over IPv4', timeout=15):
-        logging.info("Boot to Https Failed")
         logging.info('<TC016><Result>Https Test:Fail')
         return
-    if not serial.waitString('Shell', timeout=15):
-        logging.info("Boot to SHELL Failed")
+    serial.send_keys_with_delay(key1)
+    if not serial.to_highlight_option(option, timeout=100):
+        logging.info('<TC016><Result>Https Test:Fail')
+        return
+    serial.send_keys(Key.ENTER)
+    if not serial.waitString('Start HTTPS Boot over IPv4', timeout=30):
+        logging.info('<TC016><Result>Https Test:Fail')
+        return
+    if not serial.waitString('Shell', timeout=60):
         logging.info('<TC016><Result>Https Test:Fail')
         return
     logging.info('<TC016><Result>Https Test:Pass')
@@ -321,10 +310,53 @@ def chipsecTest(serial, ssh, username, pwd):
     logging.info('<TC020><Result>chipsec Test:Pass')
     return True
 
-# if __name__ == '__main__':
-#     start_time = time.perf_counter()  # start
-#     print('Start:', datetime.datetime.now())
-#     end_time = time.perf_counter()
-#     print('End:', datetime.datetime.now())  # end
-#     cost = end_time - start_time
-#     print("%s cost %s seconds" % (os.path.basename(sys.argv[0]), cost))  # runtime
+
+# press F2
+def pressF2(serial, ssh):
+    tc = ('041', 'Setup菜单用户输入界面按F2切换键盘制式', '支持热键配置')
+    result = Misc.LogHeaderResult(tc, serial)
+    if not Hy5TcLib.force_reset(ssh):
+        result.log_fail()
+        return
+    if not serial.waitString(msg, timeout=300):
+        result.log_fail()
+        return
+    serial.send_keys(Key.DEL)
+    if not serial.waitString("Press F2", timeout=30):
+        result.log_fail()
+        return
+    serial.send_keys(Key.F2)
+    if not serial.waitString('fr-FR'):
+        result.log_fail()
+        return
+    serial.send_keys(Key.F2)
+    if not serial.waitString('ja-JP'):
+        result.log_fail()
+        return
+    serial.send_keys(Key.F2)
+    if not serial.waitString('en-US'):
+        result.log_fail()
+        return
+    serial.send_data("Admin@9000")
+    serial.send_data(chr(0x0D))  # Send Enter
+    serial.send_data(chr(0x0D))  # Send Enter
+    logging.info("Send password...")
+    if not serial.waitString('Continue', timeout=30):
+        return
+    result.log_pass()
+    return True
+
+
+# Main Func...
+def hy5BasicTest(serial, ssh):
+    Upgrade_Test(serial)
+    Downgrade_Test(serial)
+    POST_Test(serial, ssh)
+    PM(serial, ssh, 5)
+    pxeTest(serial, ssh, 1)
+    httpsTest(serial, ssh)
+    usbTest(serial, ssh)
+    ProcessorDIMM(serial, ssh)
+    chipsecTest(serial, ssh, 'byo', '1')
+    pressF2(serial, ssh)
+    logging.info('Hy5 Basic Function test Completed...')

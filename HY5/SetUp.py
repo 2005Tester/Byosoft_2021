@@ -441,12 +441,8 @@ def staticTurbo(serial, ssh):
         return
     serial.send_keys_with_delay(Hy5Config.Key.ESC)
     serial.send_keys_with_delay(ENTER)
-    serial.send_keys_with_delay(DOWN + ENTER + UP)
-    if not serial.waitString('Manual', timeout=60):
-        logging.info("<TC021><Result>静态Turbo默认值测试:Fail")
-        return
-    serial.send_keys_with_delay(UP)
-    if not serial.waitString('Auto', timeout=60):
+    serial.send_keys_with_delay(DOWN + ENTER)
+    if not serial.to_highlight_option(DOWN, r'AutoManualDisabled', timeout=30):
         logging.info("<TC021><Result>静态Turbo默认值测试:Fail")
         return
     logging.info("<TC021><Result>静态Turbo默认值测试:Pass")
@@ -477,13 +473,8 @@ def ufs(serial, ssh):
         logging.info("<TC022><Result>UFS默认值测试:Fail")
         return
     serial.send_keys_with_delay(Hy5Config.Key.ESC)
-    serial.send_keys_with_delay(ENTER)
-    serial.send_keys_with_delay(ENTER + DOWN)
-    if not serial.waitString('Disabled_Max', timeout=60):
-        logging.info("<TC022><Result>UFS默认值测试:Fail")
-        return
-    serial.send_keys_with_delay(DOWN)
-    if not serial.waitString('Disabled_Min', timeout=60):
+    serial.send_keys_with_delay(ENTER * 2)
+    if not serial.to_highlight_option(DOWN, r'Disabled_MaxDisabled_Min', timeout=30):
         logging.info("<TC022><Result>UFS默认值测试:Fail")
         return
     logging.info("<TC022><Result>UFS默认值测试:Pass")
@@ -508,15 +499,23 @@ def rrQIRQ(serial, ssh):
     if not Hy5BasicFunc.verify_setup_options_down(serial, ['Local/Remote Threshold\s+<Auto>'], 12):
         logging.info("<TC023><Result>Setup菜单RRQ和IRQ选项默认值测试:Fail")
         return
+    # if not serial.to_highlight_option(DOWN, r'Local/Remote Threshold', timeout=60):
+    #     logging.info("<TC023><Result>Setup菜单RRQ和IRQ选项默认值测试:Fail")
+    #     return
     serial.send_keys_with_delay(Hy5Config.Key.ESC)
     serial.send_keys_with_delay(ENTER)
-    serial.send_keys_with_delay(key2)
+    serial.send_keys_with_delay(DOWN * 8 + ENTER)
+    if not serial.to_highlight_option(DOWN, r'DisabledAutoLowMediumHighManual', timeout=15):
+        logging.info("<TC023><Result>Setup菜单RRQ和IRQ选项默认值测试:Fail")
+        return
+    serial.send_keys_with_delay(Hy5Config.Key.ESC)
+    serial.send_keys_with_delay(ENTER + DOWN * 4 + ENTER)
     if not Hy5BasicFunc.verify_setup_options_down(serial, ['\[7\]\s+IRQ Threshold', '\[7\]\s+RRQ Threshold'], 12):
         logging.info("<TC023><Result>Setup菜单RRQ和IRQ选项默认值测试:Fail")
         return
     serial.send_keys_with_delay(Hy5Config.Key.ESC)
     serial.send_keys_with_delay(ENTER)
-    serial.send_keys_with_delay(key3)
+    serial.send_keys_with_delay(key2)
     serial.send_data('10')
     serial.send_keys_with_delay(ENTER + DOWN + ENTER)
     serial.send_data('20')
@@ -558,7 +557,7 @@ def dramRAPL(serial, ssh):
         return
     serial.send_keys_with_delay(Hy5Config.Key.ESC)
     serial.send_keys_with_delay(key3)
-    if not serial.waitString('Disabled', timeout=60):
+    if not serial.to_highlight_option(DOWN, r'DisabledEnabled', timeout=30):
         logging.info("<TC024><Result>菜单项DRAM RAPL选单检查:Fail")
         return
     logging.info("<TC024><Result>菜单项DRAM RAPL选单检查:Pass")
@@ -990,26 +989,6 @@ def txtTPM(serial, ssh):
     return True
 
 
-# Testcase_BootPXE_001, 002. 004 and 006 【UEFI和legacy模式】PXE长时间启动测试 -  TBD
-def pxeTest(serial, ssh):
-    pass
-    # logging.info("<TC035><Tittle>PXE启动测试:Start")
-    # logging.info("<TC035><Description>支持网口PXE引导及安装OS")
-    # if not Hy5BasicFunc.toBIOS(serial, ssh):
-    #     logging.info("<TC033><Result>PXE启动测试:Fail")
-    #     return
-    # serial.send_keys_with_delay(key2Setup)
-    # if not serial.waitString('System Time', timeout=60):
-    #     logging.info("<TC035><Result>PXE启动测试:Fail")
-    #     return
-    # serial.send_keys_with_delay(LEFT * 3 + UP * 2 + ENTER)
-    # serial.send_keys_with_delay(DOWN * 3 + F6 * 2)
-    # time.sleep(0.2)
-    # serial.send_keys(F10 + Y)
-    # logging.info("<TC035><Result>PXE启动测试:Pass")
-    # return True
-
-
 # Testcase_VTD_002
 def vtd(serial, ssh):
     logging.info("<TC037><Tittle>关闭VT-d功能启动测试:Start")
@@ -1048,3 +1027,87 @@ def cpuCOMPA(serial, ssh):
     logging.info("<TC038><Result>UPI link链路检测测试:Pass")
     return True
 
+
+# Testcase_LogTime_001, 002 and 003 串口日志打印
+def logTime(serial, ssh, username='byo', pwd='1'):
+    tc = ('039', '串口日志打印测试', '支持BIOS启动开始和结束信息打印及上报')
+    result = Misc.LogHeaderResult(tc, serial)
+    if not Hy5BasicFunc.toBIOS(serial, ssh):
+        result.log_fail()
+        return
+    serial.send_keys(Hy5BasicFunc.Key.RIGHT)
+    serial.send_data(chr(0x0D))
+    if not serial.waitString('ubuntu', timeout=15):
+        result.log_fail()
+        return
+    serial.send_data(chr(0x0D))
+    if not serial.waitString('LTS byo-DH140-V6 ttyS0', timeout=300):
+        result.log_fail()
+        return
+    serial.send_keys_with_delay(ENTER)
+    time.sleep(0.1)
+    serial.send_data(username)
+    serial.send_data(chr(0x0D))
+    time.sleep(0.1)
+    serial.send_data(pwd)
+    serial.send_data(chr(0x0D))
+    if not serial.waitString("$", timeout=15):
+        result.log_fail()
+        return
+    serial.send_data("sudo hwclock --show")
+    serial.send_data(chr(0x0D))
+    serial.send_data(pwd)
+    serial.send_data(chr(0x0D))
+    if not serial.is_msg_present_general('0800'):    # 0800 OS time zone
+        result.log_fail()
+        return
+    serial.send_data('sudo reboot')
+    serial.send_data(chr(0x0D))
+    time.sleep(0.1)
+    serial.send_data(pwd)
+    serial.send_data(chr(0x0D))
+    if not serial.is_msg_present_general('BIOS Log', delay=60):
+        result.log_fail()
+        return
+    with open(Hy5Config.SERIAL_LOG, 'r') as f:
+        while True:
+            try:
+                line = f.readline()
+                if '0800' in line:
+                    t0 = line.split('.')[0]
+                    t1 = datetime.datetime.strptime(t0, '%Y-%m-%d %H:%M:%S')
+
+                if 'BIOS Log' in line:
+                    t2 = line.split('@')[-1].rstrip().split('<')[0].lstrip().replace('.', '-').strip()
+                    t3 = datetime.datetime.strptime(t2, '%Y-%m-%d %H:%M:%S')
+                    t_time = (t3 - t1)
+                    hour = int(t_time.seconds / 60 / 60)
+                    dela_time = int((t_time.seconds - hour * 60 * 60) / 60)
+                    # print(t3, t1, hour, dela_time)
+                    if dela_time < 5:  # if interval time is less than 5 mins,
+                        pass
+                    else:
+                        print('The BIOS time is not matched with RTC time')
+                        result.log_fail()
+                        return False
+                    break
+            except Exception as e:
+                print(str(e))
+    f.close()
+    result.log_pass()
+    return True
+
+
+# Main function
+def biosSetupTest(serial, ssh):
+    Load_Default_Test(serial, ssh)
+    staticTurbo(serial, ssh)
+    ufs(serial, ssh)
+    rrQIRQ(serial, ssh)
+    dramRAPL(serial, ssh)
+    pwdSecurityTest(serial, ssh)
+    securityBoot(serial, ssh)
+    vtd(serial, ssh)
+    cpuCOMPA(serial, ssh)
+    logTime(serial, ssh)
+    logging.info('Hy5 Setup test completed...')

@@ -407,4 +407,4 @@ class SutControl:
             read = self.session.readline()
         else:
             read = self.session.readline(limit)
-        return self.cleanup_data(read.decode())
+        return read.decode()  # remove duplicated cleanup_data action
