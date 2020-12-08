@@ -241,31 +241,39 @@ class SutControl:
         :param msg_list: Multiple strings wait to be captured
         :param timeout: Timeout of wait duration
         :return: True, if all strings get from COM port
-                 False, script has not capture all strings after timeout
+                 False, script has not captured all strings after timeout
         """
         if msg_list is None:
             msg_list = []
         t_start = time.time()
+        tmp = []
+        var = ''
         self.buffer = ""
-        logging.info("Waiting for strings:\"{0}\"".format(msg_list))
-        logging.debug("wait_for_msg: receiving data from serial port...")
         while True:
             try:
                 count = self.session.inWaiting()  # Serial port buffer data
                 if count != 0:
-                    rev = self.session.read(count).decode('utf-8')
+                    rev = self.session.read(count).decode()
                     self.buffer += rev
                     rev = self.cleanup_data(self.buffer)
-                    if all(key in rev for key in msg_list):
-                        logging.info("Find strings:{0}".format(msg_list))
-                        return True
+                    for i in range(len(msg_list)):
+                        if msg_list[i] not in rev:
+                            var = msg_list[i]
+                        else:
+                            tmp.append(msg_list[i])
+
                 time.sleep(0.1)
             except Exception as e:
                 logging.error("Error:{0}".format(e))
+
+            if tmp == msg_list:
+                logging.info('Find strings:{0}'.format(tmp))
+                return True
+
             now = time.time()
             spent_time = (now - t_start)
             if spent_time > timeout:
-                logging.info("Can not find strings(timeout):{0}".format(msg_list))
+                logging.info("Can not find strings(timeout):{0}".format(var))
                 return False
 
     # boot with hotkey pressed, and check whether boot is successful
