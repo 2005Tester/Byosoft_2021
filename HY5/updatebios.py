@@ -22,8 +22,12 @@ from HY5 import Hy5Config
 def get_test_image(path):
     if os.path.exists(path):
         versions = os.listdir(path)
-        versions.sort(reverse=True)
-        latest_version = versions[1]
+        versions.sort(reverse=True)   # for hpm folder, mkdir the name rule like: e.g HY5-BIOS-Vxxx
+        res = [i for i in versions if 'BIOS' in i]
+        if res:
+            latest_version = versions[0]
+        else:
+            latest_version = versions[1]
         logging.info("Latest Version is: {0}".format(latest_version))
         if latest_version in daily.VER_TESTED:
             logging.info("{0} has been tested".format(latest_version))
@@ -34,9 +38,10 @@ def get_test_image(path):
 
     current_image_dir = os.path.join(path, latest_version)
     p = Path(current_image_dir)   # remote image dir of current version
+    types = ('HY5*_byo.bin', '*.hpm')
     rp001_image = []
-    for b in p.rglob('HY5*_byo.bin'):
-        rp001_image.append(b)
+    for files in types:
+        rp001_image.extend(p.rglob(files))
     if not rp001_image:
         logging.info("Image for {0} not found, please check whether build is finished.".format(latest_version))
         return
@@ -49,8 +54,12 @@ def get_test_image(path):
 def get_previous_test_image(path):
     if os.path.exists(path):
         versions = os.listdir(path)
-        versions.sort(reverse=True)
-        previous_version = versions[2]
+        versions.sort(reverse=True)   # for hpm folder, mkdir the name rule like: e.g HY5-BIOS-Vxxx
+        res = [i for i in versions if 'BIOS' in i]
+        if res:
+            previous_version = versions[1]
+        else:
+            previous_version = versions[2]
         logging.info("Previous Version is: {0}".format(previous_version))
         if previous_version in daily.VER_TESTED:
             logging.info("{0} has been tested".format(previous_version))
@@ -61,9 +70,10 @@ def get_previous_test_image(path):
 
     current_image_dir = os.path.join(path, previous_version)
     p = Path(current_image_dir)   # remote image dir of current version
+    types = ('HY5*_byo.bin', '*.hpm')
     rp001_image = []
-    for b in p.rglob('HY5*_byo.bin'):
-        rp001_image.append(b)
+    for files in types:
+        rp001_image.extend(p.rglob(files))
     if not rp001_image:
         logging.info("Image for {0} not found, please check whether build is finished.".format(previous_version))
         return
@@ -133,13 +143,12 @@ def hpm_update():
     cmd_hpmupdate = 'ipmcset -d upgrade -v /tmp/bios.hpm\n'
     s = paramiko.SSHClient()
     s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    s.connect(Hy5Config.BMC_IP, 22, Hy5Config.BMC_USER, Hy5Config.BMC_PW)
+    s.connect(Hy5Config.BMC_IP, 22, Hy5Config.BMC_USER, Hy5Config.BMC_PASSWORD)
     op = s.invoke_shell()
     op.send(cmd_hpmupdate)
     time.sleep(5)
     res = op.recv(1024)
     if re.search('successfully',res.decode('utf-8')):
-        # print_rawmsg(res)
         print("HPM Uploaded successfully, upgrade on next reboot")
         op.close()
         s.close()

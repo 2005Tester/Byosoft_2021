@@ -79,24 +79,25 @@ def boot_manager(serial, ssh):
 
 
 def ping_sut():
+    ping_cmd = 'ping {0}'.format(Hy5Config.OS_IP)
     start_time = time.time()
     while True:
-        p = subprocess.Popen(args=config.PING_CMD, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.Popen(args=ping_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         (stdoutput, erroutput) = p.communicate()
-        output = stdoutput.decode()
         now = time.time()
         time_spent = (now-start_time)
-        if output.find("TTL=") >= 0:
+        if 'TTL=' in stdoutput.decode('gbk'):
             print("SUT is online now")
             return True
         if time_spent > 600:
-            print("Lost SUT for %s seconds, refresh BIOS image" % time_spent)
-            try:
-                updatebios.update_specific_img(config.BIOS)
-                time.sleep(300)
-                start_time = time.time()
-            except Exception as e:
-                print(e)
+            print("Lost SUT for %s seconds, check the ip connection" % time_spent)
+            return False
+            # try:
+            #     updatebios.update_specific_img(config.BIOS, serial)
+            #     time.sleep(300)
+            #     start_time = time.time()
+            # except Exception as e:
+            #     print(e)
 
 
 # update by arthur,

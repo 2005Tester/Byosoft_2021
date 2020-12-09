@@ -21,6 +21,7 @@ if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 SERIAL_LOG = os.path.join(LOG_DIR, 'serial.log')
 BINARY_DIR = '\\\\172.16.0.73\\HY5_Binary'
+HPM_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\HY5 HPM'
 
 # Serial Port Configuration
 BIOS_SERIAL = "com3"
