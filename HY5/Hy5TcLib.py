@@ -17,10 +17,10 @@ import Common.ssh as SSH
 from Common import Misc
 
 
-def dump_smbios(ssh):
+def dump_smbios(ssh, cmd='dmidecode'):
     if ssh.login(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD):
         logging.info("Dumping smbios table...")
-        return ssh.dump_info('dmidecode', Hy5Config.LOG_DIR)
+        return ssh.dump_info(cmd, Hy5Config.LOG_DIR)
 
 
 def lspci(ssh):

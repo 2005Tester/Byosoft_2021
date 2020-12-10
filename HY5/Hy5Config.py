@@ -19,6 +19,9 @@ timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 LOG_DIR = 'c:\\daily\\HY5\\{0}'.format(timestamp)
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
+SMBIOS_DIR = 'c:\\daily\\SMBIOS'
+if not os.path.exists(SMBIOS_DIR):
+    os.makedirs(SMBIOS_DIR)
 SERIAL_LOG = os.path.join(LOG_DIR, 'serial.log')
 BINARY_DIR = '\\\\172.16.0.73\\HY5_Binary'
 HPM_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\HY5 HPM'
@@ -58,6 +61,11 @@ class Key:
     LEFT = [chr(0x1b), chr(0x5b), chr(0x44)]
     RIGHT = [chr(0x1b), chr(0x5b), chr(0x43)]
     Y = [chr(0x59)]
+
+
+# unitool, chipsec path
+unitool_path = r'Desktop/flashtool/Linux_17.10/'
+chipsc_path = r'Desktop/chipsec-master/'
 
 
 

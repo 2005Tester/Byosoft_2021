@@ -64,20 +64,123 @@ class LogAnalyzer:
         logging.info("Core count is correct")
         return True
 
-    def check_smbios(self):
-        passed_test = 0
-        smbios_log = os.path.join(self.log_dir, "dmidecode.log")
-        data = self.load_log(smbios_log)
-        for line in data:
-            if re.search("UUID: E1C5D866-0018-83C3-B211-D21D464C6424", line):
-                logging.info("UUID checked:{0}".format(line.strip("\n")))
-                passed_test +=1
+    # API to check SMBIOS,
+    def check_smbios(self, target_path, template_path):
+        target_file = ''
+        template_file = ''
+        num = []
+        for file in os.listdir(target_path):
+            if 'dmidecode' in os.path.splitext(file)[0]:
+                target_file = os.path.join(target_path, file)
+                num = re.findall(r"\d+", os.path.splitext(file)[0])
 
-            if re.search("Product Name: 2488H V6", line):
-                logging.info("Product Name checked: {0}".format(line.strip("\n")))
-                passed_test +=1
-            
-        if passed_test == 2:
+        # write the diff data to files
+        result_file = 'diff-{0}.log'.format(''.join(num))
+
+        for file1 in os.listdir(template_path):
+            if 'config' in os.path.splitext(file1)[0]:
+                template_file = os.path.join(template_path, file1)
+            elif 'dmidecode' in os.path.splitext(file1)[0]:
+                template_file = os.path.join(template_path, file1)
+
+        target_list = self.getData(target_file)
+        origin_list = self.getData(template_file)
+        diff_file = open(os.path.join(target_path, result_file), 'w')
+
+        # break if the type date is none,
+        if len(target_list) == 1:
+            logging.info('No type date found in template file')
+            return False
+
+        diff_list = [[]]
+        if 'dmidecode' in template_file.split(os.sep)[-1].split('.')[0]:
+            for i in range(1, len(target_list)):
+                for j in range(1, len(origin_list)):
+                    if target_list[i][0] == origin_list[j][0]:
+                        # print('find the type data, start to compare...')
+                        for k in range(1, len(target_list[i])):
+                            if target_list[i][k] in origin_list[j]:
+                                pass
+                            else:
+                                diff_list.append(target_list[i][k])
+                                logging.info('The diff data - {0}{1}'.format(target_list[i][0], target_list[i][k]))
+                                diff_data = target_list[i][0], target_list[i][k]
+                                diff_file.writelines(diff_data)
+                    else:
+                        pass
+        elif 'config' in template_file.split(os.sep)[-1].split('.')[0]:
+            for i in range(1, len(target_list)):
+                for j in range(1, len(origin_list)):
+                    if target_list[i][0] == origin_list[j][0]:
+                        # print('find the type data, start to compare...')
+                        for n in range(2, len(target_list[i])):
+                            var_name = target_list[i][n].split(':')[0].strip()
+                            for m in range(1, len(origin_list[j])):
+                                var_name_tmp = origin_list[j][m].split('=')[0]
+                                if var_name == var_name_tmp:
+                                    var_value = target_list[i][n].split(':')[1].strip()
+                                    var_value_tmp = origin_list[j][m].split('=')[1].strip()
+                                    if var_value != var_value_tmp:
+                                        diff_list.append(target_list[i][n])
+                                        logging.info(
+                                            'The diff data - {0}{1}'.format(target_list[i][0], target_list[i][n]))
+                                        diff_data = target_list[i][0], target_list[i][n]
+                                        diff_file.writelines(diff_data)
+                                    else:
+                                        pass
+                                else:
+                                    pass
+                    else:
+                        pass
+        else:
+            logging.info('The file can not be parsed, check the origin data')
+            return False
+
+        diff_list = [j for j in diff_list if j != []]
+        diff_file.close()
+        # if empty list, no diff data - pass
+        if len(diff_list):
+            return False
+        else:
             return True
+
+    # parse the smbios log file to list,
+    def getData(self, file):
+        f = open(file, 'r')
+        data = f.readlines()
+        lists = [[]]
+        index = 0
+        for i in data:
+            if i == '\n':
+                index += 1
+                lists.append([])
+            else:
+                lists[index].append(i)
+        f.close()
+        lists = [j for j in lists if j != []]  # remove the []
+        return lists
+
+    # test API
+    def smbiosCheck(self, command, target_path, template_path):
+        """
+        :param command: smbios command, e.g: dmidecode -t xx
+        :param template_path: e.g: Hy5Config.SMBIOS_DIR
+        :param target_path: e.g: Hy5Config.LOG_DIR
+        for different platform, the ini file is a standard defined smbios table file.
+                        dmidecode.log is for stress or find the diff after the smbios table is completed on BIOS side.
+        :return: True - Data matched, False - find diff data
+        """
+        if self.check_smbios(target_path, template_path):
+            logging.info('Pass:{0}'.format(command))
+        else:
+            logging.info('Fail:{0}'.format(command))
+        # print(target_path)
+        with open(os.path.join(target_path, 'test.log'), 'r') as f:
+            for line in f.readlines():
+                if 'Fail:' in line:
+                    print('TYPE DATA Check:Failed')
+                    return False
+
+        return True
 
 
