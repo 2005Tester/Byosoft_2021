@@ -50,7 +50,8 @@ class SutControl:
             time.sleep(0.2)
 
     def receive_data(self, size):
-        self.session.read(size)
+        data = self.session.read(size).decode('utf-8')
+        return data
 
     @ staticmethod
     def is_timeout(t_start, timeout):
@@ -79,18 +80,20 @@ class SutControl:
             logging.info("Found string: \"{0}\"".format(msg))
             return True
     
-    def write_msg(self, msg):
+    def write_data2log(self, data):
         with open(self.log, 'a') as f:
-            f.write(msg)
+            f.write(data)
 
-    @staticmethod
-    def cleanup_data(data):
+    def cleanup_data(self, data):
         pat1 = "\x1B[@-_][0-?]*[ -/]*[@-~]"
-        pat2 = "[-\+^]"
+        pat2 = "[-\+^]{3,}"
         pat3 = "/\s+\\\\"
         dic = {pat1: "", pat2: "", pat3:""}
         for k, v in dic.items():
             data = re.compile(k).sub(v, data)
+        with open(self.log, 'a') as f:
+            f.write(data)
+
         return data
 
     def is_boot_success(self):
@@ -101,8 +104,6 @@ class SutControl:
                 if self.session.in_waiting:
                     data = self.session.read(256).decode("utf-8")
                     data = self.cleanup_data(data)
-                    with open(self.log, 'a') as f:
-                        f.write(data)
                     if self.find_msg("Press F2", data):
                         self.send_data("Admin@9000")
                         self.send_data(chr(0x0D))  # Send Enter
@@ -117,21 +118,27 @@ class SutControl:
                 logging.debug("is_boot_success: timeout")
                 break
 
-    def is_msg_present_general(self, msg, delay=150):
-        logging.info("Looking for:\"{0}\"".format(msg))
+    def is_msg_present_general(self, msg, delay=150, pw_prompt=None, pw=None, cleanup=True):
+        logging.info("Waiting for:\"{0}\"".format(msg))
         start_time = time.time()
         logging.debug("is_msg_present_general: receiving data from serial port...")
         while True:
             if self.session.in_waiting:
                 try:
                     data = self.session.read(512).decode("utf-8")
-                    data = self.cleanup_data(data)
+                    if cleanup:
+                        data = self.cleanup_data(data)
+                    else:
+                        self.write_data2log(data)
                 except Exception as e:
                     logging.debug(e)
                     logging.debug("is_msg_present_general: error in reading serial data")
                     data = ''              
-                with open(self.log, 'a') as f:
-                    f.write(data)                   
+                if pw_prompt and self.find_msg(pw_prompt, data):
+                    self.send_data(pw)
+                    self.send_data(chr(0x0D))  # Send Enter
+                    self.send_data(chr(0x0D))  # Send Enter
+                    logging.info("Send password...")               
                 if self.find_msg(msg, data):
                     return True
 
@@ -348,11 +355,12 @@ class SutControl:
                 logging.info("{0} not verified".format(option)) 
 
     def find_setup_option(self, key, setupoption, try_counts):
+        highlight = "\x1B\[0m"
         while try_counts:
             self.send_keys(key)
             try_counts -= 1
             time.sleep(2)
-            if self.is_msg_present_general(setupoption, 1):
+            if self.is_msg_present_general(setupoption + highlight, 1, cleanup=False):
                 logging.info("{0} found".format(setupoption))
                 self.send_keys(ENTER)
                 try_counts = 0

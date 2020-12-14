@@ -22,7 +22,7 @@ class LogHeaderResult:
         self.msg_skip = '<TC{0}><Result>{1}:Skip'.format(tc[0], tc[1])
         if serial:
             self.msg_serial = 'TC{0} {1}\n'.format(tc[0], tc[1])
-            serial.write_msg(self.msg_serial)
+            serial.write_data2log(self.msg_serial)
         logging.info(self.msg_start)
         logging.info(self.msg_description)
 
