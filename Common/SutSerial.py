@@ -355,9 +355,9 @@ class SutControl:
                 logging.info("{0} not verified".format(option)) 
 
     def find_setup_option(self, key, setupoption, try_counts):
-        highlight = "\x1B\[0m"
+        highlight = "\x1B\["
+        self.receive_data(512)
         while try_counts:
-            self.send_keys(key)
             try_counts -= 1
             time.sleep(2)
             if self.is_msg_present_general(setupoption + highlight, 1, cleanup=False):
@@ -365,6 +365,7 @@ class SutControl:
                 self.send_keys(ENTER)
                 try_counts = 0
                 return True
+            self.send_keys(key)
     
     def enter_setup_menu(self, key, option_path, try_counts, confirm_msg):
         for option in option_path:
