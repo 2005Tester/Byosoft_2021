@@ -42,12 +42,13 @@ class SutControl:
     def send_keys(self, keys):
         for char in keys:
             self.send_data(char)
-        logging.info("key sent") 
+        logging.info("key sent")
 
-    def send_keys_with_delay(self, keys):
-        for char in keys:
-            self.send_data(char)
-            time.sleep(0.2)
+    # send multiple keys in a row with delay, keys = list
+    def send_keys_with_delay(self, keys, delay=1):
+        for key in keys:
+            self.send_keys(key)
+            time.sleep(delay)
 
     def receive_data(self, size):
         data = self.session.read(size).decode('utf-8')
@@ -377,11 +378,19 @@ class SutControl:
         logging.info("Enter {0} successfully".format(option_path[-1]))
         return True
 
-    # debug, updated by arthur, the issue: can not to the first item, still need to be enhanced, TBD
+    # the issue: can not to the first item(WA: ENTER + UP, then can find the first option or item), still need to be enhanced, TBD
     # the result passed after stress, could be used to navigate to a option in boot manager page or a option in Setup,
-    def to_highlight_option(self, key, msg, timeout=15):
-        # pat1
-        pat1 = re.compile(msg)
+    def to_highlight_option(self, key, msg, pat=None, timeout=5):
+        """
+        :param msg: the option to be highlighted,
+        :param pat: the re rule, need to be modified for different platform, eg. pat value from Hy5Config.py,
+        :timeout: set the value based on the counts of option in the current page,
+        :return: Data read from serial port,
+        """
+        if pat is None:
+            pat1 = re.compile('H+{0}'.format(msg), re.M)
+        else:
+            pat1 = re.compile('{0}{1}'.format(pat, msg), re.M)
 
         # flush serial buffer in 5 sec
         for i in range(0, 5):
@@ -400,6 +409,58 @@ class SutControl:
             # read serial log in 2 sec
             for i in range(0, 2):
                 data = self.readLines()
+                if data:
+                    serial_data += data
+                time.sleep(1)
+
+            pat1_res = pat1.findall(serial_data)
+            if not pat1_res:
+                continue
+            else:
+                logging.debug(pat1_res)
+                # logging.info('find the highlight option:{0}'.format(pat1_res[0]))
+                logging.info('Find the highlight option, wait for the next step,')
+                # self.send_keys(ENTER)
+
+        return True
+
+    # debug, to support to_highlight_option def,
+    def readLines(self, limit=None):
+        """
+        :param limit: most limit bytes to be read,
+        :return: Data read from serial port,
+        """
+        if limit is None:
+            read = self.session.readline()
+        else:
+            read = self.session.readline(limit)
+        return read.decode()
+
+    # used to verified the option values,
+    def verify_option_value(self, key, msg, timeout=5):
+        """
+        :param timeout: no need to set the timeout anymore, the data will be read in 5s,
+        """
+        # pat1
+        pat1 = re.compile(msg)
+
+        # flush serial buffer in 5 sec
+        for i in range(0, 5):
+            self.readLines()
+            time.sleep(1)
+
+        s_time = time.time()  # set timeout flag
+        while True:
+            serial_data = ''
+            if time.time() - s_time > timeout:
+                print("Find the option value timeout, failed to check the value")
+                return False
+
+            self.send_keys(key)
+
+            # read serial log in 2 sec
+            for i in range(0, 2):
+                data = self.readLines()
                 data = self.cleanup_data(data)
                 if data:
                     serial_data += data
@@ -409,19 +470,7 @@ class SutControl:
             if not pat1_res:
                 continue
             else:
-                logging.info('find the highlight option:{0}'.format(pat1_res))
-                return True
+                logging.info('The option values are correct:{0}'.format(pat1_res))
+                break
 
-        return False
-
-    # debug, to support to_highlight_option def,
-    def readLines(self, limit=None):
-        """
-        :param limit: most limit bytes to be read
-        :return: Data read from serial port
-        """
-        if limit is None:
-            read = self.session.readline()
-        else:
-            read = self.session.readline(limit)
-        return read.decode()  # remove duplicated cleanup_data action
+        return True

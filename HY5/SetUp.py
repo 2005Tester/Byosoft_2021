@@ -6,54 +6,17 @@
 #  stored in a retrieval system, or transmitted in any form or by any
 #  means without the express written consent of Byosoft Corporation.
 # -*- encoding=utf8 -*-
+import datetime
 import logging
 import time
-import datetime
-from HY5 import Hy5TcLib, Hy5Config, Hy5BasicFunc
+
 from Common import Misc
+from HY5.Hy5Config import Key
+from Common.LogAnalyzer import LogAnalyzer
+from HY5 import Hy5TcLib, Hy5Config, Hy5BaseAPI
 
-# Key mapping
-ENTER = [chr(0x0D)]
-DEL = [chr(0x7F)]
-F2 = [chr(0x1b), chr(0x5b), chr(0x31), chr(0x32), chr(0x7e)]
-F5 = [chr(0x1b), chr(0x5b), chr(0x31), chr(0x35), chr(0x7e)]
-F6 = [chr(0x1b), chr(0x5b), chr(0x31), chr(0x37), chr(0x7e)]
-F9 = [chr(0x1b), chr(0x5b), chr(0x32), chr(0x30), chr(0x7e)]
-F10 = [chr(0x1b), chr(0x5b), chr(0x32), chr(0x31), chr(0x7e)]
-F11 = [chr(0x1b), chr(0x5b), chr(0x32), chr(0x33), chr(0x7e)]
-F12 = [chr(0x1b), chr(0x5b), chr(0x32), chr(0x34), chr(0x7e)]
-UP = [chr(0x1b), chr(0x5b), chr(0x41)]
-DOWN = [chr(0x1b), chr(0x5b), chr(0x42)]
-LEFT = [chr(0x1b), chr(0x5b), chr(0x44)]
-RIGHT = [chr(0x1b), chr(0x5b), chr(0x43)]
-Y = [chr(0x59)]
-
-# set by arthur, a common key order
-key2Setup = RIGHT * 2 + DOWN + ENTER
-key2PWD = RIGHT * 3 + DOWN + ENTER  # to password page
-default_pwd = 'Admin@9000'
-new_pwd_9 = 'Admin@9001'
-new_pwd_8 = 'Admin@9!'
-new_pwd_16 = 'Admin@9001Admin@90'
-new_pwd_17 = 'Admin@9001Admin@900'
-simple_pwd = '11111111'
-weak_pwd = 'Huawei@CLOUD8!'
-pwd_list1 = ['ADMIN123', 'admin123', 'admin###', 'ADMIN###', 'ADMINadm', '1234####']  # 新密码为2种字符类型，尝试各种组合（共6种组合）
-# System will be locked after send wrong pwd 3 times
-pwd_list2 = ['Administrator@', 'admin@123', 'Administrator1', 'ADMIN@123']  # 新密码为3种字符类型，尝试各种组合（共4种组合）
-# common error msg
-pwd_info_1 = 'Please type in your password'
-pwd_info_2 = 'Please type in your new password'
-pwd_info_3 = 'Please confirm your new password'
-pwd_info_4 = 'Changes have been saved after press'
-invalid_info = 'Invalid Password'
-error_info = 'Enter incorrect password 3 times,System Locked'
-simple_pwd_warning = 'The password fails the dictionary check - it is too simplistic/systematic'
-# TPM info
-tpm_info = ['TPM Device\s+TPM 2.0', 'TPM2 Active PCR Hash\s+Algorithm+\s+SHA1\, SHA256',
-            'TPM2 Hardware Supported Hash\s+Algorithm+\s+SHA1\, SHA256']
-# UPI Status
-upi_state = ['Current UPI Link Speed\s+Fast', 'Current UPI Link Frequency\s+10\.4\s+GT\/s']
+# smbiosTest
+P = LogAnalyzer(Hy5Config.LOG_DIR)
 
 
 # Boot to setup home page after a force reset
@@ -65,7 +28,7 @@ def boot_to_setup(serial, ssh):
         logging.info("Rebooting SUT Failed.")
         return
     logging.info("Booting to setup")
-    if not serial.boot_with_hotkey(DEL, msg, 300):
+    if not serial.boot_with_hotkey(Key.DEL, msg, 300):
         logging.info("Boot to setup failed.")
         return
     return True
@@ -75,7 +38,7 @@ def boot_to_setup(serial, ssh):
 def continue_to_bootmanager(serial):
     logging.info("HaiYan5 Common TC: continue boot to bootmanager")
     msg = "Boot Manager Menu"
-    if not serial.boot_with_hotkey(F11, msg, 300):
+    if not serial.boot_with_hotkey(Key.F11, msg, 300):
         logging.info("Continue boot to bootmanager failed.")
         return
     logging.info("HaiYan5 Common TC: Boot to bootmanager successful")
@@ -84,10 +47,9 @@ def continue_to_bootmanager(serial):
 
 # Boot to BIOS configuration page
 def boot_to_bios_config(serial, ssh):
-    keys = RIGHT * 2 + DOWN + ENTER
     if not boot_to_setup(serial, ssh):
         return
-    serial.send_keys(keys)
+    serial.send_keys_with_delay(Hy5Config.key2Setup)
     if not serial.is_msg_present('System Time'):
         logging.info("Boot to BIOS Configuration Failed")
         return
@@ -98,7 +60,7 @@ def boot_to_bios_config(serial, ssh):
 # Reset BIOS setup to default by pressing F9
 def reset_default(serial, ssh):
     logging.info("Reset BIOS to dafault by F9")
-    keys = F9 + Y + F10 + Y
+    keys = Key.F9 + Key.Y + Key.F10 + Key.Y
     if not boot_to_bios_config(serial, ssh):
         return
     serial.send_keys(keys)
@@ -113,8 +75,8 @@ def reset_default(serial, ssh):
 def check_me_state(serial, ssh):
     tc = ('005', 'Check ME State', 'Verify ME state in operational mode')
     result = Misc.LogHeaderResult(tc, serial)
-    keys = RIGHT * 2 + DOWN + ENTER + RIGHT + DOWN * 5 + ENTER
-    keys_state = DOWN * 5
+    keys = Key.RIGHT * 2 + Key.DOWN + Key.ENTER + Key.RIGHT + Key.DOWN * 5 + Key.ENTER
+    keys_state = Key.DOWN * 5
     if not boot_to_setup(serial, ssh):
         return
     serial.send_keys(keys)
@@ -134,7 +96,7 @@ def check_me_state(serial, ssh):
 def enable_full_debug_msg(serial, ssh):
     tc = ('006', 'Enable full debug message', 'Enable serial full debug message')
     result = Misc.LogHeaderResult(tc, serial)
-    keys_enable_full_debug = RIGHT + DOWN + ENTER + DOWN * 5 + F5 + F10 + Y
+    keys_enable_full_debug = Key.RIGHT + Key.DOWN + Key.ENTER + Key.DOWN * 5 + Key.F5 + Key.F10 + Key.Y
     if not boot_to_bios_config(serial, ssh):
         return
     serial.send_keys(keys_enable_full_debug)
@@ -152,7 +114,7 @@ def enable_full_debug_msg(serial, ssh):
 def disable_full_debug_msg(serial, ssh):
     tc = ('007', 'Disable full debug message', 'Disable serial full debug message')
     result = Misc.LogHeaderResult(tc, serial)
-    keys_enable_full_debug = RIGHT + DOWN + ENTER + DOWN * 5 + F6 + F10 + Y
+    keys_enable_full_debug = Key.RIGHT + Key.DOWN + Key.ENTER + Key.DOWN * 5 + Key.F6 + Key.F10 + Key.Y
     if not boot_to_bios_config(serial, ssh):
         result.log_fail()
         return
@@ -168,7 +130,7 @@ def disable_full_debug_msg(serial, ssh):
 def enable_legacy_boot(serial, ssh):
     tc = ('008', 'Enable Legacy Boot', 'Enable Legacy Boot')
     result = Misc.LogHeaderResult(tc, serial)
-    keys = RIGHT * 4 + F5 + F10 + Y
+    keys = Key.RIGHT * 4 + Key.F5 + Key.F10 + Key.Y
     if not boot_to_bios_config(serial, ssh):
         return
     serial.send_keys(keys)
@@ -183,7 +145,7 @@ def enable_legacy_boot(serial, ssh):
 def disable_legacy_boot(serial, ssh):
     tc = ('009', 'Disable Legacy Boot', 'Disable Legacy Boot')
     result = Misc.LogHeaderResult(tc, serial)
-    keys = RIGHT * 4 + F6 + F10 + Y
+    keys = Key.RIGHT * 4 + Key.F6 + Key.F10 + Key.Y
     if not boot_to_bios_config(serial, ssh):
         return
     serial.send_keys(keys)
@@ -198,12 +160,12 @@ def disable_legacy_boot(serial, ssh):
 def change_cpu_cores(serial, ssh, n, num):
     logging.info("<TC010><Tittle>Change CPU Cores:Start")
     logging.info("<TC010><Description>Change CPU Core counts in setup and verify in OS")
-    keys_cpu_core = RIGHT * 1 + DOWN * 8 + ENTER * 2
+    keys_cpu_core = Key.RIGHT * 1 + Key.DOWN * 8 + Key.ENTER * 2
     if not boot_to_bios_config(serial, ssh):
         return
     logging.info("Changing cpu core counts")
     serial.send_keys_with_delay(keys_cpu_core)
-    serial.send_keys(F6 * 14 + F10 + Y)
+    serial.send_keys(Key.F6 * 14 + Key.F10 + Key.Y)
     time.sleep(5)
 
     """
@@ -222,590 +184,522 @@ def change_cpu_cores(serial, ssh, n, num):
     """
 
 
-# common def, not test cases
-# updated by arthur, press Delete
-def pressDel(serial, ssh):
-    if not Hy5TcLib.force_reset(ssh):
-        return
-    if not serial.waitString('Press Del go to Setup Utility', timeout=300):
-        return
-    serial.send_keys(DEL)
-    if not serial.waitString("Press F2", timeout=60):
-        return
-    return True
-
-
-def pressDelnp(serial):
-    if not serial.waitString('Press Del go to Setup Utility', timeout=300):
-        return
-    serial.send_keys(DEL)
-    if not serial.waitString("Press F2", timeout=60):
-        return
-    return True
-
-
-# enhanced pwdVerification4 def,
-def enterPWD(serial, pwd):
-    serial.send_keys_with_delay(Hy5BasicFunc.Key.CTRL_ALT_DELETE)
-    if not Hy5BasicFunc.toBIOSnp(serial, pwd):
-        return
-    serial.send_keys_with_delay(key2Setup)
-    if not serial.waitString('System Time', timeout=60):
-        return
-    serial.send_keys_with_delay(key2PWD)
-    if not serial.waitString(pwd_info_1, timeout=15):
-        return
-    return True
-
-
-# set pwd common def function, only for set PWD, do not call it for other cases
-# pwd1 - previous password, pwd2 - new password
-def setPWD(serial, ssh, pwd1, pwd2):
-    if not Hy5BasicFunc.toBIOS(serial, ssh, new_pwd_9):
-        return
-    time.sleep(0.2)
-    serial.send_keys_with_delay(key2Setup)
-    if not serial.waitString('System Time', timeout=60):
-        return
-    serial.send_keys_with_delay(key2PWD)
-    if not serial.waitString(pwd_info_1, timeout=30):
-        return
-    serial.send_data(pwd1)
-    serial.send_data(chr(0x0D))
-    if not serial.waitString(pwd_info_2, timeout=30):
-        return
-    serial.send_data(pwd2)
-    serial.send_data(chr(0x0D))
-    time.sleep(0.2)
-    if not serial.waitString(pwd_info_3, timeout=30):
-        return
-    serial.send_data(pwd2)
-    serial.send_data(chr(0x0D))
-    if not serial.waitString(pwd_info_4, timeout=30):
-        return
-    time.sleep(0.2)
-    serial.send_keys_with_delay(ENTER)
-    time.sleep(0.2)
-    serial.send_keys(F10 + Y)
-    return True
-
-
-# set password with no power action first
-def setPWDnp(serial, pwd1, pwd2):
-    serial.send_data(chr(0x0D))
-    if not serial.waitString(pwd_info_1, timeout=30):
-        return
-    serial.send_data(pwd1)
-    serial.send_data(chr(0x0D))
-    if not serial.waitString(pwd_info_2, timeout=30):
-        return
-    serial.send_data(pwd2)
-    serial.send_data(chr(0x0D))
-    if not serial.waitString(pwd_info_3, timeout=30):
-        return
-    serial.send_data(pwd2)
-    serial.send_data(chr(0x0D))
-    if not serial.waitString(pwd_info_4, timeout=30):
-        return
-    serial.send_keys_with_delay(ENTER)
-    time.sleep(0.2)
-    serial.send_keys(F10 + Y)
-    return True
-
-
-# set password with no power action first
-def setPWDwithoutF10(serial, pwd1, pwd2):
-    serial.send_data(chr(0x0D))
-    if not serial.waitString(pwd_info_1, timeout=30):
-        return
-    serial.send_data(pwd1)
-    serial.send_data(chr(0x0D))
-    if not serial.waitString(pwd_info_2, timeout=30):
-        return
-    serial.send_data(pwd2)
-    serial.send_data(chr(0x0D))
-    if not serial.waitString(pwd_info_3, timeout=30):
-        return
-    serial.send_data(pwd2)
-    serial.send_data(chr(0x0D))
-    if not serial.waitString(pwd_info_4, timeout=30):
-        return
-    serial.send_keys_with_delay(ENTER)
-    time.sleep(0.2)
-    serial.send_keys_with_delay(Hy5BasicFunc.Key.CTRL_ALT_DELETE)
-    return True
-
-
-# def to BIOS Setup - System Time page
-def toSysTime(serial):
-    if not Hy5BasicFunc.toBIOSnp(serial):
-        return
-    serial.send_keys_with_delay(key2Setup)
-    if not serial.waitString('System Time', timeout=30):
-        return
-    return True
-
-
 # check password, for password case only
 def checkPWD(serial, pwd1, pwd2):
-    if not pressDelnp(serial):
+    if not Hy5BaseAPI.pressDelnp(serial):
         return
     serial.send_data(pwd1)
     serial.send_data(chr(0x0D))
-    if not serial.waitString(invalid_info, timeout=30):
+    if not serial.waitString(Hy5Config.invalid_info, timeout=30):
         return
     serial.send_data(chr(0x0D))
     serial.send_data('22222222')
     serial.send_data(chr(0x0D))
-    if not serial.waitString(invalid_info, timeout=30):
+    if not serial.waitString(Hy5Config.invalid_info, timeout=30):
         return
     serial.send_data(chr(0x0D))
     serial.send_data(pwd2)
     serial.send_data(chr(0x0D))
-    serial.send_keys_with_delay(RIGHT + LEFT)
+    serial.send_keys_with_delay([Key.RIGHT, Key.LEFT])
     if not serial.waitString('Continue', timeout=30):
         return
     return True
 
 
-# AT test cases below... ...
-# Setup: Load default and setting saving
+# Setup: Load default and setting saving - AT test cases below,
 def Load_Default_Test(serial, ssh):
-    logging.info("<TC013><Tittle>Load default and setting saving Test:Start")
-    logging.info("<TC013><Description>BIOS Load default Test")
+    tc = ('013', 'Load default and setting saving Test', 'BIOS Load default Test')
+    result = Misc.LogHeaderResult(tc, serial)
+    key1 = [Key.RIGHT, Key.RIGHT, Key.RIGHT, Key.RIGHT]
     option_bfo = ['<UEFI Boot Type>', '<Boot Retry>']
     option_aft = ['<Legacy Boot Type>', '<Cold Boot>']
-    key1 = RIGHT * 4
-    key2 = F9 + Y + F10 + Y
-    if not Hy5BasicFunc.toBIOS(serial, ssh):
+    if not Hy5BaseAPI.toBIOS(serial, ssh):
         return
-    serial.send_keys_with_delay(key2Setup)
-    if not serial.waitString('System Time', timeout=60):
-        logging.info("<TC013><Result>Load default and setting saving Test:Fail")
+    if not Hy5BaseAPI.toBIOSConf(serial):
+        result.log_fail()
         return
     serial.send_keys_with_delay(key1)
-    if not Hy5BasicFunc.verify_setup_options_down(serial, option_bfo, 14):
-        logging.info("<TC013><Result>Load default and setting saving Test:Fail")
+    if not Hy5BaseAPI.verify_setup_options_down(serial, option_bfo, 14):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(LEFT + RIGHT)
-    serial.send_keys_with_delay(ENTER + DOWN + ENTER)
-    serial.send_keys_with_delay(DOWN * 2 + ENTER + DOWN + ENTER)
-    # if not verify_setup_options(serial, options_new, 12):
-    #     return
-    serial.send_keys(F10 + Y)
-    if not Hy5BasicFunc.toBIOSnp(serial):
-        logging.info("<TC013><Result>Load default and setting saving Test:Fail")
+    serial.send_keys_with_delay([Key.LEFT, Key.RIGHT, Key.UP])
+    if not serial.to_highlight_option(Key.DOWN, 'Boot Type'):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(key2Setup)
-    if not serial.waitString('System Time', timeout=60):
-        logging.info("<TC013><Result>Load default and setting saving Test:Fail")
+    serial.send_keys(Key.F5)
+    if not serial.to_highlight_option(Key.DOWN, 'Boot Fail Policy'):
+        result.log_fail()
+        return
+    serial.send_keys(Key.F5)
+    serial.send_keys(Key.F10 + Key.Y)
+    if not Hy5BaseAPI.toBIOSnp(serial):
+        result.log_fail()
+        return
+    if not Hy5BaseAPI.toBIOSConf(serial):
+        result.log_fail()
         return
     serial.send_keys_with_delay(key1)
-    if not Hy5BasicFunc.verify_setup_options_down(serial, option_aft, 14):
-        logging.info("<TC013><Result>Load default and setting saving Test:Fail")
+    if not Hy5BaseAPI.verify_setup_options_down(serial, option_aft, 14):
+        result.log_fail()
         if not reset_default(serial, ssh):
             return
-    serial.send_keys(key2)
-    if not Hy5BasicFunc.toBIOSnp(serial):
-        logging.info("<TC013><Result>Load default and setting saving Test:Fail")
+    serial.send_keys(Hy5Config.key2default)
+    if not Hy5BaseAPI.toBIOSnp(serial):
+        result.log_fail()
         if not reset_default(serial, ssh):
             return
-    serial.send_keys_with_delay(key2Setup)
-    if not serial.waitString('System Time', timeout=60):
-        logging.info("<TC013><Result>Load default and setting saving Test:Fail")
+    if not Hy5BaseAPI.toBIOSConf(serial):
+        result.log_fail()
         return
     serial.send_keys_with_delay(key1)
     time.sleep(1)
-    if not Hy5BasicFunc.verify_setup_options_down(serial, option_bfo, 14):
-        logging.info("<TC013><Result>Load default and setting saving Test:Fail")
+    if not Hy5BaseAPI.verify_setup_options_down(serial, option_bfo, 14):
+        result.log_fail()
         if not reset_default(serial, ssh):
             return
-    logging.info("<TC013><Result>Load default and setting saving Test:Pass")
+    result.log_pass()
     return True
 
 
 # updated by arthur, Testcase_Static_Turbo_001
 def staticTurbo(serial, ssh):
-    logging.info("<TC021><Tittle>静态Turbo默认值测试:Start")
-    logging.info("<TC021><Description>支持静态turbo")
-    key1 = RIGHT + DOWN * 8 + ENTER + DOWN * 6 + ENTER
-    if not Hy5BasicFunc.toBIOS(serial, ssh):
-        logging.info("<TC021><Result>静态Turbo默认值测试:Fail")
+    tc = ('021', '静态Turbo默认值测试', '支持静态turbo')
+    result = Misc.LogHeaderResult(tc, serial)
+    if not Hy5BaseAPI.toBIOS(serial, ssh):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(key2Setup)
-    if not serial.waitString('System Time', timeout=60):
-        logging.info("<TC021><Result>静态Turbo默认值测试:Fail")
+    if not Hy5BaseAPI.toBIOSConf(serial):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(key1)
-    if not Hy5BasicFunc.verify_setup_options_down(serial, ['<Disabled>\s+Static Turbo'], 5):
-        logging.info("<TC021><Result>静态Turbo默认值测试:Fail")
+    serial.send_keys_with_delay([Key.RIGHT, Key.UP])
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.option2):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(Hy5Config.Key.ESC)
-    serial.send_keys_with_delay(ENTER)
-    serial.send_keys_with_delay(DOWN + ENTER)
-    if not serial.to_highlight_option(DOWN, r'AutoManualDisabled', timeout=30):
-        logging.info("<TC021><Result>静态Turbo默认值测试:Fail")
+    serial.send_keys(Key.ENTER)
+    if not serial.to_highlight_option(Key.UP, Hy5Config.option6):
+        result.log_fail()
         return
-    logging.info("<TC021><Result>静态Turbo默认值测试:Pass")
+    serial.send_keys(Key.ENTER)
+    if not Hy5BaseAPI.verify_setup_options_down(serial, Hy5Config.static_turbo, 5):
+        result.log_fail()
+        return
+    serial.send_keys(Hy5Config.Key.ESC)
+    serial.send_keys(Key.ENTER)
+    if not serial.to_highlight_option(Key.DOWN, 'Static Turbo', timeout=30):
+        result.log_fail()
+        return
+    serial.send_keys(Key.ENTER)
+    if not serial.verify_option_value(Key.DOWN, r'AutoManualDisabled'):
+        result.log_fail()
+        return
+    result.log_pass()
     return True
 
 
 # Testcase_UFS_001,
 def ufs(serial, ssh):
-    logging.info("<TC022><Tittle>UFS默认值测试:Start")
-    logging.info("<TC022><Description>支持UFS设置")
-    key1 = F9 + Y + F10 + Y
-    key2 = RIGHT + DOWN * 8 + ENTER + DOWN * 6 + ENTER
-    key3 = DOWN * 2 + ENTER
+    tc = ('022', 'UFS默认值测试', '支持UFS设置')
+    result = Misc.LogHeaderResult(tc, serial)
     if not boot_to_bios_config(serial, ssh):
-        logging.info("<TC022><Result>UFS默认值测试:Fail")
+        result.log_fail()
         return
-    serial.send_keys(key1)
-    if not Hy5BasicFunc.toBIOSnp(serial):
-        logging.info("<TC022><Result>UFS默认值测试:Fail")
+    serial.send_keys_with_delay(Hy5Config.key2default)
+    if not Hy5BaseAPI.toBIOSnp(serial):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(key2Setup)
-    if not serial.waitString('System Time', timeout=60):
-        logging.info("<TC022><Result>UFS默认值测试:Fail")
+    if not Hy5BaseAPI.toBIOSConf(serial):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(key2)
-    serial.send_keys_with_delay(key3)
-    if not Hy5BasicFunc.verify_setup_options_up(serial, ['<Enabled>\s+UFS'], 4):
-        logging.info("<TC022><Result>UFS默认值测试:Fail")
+    serial.send_keys_with_delay([Key.RIGHT, Key.UP])
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.option2):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(Hy5Config.Key.ESC)
-    serial.send_keys_with_delay(ENTER * 2)
-    if not serial.to_highlight_option(DOWN, r'Disabled_MaxDisabled_Min', timeout=30):
-        logging.info("<TC022><Result>UFS默认值测试:Fail")
+    serial.send_keys(Key.ENTER)
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.option6, timeout=30):
+        result.log_fail()
         return
-    logging.info("<TC022><Result>UFS默认值测试:Pass")
+    serial.send_keys(Key.ENTER)
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.option8, timeout=30):
+        result.log_fail()
+        return
+    serial.send_keys(Key.ENTER)
+    if not Hy5BaseAPI.verify_setup_options_up(serial, Hy5Config.ufs, 4):
+        result.log_fail()
+        return
+    serial.send_keys(Key.ESC)
+    serial.send_keys_with_delay([Key.ENTER, Key.UP])
+    if not serial.to_highlight_option(Key.DOWN, 'UFS', timeout=30):
+        result.log_fail()
+        return
+    serial.send_keys(Key.ENTER)
+    if not serial.verify_option_value(Key.DOWN, r'Disabled_MaxDisabled_Min'):
+        result.log_fail()
+        return
+    result.log_pass()
     return True
 
 
 # Testcase_RRQIRQ_001
 def rrQIRQ(serial, ssh):
-    logging.info("<TC023><Tittle>Setup菜单RRQ和IRQ选项默认值测试:Start")
-    logging.info("<TC023><Description>支持RRQ&IRQ设置")
-    key1 = RIGHT + DOWN * 8 + ENTER + DOWN * 2 + ENTER * 2
-    key2 = DOWN * 8 + ENTER + DOWN * 4 + ENTER
-    key3 = DOWN * 9 + ENTER
-    if not Hy5BasicFunc.toBIOS(serial, ssh):
-        logging.info("<TC023><Result>Setup菜单RRQ和IRQ选项默认值测试:Fail")
+    tc = ('023', 'Setup菜单RRQ和IRQ选项默认值测试', '支持RRQ&IRQ设置')
+    result = Misc.LogHeaderResult(tc, serial)
+    if not Hy5BaseAPI.toBIOS(serial, ssh):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(key2Setup)
-    if not serial.waitString('System Time', timeout=60):
-        logging.info("<TC023><Result>Setup菜单RRQ和IRQ选项默认值测试:Fail")
+    if not Hy5BaseAPI.toBIOSConf(serial):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(key1)
-    if not Hy5BasicFunc.verify_setup_options_down(serial, ['Local/Remote Threshold\s+<Auto>'], 12):
-        logging.info("<TC023><Result>Setup菜单RRQ和IRQ选项默认值测试:Fail")
+    serial.send_keys_with_delay([Key.RIGHT, Key.UP])
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.option2):
+        result.log_fail()
         return
-    # if not serial.to_highlight_option(DOWN, r'Local/Remote Threshold', timeout=60):
-    #     logging.info("<TC023><Result>Setup菜单RRQ和IRQ选项默认值测试:Fail")
-    #     return
-    serial.send_keys_with_delay(Hy5Config.Key.ESC)
-    serial.send_keys_with_delay(ENTER)
-    serial.send_keys_with_delay(DOWN * 8 + ENTER)
-    if not serial.to_highlight_option(DOWN, r'DisabledAutoLowMediumHighManual', timeout=15):
-        logging.info("<TC023><Result>Setup菜单RRQ和IRQ选项默认值测试:Fail")
+    serial.send_data(chr(0x0D))
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.option9, timeout=30):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(Hy5Config.Key.ESC)
-    serial.send_keys_with_delay(ENTER + DOWN * 4 + ENTER)
-    if not Hy5BasicFunc.verify_setup_options_down(serial, ['\[7\]\s+IRQ Threshold', '\[7\]\s+RRQ Threshold'], 12):
-        logging.info("<TC023><Result>Setup菜单RRQ和IRQ选项默认值测试:Fail")
+    serial.send_data(chr(0x0D))
+    if not serial.find_setup_option(Key.DOWN, Hy5Config.option12, 3):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(Hy5Config.Key.ESC)
-    serial.send_keys_with_delay(ENTER)
-    serial.send_keys_with_delay(key2)
+    if not Hy5BaseAPI.verify_setup_options_down(serial, Hy5Config.local_remote, 12):
+        result.log_fail()
+        return
+    serial.send_keys(Key.ESC)
+    serial.send_keys(Key.ENTER)
+    if not serial.to_highlight_option(Key.DOWN, 'Local/Remote Threshold', timeout=30):
+        result.log_fail()
+        return
+    serial.send_keys(Key.ENTER)
+    if not serial.verify_option_value(Key.DOWN, r'DisabledAutoLowMediumHighManual', timeout=15):
+        result.log_fail()
+        return
+    serial.send_keys(Key.ESC)
+    serial.send_keys_with_delay([Key.F5, Key.F5, Key.F5, Key.F5])
+    if not Hy5BaseAPI.verify_setup_options_down(serial, ['\[7\]\s+IRQ Threshold', '\[7\]\s+RRQ Threshold'], 12):
+        result.log_fail()
+        return
+    serial.send_keys(Key.ESC)
+    serial.send_keys(Key.ENTER)
+    if not serial.to_highlight_option(Key.DOWN, 'IRQ Threshold', timeout=60):
+        result.log_fail()
+        return
+    serial.send_keys(Key.ENTER)
     serial.send_data('10')
-    serial.send_keys_with_delay(ENTER + DOWN + ENTER)
+    serial.send_keys_with_delay([Key.ENTER, Key.DOWN, Key.ENTER])
     serial.send_data('20')
-    serial.send_keys_with_delay(ENTER)
-    serial.send_keys(F10 + Y)
-    if not Hy5BasicFunc.toBIOSnp(serial):
-        logging.info("<TC023><Result>Setup菜单RRQ和IRQ选项默认值测试:Fail")
+    serial.send_keys(Key.ENTER)
+    serial.send_keys(Key.F10 + Key.Y)
+    if not Hy5BaseAPI.toBIOSnp(serial):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(key2Setup)
-    if not serial.waitString('System Time', timeout=60):
-        logging.info("<TC013><Result>Load default and setting saving Test:Fail")
+    if not Hy5BaseAPI.toBIOSConf(serial):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(key1)
-    if not Hy5BasicFunc.verify_setup_options_down(serial, ['\[10\]\s+IRQ Threshold', '\[20\]\s+RRQ Threshold'], 12):
-        logging.info("<TC023><Result>Setup菜单RRQ和IRQ选项默认值测试:Fail")
+    serial.send_keys_with_delay([Key.RIGHT, Key.UP])
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.option2, timeout=30):
+        result.log_fail()
         return
-    logging.info("<TC023><Result>Setup菜单RRQ和IRQ选项默认值测试:Pass")
+    serial.send_keys(Key.ENTER)
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.option9, timeout=30):
+        result.log_fail()
+        return
+    serial.send_keys(Key.ENTER)
+    if not serial.find_setup_option(Key.DOWN, Hy5Config.option12, 3):
+        result.log_fail()
+        return
+    if not Hy5BaseAPI.verify_setup_options_down(serial, ['\[10\]\s+IRQ Threshold', '\[20\]\s+RRQ Threshold'], 12):
+        result.log_fail()
+        return
+    result.log_pass()
     return True
 
 
 # Testcase_DRAM_RAPL_001
 def dramRAPL(serial, ssh):
-    logging.info("<TC024><Tittle>菜单项DRAM RAPL选单检查:Start")
-    logging.info("<TC024><Description>支持DRAM RAPL设置")
-    key1 = RIGHT + DOWN * 8 + ENTER + DOWN * 6 + ENTER
-    key2 = DOWN * 11 + ENTER * 2
-    key3 = ENTER + DOWN + ENTER + UP
-    if not Hy5BasicFunc.toBIOS(serial, ssh):
-        logging.info("<TC024><Result>菜单项DRAM RAPL选单检查:Fail")
+    tc = ('024', '菜单项DRAM RAPL选单检查', '支持DRAM RAPL设置')
+    result = Misc.LogHeaderResult(tc, serial)
+    if not Hy5BaseAPI.toBIOS(serial, ssh):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(key2Setup)
-    if not serial.waitString('System Time', timeout=60):
-        logging.info("<TC024><Result>菜单项DRAM RAPL选单检查:Fail")
+    if not Hy5BaseAPI.toBIOSConf(serial):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(key1)
-    serial.send_keys_with_delay(key2)
-    if not Hy5BasicFunc.verify_setup_options_up(serial, ['DRAM RAPL\s+<Enabled>'], 4):
-        logging.info("<TC024><Result>菜单项DRAM RAPL选单检查:Fail")
+    serial.send_keys_with_delay([Key.RIGHT, Key.UP])
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.option2):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(Hy5Config.Key.ESC)
-    serial.send_keys_with_delay(key3)
-    if not serial.to_highlight_option(DOWN, r'DisabledEnabled', timeout=30):
-        logging.info("<TC024><Result>菜单项DRAM RAPL选单检查:Fail")
+    serial.send_keys(Key.ENTER)
+    if not serial.to_highlight_option(Key.UP, Hy5Config.option6):
+        result.log_fail()
         return
-    logging.info("<TC024><Result>菜单项DRAM RAPL选单检查:Pass")
+    serial.send_data(chr(0x0D))
+    if not serial.to_highlight_option(Key.UP, Hy5Config.option11):
+        result.log_fail()
+        return
+    serial.send_data(chr(0x0D))
+    if not serial.find_setup_option(Key.DOWN, 'DRAM RAPL Configuration', 7):
+        result.log_fail()
+        return
+    if not Hy5BaseAPI.verify_setup_options_up(serial, Hy5Config.dram, 4):
+        result.log_fail()
+        return
+    serial.send_data(chr(0x0D))
+    if not serial.verify_option_value(Key.DOWN, r'DisabledEnabled', timeout=30):
+        result.log_fail()
+        return
+    result.log_pass()
     return True
 
 
 # Testcase_BiosPasswordSecurity_012, 013, 014
 # 输入错误密码次数测试_阈值内输入错误密码, 输入错误密码次数测试_阈值内连续输入错误密码后输入正确密码和输入错误密码次数测试_超出阈值不影响下一次登录
 def pwdSecurity(serial, ssh):
-    logging.info("<TC025><Tittle>输入错误密码次数测试:Start")
-    logging.info("<TC025><Description>输入错误密码次数测试包含密码错误，次数测试和超出阈值不影响下一次登录")
-    if not pressDel(serial, ssh):
-        logging.info('<TC025><Result>输入错误密码次数测试:Fail')
+    tc = ('025', '输入错误密码次数测试', '输入错误密码次数测试包含密码错误，次数测试和超出阈值不影响下一次登录')
+    result = Misc.LogHeaderResult(tc, serial)
+    if not Hy5BaseAPI.pressDel(serial, ssh):
+        result.log_fail()
         return
     for i in range(2):
         logging.info("Send wrong password...")
-        serial.send_data(new_pwd_9)
+        serial.send_data(Hy5Config.new_pwd_9)
         serial.send_data(chr(0x0D))  # Send Enter
-        if not serial.waitString(invalid_info, timeout=15):
-            logging.info('<TC025><Result>输入错误密码次数测试:Fail')
+        if not serial.waitString(Hy5Config.invalid_info, timeout=15):
+            result.log_fail()
             return
         serial.send_data(chr(0x0D))  # Send Enter
     logging.info('Send the right password...')
-    serial.send_data(default_pwd)
+    serial.send_data(Hy5Config.default_pwd)
     serial.send_data(chr(0x0D))
     serial.send_data(chr(0x0D))
     if not serial.waitString('BIOS Configuration', timeout=60):
-        logging.info('<TC025><Result>输入错误密码次数测试:Fail')
+        result.log_fail()
         return
-    serial.send_keys(Hy5BasicFunc.Key.CTRL_ALT_DELETE)
-    if not pressDel(serial, ssh):
-        logging.info('<TC025><Result>输入错误密码次数测试:Fail')
+    serial.send_keys(Key.CTRL_ALT_DELETE)
+    if not Hy5BaseAPI.pressDel(serial, ssh):
+        result.log_fail()
         return
     for i in range(3):
         logging.info("Send wrong password...")
-        serial.send_data(new_pwd_9)
+        serial.send_data(Hy5Config.new_pwd_9)
         serial.send_data(chr(0x0D))  # Send Enter
-        if not serial.waitString(invalid_info, timeout=15):
-            logging.info('<TC025><Result>输入错误密码次数测试:Fail')
+        if not serial.waitString(Hy5Config.invalid_info, timeout=15):
+            result.log_fail()
             return
         serial.send_data(chr(0x0D))  # Send Enter
-    if not serial.waitString(error_info, timeout=15):
-        logging.info('<TC025><Result>输入错误密码次数测试:Fail')
+    if not serial.waitString(Hy5Config.error_info, timeout=15):
+        result.log_fail()
         return
-    serial.send_keys(Hy5BasicFunc.Key.CTRL_ALT_DELETE)
-    if not Hy5BasicFunc.toBIOSnp(serial):
-        logging.info('<TC025><Result>输入错误密码次数测试:Fail')
+    serial.send_keys(Key.CTRL_ALT_DELETE)
+    if not Hy5BaseAPI.toBIOSnp(serial):
+        result.log_fail()
         return
-    logging.info('<TC025><Result>输入错误密码次数测试:Pass')
+    result.log_pass()
     return True
 
 
 # 检查CDN开关默认值
 def cnd(serial, ssh):
-    logging.info("<TC026><Tittle>检查CDN开关默认值:Start")
-    logging.info("<TC026><Description>支持网口CDN特性开关")
-    key1 = RIGHT + DOWN + ENTER
-    if not Hy5BasicFunc.toBIOS(serial, ssh):
-        logging.info("<TC026><Result>检查CDN开关默认值:Fail")
+    tc = ('026', '检查CDN开关默认值', '支持网口CDN特性开关')
+    result = Misc.LogHeaderResult(tc, serial)
+    if not Hy5BaseAPI.toBIOS(serial, ssh):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(key2Setup)
-    if not serial.waitString('System Time', timeout=60):
-        logging.info("<TC026><Result>菜单项DRAM RAPL选单检查:Fail")
+    if not Hy5BaseAPI.toBIOSConf(serial):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(key1)
-    if not Hy5BasicFunc.verify_setup_options_down(serial, ['<Enabled>\s+Network CDN'], 12):
-        logging.info("<TC026><Result>菜单项DRAM RAPL选单检查:Fail")
+    serial.send_keys(Key.RIGHT)
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.option7, timeout=30):
+        result.log_fail()
         return
-    logging.info("<TC026><Result>菜单项DRAM RAPL选单检查:Pass")
+    if not Hy5BaseAPI.verify_setup_options_down(serial, ['<Enabled>\s+Network CDN'], 12):
+        result.log_fail()
+        return
+    result.log_pass()
     return True
 
 
 # Testcase_BiosPasswordSecurity_007, 019, 020, 021, 022
 def pwdVerification1(serial, ssh):
-    logging.info("<TC027><Tittle>密码修改验证:Start")
-    logging.info("<TC027><Description>BIOS密码应满足产品网络安全要求")
-    if not Hy5BasicFunc.toBIOS(serial, ssh):
-        logging.info("<TC027><Result>密码修改验证:Fail")
+    tc = ('027', '密码修改验证', 'BIOS密码应满足产品网络安全要求')
+    result = Misc.LogHeaderResult(tc, serial)
+    # if not Hy5BaseAPI.toBIOS(serial, ssh):
+    #     result.log_fail()
+    #     return
+    if not Hy5BaseAPI.toBIOSConf(serial):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(key2Setup)
-    if not serial.waitString('System Time', timeout=60):
-        logging.info("<TC027><Result>密码修改验证:Fail")
+    serial.send_keys_with_delay(Hy5Config.key2pwd)
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.pwd_item):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(key2PWD)
-    if not serial.waitString(pwd_info_1, timeout=30):
-        logging.info("<TC027><Result>密码修改验证:Fail")
+    serial.send_keys(Key.ENTER)
+    if not serial.waitString(Hy5Config.pwd_info_1, timeout=30):
+        result.log_fail()
         return
     # Testcase_BiosPasswordSecurity_002 新密码长度小于最少字符数要求（8）
-    serial.send_data(simple_pwd)
+    serial.send_data(Hy5Config.simple_pwd)
     serial.send_data(chr(0x0D))
-    if not serial.waitString(invalid_info, timeout=15):
-        logging.info("<TC027><Result>密码修改验证:Fail")
+    if not serial.waitString(Hy5Config.invalid_info, timeout=15):
+        result.log_fail()
         return
     serial.send_data(chr(0x0D))
     serial.send_data(chr(0x0D))
-    if not serial.waitString(pwd_info_1, timeout=30):
-        logging.info("<TC027><Result>密码修改验证:Fail")
+    if not serial.waitString(Hy5Config.pwd_info_1, timeout=30):
+        result.log_fail()
         return
-    serial.send_data(default_pwd)
+    serial.send_data(Hy5Config.default_pwd)
     serial.send_data(chr(0x0D))
-    if not serial.waitString(pwd_info_2, timeout=30):
-        logging.info("<TC027><Result>密码修改验证:Fail")
+    if not serial.waitString(Hy5Config.pwd_info_2, timeout=30):
+        result.log_fail()
         return
-    serial.send_data(weak_pwd)
+    serial.send_data(Hy5Config.weak_pwd)
     serial.send_data(chr(0x0D))
-    if not serial.waitString(pwd_info_3, timeout=30):
-        logging.info("<TC027><Result>密码修改验证:Fail")
+    if not serial.waitString(Hy5Config.pwd_info_3, timeout=30):
+        result.log_fail()
         return
-    serial.send_data(weak_pwd)
+    serial.send_data(Hy5Config.weak_pwd)
     serial.send_data(chr(0x0D))
     # 弱口令验证
-    if not serial.waitString(simple_pwd_warning, timeout=30):
-        logging.info("<TC027><Result>密码修改验证:Fail")
+    if not serial.waitString(Hy5Config.simple_pwd_warning, timeout=30):
+        result.log_fail()
         return
     serial.send_data(chr(0x0D))
     serial.send_data(chr(0x0D))
-    if not serial.waitString(pwd_info_1, timeout=30):
-        logging.info("<TC027><Result>密码修改验证:Fail")
+    if not serial.waitString(Hy5Config.pwd_info_1, timeout=30):
+        result.log_fail()
         return
-    serial.send_data(default_pwd)
+    serial.send_data(Hy5Config.default_pwd)
     serial.send_data(chr(0x0D))
     # Testcase_BiosPasswordSecurity_004 新密码长度大于最少字符数要求（8）
-    serial.send_data(new_pwd_9)
+    serial.send_data(Hy5Config.new_pwd_9)
     serial.send_data(chr(0x0D))
-    if not serial.waitString(pwd_info_2, timeout=30):
-        logging.info("<TC027><Result>密码修改验证:Fail")
+    if not serial.waitString(Hy5Config.pwd_info_2, timeout=30):
+        result.log_fail()
         return
-    serial.send_data(new_pwd_9)
+    serial.send_data(Hy5Config.new_pwd_9)
     serial.send_data(chr(0x0D))
-    time.sleep(0.2)
-    if not serial.waitString(pwd_info_3, timeout=30):
-        logging.info("<TC027><Result>密码修改验证:Fail")
+    time.sleep(1)
+    if not serial.waitString(Hy5Config.pwd_info_3, timeout=30):
+        result.log_fail()
         return
-    serial.send_data(new_pwd_9)
+    serial.send_data(Hy5Config.new_pwd_9)
     serial.send_data(chr(0x0D))
-    if not serial.waitString(pwd_info_4, timeout=30):
-        logging.info("<TC027><Result>密码修改验证:Fail")
+    if not serial.waitString(Hy5Config.pwd_info_4, timeout=30):
+        result.log_fail()
         return
-    time.sleep(0.2)
-    serial.send_keys(F10 + Y)
-    if not Hy5BasicFunc.toBIOSnp(serial, new_pwd_9):
-        logging.info("<TC027><Result>密码修改验证:Fail")
+    time.sleep(1)
+    serial.send_keys(Key.F10 + Key.Y)
+    if not Hy5BaseAPI.toBIOSnp(serial, Hy5Config.new_pwd_9):
+        result.log_fail()
         return
     logging.info("新密码验证成功，将在最后一个密码修改用例里恢复环境")
-    logging.info("<TC027><Result>密码修改验证:Pass")
+    result.log_pass()
     return True
 
 
 # Testcase_BiosPasswordSecurity_003, 010 设置密码长度度测试_密码长度等于最少字符数(8)
 def pwdVerification2(serial, ssh):
-    logging.info("<TC028><Tittle>设置密码长度度测试:Start")
-    logging.info("<TC028><Description>BIOS密码应满足产品网络安全要求")
-    if not setPWD(serial, ssh, new_pwd_9, new_pwd_8):
-        logging.info("<TC028><Result>设置密码长度度测试:Fail")
+    tc = ('028', '设置密码长度度测试', 'BIOS密码应满足产品网络安全要求')
+    result = Misc.LogHeaderResult(tc, serial)
+    if not Hy5BaseAPI.setPWD(serial, ssh, Hy5Config.new_pwd_9, Hy5Config.new_pwd_8):
+        result.log_fail()
         return
-    if not Hy5BasicFunc.toBIOSnp(serial, new_pwd_8):
-        logging.info("<TC028><Result>设置密码长度度测试:Fail")
+    if not Hy5BaseAPI.toBIOSnp(serial, Hy5Config.new_pwd_8):
+        result.log_fail()
         return
     logging.info("新密码验证成功，将在最后一个密码修改用例里恢复环境")
-    logging.info("<TC028><Result>设置密码长度度测试:Pass")
+    result.log_pass()
     return True
 
 
 # Testcase_BiosPasswordSecurity_005, 006
 def pwdVerification3(serial, ssh):
-    logging.info("<TC029><Tittle>设置密码最大字符数测试:Start")
-    logging.info("<TC029><Description>BIOS密码应满足产品网络安全要求")
-    if not Hy5BasicFunc.toBIOS(serial, ssh, new_pwd_8):
-        logging.info("<TC029><Result>设置密码最大字符数测试:Fail")
+    tc = ('029', '设置密码最大字符数测试', 'BIOS密码应满足产品网络安全要求')
+    result = Misc.LogHeaderResult(tc, serial)
+    if not Hy5BaseAPI.toBIOS(serial, ssh, Hy5Config.new_pwd_8):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(key2Setup)
-    if not serial.waitString('System Time', timeout=60):
+    if not Hy5BaseAPI.toBIOSConf(serial):
         return
-    serial.send_keys_with_delay(key2PWD)
-    if not serial.waitString(pwd_info_1, timeout=15):
+    serial.send_keys_with_delay(Hy5Config.key2pwd)
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.pwd_item):
+        result.log_fail()
         return
-    serial.send_data(new_pwd_17)
+    serial.send_keys(Key.ENTER)
+    if not serial.waitString(Hy5Config.pwd_info_1, timeout=15):
+        result.log_fail()
+        return
+    serial.send_data(Hy5Config.new_pwd_17)
     serial.send_data(chr(0x0D))
-    if not serial.waitString(invalid_info, timeout=15):
-        logging.info("<TC029><Result>设置密码最大字符数测试:Fail")
+    if not serial.waitString(Hy5Config.invalid_info, timeout=15):
+        result.log_fail()
         return
     serial.send_data(chr(0x0D))
-    if not setPWDnp(serial, new_pwd_8, new_pwd_16):
-        logging.info("<TC029><Result>设置密码最大字符数测试:Fail")
+    if not Hy5BaseAPI.setPWDnp(serial, Hy5Config.new_pwd_8, Hy5Config.new_pwd_16):
+        result.log_fail()
         return
-    if not Hy5BasicFunc.toBIOSnp(serial, new_pwd_16):
-        # logging.info("New pwd has failed to be verified, start to restore the test Env - update bios")
-        # if not Hy5BasicFunc.Upgrade_Test(serial):
-        #     return
-        logging.info("<TC029><Result>设置密码最大字符数测试:Fail")
+    if not Hy5BaseAPI.toBIOSnp(serial, Hy5Config.new_pwd_16):
+        result.log_fail()
         return
     logging.info("新密码验证成功，将在最后一个密码修改用例里恢复环境")
-    logging.info("<TC029><Result>设置密码最大字符数测试:Pass")
+    result.log_pass()
     return True
 
 
 # Testcase_BiosPasswordSecurity_008, 009
 def pwdVerification4(serial, ssh):
-    logging.info("<TC030><Tittle>设置密码最大字符数测试:Start")
-    logging.info("<TC030><Description>BIOS密码应满足产品网络安全要求")
-    if not Hy5BasicFunc.toBIOS(serial, ssh, new_pwd_16):
-        logging.info("<TC030><Result>设置密码最大字符数测试:Fail")
+    tc = ('030', '设置密码最大字符数测试', 'BIOS密码应满足产品网络安全要求')
+    result = Misc.LogHeaderResult(tc, serial)
+    if not Hy5BaseAPI.toBIOS(serial, ssh, Hy5Config.new_pwd_16):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(key2Setup)
-    if not serial.waitString('System Time', timeout=60):
-        logging.info("<TC030><Result>设置密码最大字符数测试:Fail")
+    if not Hy5BaseAPI.toBIOSConf(serial):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(key2PWD)
-    if not serial.waitString(pwd_info_1, timeout=15):
-        logging.info("<TC030><Result>设置密码最大字符数测试:Fail")
+    serial.send_keys_with_delay(Hy5Config.key2pwd)
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.pwd_item):
+        result.log_fail()
+        return
+    serial.send_keys(Key.ENTER)
+    if not serial.waitString(Hy5Config.pwd_info_1, timeout=15):
+        result.log_fail()
         return
     i = 0
-    full_pwd_list = pwd_list1 + pwd_list2
+    full_pwd_list = Hy5Config.pwd_list1 + Hy5Config.pwd_list2
     while i < len(full_pwd_list):
         serial.send_data(full_pwd_list[i])
         serial.send_data(chr(0x0D))
         logging.info('send the pwd:{0}'.format(full_pwd_list[i]))
         if len(full_pwd_list) == 8:
-            if not serial.waitString(error_info, timeout=15):
-                logging.info("<TC030><Result>设置密码最大字符数测试:Fail")
+            if not serial.waitString(Hy5Config.error_info, timeout=15):
+                result.log_fail()
                 return
             full_pwd_list.remove(full_pwd_list[i])
             i -= 1
-            if not enterPWD(serial, new_pwd_16):
-                logging.info("<TC030><Result>设置密码最大字符数测试:Fail")
+            if not Hy5BaseAPI.enterPWD(serial, Hy5Config.new_pwd_16):
+                result.log_fail()
                 return
         elif len(full_pwd_list) == 5:
-            if not serial.waitString(error_info, timeout=15):
-                logging.info("<TC030><Result>设置密码最大字符数测试:Fail")
+            if not serial.waitString(Hy5Config.error_info, timeout=15):
+                result.log_fail()
                 return
             full_pwd_list.remove(full_pwd_list[i])
             i -= 1
-            if not enterPWD(serial, new_pwd_16):
-                logging.info("<TC030><Result>设置密码最大字符数测试:Fail")
+            if not Hy5BaseAPI.enterPWD(serial, Hy5Config.new_pwd_16):
+                result.log_fail()
                 return
         elif len(full_pwd_list) == 2:
-            if not serial.waitString(error_info, timeout=15):
-                logging.info("<TC030><Result>设置密码最大字符数测试:Fail")
+            if not serial.waitString(Hy5Config.error_info, timeout=15):
+                result.log_fail()
                 return
             full_pwd_list.remove(full_pwd_list[i])
             i -= 1
-            if not enterPWD(serial, new_pwd_16):
-                logging.info("<TC030><Result>设置密码最大字符数测试:Fail")
+            if not Hy5BaseAPI.enterPWD(serial, Hy5Config.new_pwd_16):
+                result.log_fail()
                 return
         else:
-            if not serial.waitString(invalid_info, timeout=15):
-                logging.info("<TC030><Result>设置密码最大字符数测试:Fail")
+            if not serial.waitString(Hy5Config.invalid_info, timeout=15):
+                result.log_fail()
                 return
             full_pwd_list.remove(full_pwd_list[i])
             i -= 1
@@ -814,48 +708,57 @@ def pwdVerification4(serial, ssh):
 
         i += 1
     logging.info("新密码验证成功，将在最后一个密码修改用例里恢复环境")
-    logging.info("<TC030><Result>设置密码最大字符数测试:Pass")
+    result.log_pass()
     return True
 
 
 # Testcase_SimplePassword_001, 002, 003, 004 and 005
 def simplePWDTest(serial, ssh):
-    logging.info("<TC034><Tittle>简易密码开关默认值测试:Start")
-    logging.info("<TC034><Description>支持关闭密码复杂度检测")
-    if not Hy5BasicFunc.toBIOS(serial, ssh, new_pwd_16):
-        logging.info("<TC034><Result>简易密码开关默认值测试:Fail")
+    tc = ('034', '简易密码开关默认值测试', '支持关闭密码复杂度检测')
+    result = Misc.LogHeaderResult(tc, serial)
+    if not Hy5BaseAPI.toBIOS(serial, ssh, Hy5Config.new_pwd_16):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(key2Setup)
-    if not serial.waitString('System Time', timeout=30):
-        logging.info("<TC034><Result>简易密码开关默认值测试:Fail")
+    if not Hy5BaseAPI.toBIOSConf(serial):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(RIGHT * 3)
-    if not Hy5BasicFunc.verify_setup_options_down(serial, ['<Disabled>\s+Simple Password'], 10):
-        logging.info("<TC034><Result>简易密码开关默认值测试:Fail")
+    serial.send_keys_with_delay(Hy5Config.key2pwd)
+    if not Hy5BaseAPI.verify_setup_options_down(serial, ['<Disabled>\s+Simple Password'], 10):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(LEFT + RIGHT + DOWN * 5 + ENTER + DOWN + ENTER * 2)
-    time.sleep(0.2)
-    serial.send_keys_with_delay(LEFT + RIGHT + DOWN)
-    if not setPWDwithoutF10(serial, new_pwd_16, simple_pwd):
-        logging.info("<TC034><Result>简易密码开关默认值测试:Fail")
+    serial.send_keys_with_delay([Key.LEFT, Key.RIGHT])
+    time.sleep(1)
+    if not serial.to_highlight_option(Key.UP, 'Simple Password', timeout=30):
+        result.log_fail()
         return
-    if not checkPWD(serial, simple_pwd, new_pwd_16):
-        logging.info("<TC034><Result>简易密码开关默认值测试:Fail")
+    serial.send_keys(Key.F5)
+    if not serial.to_highlight_option(Key.UP, Hy5Config.pwd_item, timeout=30):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(key2Setup)
-    if not serial.waitString('System Time', timeout=30):
-        logging.info("<TC034><Result>简易密码开关默认值测试:Fail")
+    if not Hy5BaseAPI.setPWDwithoutF10(serial, Hy5Config.new_pwd_16, Hy5Config.simple_pwd):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(RIGHT * 3 + DOWN * 5 + ENTER + DOWN + ENTER * 2)
-    time.sleep(0.2)
-    serial.send_keys_with_delay(LEFT + RIGHT + DOWN)
-    if not setPWDnp(serial, new_pwd_16, simple_pwd):
-        logging.info("<TC034><Result>简易密码开关默认值测试:Fail")
+    if not checkPWD(serial, Hy5Config.simple_pwd, Hy5Config.new_pwd_16):
+        result.log_fail()
         return
-    if not checkPWD(serial, new_pwd_16, simple_pwd):
-        logging.info("<TC034><Result>简易密码开关默认值测试:Fail")
+    if not Hy5BaseAPI.toBIOSConf(serial):
+        result.log_fail()
         return
-    logging.info("<TC034><Result>简易密码开关默认值测试:Pass")
+    serial.send_keys_with_delay(Hy5Config.key2pwd)
+    time.sleep(1)
+    if not serial.to_highlight_option(Key.UP, 'Simple Password', timeout=30):
+        return
+    serial.send_keys(Key.F5)
+    if not serial.to_highlight_option(Key.UP, Hy5Config.pwd_item, timeout=30):
+        result.log_fail()
+        return
+    if not Hy5BaseAPI.setPWDnp(serial, Hy5Config.new_pwd_16, Hy5Config.simple_pwd):
+        result.log_fail()
+        return
+    if not checkPWD(serial, Hy5Config.new_pwd_16, Hy5Config.simple_pwd):
+        result.log_fail()
+        return
+    result.log_pass()
     return True
 
 
@@ -868,205 +771,175 @@ def pwdSecurityTest(serial, ssh):
     pwdVerification4(serial, ssh)
     simplePWDTest(serial, ssh)
     logging.info("密码组合和简易设置验证完成，当前为最后一个密码修改用例，开始恢复环境:更新BIOS")
-    if not Hy5BasicFunc.Upgrade_Test(serial):
-        return
+    if not Hy5BaseAPI.restore_env(serial):
+        pass
+
     return True
 
 
 # Testcase_SecurityBoot_001, 004
 def securityBoot(serial, ssh):
-    logging.info("<TC031><Tittle>Secure Boot默认值:Start")
-    logging.info("<TC031><Description>支持Secure boot")
-    if not Hy5BasicFunc.toBIOS(serial, ssh):
-        logging.info("<TC031><Result>Secure Boot默认值:Fail")
+    tc = ('031', 'Secure Boot默认值', 'Secure Boot默认值')
+    result = Misc.LogHeaderResult(tc, serial)
+    if not Hy5BaseAPI.toBIOS(serial, ssh):
+        result.log_fail()
         return
-    key1 = RIGHT + DOWN + ENTER
+    key1 = [Key.RIGHT, Key.DOWN, Key.ENTER]
     serial.send_keys_with_delay(key1)
-    if not Hy5BasicFunc.verify_setup_options_down(serial, ['Current Secure Boot State\s+Disabled'], 6):
-        logging.info("<TC031><Result>Secure Boot默认值:Fail")
+    if not Hy5BaseAPI.verify_setup_options_down(serial, ['Current Secure Boot State\s+Disabled'], 6):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(Hy5BasicFunc.Key.ESC)
-    serial.send_keys_with_delay(RIGHT + ENTER)
-    serial.send_keys_with_delay(RIGHT * 4 + ENTER + DOWN + ENTER)
-    time.sleep(0.2)
-    serial.send_keys(F10 + Y)
-    if not Hy5BasicFunc.toBIOSnp(serial):
-        logging.info("<TC031><Result>Secure Boot默认值:Fail")
+    serial.send_keys(Key.ESC)
+    serial.send_keys_with_delay([Key.RIGHT, Key.ENTER])
+    serial.send_keys_with_delay([Key.RIGHT, Key.RIGHT, Key.RIGHT, Key.RIGHT, Key.UP])
+    if not serial.to_highlight_option(Key.DOWN, 'Boot Type'):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(RIGHT + DOWN + UP + DOWN)
-    if serial.waitString('Administer Secure Boot', timeout=5):
-        status = False
-    else:
-        logging.info("<TC031><Result>Secure Boot默认值:Pass")
-        status = True
+    serial.send_keys(Key.F5)
+    time.sleep(0.1)
+    serial.send_keys(Key.F10 + Key.Y)
+    if not Hy5BaseAPI.toBIOSnp(serial):
+        result.log_fail()
+        return
+    serial.send_keys_with_delay([Key.RIGHT, Key.DOWN, Key.UP, Key.DOWN])
+    if serial.waitString('Administer Secure Boot'):
+        result.log_fail()
+        return
     logging.info('Restore the test Env...')
     if not reset_default(serial, ssh):
-        return
-
-    return status
-
-
-# Testcase_TPM_001, 002, 005, 006, 009 TPM芯片测试 (单板已插TPM卡)
-def tpm(serial, ssh):
-    logging.info("<TC032><Tittle>TPM芯片测试:Start")
-    logging.info("<TC032><Description>支持CBNT")
-    key1 = LEFT * 2 + DOWN + ENTER + DOWN * 6
-    if not Hy5BasicFunc.toBIOS(serial, ssh):
-        logging.info("<TC032><Result>TPM芯片测试:Fail")
-        return
-    serial.send_keys_with_delay(key2Setup)
-    if not serial.waitString('System Time', timeout=15):
-        logging.info("<TC032><Result>TPM芯片测试:Fail")
-        return
-    serial.send_keys_with_delay(RIGHT * 3)
-    if not Hy5BasicFunc.verify_setup_options_down(serial, tpm_info, 12):
-        logging.info("<TC032><Result>TPM芯片测试:Fail")
-        return
-    serial.send_keys_with_delay(key1)
-    serial.send_keys_with_delay(ENTER + DOWN + ENTER)
-    time.sleep(0.2)
-    serial.send_keys(F10 + Y)
-    if not serial.waitString('DetectTpmDevice', timeout=120):
-        logging.info("<TC032><Result>TPM芯片测试:Fail")
-        if not reset_default(serial, ssh):
-            return
-    if not toSysTime(serial):
-        logging.info("<TC032><Result>TPM芯片测试:Fail")
-        if not reset_default(serial, ssh):
-            return
-    time.sleep(0.2)
-    serial.send_keys(F9 + Y + F10 + Y)
-    if not toSysTime(serial):
-        logging.info("<TC032><Result>TPM芯片测试:Fail")
-        return
-    serial.send_keys_with_delay(RIGHT * 3)
-    if not Hy5BasicFunc.verify_setup_options_down(serial, tpm_info, 10):
-        logging.info("<TC032><Result>TPM芯片测试:Fail")
-        return
-    logging.info("<TC032><Result>TPM芯片测试:Pass")
+        pass
+    result.log_pass()
     return True
 
 
+# Testcase_TPM_001, 002, 005, 006, 009 TPM芯片测试 (单板已插TPM卡)
 # TXT + TPM Test Testcase_TPM_013 单板已插TPM卡 - 待在新板上验证，旧板不支持TXT（或rework板子开启TXT）
-def txtTPM(serial, ssh):
-    logging.info("<TC033><Tittle>TXT打开不影响TPM_硬盘等外设初始化:Start")
-    logging.info("<TC033><Description>支持CBNT")
-    key1 = RIGHT + DOWN + ENTER + DOWN * 6
-    key2 = ENTER + DOWN + ENTER
-    key3 = DOWN * 7 + ENTER * 2
-    key4 = UP * 6 + ENTER + DOWN + ENTER
-    if not Hy5BasicFunc.toBIOS(serial, ssh):
-        logging.info("<TC033><Result>TXT打开不影响TPM_硬盘等外设初始化:Fail")
+def tpm(serial, ssh):
+    tc = ('032', 'TPM芯片测试', '支持CBNT')
+    result = Misc.LogHeaderResult(tc, serial)
+    if not Hy5BaseAPI.toBIOS(serial, ssh):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(key2Setup)
-    if not serial.waitString('System Time', timeout=15):
-        logging.info("<TC033><Result>TXT打开不影响TPM_硬盘等外设初始化:Fail")
+    if not Hy5BaseAPI.toBIOSConf(serial):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(key1)
-    serial.send_keys_with_delay(key2)
-    serial.send_keys_with_delay(Hy5BasicFunc.Key.ESC)
-    time.sleep(0.2)
-    serial.send_keys_with_delay(key3)
-    serial.send_keys_with_delay(key4)
-    time.sleep(0.2)
-    serial.send_keys(F10 + Y)
+    serial.send_keys_with_delay(Hy5Config.key2pwd)
+    if not Hy5BaseAPI.verify_setup_options_down(serial, Hy5Config.tpm_info, 12):
+        result.log_fail()
+        return
+    serial.send_keys_with_delay([Key.LEFT, Key.LEFT, Key.UP])
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.option2):
+        result.log_fail()
+        return
+    serial.send_keys_with_delay([Key.ENTER, Key.UP])
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.option3):
+        result.log_fail()
+        return
+    serial.send_keys(Key.ENTER)
+    if not serial.to_highlight_option(Key.UP, 'Intel'):
+        result.log_fail()
+        return
+    serial.send_keys(Key.F5)
+    serial.send_keys(Key.F10 + Key.Y)
     if not serial.waitString('DetectTpmDevice', timeout=120):
-        logging.info("<TC033><Result>TXT打开不影响TPM_硬盘等外设初始化:Fail")
+        result.log_fail()
         if not reset_default(serial, ssh):
             return
-    if not toSysTime(serial):
-        logging.info("<TC033><Result>TXT打开不影响TPM_硬盘等外设初始化:Fail")
+    if not Hy5BaseAPI.toSysTime(serial):
+        result.log_fail()
         if not reset_default(serial, ssh):
             return
-    serial.send_keys_with_delay(RIGHT * 3)
-    if not Hy5BasicFunc.verify_setup_options_down(serial, tpm_info, 10):
-        logging.info("<TC033><Result>TXT打开不影响TPM_硬盘等外设初始化:Fail")
-        if not reset_default(serial, ssh):
-            return
-    logging.info("<TC033><Result>TXT打开不影响TPM_硬盘等外设初始化:Pass")
-    if not reset_default(serial, ssh):
+    serial.send_keys(Hy5Config.key2default)
+    if not Hy5BaseAPI.toSysTime(serial):
+        result.log_fail()
         return
-
+    serial.send_keys_with_delay(Hy5Config.key2pwd)
+    if not Hy5BaseAPI.verify_setup_options_down(serial, Hy5Config.tpm_info, 10):
+        result.log_fail()
+        return
+    result.log_pass()
     return True
 
 
 # Testcase_VTD_002
 def vtd(serial, ssh):
-    logging.info("<TC037><Tittle>关闭VT-d功能启动测试:Start")
-    logging.info("<TC037><Description>支持VT-d")
-    if not Hy5BasicFunc.toBIOS(serial, ssh):
-        logging.info("<TC037><Result>关闭VT-d功能启动测试:Fail")
+    tc = ('037', '关闭VT-d功能启动测试', '支持VT-d')
+    result = Misc.LogHeaderResult(tc, serial)
+    if not Hy5BaseAPI.toBIOS(serial, ssh):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(key2Setup)
-    if not serial.waitString('System Time', timeout=60):
-        logging.info("<TC037><Result>关闭VT-d功能启动测试:Fail")
+    if not Hy5BaseAPI.toBIOSConf(serial):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(RIGHT + DOWN * 2 + ENTER * 3 + DOWN + ENTER)
-    time.sleep(0.2)
-    serial.send_keys(F10 + Y)
-    if not serial.waitString('BIOS boot completed', timeout=300):   # OS flag TBD
-        logging.info("<TC037><Result>关闭VT-d功能启动测试:Fail")
+    serial.send_keys(Key.RIGHT)
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.option10, timeout=60):
+        result.log_fail()
         return
-    logging.info("<TC037><Result>关闭VT-d功能启动测试:Pass")
+    serial.send_keys_with_delay([Key.ENTER, Key.UP])
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.option13):
+        result.log_fail()
+        return
+    serial.send_keys(Key.ENTER)
+    serial.send_keys(Key.F5)
+    time.sleep(0.1)
+    serial.send_keys(Key.F10 + Key.Y)
+    if not Hy5TcLib.ping_sut():   # OS flag
+        result.log_fail()
+        return
+    result.log_pass()
     return True
+
 
 # Testcase_CPU_COMPA_015, 016 - TBD
 def cpuCOMPA(serial, ssh):
-    logging.info("<TC038><Tittle>UPI link链路检测测试:Start")
-    logging.info("<TC038><Description>CPU兼容性测试")
-    if not Hy5BasicFunc.toBIOS(serial, ssh):
-        logging.info("<TC038><Result>UPI link链路检测测试:Fail")
+    tc = ('038', 'UPI link链路检测测试', 'CPU兼容性测试')
+    result = Misc.LogHeaderResult(tc, serial)
+    if not Hy5BaseAPI.toBIOS(serial, ssh):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(key2Setup)
-    if not serial.waitString('System Time', timeout=30):
-        logging.info("<TC038><Result>UPI link链路检测测试:Fail")
+    if not Hy5BaseAPI.toBIOSConf(serial):
+        result.log_fail()
         return
-    serial.send_keys_with_delay(RIGHT + DOWN * 8 + ENTER + DOWN * 2 + ENTER * 3)
-    if not Hy5BasicFunc.verify_setup_options_down(serial, upi_state, 4):
-        logging.info("<TC038><Result>UPI link链路检测测试:Fail")
+    serial.send_keys_with_delay([Key.RIGHT, Key.UP])
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.option2):
+        result.log_fail()
         return
-    logging.info("<TC038><Result>UPI link链路检测测试:Pass")
+    serial.send_data(chr(0x0D))
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.option9):
+        result.log_fail()
+        return
+    serial.send_data(chr(0x0D))
+    if not serial.find_setup_option(Key.DOWN, Hy5Config.option12, 4):
+        result.log_fail()
+        return
+    serial.send_keys(Key.UP)
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.option14):
+        result.log_fail()
+        return
+    serial.send_data(chr(0x0D))
+    if not Hy5BaseAPI.verify_setup_options_down(serial, Hy5Config.upi_state, 4):
+        result.log_fail()
+        return
+    result.log_pass()
     return True
 
 
 # Testcase_LogTime_001, 002 and 003 串口日志打印
-def logTime(serial, ssh, username='byo', pwd='1'):
+def logTime(serial, ssh):
     tc = ('039', '串口日志打印测试', '支持BIOS启动开始和结束信息打印及上报')
     result = Misc.LogHeaderResult(tc, serial)
-    if not Hy5BasicFunc.toBIOS(serial, ssh):
+    if not Hy5BaseAPI.toBIOS(serial, ssh):
         result.log_fail()
         return
-    serial.send_keys(Hy5BasicFunc.Key.RIGHT)
-    serial.send_data(chr(0x0D))
-    if not serial.waitString('ubuntu', timeout=15):
+    serial.send_keys_with_delay(Hy5Config.key2OS)
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.OS, timeout=30):
         result.log_fail()
         return
-    serial.send_data(chr(0x0D))
-    if not serial.waitString('LTS byo-DH140-V6 ttyS0', timeout=300):
+    serial.send_keys(Key.ENTER)
+    if not Hy5TcLib.ping_sut():
         result.log_fail()
         return
-    serial.send_keys_with_delay(ENTER)
-    time.sleep(0.1)
-    serial.send_data(username)
-    serial.send_data(chr(0x0D))
-    time.sleep(0.1)
-    serial.send_data(pwd)
-    serial.send_data(chr(0x0D))
-    if not serial.waitString("$", timeout=15):
-        result.log_fail()
-        return
-    serial.send_data("sudo hwclock --show")
-    serial.send_data(chr(0x0D))
-    serial.send_data(pwd)
-    serial.send_data(chr(0x0D))
-    if not serial.is_msg_present_general('0800'):    # 0800 OS time zone
-        result.log_fail()
-        return
-    serial.send_data('sudo reboot')
-    serial.send_data(chr(0x0D))
-    time.sleep(0.1)
-    serial.send_data(pwd)
-    serial.send_data(chr(0x0D))
+    t1 = Hy5TcLib.osTime(ssh)
     if not serial.is_msg_present_general('BIOS Log', delay=60):
         result.log_fail()
         return
@@ -1074,10 +947,6 @@ def logTime(serial, ssh, username='byo', pwd='1'):
         while True:
             try:
                 line = f.readline()
-                if '0800' in line:
-                    t0 = line.split('.')[0]
-                    t1 = datetime.datetime.strptime(t0, '%Y-%m-%d %H:%M:%S')
-
                 if 'BIOS Log' in line:
                     t2 = line.split('@')[-1].rstrip().split('<')[0].lstrip().replace('.', '-').strip()
                     t3 = datetime.datetime.strptime(t2, '%Y-%m-%d %H:%M:%S')
@@ -1099,16 +968,70 @@ def logTime(serial, ssh, username='byo', pwd='1'):
     return True
 
 
+# Testcase_CoreDisable_001, 002, 003, 004, 005 and 007
+def coreDisable(serial, ssh):
+    tc = ('043', 'Setup菜单关核选项测试', '支持CPU关核')
+    result = Misc.LogHeaderResult(tc, serial)
+    # if not Hy5BasicFunc.toBIOS(serial, ssh):
+    #     result.log_fail()
+    #     return
+    # serial.send_keys_with_delay(key2Setup)
+    # if not serial.waitString('System Time', timeout=30):
+    #     result.log_fail()
+    #     return
+    # serial.send_keys_with_delay(RIGHT + DOWN * 8 + ENTER * 2)
+    # if not Hy5BasicFunc.verify_setup_options_up(serial, ['<All>\s+Active Processor Cores'], 7):
+    #     result.log_fail()
+    #     return
+    # serial.send_keys(Hy5Config.Key.ESC)
+    # serial.send_keys_with_delay(ENTER * 2)
+    # if not serial.to_highlight_option(UP, r'1234567891011121314151617All', timeout=15):
+    #     result.log_fail()
+    #     return
+    # serial.send_keys_with_delay(UP * 16)
+    # serial.send_keys(ENTER)
+    # serial.send_keys(F10 + Y)
+    # if not Hy5BasicFunc.toBIOSnp(serial):
+    #     result.log_fail()
+    #     return
+    # serial.send_keys_with_delay(key2Setup)
+    # if not serial.waitString('System Time', timeout=30):
+    #     result.log_fail()
+    #     return
+    # serial.send_keys_with_delay(RIGHT + DOWN * 8 + ENTER)
+    # serial.send_keys_with_delay(DOWN * 4 + ENTER)
+    # if not Hy5BasicFunc.verify_setup_options_up(serial, Hy5BasicFunc.DIMM_info, 20):
+    #     result.log_fail()
+    #     return
+    # serial.send_keys_with_delay(Hy5Config.Key.CTRL_ALT_DELETE)
+    # if not Hy5TcLib.ping_sut():
+    #     result.log_fail()
+    #     return
+    if not Hy5TcLib.chipsecMerge(ssh):
+        result.log_fail()
+        return
+    # cmd = 'dmidecode -t 4'
+    # path = Hy5Config.LOG_DIR
+    # Hy5TcLib.dump_smbios(ssh, cmd)
+    # path1 = r'C:\Users\nuc\Desktop\hy5AT\HY5'
+    # if not P.smbiosCheck(cmd, path, path1):
+    #     result.log_fail()
+    #     return
+    result.log_pass()
+    return True
+
+
 # Main function
-def biosSetupTest(serial, ssh):
-    Load_Default_Test(serial, ssh)
-    staticTurbo(serial, ssh)
-    ufs(serial, ssh)
-    rrQIRQ(serial, ssh)
-    dramRAPL(serial, ssh)
-    pwdSecurityTest(serial, ssh)
-    securityBoot(serial, ssh)
-    vtd(serial, ssh)
-    cpuCOMPA(serial, ssh)
-    logTime(serial, ssh)
+def biosSetupTest(serial, ssh, n=1):
+    for i in range(n):
+        Load_Default_Test(serial, ssh)
+        staticTurbo(serial, ssh)
+        ufs(serial, ssh)
+        rrQIRQ(serial, ssh)
+        dramRAPL(serial, ssh)
+        pwdSecurityTest(serial, ssh)
+        securityBoot(serial, ssh)
+        vtd(serial, ssh)
+        cpuCOMPA(serial, ssh)
+        logTime(serial, ssh)
     logging.info('Hy5 Setup test completed...')

@@ -6,16 +6,20 @@
 #  stored in a retrieval system, or transmitted in any form or by any
 #  means without the express written consent of Byosoft Corporation.
 # -*- encoding=utf8 -*-
-import time
-import subprocess
+import datetime
 import logging
 import re
-from HY5 import updatebios
-from HY5 import Hy5Config
-from RedFish import config
+import subprocess
+import time
+
 import Common.ssh as SSH
 from Common import Misc
+from Common.ssh import sftp
+from HY5 import Hy5Config
 
+# sftp, ssh(instantiation)
+s = sftp(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD)
+h = SSH.SshConnection()
 
 def dump_smbios(ssh, cmd='dmidecode'):
     if ssh.login(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD):
@@ -109,9 +113,11 @@ def is_power_off(ssh):
         ret = ssh.execute_command_interaction(cmd_on)
         # print(ret)
         if ret_confirm in ret.decode():
+            logging.info('Current power state is Off')
             return True
         else:
-            return False
+            logging.info('Current power state is On')
+            return
 
 
 # updated by arthur,
@@ -130,13 +136,26 @@ def power_on(ssh):
         return
 
 
+def power_off(ssh):
+    logging.info("Power off system - force")
+    cmd_reset = 'ipmcset -d powerstate -v 2\n'
+    ret_reset = 'Do you want to continue'
+    cmd_confirm = 'Y\n'
+    ret_confirm = 'successfully'
+    cmds = [cmd_reset, cmd_confirm]
+    rets = [ret_reset, ret_confirm]
+    if ssh.login(Hy5Config.BMC_IP, Hy5Config.BMC_USER, Hy5Config.BMC_PASSWORD):
+        return ssh.interaction(cmds, rets)
+    else:
+        logging.error("HY5 Common TC: Power off failed")
+        return
+
+
 def force_reset(ssh):
     if is_power_off(ssh):
-        print('Current power state is Off, power on first')  # updated by arthur,
         if power_on(ssh):
             return True
     else:
-        logging.info("Current power state is On, force system reset.")  # updated by arthur,
         cmd_reset = 'ipmcset -d frucontrol -v 0\n'
         ret_reset = 'Do you want to continue'
         cmd_confirm = 'Y\n'
@@ -254,8 +273,85 @@ def clearCMOS(ssh):
     ret_confirm = 'successfully'
     cmds = [cmd_clearcoms, cmd_confirm]
     rets = [ret_clearcmos, ret_confirm]
+    if is_power_off(ssh):
+        pass
+    else:
+        if power_off(ssh):
+            time.sleep(30)  # wait for 30s due to if in OS
+            pass
+
     if ssh.login(Hy5Config.BMC_IP, Hy5Config.BMC_USER, Hy5Config.BMC_PASSWORD):
         return ssh.interaction(cmds, rets)
     else:
         logging.error("HY5 Common TC: clear CMOS failed")
         return
+
+
+# scp the ini file to OS...
+def sftpFile(ssh):
+    s.login()
+    # a = s.sftp.listdir(Hy5Config.unitool_path)
+    # print(a)
+    b = '{0}\\AT\\unitool.ini'.format(Hy5Config.HPM_DIR)  # the level 2 folder name must be app, {0} - unitool path
+    s.sftp.put(b, r'{0}/app/1.ini'.format(Hy5Config.unitool_path), confirm=True)
+    s.sftp.close()
+    if ssh.login(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD):
+        logging.info("unitool...")
+        ssh.execute_command(r'cd {0}/kernel;insmod ufudev.ko'.format(Hy5Config.unitool_path))
+        res = ssh.execute_command(r'cd {0}/app;./unitool -rf 1.ini | grep error'.format(Hy5Config.unitool_path))
+        if 'error' in res.decode():
+            logging.debug(res.decode())
+            return
+        else:
+            # ssh.execute_command(r'cd {0}/app;cp unicfg.ini 1_bef.ini'.format(Hy5Config.unitool_path))
+            res1 = ssh.execute_command(r'cd {0}/app;./unitool -wf 1.ini | grep error'.format(Hy5Config.unitool_path))
+            if 'error' in res1.decode():
+                logging.debug(res1.decode)
+                return
+    h.close_session()
+    return True
+
+
+# cmp the diff files,
+def cmpFile(ssh):
+    if ssh.login(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD):
+        logging.info("cmp the config ini file...")
+        res = ssh.execute_command(r'cd {0}/app;./unitool -rf 1.ini | grep error'.format(Hy5Config.unitool_path))
+        if 'error' in res.decode():
+            logging.debug(res.decode())
+            return
+        else:
+            res1 = ssh.execute_command(r'cd {0}/app;diff -b 1.ini unicfg.ini'.format(Hy5Config.unitool_path))
+            if len(res1) != 0:
+                logging.debug(res1.decode())
+                return
+    h.close_session()
+    return True
+
+
+# chipsec_test,
+def chipsecMerge(ssh):
+    if ssh.login(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD):
+        logging.info("chipsec Test...")
+        res = ssh.execute_command(r'cd {0};python chipsec_main.py | grep -i failed'.format(Hy5Config.chipsc_path))
+        # print(res.decode())
+        if 'FAILED:' in res.decode():
+            logging.debug(res.decode())
+            return
+    h.close_session()
+    return True
+
+
+# OS - capture time,
+def osTime(ssh):
+    t1 = ''
+    if ssh.login(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD):
+        logging.info("Capture time...")
+        res = ssh.execute_command(r'hwclock --show')
+        t = res.decode()
+        t0 = t.split('.')[0]
+        t1 = datetime.datetime.strptime(t0, '%Y-%m-%d %H:%M:%S')
+        time.sleep(1)
+        ssh.execute_command(r'reboot')
+    h.close_session()
+    return t1
