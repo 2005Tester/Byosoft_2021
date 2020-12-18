@@ -19,6 +19,7 @@ from Report.ReportGen import ReportGenerator
 
 # Init log setting
 log_dir = Hy5Config.LOG_DIR
+shar_dir = Hy5Config.SHAR_DIR
 log_format = LogConfig.gen_config(log_dir)
 logging.config.dictConfig(log_format)
 logging.getLogger("paramiko").setLevel(logging.WARNING)
@@ -32,8 +33,11 @@ sshins = ssh.SshConnection()
 def gen_report():
     template = Hy5Config.REPORT_TEMPLATE
     report = ReportGenerator(template, os.path.join(log_dir, "test.log"), os.path.join(log_dir, "report.html"))
+    shar_report = ReportGenerator(template, os.path.join(log_dir, "test.log"), os.path.join(shar_dir, "report.html"))
     report.collect_test_result()
+    shar_report.collect_test_result()
     report.write_to_html()
+    shar_report.write_to_html()
 
 
 def test_run():

@@ -511,7 +511,7 @@ def cnd(serial, ssh):
     if not serial.to_highlight_option(Key.DOWN, Hy5Config.option7, timeout=30):
         result.log_fail()
         return
-    if not Hy5BaseAPI.verify_setup_options_down(serial, ['<Enabled>\s+Network CDN'], 12):
+    if not Hy5BaseAPI.verify_setup_options_down(serial, Hy5Config.cnd_status, 12):
         result.log_fail()
         return
     result.log_pass()
@@ -723,15 +723,19 @@ def simplePWDTest(serial, ssh):
         result.log_fail()
         return
     serial.send_keys_with_delay(Hy5Config.key2pwd)
-    if not Hy5BaseAPI.verify_setup_options_down(serial, ['<Disabled>\s+Simple Password'], 10):
+    if not Hy5BaseAPI.verify_setup_options_down(serial, Hy5Config.simplePWD_info, 10):
         result.log_fail()
         return
     serial.send_keys_with_delay([Key.LEFT, Key.RIGHT])
     time.sleep(1)
-    if not serial.to_highlight_option(Key.UP, 'Simple Password', timeout=30):
+    if not serial.to_highlight_option(Key.UP, Hy5Config.pwd_item1, timeout=30):
         result.log_fail()
         return
     serial.send_keys(Key.F5)
+    if not serial.waitString(Hy5Config.enable_simple_pwd, timeout=30):
+        result.log_fail()
+        return
+    serial.send_keys(Key.ENTER)
     if not serial.to_highlight_option(Key.UP, Hy5Config.pwd_item, timeout=30):
         result.log_fail()
         return
@@ -746,9 +750,13 @@ def simplePWDTest(serial, ssh):
         return
     serial.send_keys_with_delay(Hy5Config.key2pwd)
     time.sleep(1)
-    if not serial.to_highlight_option(Key.UP, 'Simple Password', timeout=30):
+    if not serial.to_highlight_option(Key.UP, Hy5Config.pwd_item1, timeout=30):
         return
     serial.send_keys(Key.F5)
+    if not serial.waitString(Hy5Config.enable_simple_pwd, timeout=30):
+        result.log_fail()
+        return
+    serial.send_keys(Key.ENTER)
     if not serial.to_highlight_option(Key.UP, Hy5Config.pwd_item, timeout=30):
         result.log_fail()
         return
@@ -786,7 +794,7 @@ def securityBoot(serial, ssh):
         return
     key1 = [Key.RIGHT, Key.DOWN, Key.ENTER]
     serial.send_keys_with_delay(key1)
-    if not Hy5BaseAPI.verify_setup_options_down(serial, ['Current Secure Boot State\s+Disabled'], 6):
+    if not Hy5BaseAPI.verify_setup_options_down(serial, Hy5Config.secure_status, 6):
         result.log_fail()
         return
     serial.send_keys(Key.ESC)
@@ -836,7 +844,7 @@ def tpm(serial, ssh):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.UP, 'Intel'):
+    if not serial.to_highlight_option(Key.UP, 'TXT'):
         result.log_fail()
         return
     serial.send_keys(Key.F5)
@@ -876,12 +884,12 @@ def vtd(serial, ssh):
         result.log_fail()
         return
     serial.send_keys_with_delay([Key.ENTER, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, Hy5Config.option13):
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.pat, 'Intel'):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
     serial.send_keys(Key.F5)
-    time.sleep(0.1)
+    time.sleep(1)
     serial.send_keys(Key.F10 + Key.Y)
     if not Hy5TcLib.ping_sut():   # OS flag
         result.log_fail()

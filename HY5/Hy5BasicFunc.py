@@ -67,7 +67,7 @@ def POST_Test(serial, ssh):
         result.log_fail()
         return
     msg_list = [Hy5Config.msg, Hy5Config.msg1, Hy5Config.msg2, Hy5Config.msg3]
-    if not serial.waitStrings(msg_list, timeout=100):
+    if not serial.waitStrings(msg_list, timeout=300):  # 考虑到满载配置
         result.log_fail()
         return
     result.log_pass()
@@ -160,7 +160,7 @@ def usbTest(serial, ssh):
     if not Hy5BaseAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(Key.RIGHT)
+    serial.send_keys(Key.RIGHT)
     if not serial.to_highlight_option(Key.DOWN, Hy5Config.option):
         result.log_fail()
         return

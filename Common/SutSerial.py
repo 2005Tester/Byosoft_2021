@@ -380,20 +380,21 @@ class SutControl:
 
     # the issue: can not to the first item(WA: ENTER + UP, then can find the first option or item), still need to be enhanced, TBD
     # the result passed after stress, could be used to navigate to a option in boot manager page or a option in Setup,
-    def to_highlight_option(self, key, msg, pat=None, timeout=5):
+    def to_highlight_option(self, key, msg, pat=None, timeout=15):
         """
         :param msg: the option to be highlighted,
+                    (ps: if the option name is 'Intel(R) TXT', just input TXT' -- known issue, to be enhanced, TBD)
         :param pat: the re rule, need to be modified for different platform, eg. pat value from Hy5Config.py,
         :timeout: set the value based on the counts of option in the current page,
         :return: Data read from serial port,
         """
         if pat is None:
-            pat1 = re.compile('H+{0}'.format(msg), re.M)
+            pat1 = re.compile('{0}\s*\x1B\W'.format(msg), re.M)
         else:
             pat1 = re.compile('{0}{1}'.format(pat, msg), re.M)
 
-        # flush serial buffer in 5 sec
-        for i in range(0, 5):
+        # flush serial buffer in 4 sec
+        for i in range(0, 4):
             self.readLines()
             time.sleep(1)
 
@@ -417,10 +418,10 @@ class SutControl:
             if not pat1_res:
                 continue
             else:
-                logging.debug(pat1_res)
-                # logging.info('find the highlight option:{0}'.format(pat1_res[0]))
+                logging.debug('find the highlight option:{0}'.format(pat1_res))
                 logging.info('Find the highlight option, wait for the next step,')
                 # self.send_keys(ENTER)
+                break
 
         return True
 

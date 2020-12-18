@@ -36,11 +36,11 @@ def toBIOS(serial, ssh, pwd='Admin@9000'):
         logging.info("Rebooting SUT Failed.")
         return
     logging.info("Booting to setup")
-    if not serial.waitString(Hy5Config.msg, timeout=300):
+    if not serial.waitString(Hy5Config.msg, timeout=600):
         return
     serial.send_keys(Key.DEL)
     logging.info("Hot Key sent")
-    if not serial.waitString(Hy5Config.press_f2, timeout=15):
+    if not serial.waitString(Hy5Config.press_f2, timeout=60):
         return
     serial.send_data(pwd)
     time.sleep(0.2)
@@ -66,7 +66,7 @@ def toBIOSnp(serial, pwd='Admin@9000'):
         return
     serial.send_keys(Key.DEL)
     logging.info("Hot Key sent")
-    if not serial.waitString(Hy5Config.press_f2, timeout=30):  # 考虑全打印，延长15s
+    if not serial.waitString(Hy5Config.press_f2, timeout=60):  # 考虑全打印
         return
     serial.send_data(pwd)
     serial.send_data(chr(0x0D))  # Send Enter

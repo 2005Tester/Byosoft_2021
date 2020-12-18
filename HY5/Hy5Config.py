@@ -11,7 +11,7 @@ import os
 import datetime
 
 # Report Setting
-REPORT_TEMPLATE = r"C:\Users\nuc\Desktop\hy5AT\Report\template_HY5"
+REPORT_TEMPLATE = r"{0}\Report\template_HY5".format(os.getcwd())
 
 # Environment settings
 timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
@@ -24,12 +24,15 @@ if not os.path.exists(SMBIOS_DIR):
 SERIAL_LOG = os.path.join(LOG_DIR, 'serial.log')
 BINARY_DIR = '\\\\172.16.0.73\\HY5_Binary'
 HPM_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\HY5 HPM'
+SHAR_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\AT Report\\{0}'.format(timestamp)
+if not os.path.exists(SHAR_DIR):
+    os.makedirs(SHAR_DIR)
 
 # Serial Port Configuration
 BIOS_SERIAL = "com3"
 
 # BMC Configuration
-BMC_IP = '192.168.2.140'
+BMC_IP = '192.168.2.100'
 BMC_USER = 'Administrator'
 BMC_PASSWORD = 'Admin@9000'
 PORT = 22
@@ -41,7 +44,7 @@ BIOS_PASSWORD = 'Admin@9000'
 # OS Configuration
 OS_IP = '192.168.100.91'
 OS_USER = 'root'
-OS_PASSWORD = '1'
+OS_PASSWORD = 'byosoft@123'
 
 
 # Key mapping
@@ -90,6 +93,7 @@ option = 'PCH Configuration'
 option2 = 'CPU Configuration'
 OS = 'P0-ubuntu - HDD 0'
 pwd_item = 'Manage Supervisor Password'
+pwd_item1 = 'Simple Password'
 
 # level 2
 option3 = 'Processor Configuration'
@@ -107,7 +111,6 @@ option11 = 'Memory Power & Thermal Configuration'
 option12 = 'Uncore General Configuration'
 
 # level 4
-option13 = 'Intel'
 option14 = 'Uncore Status'
 
 # BIOS items info,
@@ -115,6 +118,10 @@ static_turbo = ['<Disabled>\s+Static Turbo']
 ufs = ['<Enabled>\s+UFS']
 local_remote = ['Local/Remote Threshold\s+<Auto>']
 dram = ['<Enabled>\s+DRAM RAPL']
+simplePWD_info = ['<Disabled>\s+Simple Password']
+secure_status = ['Current Secure Boot State\s+Disabled']
+cnd_status = ['<Enabled>\s+Network CDN']
+
 # TPM info
 tpm_info = ['TPM Device\s+TPM 2.0', 'TPM2 Active PCR Hash\s+Algorithm+\s+SHA1\, SHA256',
             'TPM2 Hardware Supported Hash\s+Algorithm+\s+SHA1\, SHA256']
@@ -138,9 +145,11 @@ new_pwd_16 = 'Admin@9001Admin@90'
 new_pwd_17 = 'Admin@9001Admin@900'
 simple_pwd = '11111111'
 weak_pwd = 'Huawei@CLOUD8!'
-pwd_list1 = ['ADMIN123', 'admin123', 'admin###', 'ADMIN###', 'ADMINadm', '1234####']  # 新密码为2种字符类型，尝试各种组合（共6种组合）
+# 新密码为2种字符类型，尝试各种组合（共6种组合）
+pwd_list1 = ['ADMIN123', 'admin123', 'admin###', 'ADMIN###', 'ADMINadm', '1234####']
 # System will be locked after send wrong pwd 3 times
-pwd_list2 = ['Administrator@', 'admin@123', 'Administrator1', 'ADMIN@123']  # 新密码为3种字符类型，尝试各种组合（共4种组合）
+# 新密码为3种字符类型，尝试各种组合（共4种组合）
+pwd_list2 = ['Administrator@', 'admin@123', 'Administrator1', 'ADMIN@123']
 # common error msg
 pwd_info_1 = 'Please type in your password'
 pwd_info_2 = 'Please type in your new password'
@@ -148,4 +157,5 @@ pwd_info_3 = 'Please confirm your new password'
 pwd_info_4 = 'Changes have been saved after press'
 invalid_info = 'Invalid Password'
 error_info = 'Enter incorrect password 3 times,System Locked'
+enable_simple_pwd = 'Enabling simple password poses security risks'
 simple_pwd_warning = 'The password fails the dictionary check - it is too simplistic/systematic'
