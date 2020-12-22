@@ -9,6 +9,7 @@
 
 # Project ID, HwICX: 31, Moc25: 12, Byo: 34
 
+import logging
 import requests
 import zipfile
 import json
@@ -28,7 +29,7 @@ class Gitlab:
         res = requests.get(self.jobs_url, headers=self.header)
         job_list = json.loads(res.content)
         if not job_list:
-            print("Job list is empty")
+            logging.info("Job list is empty")
             return
         latest_job = []
         for i in range(len(job_list)):
@@ -39,12 +40,12 @@ class Gitlab:
 
     @staticmethod
     def print_msg(job):
-        print("JobID:{0}".format(job['id']))
-        print("JobName:{0}".format(job['name']))
-        print("Branch:{0}".format(job['ref']))
-        print("Author:{0}".format(job['commit']['author_name']))
-        print("Commit: {0}".format(job['commit']['short_id']))
-        print("BuildFinishedTime:{0}".format(job['finished_at']))
+        logging.info("JobID:{0}".format(job['id']))
+        logging.info("JobName:{0}".format(job['name']))
+        logging.info("Branch:{0}".format(job['ref']))
+        logging.info("Author:{0}".format(job['commit']['author_name']))
+        logging.info("Commit: {0}".format(job['commit']['short_id']))
+        logging.info("BuildFinishedTime:{0}".format(job['finished_at']))
 
     def download_image(self, job, dir):
         img_zip = os.path.join(dir, "artifacts.zip")
@@ -58,12 +59,12 @@ class Gitlab:
         artifact_url = self.jobs_url + '/' + str(job['id']) + '/artifacts'
         cmd = "curl --output {0} --header \"PRIVATE-TOKEN: {1}\" {2}".format(img_zip, self.access_token, artifact_url)      
         if os.system(cmd) == 0:
-            print("Download image successfully")
+            logging.info("Download image successfully")
             image_path = self.unzip(img_zip, dir)
             os.remove(img_zip)
             return image_path
         else:
-            print("Download image fail")
+            logging.info("Download image fail")
     
     def download_latest_image_master(self, dir):
         latest_job = self.get_latest_job_master()
@@ -76,13 +77,7 @@ class Gitlab:
             if '.bin' in file:
                 file_path =  os.path.join(dst, file.replace("/", "\\"))
                 if os.path.exists(file_path):
-                    print("Delete old file")
+                    logging.info("Delete old file")
                     os.remove(file_path)
                 uz.extract(file, dst)
                 return os.path.join(dst, file_path)
-
-
-if __name__ == '__main__':
-    dst = "c:\\daily"
-    gitlab_icx = Gitlab(12, 'PbLqm_njsnGxCQBtHoMG')
-    print(gitlab_icx.download_latest_image_master(dst))

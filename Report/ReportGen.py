@@ -29,7 +29,7 @@ class ReportGenerator:
     # Convert time string from log to timestamp
     @staticmethod
     def convert_time(time_str):
-        time_arr = time.strptime(time_str, "%Y-%m-%d %H:%M:%S")
+        time_arr = time.strptime(time_str, r"%Y-%m-%d %H:%M:%S")
         ts = int(time.mktime(time_arr))
         return ts
 
@@ -52,7 +52,7 @@ class ReportGenerator:
                 else:
                     start_time = "2000-01-01 00:00:01"
             if re.search("<{0}><Result>.+:.+".format(id), line):
-                if re.findall("(.+)\sINFO.+", line):
+                if re.findall("(.+)\s(?:INFO|DEBUG|ERROR).+", line):
                     end_time = re.findall("(.+)\sINFO.+", line)[0]
                 else:
                     end_time = start_time
@@ -68,8 +68,8 @@ class ReportGenerator:
     # get start time and total time spent in a test cycle
     def get_total_time(self):
         testlog = self.load_test_log()
-        start_time = re.findall("(.+)\sINFO.+", testlog[0])[0]
-        end_time = re.findall("(.+)\s[A-Z]+:", testlog[-1])[0]
+        start_time = re.findall("(.+)\s(?:INFO|DEBUG|ERROR).+", testlog[0])[0]
+        end_time = re.findall("(.+)\s(?:INFO|DEBUG|ERROR).+:", testlog[-1])[0]
         total_time = self.convert_time(end_time) - self.convert_time(start_time)
         m, s = divmod(total_time, 60)
         h, m = divmod(m, 60)
