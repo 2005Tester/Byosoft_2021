@@ -19,14 +19,14 @@ LOG_DIR = 'c:\\daily\\HY5\\{0}'.format(timestamp)
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 SMBIOS_DIR = 'c:\\daily\\SMBIOS'
-if not os.path.exists(SMBIOS_DIR):
-    os.makedirs(SMBIOS_DIR)
+# if not os.path.exists(SMBIOS_DIR):   # if run SMBIOS related test cases, this line should not be annotated,
+#     os.makedirs(SMBIOS_DIR)
 SERIAL_LOG = os.path.join(LOG_DIR, 'serial.log')
 BINARY_DIR = '\\\\172.16.0.73\\HY5_Binary'
 HPM_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\HY5 HPM'
 SHAR_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\AT Report\\{0}'.format(timestamp)
-if not os.path.exists(SHAR_DIR):
-    os.makedirs(SHAR_DIR)
+# if not os.path.exists(SHAR_DIR):
+#     os.makedirs(SHAR_DIR)
 
 # Serial Port Configuration
 BIOS_SERIAL = "com3"
@@ -92,6 +92,7 @@ PXE_option = 'UEFI HTTPSv4: Network - Port00 SLOT1'
 option = 'PCH Configuration'
 option2 = 'CPU Configuration'
 OS = 'P0-ubuntu - HDD 0'
+SUSE = 'P0-SUSE Linux Enterprise - HDD 0'
 pwd_item = 'Manage Supervisor Password'
 pwd_item1 = 'Simple Password'
 

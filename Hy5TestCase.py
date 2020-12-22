@@ -13,8 +13,8 @@ from sys import argv
 from Common import ssh
 from Common import SutSerial
 from Common import LogConfig
-from HY5 import Hy5Config, Hy5BasicFunc
 from HY5 import SetUp
+from HY5 import Hy5Config, Hy5BasicFunc
 from Report.ReportGen import ReportGenerator
 
 # Init log setting
@@ -33,11 +33,12 @@ sshins = ssh.SshConnection()
 def gen_report():
     template = Hy5Config.REPORT_TEMPLATE
     report = ReportGenerator(template, os.path.join(log_dir, "test.log"), os.path.join(log_dir, "report.html"))
-    shar_report = ReportGenerator(template, os.path.join(log_dir, "test.log"), os.path.join(shar_dir, "report.html"))
+    # shar_report = ReportGenerator(template, os.path.join(log_dir, "test.log"), os.path.join(shar_dir, "report.html"))
     report.collect_test_result()
-    shar_report.collect_test_result()
+    # shar_report.collect_test_result()
     report.write_to_html()
-    shar_report.write_to_html()
+    # shar_report.write_to_html()
+    shutil.copytree(log_dir, shar_dir, ignore=None)  # if local debug, this line should be annotated
 
 
 def test_run():

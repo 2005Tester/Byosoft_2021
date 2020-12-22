@@ -207,10 +207,9 @@ def checkPWD(serial, pwd1, pwd2):
 
 
 # Setup: Load default and setting saving - AT test cases below,
-def Load_Default_Test(serial, ssh):
+def loadDefault(serial, ssh):
     tc = ('013', 'Load default and setting saving Test', 'BIOS Load default Test')
     result = Misc.LogHeaderResult(tc, serial)
-    key1 = [Key.RIGHT, Key.RIGHT, Key.RIGHT, Key.RIGHT]
     option_bfo = ['<UEFI Boot Type>', '<Boot Retry>']
     option_aft = ['<Legacy Boot Type>', '<Cold Boot>']
     if not Hy5BaseAPI.toBIOS(serial, ssh):
@@ -218,7 +217,7 @@ def Load_Default_Test(serial, ssh):
     if not Hy5BaseAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(key1)
+    serial.send_keys_with_delay(Hy5Config.key2type)
     if not Hy5BaseAPI.verify_setup_options_down(serial, option_bfo, 14):
         result.log_fail()
         return
@@ -238,12 +237,12 @@ def Load_Default_Test(serial, ssh):
     if not Hy5BaseAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(key1)
+    serial.send_keys_with_delay(Hy5Config.key2type)
     if not Hy5BaseAPI.verify_setup_options_down(serial, option_aft, 14):
         result.log_fail()
         if not reset_default(serial, ssh):
             return
-    serial.send_keys(Hy5Config.key2default)
+    serial.send_keys_with_delay(Hy5Config.key2default)
     if not Hy5BaseAPI.toBIOSnp(serial):
         result.log_fail()
         if not reset_default(serial, ssh):
@@ -251,7 +250,7 @@ def Load_Default_Test(serial, ssh):
     if not Hy5BaseAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(key1)
+    serial.send_keys_with_delay(Hy5Config.key2type)
     time.sleep(1)
     if not Hy5BaseAPI.verify_setup_options_down(serial, option_bfo, 14):
         result.log_fail()
@@ -808,14 +807,15 @@ def securityBoot(serial, ssh):
     serial.send_keys(Key.F10 + Key.Y)
     if not Hy5BaseAPI.toBIOSnp(serial):
         result.log_fail()
+        reset_default(serial, ssh)
         return
-    serial.send_keys_with_delay([Key.RIGHT, Key.DOWN, Key.UP, Key.DOWN])
-    if serial.waitString('Administer Secure Boot'):
+    serial.send_keys_with_delay(key1)
+    if not Hy5BaseAPI.verify_setup_options_down(serial, Hy5Config.secure_status, 6):
+        reset_default(serial, ssh)
         result.log_fail()
         return
     logging.info('Restore the test Env...')
-    if not reset_default(serial, ssh):
-        pass
+    reset_default(serial, ssh)
     result.log_pass()
     return True
 
@@ -980,51 +980,67 @@ def logTime(serial, ssh):
 def coreDisable(serial, ssh):
     tc = ('043', 'Setup菜单关核选项测试', '支持CPU关核')
     result = Misc.LogHeaderResult(tc, serial)
-    # if not Hy5BasicFunc.toBIOS(serial, ssh):
-    #     result.log_fail()
-    #     return
-    # serial.send_keys_with_delay(key2Setup)
-    # if not serial.waitString('System Time', timeout=30):
-    #     result.log_fail()
-    #     return
-    # serial.send_keys_with_delay(RIGHT + DOWN * 8 + ENTER * 2)
-    # if not Hy5BasicFunc.verify_setup_options_up(serial, ['<All>\s+Active Processor Cores'], 7):
-    #     result.log_fail()
-    #     return
-    # serial.send_keys(Hy5Config.Key.ESC)
-    # serial.send_keys_with_delay(ENTER * 2)
-    # if not serial.to_highlight_option(UP, r'1234567891011121314151617All', timeout=15):
-    #     result.log_fail()
-    #     return
-    # serial.send_keys_with_delay(UP * 16)
-    # serial.send_keys(ENTER)
-    # serial.send_keys(F10 + Y)
-    # if not Hy5BasicFunc.toBIOSnp(serial):
-    #     result.log_fail()
-    #     return
-    # serial.send_keys_with_delay(key2Setup)
-    # if not serial.waitString('System Time', timeout=30):
-    #     result.log_fail()
-    #     return
-    # serial.send_keys_with_delay(RIGHT + DOWN * 8 + ENTER)
-    # serial.send_keys_with_delay(DOWN * 4 + ENTER)
-    # if not Hy5BasicFunc.verify_setup_options_up(serial, Hy5BasicFunc.DIMM_info, 20):
-    #     result.log_fail()
-    #     return
-    # serial.send_keys_with_delay(Hy5Config.Key.CTRL_ALT_DELETE)
-    # if not Hy5TcLib.ping_sut():
-    #     result.log_fail()
-    #     return
+    if not Hy5BaseAPI.toBIOS(serial, ssh):
+        result.log_fail()
+        return
+    if not Hy5BaseAPI.toBIOSConf(serial):
+        result.log_fail()
+        return
+    serial.send_keys_with_delay([Key.RIGHT, Key.UP])
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.option2):
+        result.log_fail()
+        return
+    serial.send_keys_with_delay([Key.ENTER, Key.UP])
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.option3):
+        result.log_fail()
+        return
+    serial.send_keys(Key.ENTER)
+    if not Hy5BaseAPI.verify_setup_options_up(serial, ['<All>\s+Active Processor Cores'], 7):
+        result.log_fail()
+        return
+    serial.send_keys(Key.ESC)
+    serial.send_keys(Key.ENTER)
+    if not serial.to_highlight_option(Key.DOWN, 'Active Processor Cores'):
+        result.log_fail()
+        return
+    serial.send_keys(Key.ENTER)
+    if not serial.verify_option_value(Key.UP, r'1234567891011121314151617All', timeout=15):
+        result.log_fail()
+        return
+    serial.send_keys(Key.ESC)
+    serial.send_keys_with_delay([Key.F6, Key.F6])
+    serial.send_keys(Key.F10 + Key.Y)
+    if not Hy5BaseAPI.toBIOSnp(serial):
+        result.log_fail()
+        return
+    if not Hy5BaseAPI.toBIOSConf(serial):
+        result.log_fail()
+        return
+    serial.send_keys_with_delay([Key.RIGHT, Key.UP])
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.option2):
+        result.log_fail()
+        return
+    serial.send_keys_with_delay([Key.ENTER, Key.UP])
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.option5):
+        result.log_fail()
+        return
+    serial.send_keys(Key.ENTER)
+    if not Hy5BaseAPI.verify_setup_options_up(serial, Hy5Config.DIMM_info, 20):
+        result.log_fail()
+        return
+    serial.send_keys_with_delay(Hy5Config.Key.CTRL_ALT_DELETE)
+    if not Hy5TcLib.ping_sut():
+        result.log_fail()
+        return
     if not Hy5TcLib.chipsecMerge(ssh):
         result.log_fail()
         return
-    # cmd = 'dmidecode -t 4'
-    # path = Hy5Config.LOG_DIR
-    # Hy5TcLib.dump_smbios(ssh, cmd)
-    # path1 = r'C:\Users\nuc\Desktop\hy5AT\HY5'
-    # if not P.smbiosCheck(cmd, path, path1):
-    #     result.log_fail()
-    #     return
+    cmd = 'dmidecode -t 4'
+    path = Hy5Config.LOG_DIR
+    Hy5TcLib.dump_smbios(ssh, cmd)
+    if not P.smbiosCheck(cmd, path, Hy5Config.SMBIOS_TEMPLATE):
+        result.log_fail()
+        return
     result.log_pass()
     return True
 
@@ -1032,7 +1048,8 @@ def coreDisable(serial, ssh):
 # Main function
 def biosSetupTest(serial, ssh, n=1):
     for i in range(n):
-        Load_Default_Test(serial, ssh)
+        logging.info("BIOS Setup Test Cycle: {0}".format(i + 1))
+        loadDefault(serial, ssh)
         staticTurbo(serial, ssh)
         ufs(serial, ssh)
         rrQIRQ(serial, ssh)

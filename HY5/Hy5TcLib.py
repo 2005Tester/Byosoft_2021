@@ -83,6 +83,7 @@ def boot_manager(serial, ssh):
 
 
 def ping_sut():
+    logging.info("Test the connection...")
     ping_cmd = 'ping {0}'.format(Hy5Config.OS_IP)
     start_time = time.time()
     while True:
@@ -299,14 +300,14 @@ def sftpFile(ssh):
         logging.info("unitool...")
         ssh.execute_command(r'cd {0}/kernel;insmod ufudev.ko'.format(Hy5Config.unitool_path))
         res = ssh.execute_command(r'cd {0}/app;./unitool -rf 1.ini | grep error'.format(Hy5Config.unitool_path))
-        if 'error' in res.decode():
-            logging.debug(res.decode())
+        if 'error' in res:
+            logging.debug(res)
             return
         else:
             # ssh.execute_command(r'cd {0}/app;cp unicfg.ini 1_bef.ini'.format(Hy5Config.unitool_path))
             res1 = ssh.execute_command(r'cd {0}/app;./unitool -wf 1.ini | grep error'.format(Hy5Config.unitool_path))
-            if 'error' in res1.decode():
-                logging.debug(res1.decode)
+            if 'error' in res1:
+                logging.debug(res1)
                 return
     h.close_session()
     return True
@@ -317,13 +318,13 @@ def cmpFile(ssh):
     if ssh.login(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD):
         logging.info("cmp the config ini file...")
         res = ssh.execute_command(r'cd {0}/app;./unitool -rf 1.ini | grep error'.format(Hy5Config.unitool_path))
-        if 'error' in res.decode():
-            logging.debug(res.decode())
+        if 'error' in res:
+            logging.debug(res)
             return
         else:
             res1 = ssh.execute_command(r'cd {0}/app;diff -b 1.ini unicfg.ini'.format(Hy5Config.unitool_path))
             if len(res1) != 0:
-                logging.debug(res1.decode())
+                logging.debug(res1)
                 return
     h.close_session()
     return True
@@ -335,8 +336,8 @@ def chipsecMerge(ssh):
         logging.info("chipsec Test...")
         res = ssh.execute_command(r'cd {0};python chipsec_main.py | grep -i failed'.format(Hy5Config.chipsc_path))
         # print(res.decode())
-        if 'FAILED:' in res.decode():
-            logging.debug(res.decode())
+        if 'FAILED:' in res:
+            logging.debug(res)
             return
     h.close_session()
     return True
@@ -352,6 +353,24 @@ def osTime(ssh):
         t0 = t.split('.')[0]
         t1 = datetime.datetime.strptime(t0, '%Y-%m-%d %H:%M:%S')
         time.sleep(1)
-        ssh.execute_command(r'reboot')
+    ssh.execute_command('reboot')
     h.close_session()
     return t1
+
+
+# used for equipment test
+def equipment(ssh):
+    s.login()
+    b = '{0}\\AT\\equipment.ini'.format(Hy5Config.HPM_DIR)  # the level 2 folder name must be app, {0} - unitool path
+    s.sftp.put(b, r'{0}/app/2.ini'.format(Hy5Config.unitool_path), confirm=True)
+    s.sftp.close()
+    if ssh.login(Hy5Config.OS_IP, Hy5Config.OS_USER, Hy5Config.OS_PASSWORD):
+        logging.info("unitool...")
+        ssh.execute_command(r'cd {0}/kernel;insmod ufudev.ko'.format(Hy5Config.unitool_path))
+        res = ssh.execute_command(r'cd {0}/app;./unitool -wf 2.ini | grep error'.format(Hy5Config.unitool_path))
+        if 'error' in res:
+            logging.debug(res)
+            return
+    ssh.execute_command('reboot')
+    h.close_session()
+    return True

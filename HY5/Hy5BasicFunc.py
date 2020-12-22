@@ -4,9 +4,12 @@ __author__ = 'arthur'
 
 import logging
 
-from Common import Misc
 from HY5.Hy5Config import Key
+from Common import Misc
+from Common.LogAnalyzer import LogAnalyzer
 from HY5 import updatebios, Hy5TcLib, Hy5Config, Hy5BaseAPI
+
+P = LogAnalyzer(Hy5Config.LOG_DIR)
 
 
 # Basic Function Test Case: Flash, POST, Boot, Setup, OS Installation, PM, Device, Chipsec Test and Source code cons.
@@ -277,6 +280,44 @@ def pressF2(serial, ssh):
     return True
 
 
+def equipmentMode(serial, ssh):
+    tc = ('050', 'Equipment Mode Test', '支持Equipment Mode')
+    result = Misc.LogHeaderResult(tc, serial)
+    if not Hy5BaseAPI.toBIOS(serial, ssh):
+        result.log_fail()
+        return
+    serial.send_keys_with_delay(Hy5Config.key2OS)
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.suse):
+        result.log_fail()
+        return
+    serial.send_keys(Key.ENTER)
+    if not Hy5TcLib.ping_sut():
+        result.log_fail()
+        return
+    if not Hy5TcLib.equipment(ssh):
+        result.log_fail()
+        return
+    if not Hy5BaseAPI.toBIOSnp(serial):
+        result.log_fail()
+        return
+    serial.send_keys_with_delay(Hy5Config.key2OS)
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.suse):
+        result.log_fail()
+        return
+    serial.send_keys(Key.ENTER)
+    if not Hy5TcLib.ping_sut():
+        result.log_fail()
+        return
+    cmd = 'dmidecode -t 128'
+    path = Hy5Config.LOG_DIR
+    Hy5TcLib.dump_smbios(ssh, cmd)
+    if not P.smbiosCheck(cmd, path, Hy5Config.SMBIOS_TEMPLATE):
+        result.log_fail()
+        return
+    result.log_pass()
+    return True
+
+
 # Main Func...
 def hy5BasicTest(serial, ssh, n=1):
     # hpm image defined,
@@ -286,6 +327,7 @@ def hy5BasicTest(serial, ssh, n=1):
     lst_binary_img = updatebios.get_test_image(Hy5Config.BINARY_DIR)
     prev_binary_img = updatebios.get_previous_test_image(Hy5Config.BINARY_DIR)
     for i in range(n):
+        logging.info("Basic Func Test Cycle: {0}".format(i + 1))
         updateBios(serial, lst_binary_img)
         updateBios(serial, prev_binary_img)
         updateHPM(serial, ssh, prev_image)
