@@ -89,7 +89,7 @@ def PM(serial, ssh, n=5):
     for i in range(n):
         try:
             logging.info("Warm reset cycle: {0}".format(i + 1))
-            serial.send_keys_with_delay(Key.CTRL_ALT_DELETE)
+            serial.send_keys(Key.CTRL_ALT_DELETE)   # without delay
             logging.debug("Ctrl + Alt + Del key sent")
             if not Hy5BaseAPI.toBIOSnp(serial):
                 logging.info("Warm reset Test:Fail")
@@ -124,7 +124,7 @@ def pxeTest(serial, ssh, n=1):
         if not Hy5BaseAPI.pressF12(serial, ssh):
             result.log_fail()
             return
-        if not serial.waitString('Install', timeout=15):
+        if not serial.waitString('NBP file downloaded successfully', timeout=60):
             result.log_fail()
             return
     result.log_pass()

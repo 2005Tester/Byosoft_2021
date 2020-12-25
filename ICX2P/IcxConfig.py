@@ -19,22 +19,20 @@ LOG_DIR = 'c:\\daily\\ICX2P\\{0}'.format(timestamp)
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 SMBIOS_DIR = 'c:\\daily\\SMBIOS'
-if not os.path.exists(SMBIOS_DIR):
-    os.makedirs(SMBIOS_DIR)
+# if not os.path.exists(SMBIOS_DIR):
+#     os.makedirs(SMBIOS_DIR)
 SERIAL_LOG = os.path.join(LOG_DIR, 'serial.log')
-BINARY_DIR = '\\\\172.16.0.73\\HY5_Binary'
+# BINARY_DIR = '\\\\172.16.0.73\\HY5_Binary'
 HPM_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\HY5 HPM'
 SHAR_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\AT Report\\{0}'.format(timestamp)
-if not os.path.exists(SHAR_DIR):
-    os.makedirs(SHAR_DIR)
 
 # Serial Port Configuration
-BIOS_SERIAL = "com6"
+BIOS_SERIAL = "com3"
 
 # BMC Configuration
 BMC_IP = '192.168.2.100'
 BMC_USER = 'Administrator'
-BMC_PASSWORD = 'Admin@9000'
+BMC_PASSWORD = 'Admin@9999'
 PORT = 22
 
 # BIOS Configuration
@@ -82,7 +80,7 @@ msg3 = 'Press F6 go to SP boot'
 msg4 = 'BIOS Configuration'
 msg5 = 'USB Mouse\s+1'
 msg6 = 'USB Keyboard\s+1'
-msg7 = 'USB Mass Storage\s+2'
+msg7 = 'USB Mass Storage\s+0'
 pwd_info = 'The current password is the default password.Please update password!'
 default_pwd = 'Admin@9000'
 
@@ -92,6 +90,7 @@ PXE_option = 'UEFI HTTPSv4: Network - Port00 SLOT1'
 option = 'PCH Configuration'
 option2 = 'CPU Configuration'
 OS = 'P0-ubuntu - HDD 0'
+SUSE = 'P0-SUSE Linux Enterprise - HDD 0'
 pwd_item = 'Manage Supervisor Password'
 pwd_item1 = 'Simple Password'
 
@@ -125,19 +124,23 @@ cnd_status = ['<Enabled>\s+Network CDN']
 # TPM info
 tpm_info = ['TPM Device\s+TPM 2.0', 'TPM2 Active PCR Hash\s+Algorithm+\s+SHA1\, SHA256',
             'TPM2 Hardware Supported Hash\s+Algorithm+\s+SHA1\, SHA256']
+
 # UPI Status
 upi_state = ['Current UPI Link Speed\s+Fast', 'Current UPI Link Frequency\s+10\.4\s+GT\/s']
 
 # CPU, DIMM info
-CPU_info = ['Processor ID\s+0005065B', 'Processor Frequency\s+2.500GHz', 'Microcode Revision\s+0700001F']
-DIMM_info = ['DIMM000\s+S0.CA.D0:2933MT/s Hynix DRx4 32GB RDIMM', 'DIMM100\s+S1.CA.D0:2933MT/s Hynix DRx4 32GB RDIMM']
+CPU_info = ['Processor ID\s+000606A', 'Processor Frequency\s+2.600GHz', 'Microcode Revision\s+0C000160']
+DIMM_info = ['DIMM050\s+S0.CF.D0:2933MT/s Hynix DRx4 32GB RDIMM', 'DIMM110\s+S1.CB.D0:2933MT/s Hynix DRx4 32GB RDIMM']
 
-# set by arthur, a common key order
+# Common key order
 key2default = [Key.F9, Key.Y, Key.F10, Key.Y]
 key2Setup = [Key.RIGHT, Key.RIGHT, Key.DOWN, Key.ENTER]
 key2OS = [Key.RIGHT, Key.ENTER, Key.UP]
 key2pwd = [Key.RIGHT, Key.RIGHT, Key.RIGHT]
-key2TPM = [Key.RIGHT, Key.RIGHT, Key.RIGHT, Key.RIGHT]
+key2type = [Key.RIGHT, Key.RIGHT, Key.RIGHT, Key.RIGHT]
+
+# WA
+w2key = [Key.RIGHT, Key.UP]
 
 new_pwd_9 = 'Admin@9001'
 new_pwd_8 = 'Admin@9!'

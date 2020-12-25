@@ -378,8 +378,8 @@ class SutControl:
         logging.info("Enter {0} successfully".format(option_path[-1]))
         return True
 
-    # the issue: can not to the first item(WA: ENTER + UP, then can find the first option or item), still need to be enhanced, TBD
-    # the result passed after stress, could be used to navigate to a option in boot manager page or a option in Setup,
+    # issue: can not to the first item(WA: ENTER + UP, then can find the first option or item), to be enhanced, TBD
+    # could be used to navigate to a option in boot manager page or a option in Setup,
     def to_highlight_option(self, key, msg, pat=None, timeout=15):
         """
         :param msg: the option to be highlighted,
@@ -393,10 +393,10 @@ class SutControl:
         else:
             pat1 = re.compile('{0}{1}'.format(pat, msg), re.M)
 
-        # flush serial buffer in 4 sec
-        for i in range(0, 4):
-            self.readLines()
-            time.sleep(1)
+        # flush serial buffer
+        self.session.flushInput()
+        self.session.flushOutput()
+        time.sleep(1)
 
         s_time = time.time()  # set timeout flag
         while True:
