@@ -484,6 +484,9 @@ def reset_default(serial, ssh):
     keys = Key.F9 + Key.Y + Key.F10 + Key.Y
     if not toBIOS(serial, ssh):
         return
+    if not toBIOSConf(serial):
+        return
+    # time.sleep(1)
     serial.send_keys(keys)
     if not serial.is_msg_present('BIOS boot completed.'):
         logging.info("Reset dafault by F9:Fail")

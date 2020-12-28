@@ -454,11 +454,11 @@ def rrQIRQ(serial, ssh):
         return
     serial.send_keys(Key.ESC)
     serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.DOWN, 'Local/Remote Threshold', timeout=30):
+    if not serial.to_highlight_option(Key.DOWN, 'Local/Remote Threshold', timeout=60):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
-    if not serial.verify_option_value(Key.DOWN, r'DisabledAutoLowMediumHighManual', timeout=15):
+    if not serial.verify_option_value(Key.DOWN, r'DisabledAutoLowMediumHigh'):
         result.log_fail()
         return
     serial.send_keys(Key.ESC)
@@ -838,7 +838,7 @@ def simplePWDTest(serial, ssh):
         return
     serial.send_keys_with_delay(IcxConfig.key2pwd)
     time.sleep(1)
-    if not serial.to_highlight_option(Key.UP, IcxConfig.pwd_item1, timeout=30):
+    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pwd_item1, timeout=30):
         return
     serial.send_keys(Key.F5)
     if not serial.waitString(IcxConfig.enable_simple_pwd, timeout=30):
@@ -1140,11 +1140,11 @@ def icxbiosTest(serial, ssh, dst, n=1):
         logging.info("BIOS Setup Test Cycle: {0}".format(i + 1))
         POST_Test(serial, ssh)
         PM(serial, ssh)
-        # pxeTest(serial, ssh)
+        pxeTest(serial, ssh)
         httpsTest(serial, ssh)
         usbTest(serial, ssh)
         ProcessorDIMM(serial, ssh)
-        # chipsecTest(serial, ssh)
+        chipsecTest(serial, ssh)
         pressF2(serial, ssh)
         loadDefault(serial, ssh)
         staticTurbo(serial, ssh)
@@ -1155,5 +1155,5 @@ def icxbiosTest(serial, ssh, dst, n=1):
         securityBoot(serial, ssh)
         vtd(serial, ssh)
         cpuCOMPA(serial, ssh)
-        # logTime(serial, ssh)
+        logTime(serial, ssh)
     logging.info('ICX BIOS test completed...')
