@@ -461,43 +461,44 @@ def rrQIRQ(serial, ssh):
     if not serial.verify_option_value(Key.DOWN, r'DisabledAutoLowMediumHigh'):
         result.log_fail()
         return
-    serial.send_keys(Key.ESC)
-    serial.send_keys_with_delay([Key.F5, Key.F5, Key.F5, Key.F5])
-    if not icx2pAPI.verify_setup_options_down(serial, ['\[7\]\s+IRQ Threshold', '\[7\]\s+RRQ Threshold'], 12):
-        result.log_fail()
-        return
-    serial.send_keys(Key.ESC)
-    serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.DOWN, 'IRQ Threshold', timeout=60):
-        result.log_fail()
-        return
-    serial.send_keys(Key.ENTER)
-    serial.send_data('10')
-    serial.send_keys_with_delay([Key.ENTER, Key.DOWN, Key.ENTER])
-    serial.send_data('20')
-    serial.send_keys(Key.ENTER)
-    serial.send_keys(Key.F10 + Key.Y)
-    if not icx2pAPI.toBIOSnp(serial):
-        result.log_fail()
-        return
-    if not icx2pAPI.toBIOSConf(serial):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay(IcxConfig.w2key)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option2, timeout=60):
-        result.log_fail()
-        return
-    serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option9, timeout=30):
-        result.log_fail()
-        return
-    serial.send_keys(Key.ENTER)
-    if not serial.find_setup_option(Key.DOWN, IcxConfig.option12, 3):
-        result.log_fail()
-        return
-    if not icx2pAPI.verify_setup_options_down(serial, ['\[10\]\s+IRQ Threshold', '\[20\]\s+RRQ Threshold'], 12):
-        result.log_fail()
-        return
+    # not supported with current release bios, comfired with BIOS dev, TBD
+    # serial.send_keys(Key.ESC)
+    # serial.send_keys_with_delay([Key.F5, Key.F5, Key.F5, Key.F5])
+    # if not icx2pAPI.verify_setup_options_down(serial, ['\[7\]\s+IRQ Threshold', '\[7\]\s+RRQ Threshold'], 12):
+    #     result.log_fail()
+    #     return
+    # serial.send_keys(Key.ESC)
+    # serial.send_keys(Key.ENTER)
+    # if not serial.to_highlight_option(Key.DOWN, 'IRQ Threshold', timeout=60):
+    #     result.log_fail()
+    #     return
+    # serial.send_keys(Key.ENTER)
+    # serial.send_data('10')
+    # serial.send_keys_with_delay([Key.ENTER, Key.DOWN, Key.ENTER])
+    # serial.send_data('20')
+    # serial.send_keys(Key.ENTER)
+    # serial.send_keys(Key.F10 + Key.Y)
+    # if not icx2pAPI.toBIOSnp(serial):
+    #     result.log_fail()
+    #     return
+    # if not icx2pAPI.toBIOSConf(serial):
+    #     result.log_fail()
+    #     return
+    # serial.send_keys_with_delay(IcxConfig.w2key)
+    # if not serial.to_highlight_option(Key.DOWN, IcxConfig.option2, timeout=60):
+    #     result.log_fail()
+    #     return
+    # serial.send_keys(Key.ENTER)
+    # if not serial.to_highlight_option(Key.DOWN, IcxConfig.option9, timeout=30):
+    #     result.log_fail()
+    #     return
+    # serial.send_keys(Key.ENTER)
+    # if not serial.find_setup_option(Key.DOWN, IcxConfig.option12, 3):
+    #     result.log_fail()
+    #     return
+    # if not icx2pAPI.verify_setup_options_down(serial, ['\[10\]\s+IRQ Threshold', '\[20\]\s+RRQ Threshold'], 12):
+    #     result.log_fail()
+    #     return
     result.log_pass()
     return True
 
@@ -816,7 +817,7 @@ def simplePWDTest(serial, ssh):
         return
     serial.send_keys_with_delay([Key.LEFT, Key.RIGHT])
     time.sleep(1)
-    if not serial.to_highlight_option(Key.UP, IcxConfig.pwd_item1, timeout=30):
+    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pwd_item1, timeout=30):
         result.log_fail()
         return
     serial.send_keys(Key.F5)
@@ -867,8 +868,7 @@ def pwdSecurityTest(serial, ssh, dst):
     pwdVerification4(serial, ssh)
     simplePWDTest(serial, ssh)
     logging.info("密码组合和简易设置验证完成，当前为最后一个密码修改用例，开始恢复环境:更新BIOS")
-    if not icx2pAPI.restore_env(serial, dst):
-        pass
+    icx2pAPI.restore_env(serial, dst)
 
     return True
 
@@ -899,11 +899,9 @@ def securityBoot(serial, ssh):
         icx2pAPI.reset_default(serial, ssh)
         return
     serial.send_keys_with_delay(key1)
-    if not icx2pAPI.verify_setup_options_down(serial, IcxConfig.secure_status, 6):
-        icx2pAPI.reset_default(serial, ssh)
+    if serial.waitString('Current Secure Boot State'):
         result.log_fail()
         return
-    logging.info('Restore the test Env...')
     icx2pAPI.reset_default(serial, ssh)
     result.log_pass()
     return True
@@ -1135,25 +1133,22 @@ def coreDisable(serial, ssh):
 
 
 # Main function
-def icxbiosTest(serial, ssh, dst, n=1):
-    for i in range(n):
-        logging.info("BIOS Setup Test Cycle: {0}".format(i + 1))
-        POST_Test(serial, ssh)
-        PM(serial, ssh)
-        pxeTest(serial, ssh)
-        httpsTest(serial, ssh)
-        usbTest(serial, ssh)
-        ProcessorDIMM(serial, ssh)
-        chipsecTest(serial, ssh)
-        pressF2(serial, ssh)
-        loadDefault(serial, ssh)
-        staticTurbo(serial, ssh)
-        ufs(serial, ssh)
-        rrQIRQ(serial, ssh)
-        dramRAPL(serial, ssh)
-        pwdSecurityTest(serial, ssh, dst)
-        securityBoot(serial, ssh)
-        vtd(serial, ssh)
-        cpuCOMPA(serial, ssh)
-        logTime(serial, ssh)
-    logging.info('ICX BIOS test completed...')
+def icxbiosTest(serial, ssh, dst):
+    POST_Test(serial, ssh)
+    PM(serial, ssh)
+    pxeTest(serial, ssh)
+    httpsTest(serial, ssh)
+    usbTest(serial, ssh)
+    ProcessorDIMM(serial, ssh)
+    chipsecTest(serial, ssh)
+    pressF2(serial, ssh)
+    loadDefault(serial, ssh)
+    staticTurbo(serial, ssh)
+    ufs(serial, ssh)
+    rrQIRQ(serial, ssh)
+    dramRAPL(serial, ssh)
+    pwdSecurityTest(serial, ssh, dst)
+    securityBoot(serial, ssh)
+    vtd(serial, ssh)
+    cpuCOMPA(serial, ssh)
+    logTime(serial, ssh)

@@ -126,10 +126,10 @@ tpm_info = ['TPM Device\s+TPM 2.0', 'TPM2 Active PCR Hash\s+Algorithm+\s+SHA1\, 
             'TPM2 Hardware Supported Hash\s+Algorithm+\s+SHA1\, SHA256']
 
 # UPI Status
-upi_state = ['Current UPI Link Speed\s+Fast', 'Current UPI Link Frequency\s+10\.4\s+GT\/s']
+upi_state = ['Current UPI Link Speed\s+Fast', 'Current UPI Link Frequency\s+11\.2\s+GT\/s']
 
 # CPU, DIMM info
-CPU_info = ['Processor ID\s+000606A', 'Processor Frequency\s+2.600GHz', 'Microcode Revision\s+0C000160']
+CPU_info = ['Processor ID\s+000606A', 'Processor Frequency\s+2.600GHz']
 DIMM_info = ['DIMM050\s+S0.CF.D0:2933MT/s Hynix DRx4 32GB RDIMM', 'DIMM110\s+S1.CB.D0:2933MT/s Hynix DRx4 32GB RDIMM']
 
 # Common key order

@@ -727,7 +727,7 @@ def simplePWDTest(serial, ssh):
         return
     serial.send_keys_with_delay([Key.LEFT, Key.RIGHT])
     time.sleep(1)
-    if not serial.to_highlight_option(Key.UP, Hy5Config.pwd_item1, timeout=30):
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.pwd_item1, timeout=30):
         result.log_fail()
         return
     serial.send_keys(Key.F5)
@@ -749,7 +749,7 @@ def simplePWDTest(serial, ssh):
         return
     serial.send_keys_with_delay(Hy5Config.key2pwd)
     time.sleep(1)
-    if not serial.to_highlight_option(Key.UP, Hy5Config.pwd_item1, timeout=30):
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.pwd_item1, timeout=30):
         return
     serial.send_keys(Key.F5)
     if not serial.waitString(Hy5Config.enable_simple_pwd, timeout=30):
@@ -778,8 +778,7 @@ def pwdSecurityTest(serial, ssh):
     pwdVerification4(serial, ssh)
     simplePWDTest(serial, ssh)
     logging.info("密码组合和简易设置验证完成，当前为最后一个密码修改用例，开始恢复环境:更新BIOS")
-    if not Hy5BaseAPI.restore_env(serial):
-        pass
+    Hy5BaseAPI.restore_env(serial)
 
     return True
 
@@ -810,11 +809,9 @@ def securityBoot(serial, ssh):
         reset_default(serial, ssh)
         return
     serial.send_keys_with_delay(key1)
-    if not Hy5BaseAPI.verify_setup_options_down(serial, Hy5Config.secure_status, 6):
-        reset_default(serial, ssh)
+    if serial.waitString('Current Secure Boot State'):
         result.log_fail()
         return
-    logging.info('Restore the test Env...')
     reset_default(serial, ssh)
     result.log_pass()
     return True
@@ -1046,17 +1043,14 @@ def coreDisable(serial, ssh):
 
 
 # Main function
-def biosSetupTest(serial, ssh, n=1):
-    for i in range(n):
-        logging.info("BIOS Setup Test Cycle: {0}".format(i + 1))
-        loadDefault(serial, ssh)
-        staticTurbo(serial, ssh)
-        ufs(serial, ssh)
-        rrQIRQ(serial, ssh)
-        dramRAPL(serial, ssh)
-        pwdSecurityTest(serial, ssh)
-        securityBoot(serial, ssh)
-        vtd(serial, ssh)
-        cpuCOMPA(serial, ssh)
-        logTime(serial, ssh)
-    logging.info('Hy5 Setup test completed...')
+def biosSetupTest(serial, ssh):
+    loadDefault(serial, ssh)
+    staticTurbo(serial, ssh)
+    ufs(serial, ssh)
+    rrQIRQ(serial, ssh)
+    dramRAPL(serial, ssh)
+    pwdSecurityTest(serial, ssh)
+    securityBoot(serial, ssh)
+    vtd(serial, ssh)
+    cpuCOMPA(serial, ssh)
+    logTime(serial, ssh)
