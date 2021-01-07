@@ -69,7 +69,7 @@ class ReportGenerator:
     def get_total_time(self):
         testlog = self.load_test_log()
         start_time = re.findall("(.+)\s(?:INFO|DEBUG|ERROR).+", testlog[0])[0]
-        end_time = re.findall("(.+)\s(?:INFO|DEBUG|ERROR).+:", testlog[-1])[0]
+        end_time = re.findall("(.+)\s(?:INFO|DEBUG|ERROR):", testlog[-1])[0]
         total_time = self.convert_time(end_time) - self.convert_time(start_time)
         m, s = divmod(total_time, 60)
         h, m = divmod(m, 60)
@@ -137,8 +137,10 @@ class ReportGenerator:
     def get_code_version(self):
         version = "NA"
         for line in self.load_test_log():
-            if re.search("Latest Version is:", line):
+            if re.search("Latest Version is:|Commit:", line):
                 version = re.findall("Latest Version is: (\d+)", line)
+                if not version:
+                    version = re.findall("Commit: ([0-9a-z]{8})", line)
         return version
 
     # collect and update test case result

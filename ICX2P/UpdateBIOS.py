@@ -6,5 +6,6 @@ def update_bios(serial, dst):
     result = Misc.LogHeaderResult(tc, serial)
     if not Update.get_test_image(dst):
         result.log_fail()
+        return
     result.log_pass()
     return True

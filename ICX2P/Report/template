@@ -6996,7 +6996,7 @@
                         <div class="col-sm-6 b-r" style="height:350px">
                             <form class="form-horizontal">
                                 <div class="form-group">
-                                    <label class="col-sm-2 control-label text-black">SVN Version:</label>
+                                    <label class="col-sm-2 control-label text-black">Code Version:</label>
                                     <div class="col-sm-5">
                                         <span class="form-control" id="testVersion"></span>
                                     </div>
