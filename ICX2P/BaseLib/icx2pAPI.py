@@ -240,6 +240,24 @@ def equipment(ssh):
     return True
 
 
+# used for unitool test
+def unitool(ssh, data):
+    time.sleep(5)
+    if ssh.login(IcxConfig.OS_IP, IcxConfig.OS_USER, IcxConfig.OS_PASSWORD):
+        ssh.execute_command(r'cd {0}/kernel;insmod ufudev.ko'.format(IcxConfig.unitool_path))
+        logging.info('Start to set the value...')
+        print(data)
+        res = ssh.execute_command(r'cd {0}/app;./unitool -w {1} | grep error'.format(IcxConfig.unitool_path, data))
+        print(res)
+        time.sleep(5)
+        if 'error' in res:
+            logging.debug(res)
+            pass
+    ssh.execute_command('reboot')
+    h.close_session()
+    return True
+
+
 # def to BIOS Setup - System Time page
 def toSysTime(serial):
     if not toBIOSnp(serial):

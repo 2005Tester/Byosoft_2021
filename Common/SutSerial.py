@@ -389,13 +389,12 @@ class SutControl:
         :return: Data read from serial port,
         """
         if pat is None:
-            pat1 = re.compile('{0}\s*\x1B\W'.format(msg), re.M)
+            pat1 = re.compile('{0}\x1B\W'.format(msg), re.M)
         else:
-            pat1 = re.compile('{0}{1}'.format(pat, msg), re.M)
+            pat1 = re.compile('{0}{1}\s*\x1B\W'.format(pat, msg), re.M)
 
         # flush serial buffer
-        self.session.flushInput()
-        self.session.flushOutput()
+        self.session.flush()
         time.sleep(1)
 
         s_time = time.time()  # set timeout flag

@@ -24,7 +24,8 @@ SMBIOS_DIR = 'c:\\daily\\SMBIOS'
 SERIAL_LOG = os.path.join(LOG_DIR, 'serial.log')
 BINARY_DIR = '\\\\172.16.0.73\\HY5_Binary'
 HPM_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\HY5 HPM'
-SHAR_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\AT Report\\{0}'.format(timestamp)
+INI_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\AT Tools'
+SHAR_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\AT Report\\Haiyan5\\{0}'.format(timestamp)
 # if not os.path.exists(SHAR_DIR):
 #     os.makedirs(SHAR_DIR)
 

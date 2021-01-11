@@ -222,11 +222,11 @@ def loadDefault(serial, ssh):
         result.log_fail()
         return
     serial.send_keys_with_delay([Key.LEFT, Key.RIGHT, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, 'Boot Type'):
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.pat, 'Boot Type'):
         result.log_fail()
         return
     serial.send_keys(Key.F5)
-    if not serial.to_highlight_option(Key.DOWN, 'Boot Fail Policy'):
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.pat, 'Boot Fail Policy'):
         result.log_fail()
         return
     serial.send_keys(Key.F5)
@@ -284,7 +284,7 @@ def staticTurbo(serial, ssh):
         return
     serial.send_keys(Hy5Config.Key.ESC)
     serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.DOWN, 'Static Turbo', timeout=30):
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.pat, 'Static Turbo', timeout=30):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
@@ -327,7 +327,7 @@ def ufs(serial, ssh):
         return
     serial.send_keys(Key.ESC)
     serial.send_keys_with_delay([Key.ENTER, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, 'UFS', timeout=30):
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.pat, 'UFS', timeout=30):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
@@ -365,7 +365,7 @@ def rrQIRQ(serial, ssh):
         return
     serial.send_keys(Key.ESC)
     serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.DOWN, 'Local/Remote Threshold', timeout=30):
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.pat, 'Local/Remote Threshold', timeout=30):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
@@ -379,7 +379,7 @@ def rrQIRQ(serial, ssh):
         return
     serial.send_keys(Key.ESC)
     serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.DOWN, 'IRQ Threshold', timeout=60):
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.pat, 'IRQ Threshold', timeout=60):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
@@ -727,7 +727,7 @@ def simplePWDTest(serial, ssh):
         return
     serial.send_keys_with_delay([Key.LEFT, Key.RIGHT])
     time.sleep(1)
-    if not serial.to_highlight_option(Key.DOWN, Hy5Config.pwd_item1, timeout=30):
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.pat, Hy5Config.pwd_item1, timeout=30):
         result.log_fail()
         return
     serial.send_keys(Key.F5)
@@ -749,7 +749,7 @@ def simplePWDTest(serial, ssh):
         return
     serial.send_keys_with_delay(Hy5Config.key2pwd)
     time.sleep(1)
-    if not serial.to_highlight_option(Key.DOWN, Hy5Config.pwd_item1, timeout=30):
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.pat, Hy5Config.pwd_item1, timeout=30):
         return
     serial.send_keys(Key.F5)
     if not serial.waitString(Hy5Config.enable_simple_pwd, timeout=30):
@@ -798,7 +798,7 @@ def securityBoot(serial, ssh):
     serial.send_keys(Key.ESC)
     serial.send_keys_with_delay([Key.RIGHT, Key.ENTER])
     serial.send_keys_with_delay([Key.RIGHT, Key.RIGHT, Key.RIGHT, Key.RIGHT, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, 'Boot Type'):
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.pat, Hy5Config.pat, 'Boot Type'):
         result.log_fail()
         return
     serial.send_keys(Key.F5)
@@ -868,27 +868,37 @@ def tpm(serial, ssh):
 
 # Testcase_VTD_002
 def vtd(serial, ssh):
-    tc = ('037', '关闭VT-d功能启动测试', '支持VT-d')
+    tc = ('025', '关闭VT-d功能启动测试', '支持VT-d')
     result = Misc.LogHeaderResult(tc, serial)
-    if not Hy5BaseAPI.toBIOS(serial, ssh):
+    if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
         return
-    if not Hy5BaseAPI.toBIOSConf(serial):
+    if not icx2pAPI.toBIOSConf(serial):
         result.log_fail()
         return
     serial.send_keys(Key.RIGHT)
-    if not serial.to_highlight_option(Key.DOWN, Hy5Config.option10, timeout=60):
+    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option10, timeout=60):
         result.log_fail()
         return
     serial.send_keys_with_delay([Key.ENTER, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, Hy5Config.pat, 'Intel'):
+    if not serial.to_highlight_option(Key.DOWN, 'Intel\(R\) VT for Directed I/O \(VT-d\)'):
         result.log_fail()
         return
-    serial.send_keys(Key.ENTER)
+    serial.send_keys_with_delay([Key.ENTER, Key.UP])
+    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pat, 'Intel\(R\) VT for Directed I/O'):
+        result.log_fail()
+        return
     serial.send_keys(Key.F5)
     time.sleep(1)
     serial.send_keys(Key.F10 + Key.Y)
-    if not Hy5TcLib.ping_sut():   # OS flag
+    if not icx2pAPI.toBIOSnp(serial, ssh):
+        result.log_fail()
+        return
+    serial.send_keys_with_delay(IcxConfig.key2OS)
+    if not serial.find_setup_option(Key.DOWN, IcxConfig.SUSE, 10):
+        result.log_fail()
+        return
+    if not icx2pAPI.ping_sut():  # OS flag
         result.log_fail()
         return
     result.log_pass()
@@ -997,7 +1007,7 @@ def coreDisable(serial, ssh):
         return
     serial.send_keys(Key.ESC)
     serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.DOWN, 'Active Processor Cores'):
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.pat, 'Active Processor Cores'):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)

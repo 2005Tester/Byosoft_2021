@@ -24,7 +24,8 @@ SMBIOS_DIR = 'c:\\daily\\SMBIOS'
 SERIAL_LOG = os.path.join(LOG_DIR, 'serial.log')
 # BINARY_DIR = '\\\\172.16.0.73\\HY5_Binary'
 HPM_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\HY5 HPM'
-SHAR_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\AT Report\\{0}'.format(timestamp)
+INI_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\AT Tools'
+SHAR_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\AT Report\\2288V6\\{0}'.format(timestamp)
 
 # Serial Port Configuration
 BIOS_SERIAL = "com3"

@@ -308,11 +308,11 @@ def loadDefault(serial, ssh):
         result.log_fail()
         return
     serial.send_keys_with_delay([Key.LEFT, Key.RIGHT, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, 'Boot Type'):
+    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pat, 'Boot Type'):
         result.log_fail()
         return
     serial.send_keys(Key.F5)
-    if not serial.to_highlight_option(Key.DOWN, 'Boot Fail Policy'):
+    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pat, 'Boot Fail Policy'):
         result.log_fail()
         return
     serial.send_keys(Key.F5)
@@ -370,7 +370,7 @@ def staticTurbo(serial, ssh):
         return
     serial.send_keys(IcxConfig.Key.ESC)
     serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.DOWN, 'Static Turbo', timeout=30):
+    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pat, 'Static Turbo', timeout=30):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
@@ -416,7 +416,7 @@ def ufs(serial, ssh):
         return
     serial.send_keys(Key.ESC)
     serial.send_keys_with_delay([Key.ENTER, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, 'UFS', timeout=30):
+    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pat, 'UFS', timeout=30):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
@@ -454,7 +454,7 @@ def rrQIRQ(serial, ssh):
         return
     serial.send_keys(Key.ESC)
     serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.DOWN, 'Local/Remote Threshold', timeout=60):
+    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pat, 'Local/Remote Threshold', timeout=60):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
@@ -469,7 +469,7 @@ def rrQIRQ(serial, ssh):
     #     return
     # serial.send_keys(Key.ESC)
     # serial.send_keys(Key.ENTER)
-    # if not serial.to_highlight_option(Key.DOWN, 'IRQ Threshold', timeout=60):
+    # if not serial.to_highlight_option(Key.DOWN, IcxConfig.pat, 'IRQ Threshold', timeout=60):
     #     result.log_fail()
     #     return
     # serial.send_keys(Key.ENTER)
@@ -817,7 +817,7 @@ def simplePWDTest(serial, ssh):
         return
     serial.send_keys_with_delay([Key.LEFT, Key.RIGHT])
     time.sleep(1)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pwd_item1, timeout=30):
+    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pat, IcxConfig.pwd_item1, timeout=30):
         result.log_fail()
         return
     serial.send_keys(Key.F5)
@@ -839,7 +839,7 @@ def simplePWDTest(serial, ssh):
         return
     serial.send_keys_with_delay(IcxConfig.key2pwd)
     time.sleep(1)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pwd_item1, timeout=30):
+    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pat, IcxConfig.pwd_item1, timeout=30):
         return
     serial.send_keys(Key.F5)
     if not serial.waitString(IcxConfig.enable_simple_pwd, timeout=30):
@@ -888,7 +888,7 @@ def securityBoot(serial, ssh):
     serial.send_keys(Key.ESC)
     serial.send_keys_with_delay([Key.RIGHT, Key.ENTER])
     serial.send_keys_with_delay([Key.RIGHT, Key.RIGHT, Key.RIGHT, Key.RIGHT, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, 'Boot Type'):
+    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pat, 'Boot Type'):
         result.log_fail()
         return
     serial.send_keys(Key.F5)
@@ -971,13 +971,17 @@ def vtd(serial, ssh):
         result.log_fail()
         return
     serial.send_keys_with_delay([Key.ENTER, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pat, 'Intel'):
+    if not serial.to_highlight_option(Key.DOWN, 'Intel\(R\) VT for Directed I/O \(VT-d\)'):
         result.log_fail()
         return
-    serial.send_keys(Key.ENTER)
+    serial.send_keys_with_delay([Key.ENTER, Key.UP])
+    if not serial.to_highlight_option(Key.DOWN, 'Intel\(R\) VT for Directed I/O'):
+        result.log_fail()
+        return
     serial.send_keys(Key.F5)
     time.sleep(1)
     serial.send_keys(Key.F10 + Key.Y)
+
     if not icx2pAPI.ping_sut():  # OS flag
         result.log_fail()
         return
@@ -1087,7 +1091,7 @@ def coreDisable(serial, ssh):
         return
     serial.send_keys(Key.ESC)
     serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.DOWN, 'Active Processor Cores'):
+    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pat, 'Active Processor Cores'):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
@@ -1128,6 +1132,64 @@ def coreDisable(serial, ssh):
     if not P.smbiosCheck(cmd, path, IcxConfig.SMBIOS_TEMPLATE):
         result.log_fail()
         return
+    result.log_pass()
+    return True
+
+
+# unitool
+def auto_unitool_loop(serial, ssh):
+    tc = ('061', 'auto unitool loop', '支持unitool loop')
+    result = Misc.LogHeaderResult(tc, serial)
+    f = os.listdir(IcxConfig.INI_DIR)
+    status = 0
+    for root, dirs, files in os.walk(IcxConfig.INI_DIR):
+        for file in files:
+            print(file)
+            fw = open(os.path.join('{0}/written_ini'.format(IcxConfig.INI_DIR), file), 'rb')
+            data = fw.read().decode()
+            for i in data.split('\r\n'):
+                # print(i)
+                if i == '':
+                    pass
+                else:
+                    print(i)
+                    if not icx2pAPI.toBIOS(serial, ssh):
+                        result.log_fail()
+                        return
+                    serial.send_keys_with_delay(IcxConfig.key2OS)
+                    if not serial.find_setup_option(Key.DOWN, IcxConfig.SUSE, 10):
+                        result.log_fail()
+                        return
+                    if not icx2pAPI.ping_sut():
+                        result.log_fail()
+                        return
+                    time.sleep(1)
+                    ini_data = i
+                    if not icx2pAPI.unitool(ssh, ini_data):
+                        result.log_fail()
+                        return
+                    if icx2pAPI.toBIOSnp(serial):
+                        serial.send_keys_with_delay(IcxConfig.key2OS)
+                        if not serial.find_setup_option(Key.DOWN, IcxConfig.SUSE, 10):
+                            result.log_fail()
+                            return
+                        if not icx2pAPI.ping_sut():
+                            result.log_fail()
+                            status = 1
+                            icx2pAPI.clearCMOS(ssh)
+                            continue
+                    else:
+                        status = 2
+                        icx2pAPI.clearCMOS(ssh)
+                        continue
+            fw.close()
+        print(status)
+
+    logging.debug(status)
+    if status == 1 | 2:
+        result.log_fail()
+        return
+
     result.log_pass()
     return True
 
