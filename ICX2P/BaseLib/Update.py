@@ -14,7 +14,7 @@ import re
 from pathlib import Path
 from Common import ssh, Misc, GitLab
 from HY5 import daily
-from ICX2P import IcxConfig
+from ICX2P import SutConfig
 
 
 # Obtain the path of latest bios image from Gitlab artifacts
@@ -61,9 +61,9 @@ def upload_bios(src):
     # Upload BIOS image (.bin. .hpm) to SUT
     bin_file = 'rp001.bin'
     hpm_file = 'bios.hpm'
-    transport = paramiko.Transport(Hy5Config.BMC_IP, 22)
+    transport = paramiko.Transport(SutConfig.BMC_IP, 22)
     transport.banner_timeout = 90  # Increase timeout value to fix connection issue
-    transport.connect(username=Hy5Config.BMC_USER, password=Hy5Config.BMC_PASSWORD)
+    transport.connect(username=SutConfig.BMC_USER, password=SutConfig.BMC_PASSWORD)
     sftp = paramiko.SFTPClient.from_transport(transport)
     res = sftp.listdir()
     # print(res)
@@ -74,51 +74,55 @@ def upload_bios(src):
         elif re.search(".hpm", item):
             logging.info("Deleting old .hpm image...")
             sftp.remove(item)
-    if re.search('.bin', str(src)):
-        try:
-            logging.info("Uploading image to BMC...")
-            res = sftp.put(src, bin_file)
-        except OSError:
-            logging.error("Skip due to SSH connection error.")
-            return
-        if re.search("67108864", str(res)):
-            logging.info("BIOS image (bin) uploaded to iBMC SFTP.")
-            sftp.close()
-            transport.close()
-            return True
+    output = os.path.join(src, 'output')
+    for filename in os.listdir(output):
+        if re.search('.bin', str(filename)):
+            try:
+                logging.info("Uploading image to BMC...")
+                res = sftp.put(os.path.join(output, filename), bin_file)
+            except OSError:
+                logging.error("Skip due to SSH connection error.")
+                return
+            if re.search("67108864", str(res)):
+                logging.info("BIOS image (bin) uploaded to iBMC SFTP.")
+                sftp.close()
+                transport.close()
+                return True
+            else:
+                print("Failed to upload BIOS image to iBMC SFTP.")
+                print(res)
+                sftp.close()
+                transport.close()
+                return
+        elif re.search('.hpm', str(filename)):
+            try:
+                res = sftp.put(os.path.join(output, filename), hpm_file)
+            except OSError:
+                print("Skip due to SSH connection error.")
+                return
+            if re.search("rw", str(res)):
+                print("HPM image uploaded to iBMC SFTP.")
+                sftp.close()
+                transport.close()
+                return True
+            else:
+                print("Failed to upload hpm image to iBMC SFTP.")
+                print(res)
+                sftp.close()
+                transport.close()
+                return
         else:
-            print("Failed to upload BIOS image to iBMC SFTP.")
-            print(res)
+            print("Invalid image type, please check source file...")
             sftp.close()
             transport.close()
             return
-    elif re.search('.hpm', str(src)):
-        try:
-            res = sftp.put(src, hpm_file)
-        except OSError:
-            print("Skip due to SSH connection error.")
-            return
-        if re.search("rw", str(res)):
-            print("HPM image uploaded to iBMC SFTP.")
-            sftp.close()
-            transport.close()
-            return True
-        else:
-            print("Failed to upload hpm image to iBMC SFTP.")
-            print(res)
-            sftp.close()
-            transport.close()
-            return
-    else:
-        print("Invalid image type, please check source file...")
-        return
 
 
 def hpm_update():
     cmd_hpmupdate = 'ipmcset -d upgrade -v /tmp/bios.hpm\n'
     s = paramiko.SSHClient()
     s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    s.connect(Hy5Config.BMC_IP, 22, Hy5Config.BMC_USER, Hy5Config.BMC_PASSWORD)
+    s.connect(SutConfig.BMC_IP, 22, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)
     op = s.invoke_shell()
     op.send(cmd_hpmupdate)
     time.sleep(5)
@@ -152,7 +156,7 @@ def program_flash():
     cmds = [cmd_shutdown, cmd_confirm, cmd_maint_mode, cmd_upgrade_mode, cmd_load]
     rets = [ret_shutdown, ret_confirm, ret_maint_mode, ret_upgrade_mode, ret_load]
     
-    if sshconn.login(Hy5Config.BMC_IP, Hy5Config.BMC_USER, Hy5Config.BMC_PASSWORD):
+    if sshconn.login(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD):
         return sshconn.interaction(cmds, rets)
         
   
@@ -169,7 +173,7 @@ def poweron_sut():
     cmds = [cmd_power_on, cmd_confirm, cmd_fan_manual_mode, cmd_fan_40]
     rets = [ret_power_on, ret_confirm, ret_fan_manual_mode, ret_fan_40]
 
-    if sshconn.login(Hy5Config.BMC_IP, Hy5Config.BMC_USER, Hy5Config.BMC_PASSWORD):
+    if sshconn.login(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD):
         return sshconn.interaction(cmds, rets)
     
 
@@ -193,7 +197,7 @@ def update_specific_img(bios, serial):
 def update_bios_ci(serial):
     tc = ('000', 'Update BIOS by BMC', 'Outband BIOS update')
     result = Misc.LogHeaderResult(tc, serial)
-    image = get_test_image(Hy5Config.BINARY_DIR)
+    image = get_test_image(SutConfig.BINARY_DIR)
     if not image:
         result.log_skip()
         return

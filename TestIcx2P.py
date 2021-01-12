@@ -11,27 +11,27 @@ from sys import argv
 from Common import LogConfig
 from Common import SutSerial
 from Common import ssh
-from ICX2P import UpdateBIOS, IcxConfig
+from ICX2P import UpdateBIOS, SutConfig
 from Report.ReportGen import ReportGenerator
 
 
 
 # Init log setting
-log_dir = IcxConfig.LOG_DIR
+log_dir = SutConfig.LOG_DIR
 log_format = LogConfig.gen_config(log_dir)
 logging.config.dictConfig(log_format)
 logging.getLogger("paramiko").setLevel(logging.WARNING)
 
 
 # init seril
-ser = SutSerial.SutControl(IcxConfig.BIOS_SERIAL, 115200, 0.5, IcxConfig.SERIAL_LOG)
+ser = SutSerial.SutControl(SutConfig.BIOS_SERIAL, 115200, 0.5, SutConfig.SERIAL_LOG)
 
 # init BMC SSH interface
 ssh_bmc = ssh.SshConnection()
 
 # Generate html test report
 def gen_report():
-    template = IcxConfig.REPORT_TEMPLATE
+    template = SutConfig.REPORT_TEMPLATE
     report = ReportGenerator(template, os.path.join(log_dir, "test.log"), os.path.join(log_dir, "report.html"))
     report.write_to_html()
 
