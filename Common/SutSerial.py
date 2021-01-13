@@ -355,6 +355,26 @@ class SutControl:
             for option in setup_options:
                 logging.info("{0} not verified".format(option)) 
 
+
+    # Find a setup option and stop there, will not send "Enter" after option found 
+    def locate_setup_option(self, key, setupoption, try_counts, csi=False):
+        #highlight = "\x1B\[0m"
+        highlight = "\x1B"
+        if csi:
+            msg = setupoption
+        else:
+            msg = setupoption + highlight
+        
+        while try_counts:
+            self.send_keys(key)
+            try_counts -= 1
+            time.sleep(2)
+            if self.is_msg_present_general(msg, 1, cleanup=False):
+                logging.info("{0} found".format(setupoption))
+                try_counts = 0
+                return True
+
+    # Will be replaced by locate_setup_option()
     def find_setup_option(self, key, setupoption, try_counts):
         highlight = "\x1B\["
         self.receive_data(512)

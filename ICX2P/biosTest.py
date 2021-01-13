@@ -10,13 +10,13 @@ import datetime
 import logging
 import time
 
-from ICX2P.IcxConfig import Key
-from ICX2P import IcxConfig
+from ICX2P.SutConfig import Key
+from ICX2P import SutConfig
 from ICX2P.BaseLib import icx2pAPI
 from Common import Misc
 from Common.LogAnalyzer import LogAnalyzer
 
-P = LogAnalyzer(IcxConfig.LOG_DIR)
+P = LogAnalyzer(SutConfig.LOG_DIR)
 
 
 # POST, Boot, Setup, OS Installation, PM, Device, Chipsec Test and Source code cons.
@@ -26,7 +26,7 @@ def POST_Test(serial, ssh):  # POST: POST Log(TBD) and Information Check
     if not icx2pAPI.force_reset(ssh):
         result.log_fail()
         return
-    msg_list = [IcxConfig.msg, IcxConfig.msg1, IcxConfig.msg2, IcxConfig.msg3]
+    msg_list = [SutConfig.msg, SutConfig.msg1, SutConfig.msg2, SutConfig.msg3]
     if not serial.waitStrings(msg_list, timeout=300):  # 考虑到满载配置
         result.log_fail()
         return
@@ -96,10 +96,10 @@ def httpsTest(serial, ssh):
         result.log_fail()
         return
     serial.send_keys_with_delay(Key.RIGHT + Key.ENTER)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.PXE_option, timeout=60):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.PXE_option, timeout=60):
         result.log_fail()
         return
-    serial.send_data(IcxConfig.default_pwd)
+    serial.send_data(SutConfig.default_pwd)
     serial.send_data(chr(0x0D))
     if not serial.waitString('Start HTTPS Boot over IPv4', timeout=30):
         result.log_fail()
@@ -120,16 +120,16 @@ def usbTest(serial, ssh):
     if not icx2pAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(IcxConfig.w2key)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option):
+    serial.send_keys_with_delay(SutConfig.w2key)
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.option):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option1):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.option1):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
-    msg_list = [IcxConfig.msg5, IcxConfig.msg6, IcxConfig.msg7]
+    msg_list = [SutConfig.msg5, SutConfig.msg6, SutConfig.msg7]
     if not icx2pAPI.verify_setup_options_down(serial, msg_list, 7):
         result.log_fail()
         return
@@ -146,28 +146,28 @@ def ProcessorDIMM(serial, ssh):
     if not icx2pAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(IcxConfig.w2key)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option2, timeout=60):
+    serial.send_keys_with_delay(SutConfig.w2key)
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.option2, timeout=60):
         result.log_fail()
         return
     serial.send_keys_with_delay([Key.ENTER, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option3):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.option3):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option4):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.option4):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
-    if not icx2pAPI.verify_setup_options_down(serial, IcxConfig.CPU_info, 20):
+    if not icx2pAPI.verify_setup_options_down(serial, SutConfig.CPU_info, 20):
         result.log_fail()
         return
     serial.send_keys_with_delay([Key.ESC, Key.ESC])
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option5, timeout=30):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.option5, timeout=30):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
-    if not icx2pAPI.verify_setup_options_down(serial, IcxConfig.DIMM_info, 20):
+    if not icx2pAPI.verify_setup_options_down(serial, SutConfig.DIMM_info, 20):
         result.log_fail()
         return
     result.log_pass()
@@ -181,8 +181,8 @@ def chipsecTest(serial, ssh):
     result = Misc.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
         return
-    serial.send_keys_with_delay(IcxConfig.key2OS)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.OS, timeout=30):
+    serial.send_keys_with_delay(SutConfig.key2OS)
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.OS, timeout=30):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
@@ -203,7 +203,7 @@ def pressF2(serial, ssh):
     if not icx2pAPI.force_reset(ssh):
         result.log_fail()
         return
-    if not serial.waitString(IcxConfig.msg, timeout=300):
+    if not serial.waitString(SutConfig.msg, timeout=300):
         result.log_fail()
         return
     serial.send_keys(Key.DEL)
@@ -238,8 +238,8 @@ def equipmentMode(serial, ssh):
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
         return
-    serial.send_keys_with_delay(IcxConfig.key2OS)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.SUSE):
+    serial.send_keys_with_delay(SutConfig.key2OS)
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.SUSE):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
@@ -252,8 +252,8 @@ def equipmentMode(serial, ssh):
     if not icx2pAPI.toBIOSnp(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(IcxConfig.key2OS)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.SUSE):
+    serial.send_keys_with_delay(SutConfig.key2OS)
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.SUSE):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
@@ -261,9 +261,9 @@ def equipmentMode(serial, ssh):
         result.log_fail()
         return
     cmd = 'dmidecode -t 128'
-    path = IcxConfig.LOG_DIR
+    path = SutConfig.LOG_DIR
     icx2pAPI.dump_smbios(ssh, cmd)
-    if not P.smbiosCheck(cmd, path, IcxConfig.SMBIOS_TEMPLATE):
+    if not P.smbiosCheck(cmd, path, SutConfig.SMBIOS_TEMPLATE):
         result.log_fail()
         return
     result.log_pass()
@@ -276,12 +276,12 @@ def checkPWD(serial, pwd1, pwd2):
         return
     serial.send_data(pwd1)
     serial.send_data(chr(0x0D))
-    if not serial.waitString(IcxConfig.invalid_info, timeout=30):
+    if not serial.waitString(SutConfig.invalid_info, timeout=30):
         return
     serial.send_data(chr(0x0D))
     serial.send_data('22222222')
     serial.send_data(chr(0x0D))
-    if not serial.waitString(IcxConfig.invalid_info, timeout=30):
+    if not serial.waitString(SutConfig.invalid_info, timeout=30):
         return
     serial.send_data(chr(0x0D))
     serial.send_data(pwd2)
@@ -303,16 +303,16 @@ def loadDefault(serial, ssh):
     if not icx2pAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(IcxConfig.key2type)
+    serial.send_keys_with_delay(SutConfig.key2type)
     if not icx2pAPI.verify_setup_options_down(serial, option_bfo, 14):
         result.log_fail()
         return
     serial.send_keys_with_delay([Key.LEFT, Key.RIGHT, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pat, 'Boot Type'):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.pat, 'Boot Type'):
         result.log_fail()
         return
     serial.send_keys(Key.F5)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pat, 'Boot Fail Policy'):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.pat, 'Boot Fail Policy'):
         result.log_fail()
         return
     serial.send_keys(Key.F5)
@@ -323,12 +323,12 @@ def loadDefault(serial, ssh):
     if not icx2pAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(IcxConfig.key2type)
+    serial.send_keys_with_delay(SutConfig.key2type)
     if not icx2pAPI.verify_setup_options_down(serial, option_aft, 14):
         result.log_fail()
         if not icx2pAPI.reset_default(serial, ssh):
             return
-    serial.send_keys_with_delay(IcxConfig.key2default)
+    serial.send_keys_with_delay(SutConfig.key2default)
     if not icx2pAPI.toBIOSnp(serial):
         result.log_fail()
         if not icx2pAPI.reset_default(serial, ssh):
@@ -336,7 +336,7 @@ def loadDefault(serial, ssh):
     if not icx2pAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(IcxConfig.key2type)
+    serial.send_keys_with_delay(SutConfig.key2type)
     time.sleep(1)
     if not icx2pAPI.verify_setup_options_down(serial, option_bfo, 14):
         result.log_fail()
@@ -356,21 +356,21 @@ def staticTurbo(serial, ssh):
     if not icx2pAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(IcxConfig.w2key)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option2, timeout=60):
+    serial.send_keys_with_delay(SutConfig.w2key)
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.option2, timeout=60):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.UP, IcxConfig.option6):
+    if not serial.to_highlight_option(Key.UP, SutConfig.option6):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
-    if not icx2pAPI.verify_setup_options_down(serial, IcxConfig.static_turbo, 5):
+    if not icx2pAPI.verify_setup_options_down(serial, SutConfig.static_turbo, 5):
         result.log_fail()
         return
-    serial.send_keys(IcxConfig.Key.ESC)
+    serial.send_keys(SutConfig.Key.ESC)
     serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pat, 'Static Turbo', timeout=30):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.pat, 'Static Turbo', timeout=30):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
@@ -391,32 +391,32 @@ def ufs(serial, ssh):
     if not icx2pAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(IcxConfig.key2default)
+    serial.send_keys_with_delay(SutConfig.key2default)
     if not icx2pAPI.toBIOSnp(serial):
         result.log_fail()
         return
     if not icx2pAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(IcxConfig.w2key)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option2, timeout=60):
+    serial.send_keys_with_delay(SutConfig.w2key)
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.option2, timeout=60):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option6, timeout=30):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.option6, timeout=30):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option8, timeout=30):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.option8, timeout=30):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
-    if not icx2pAPI.verify_setup_options_up(serial, IcxConfig.ufs, 4):
+    if not icx2pAPI.verify_setup_options_up(serial, SutConfig.ufs, 4):
         result.log_fail()
         return
     serial.send_keys(Key.ESC)
     serial.send_keys_with_delay([Key.ENTER, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pat, 'UFS', timeout=30):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.pat, 'UFS', timeout=30):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
@@ -437,24 +437,24 @@ def rrQIRQ(serial, ssh):
     if not icx2pAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(IcxConfig.w2key)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option2, timeout=60):
+    serial.send_keys_with_delay(SutConfig.w2key)
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.option2, timeout=60):
         result.log_fail()
         return
     serial.send_data(chr(0x0D))
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option9, timeout=30):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.option9, timeout=30):
         result.log_fail()
         return
     serial.send_data(chr(0x0D))
-    if not serial.find_setup_option(Key.DOWN, IcxConfig.option12, 3):
+    if not serial.find_setup_option(Key.DOWN, SutConfig.option12, 3):
         result.log_fail()
         return
-    if not icx2pAPI.verify_setup_options_down(serial, IcxConfig.local_remote, 12):
+    if not icx2pAPI.verify_setup_options_down(serial, SutConfig.local_remote, 12):
         result.log_fail()
         return
     serial.send_keys(Key.ESC)
     serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pat, 'Local/Remote Threshold', timeout=60):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.pat, 'Local/Remote Threshold', timeout=60):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
@@ -469,7 +469,7 @@ def rrQIRQ(serial, ssh):
     #     return
     # serial.send_keys(Key.ESC)
     # serial.send_keys(Key.ENTER)
-    # if not serial.to_highlight_option(Key.DOWN, IcxConfig.pat, 'IRQ Threshold', timeout=60):
+    # if not serial.to_highlight_option(Key.DOWN, SutConfig.pat, 'IRQ Threshold', timeout=60):
     #     result.log_fail()
     #     return
     # serial.send_keys(Key.ENTER)
@@ -484,16 +484,16 @@ def rrQIRQ(serial, ssh):
     # if not icx2pAPI.toBIOSConf(serial):
     #     result.log_fail()
     #     return
-    # serial.send_keys_with_delay(IcxConfig.w2key)
-    # if not serial.to_highlight_option(Key.DOWN, IcxConfig.option2, timeout=60):
+    # serial.send_keys_with_delay(SutConfig.w2key)
+    # if not serial.to_highlight_option(Key.DOWN, SutConfig.option2, timeout=60):
     #     result.log_fail()
     #     return
     # serial.send_keys(Key.ENTER)
-    # if not serial.to_highlight_option(Key.DOWN, IcxConfig.option9, timeout=30):
+    # if not serial.to_highlight_option(Key.DOWN, SutConfig.option9, timeout=30):
     #     result.log_fail()
     #     return
     # serial.send_keys(Key.ENTER)
-    # if not serial.find_setup_option(Key.DOWN, IcxConfig.option12, 3):
+    # if not serial.find_setup_option(Key.DOWN, SutConfig.option12, 3):
     #     result.log_fail()
     #     return
     # if not icx2pAPI.verify_setup_options_down(serial, ['\[10\]\s+IRQ Threshold', '\[20\]\s+RRQ Threshold'], 12):
@@ -513,23 +513,23 @@ def dramRAPL(serial, ssh):
     if not icx2pAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(IcxConfig.w2key)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option2, timeout=60):
+    serial.send_keys_with_delay(SutConfig.w2key)
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.option2, timeout=60):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.UP, IcxConfig.option6):
+    if not serial.to_highlight_option(Key.UP, SutConfig.option6):
         result.log_fail()
         return
     serial.send_data(chr(0x0D))
-    if not serial.to_highlight_option(Key.UP, IcxConfig.option11):
+    if not serial.to_highlight_option(Key.UP, SutConfig.option11):
         result.log_fail()
         return
     serial.send_data(chr(0x0D))
     if not serial.find_setup_option(Key.DOWN, 'DRAM RAPL Configuration', 7):
         result.log_fail()
         return
-    if not icx2pAPI.verify_setup_options_up(serial, IcxConfig.dram, 4):
+    if not icx2pAPI.verify_setup_options_up(serial, SutConfig.dram, 4):
         result.log_fail()
         return
     serial.send_data(chr(0x0D))
@@ -550,14 +550,14 @@ def pwdSecurity(serial, ssh):
         return
     for i in range(2):
         logging.info("Send wrong password...")
-        serial.send_data(IcxConfig.new_pwd_9)
+        serial.send_data(SutConfig.new_pwd_9)
         serial.send_data(chr(0x0D))  # Send Enter
-        if not serial.waitString(IcxConfig.invalid_info, timeout=15):
+        if not serial.waitString(SutConfig.invalid_info, timeout=15):
             result.log_fail()
             return
         serial.send_data(chr(0x0D))  # Send Enter
     logging.info('Send the right password...')
-    serial.send_data(IcxConfig.default_pwd)
+    serial.send_data(SutConfig.default_pwd)
     serial.send_data(chr(0x0D))
     serial.send_data(chr(0x0D))
     if not serial.waitString('BIOS Configuration', timeout=60):
@@ -569,13 +569,13 @@ def pwdSecurity(serial, ssh):
         return
     for i in range(3):
         logging.info("Send wrong password...")
-        serial.send_data(IcxConfig.new_pwd_9)
+        serial.send_data(SutConfig.new_pwd_9)
         serial.send_data(chr(0x0D))  # Send Enter
-        if not serial.waitString(IcxConfig.invalid_info, timeout=15):
+        if not serial.waitString(SutConfig.invalid_info, timeout=15):
             result.log_fail()
             return
         serial.send_data(chr(0x0D))  # Send Enter
-    if not serial.waitString(IcxConfig.error_info, timeout=15):
+    if not serial.waitString(SutConfig.error_info, timeout=15):
         result.log_fail()
         return
     serial.send_keys(Key.CTRL_ALT_DELETE)
@@ -597,10 +597,10 @@ def cnd(serial, ssh):
         result.log_fail()
         return
     serial.send_keys(Key.RIGHT)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option7, timeout=30):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.option7, timeout=30):
         result.log_fail()
         return
-    if not icx2pAPI.verify_setup_options_down(serial, IcxConfig.cnd_status, 12):
+    if not icx2pAPI.verify_setup_options_down(serial, SutConfig.cnd_status, 12):
         result.log_fail()
         return
     result.log_pass()
@@ -617,68 +617,68 @@ def pwdVerification1(serial, ssh):
     if not icx2pAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(IcxConfig.key2pwd)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pwd_item):
+    serial.send_keys_with_delay(SutConfig.key2pwd)
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.pwd_item):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
-    if not serial.waitString(IcxConfig.pwd_info_1, timeout=30):
+    if not serial.waitString(SutConfig.pwd_info_1, timeout=30):
         result.log_fail()
         return
     # Testcase_BiosPasswordSecurity_002 新密码长度小于最少字符数要求（8）
-    serial.send_data(IcxConfig.simple_pwd)
+    serial.send_data(SutConfig.simple_pwd)
     serial.send_data(chr(0x0D))
-    if not serial.waitString(IcxConfig.invalid_info, timeout=15):
+    if not serial.waitString(SutConfig.invalid_info, timeout=15):
         result.log_fail()
         return
     serial.send_data(chr(0x0D))
     serial.send_data(chr(0x0D))
-    if not serial.waitString(IcxConfig.pwd_info_1, timeout=30):
+    if not serial.waitString(SutConfig.pwd_info_1, timeout=30):
         result.log_fail()
         return
-    serial.send_data(IcxConfig.default_pwd)
+    serial.send_data(SutConfig.default_pwd)
     serial.send_data(chr(0x0D))
-    if not serial.waitString(IcxConfig.pwd_info_2, timeout=30):
+    if not serial.waitString(SutConfig.pwd_info_2, timeout=30):
         result.log_fail()
         return
-    serial.send_data(IcxConfig.weak_pwd)
+    serial.send_data(SutConfig.weak_pwd)
     serial.send_data(chr(0x0D))
-    if not serial.waitString(IcxConfig.pwd_info_3, timeout=30):
+    if not serial.waitString(SutConfig.pwd_info_3, timeout=30):
         result.log_fail()
         return
-    serial.send_data(IcxConfig.weak_pwd)
+    serial.send_data(SutConfig.weak_pwd)
     serial.send_data(chr(0x0D))
     # 弱口令验证
-    if not serial.waitString(IcxConfig.simple_pwd_warning, timeout=30):
+    if not serial.waitString(SutConfig.simple_pwd_warning, timeout=30):
         result.log_fail()
         return
     serial.send_data(chr(0x0D))
     serial.send_data(chr(0x0D))
-    if not serial.waitString(IcxConfig.pwd_info_1, timeout=30):
+    if not serial.waitString(SutConfig.pwd_info_1, timeout=30):
         result.log_fail()
         return
-    serial.send_data(IcxConfig.default_pwd)
+    serial.send_data(SutConfig.default_pwd)
     serial.send_data(chr(0x0D))
     # Testcase_BiosPasswordSecurity_004 新密码长度大于最少字符数要求（8）
-    serial.send_data(IcxConfig.new_pwd_9)
+    serial.send_data(SutConfig.new_pwd_9)
     serial.send_data(chr(0x0D))
-    if not serial.waitString(IcxConfig.pwd_info_2, timeout=30):
+    if not serial.waitString(SutConfig.pwd_info_2, timeout=30):
         result.log_fail()
         return
-    serial.send_data(IcxConfig.new_pwd_9)
+    serial.send_data(SutConfig.new_pwd_9)
     serial.send_data(chr(0x0D))
     time.sleep(1)
-    if not serial.waitString(IcxConfig.pwd_info_3, timeout=30):
+    if not serial.waitString(SutConfig.pwd_info_3, timeout=30):
         result.log_fail()
         return
-    serial.send_data(IcxConfig.new_pwd_9)
+    serial.send_data(SutConfig.new_pwd_9)
     serial.send_data(chr(0x0D))
-    if not serial.waitString(IcxConfig.pwd_info_4, timeout=30):
+    if not serial.waitString(SutConfig.pwd_info_4, timeout=30):
         result.log_fail()
         return
     time.sleep(1)
     serial.send_keys(Key.F10 + Key.Y)
-    if not icx2pAPI.toBIOSnp(serial, IcxConfig.new_pwd_9):
+    if not icx2pAPI.toBIOSnp(serial, SutConfig.new_pwd_9):
         result.log_fail()
         return
     logging.info("新密码验证成功，将在最后一个密码修改用例里恢复环境")
@@ -690,10 +690,10 @@ def pwdVerification1(serial, ssh):
 def pwdVerification2(serial, ssh):
     tc = ('019', '设置密码长度度测试', 'BIOS密码应满足产品网络安全要求')
     result = Misc.LogHeaderResult(tc, serial)
-    if not icx2pAPI.setPWD(serial, ssh, IcxConfig.new_pwd_9, IcxConfig.new_pwd_8):
+    if not icx2pAPI.setPWD(serial, ssh, SutConfig.new_pwd_9, SutConfig.new_pwd_8):
         result.log_fail()
         return
-    if not icx2pAPI.toBIOSnp(serial, IcxConfig.new_pwd_8):
+    if not icx2pAPI.toBIOSnp(serial, SutConfig.new_pwd_8):
         result.log_fail()
         return
     logging.info("新密码验证成功，将在最后一个密码修改用例里恢复环境")
@@ -705,29 +705,29 @@ def pwdVerification2(serial, ssh):
 def pwdVerification3(serial, ssh):
     tc = ('020', '设置密码最大字符数测试', 'BIOS密码应满足产品网络安全要求')
     result = Misc.LogHeaderResult(tc, serial)
-    if not icx2pAPI.toBIOS(serial, ssh, IcxConfig.new_pwd_8):
+    if not icx2pAPI.toBIOS(serial, ssh, SutConfig.new_pwd_8):
         result.log_fail()
         return
     if not icx2pAPI.toBIOSConf(serial):
         return
-    serial.send_keys_with_delay(IcxConfig.key2pwd)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pwd_item):
+    serial.send_keys_with_delay(SutConfig.key2pwd)
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.pwd_item):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
-    if not serial.waitString(IcxConfig.pwd_info_1, timeout=15):
+    if not serial.waitString(SutConfig.pwd_info_1, timeout=15):
         result.log_fail()
         return
-    serial.send_data(IcxConfig.new_pwd_17)
+    serial.send_data(SutConfig.new_pwd_17)
     serial.send_data(chr(0x0D))
-    if not serial.waitString(IcxConfig.invalid_info, timeout=15):
+    if not serial.waitString(SutConfig.invalid_info, timeout=15):
         result.log_fail()
         return
     serial.send_data(chr(0x0D))
-    if not icx2pAPI.setPWDnp(serial, IcxConfig.new_pwd_8, IcxConfig.new_pwd_16):
+    if not icx2pAPI.setPWDnp(serial, SutConfig.new_pwd_8, SutConfig.new_pwd_16):
         result.log_fail()
         return
-    if not icx2pAPI.toBIOSnp(serial, IcxConfig.new_pwd_16):
+    if not icx2pAPI.toBIOSnp(serial, SutConfig.new_pwd_16):
         result.log_fail()
         return
     logging.info("新密码验证成功，将在最后一个密码修改用例里恢复环境")
@@ -739,55 +739,55 @@ def pwdVerification3(serial, ssh):
 def pwdVerification4(serial, ssh):
     tc = ('021', '设置密码最大字符数测试', 'BIOS密码应满足产品网络安全要求')
     result = Misc.LogHeaderResult(tc, serial)
-    if not icx2pAPI.toBIOS(serial, ssh, IcxConfig.new_pwd_16):
+    if not icx2pAPI.toBIOS(serial, ssh, SutConfig.new_pwd_16):
         result.log_fail()
         return
     if not icx2pAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(IcxConfig.key2pwd)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pwd_item):
+    serial.send_keys_with_delay(SutConfig.key2pwd)
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.pwd_item):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
-    if not serial.waitString(IcxConfig.pwd_info_1, timeout=15):
+    if not serial.waitString(SutConfig.pwd_info_1, timeout=15):
         result.log_fail()
         return
     i = 0
-    full_pwd_list = IcxConfig.pwd_list1 + IcxConfig.pwd_list2
+    full_pwd_list = SutConfig.pwd_list1 + SutConfig.pwd_list2
     while i < len(full_pwd_list):
         serial.send_data(full_pwd_list[i])
         serial.send_data(chr(0x0D))
         logging.info('send the pwd:{0}'.format(full_pwd_list[i]))
         if len(full_pwd_list) == 8:
-            if not serial.waitString(IcxConfig.error_info, timeout=15):
+            if not serial.waitString(SutConfig.error_info, timeout=15):
                 result.log_fail()
                 return
             full_pwd_list.remove(full_pwd_list[i])
             i -= 1
-            if not icx2pAPI.enterPWD(serial, IcxConfig.new_pwd_16):
+            if not icx2pAPI.enterPWD(serial, SutConfig.new_pwd_16):
                 result.log_fail()
                 return
         elif len(full_pwd_list) == 5:
-            if not serial.waitString(IcxConfig.error_info, timeout=15):
+            if not serial.waitString(SutConfig.error_info, timeout=15):
                 result.log_fail()
                 return
             full_pwd_list.remove(full_pwd_list[i])
             i -= 1
-            if not icx2pAPI.enterPWD(serial, IcxConfig.new_pwd_16):
+            if not icx2pAPI.enterPWD(serial, SutConfig.new_pwd_16):
                 result.log_fail()
                 return
         elif len(full_pwd_list) == 2:
-            if not serial.waitString(IcxConfig.error_info, timeout=15):
+            if not serial.waitString(SutConfig.error_info, timeout=15):
                 result.log_fail()
                 return
             full_pwd_list.remove(full_pwd_list[i])
             i -= 1
-            if not icx2pAPI.enterPWD(serial, IcxConfig.new_pwd_16):
+            if not icx2pAPI.enterPWD(serial, SutConfig.new_pwd_16):
                 result.log_fail()
                 return
         else:
-            if not serial.waitString(IcxConfig.invalid_info, timeout=15):
+            if not serial.waitString(SutConfig.invalid_info, timeout=15):
                 result.log_fail()
                 return
             full_pwd_list.remove(full_pwd_list[i])
@@ -805,54 +805,54 @@ def pwdVerification4(serial, ssh):
 def simplePWDTest(serial, ssh):
     tc = ('022', '简易密码开关默认值测试', '支持关闭密码复杂度检测')
     result = Misc.LogHeaderResult(tc, serial)
-    if not icx2pAPI.toBIOS(serial, ssh, IcxConfig.new_pwd_16):
+    if not icx2pAPI.toBIOS(serial, ssh, SutConfig.new_pwd_16):
         result.log_fail()
         return
     if not icx2pAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(IcxConfig.key2pwd)
-    if not icx2pAPI.verify_setup_options_down(serial, IcxConfig.simplePWD_info, 10):
+    serial.send_keys_with_delay(SutConfig.key2pwd)
+    if not icx2pAPI.verify_setup_options_down(serial, SutConfig.simplePWD_info, 10):
         result.log_fail()
         return
     serial.send_keys_with_delay([Key.LEFT, Key.RIGHT])
     time.sleep(1)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pat, IcxConfig.pwd_item1, timeout=30):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.pat, SutConfig.pwd_item1, timeout=30):
         result.log_fail()
         return
     serial.send_keys(Key.F5)
-    if not serial.waitString(IcxConfig.enable_simple_pwd, timeout=30):
+    if not serial.waitString(SutConfig.enable_simple_pwd, timeout=30):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.UP, IcxConfig.pwd_item, timeout=30):
+    if not serial.to_highlight_option(Key.UP, SutConfig.pwd_item, timeout=30):
         result.log_fail()
         return
-    if not icx2pAPI.setPWDwithoutF10(serial, IcxConfig.new_pwd_16, IcxConfig.simple_pwd):
+    if not icx2pAPI.setPWDwithoutF10(serial, SutConfig.new_pwd_16, SutConfig.simple_pwd):
         result.log_fail()
         return
-    if not checkPWD(serial, IcxConfig.simple_pwd, IcxConfig.new_pwd_16):
+    if not checkPWD(serial, SutConfig.simple_pwd, SutConfig.new_pwd_16):
         result.log_fail()
         return
     if not icx2pAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(IcxConfig.key2pwd)
+    serial.send_keys_with_delay(SutConfig.key2pwd)
     time.sleep(1)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pat, IcxConfig.pwd_item1, timeout=30):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.pat, SutConfig.pwd_item1, timeout=30):
         return
     serial.send_keys(Key.F5)
-    if not serial.waitString(IcxConfig.enable_simple_pwd, timeout=30):
+    if not serial.waitString(SutConfig.enable_simple_pwd, timeout=30):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.UP, IcxConfig.pwd_item, timeout=30):
+    if not serial.to_highlight_option(Key.UP, SutConfig.pwd_item, timeout=30):
         result.log_fail()
         return
-    if not icx2pAPI.setPWDnp(serial, IcxConfig.new_pwd_16, IcxConfig.simple_pwd):
+    if not icx2pAPI.setPWDnp(serial, SutConfig.new_pwd_16, SutConfig.simple_pwd):
         result.log_fail()
         return
-    if not checkPWD(serial, IcxConfig.new_pwd_16, IcxConfig.simple_pwd):
+    if not checkPWD(serial, SutConfig.new_pwd_16, SutConfig.simple_pwd):
         result.log_fail()
         return
     result.log_pass()
@@ -882,13 +882,13 @@ def securityBoot(serial, ssh):
         return
     key1 = [Key.RIGHT, Key.DOWN, Key.ENTER]
     serial.send_keys_with_delay(key1)
-    if not icx2pAPI.verify_setup_options_down(serial, IcxConfig.secure_status, 6):
+    if not icx2pAPI.verify_setup_options_down(serial, SutConfig.secure_status, 6):
         result.log_fail()
         return
     serial.send_keys(Key.ESC)
     serial.send_keys_with_delay([Key.RIGHT, Key.ENTER])
     serial.send_keys_with_delay([Key.RIGHT, Key.RIGHT, Key.RIGHT, Key.RIGHT, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pat, 'Boot Type'):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.pat, 'Boot Type'):
         result.log_fail()
         return
     serial.send_keys(Key.F5)
@@ -918,16 +918,16 @@ def tpm(serial, ssh):
     if not icx2pAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(IcxConfig.key2pwd)
-    if not icx2pAPI.verify_setup_options_down(serial, IcxConfig.tpm_info, 12):
+    serial.send_keys_with_delay(SutConfig.key2pwd)
+    if not icx2pAPI.verify_setup_options_down(serial, SutConfig.tpm_info, 12):
         result.log_fail()
         return
     serial.send_keys_with_delay([Key.LEFT, Key.LEFT, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option2, timeout=60):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.option2, timeout=60):
         result.log_fail()
         return
     serial.send_keys_with_delay([Key.ENTER, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option3):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.option3):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
@@ -944,12 +944,12 @@ def tpm(serial, ssh):
         result.log_fail()
         if not icx2pAPI.reset_default(serial, ssh):
             return
-    serial.send_keys(IcxConfig.key2default)
+    serial.send_keys(SutConfig.key2default)
     if not icx2pAPI.toSysTime(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(IcxConfig.key2pwd)
-    if not icx2pAPI.verify_setup_options_down(serial, IcxConfig.tpm_info, 10):
+    serial.send_keys_with_delay(SutConfig.key2pwd)
+    if not icx2pAPI.verify_setup_options_down(serial, SutConfig.tpm_info, 10):
         result.log_fail()
         return
     result.log_pass()
@@ -960,33 +960,41 @@ def tpm(serial, ssh):
 def vtd(serial, ssh):
     tc = ('025', '关闭VT-d功能启动测试', '支持VT-d')
     result = Misc.LogHeaderResult(tc, serial)
-    if not icx2pAPI.toBIOS(serial, ssh):
-        result.log_fail()
-        return
+    #if not icx2pAPI.toBIOS(serial, ssh):
+    #    result.log_fail()
+    #    return
     if not icx2pAPI.toBIOSConf(serial):
         result.log_fail()
         return
     serial.send_keys(Key.RIGHT)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option10, timeout=60):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.VIRTUALIZATION_CONFIG, timeout=60):
         result.log_fail()
         return
-    serial.send_keys_with_delay([Key.ENTER, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, 'Intel\(R\) VT for Directed I/O \(VT-d\)'):
+    serial.send_keys_with_delay([Key.ENTER])
+    if not serial.locate_setup_option(Key.DOWN, 'Intel\(R\) VT for Directed I/O \(VT-d\)', 10, csi=False):
         result.log_fail()
         return
-    serial.send_keys_with_delay([Key.ENTER, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, 'Intel\(R\) VT for Directed I/O'):
+    serial.send_keys_with_delay([Key.ENTER])
+    if not serial.locate_setup_option(Key.DOWN, 'Intel\(R\) VT for Directed I/O', 3, csi=True):
         result.log_fail()
         return
+    logging.info("Diasble VT-d")
     serial.send_keys(Key.F5)
     time.sleep(1)
-    serial.send_keys(Key.F10 + Key.Y)
-
-    if not icx2pAPI.ping_sut():  # OS flag
+    logging.info("Verify VT-d is disabled")
+    # serial.send_keys_with_delay([Key.ESC, Key.ENTER])
+    if not serial.is_msg_present("Disabled"):
+        logging.info("VT-d option is not disaled.")
         result.log_fail()
         return
-    result.log_pass()
-    return True
+    logging.info("Save and reboot")
+    #serial.send_keys(Key.F10 + Key.Y)
+    #logging.info("Verify OS boot with VT-D disabled.")
+    #if not icx2pAPI.ping_sut():  # OS flag
+    #    result.log_fail()
+    #    return
+    #result.log_pass()
+    #return True
 
 
 # Testcase_CPU_COMPA_015, 016 - TBD
@@ -999,24 +1007,24 @@ def cpuCOMPA(serial, ssh):
     if not icx2pAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(IcxConfig.w2key)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option2, timeout=60):
+    serial.send_keys_with_delay(SutConfig.w2key)
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.option2, timeout=60):
         result.log_fail()
         return
     serial.send_data(chr(0x0D))
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option9):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.option9):
         result.log_fail()
         return
     serial.send_data(chr(0x0D))
-    if not serial.find_setup_option(Key.DOWN, IcxConfig.option12, 4):
+    if not serial.find_setup_option(Key.DOWN, SutConfig.option12, 4):
         result.log_fail()
         return
     serial.send_keys(Key.UP)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option14):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.option14):
         result.log_fail()
         return
     serial.send_data(chr(0x0D))
-    if not icx2pAPI.verify_setup_options_down(serial, IcxConfig.upi_state, 4):
+    if not icx2pAPI.verify_setup_options_down(serial, SutConfig.upi_state, 4):
         result.log_fail()
         return
     result.log_pass()
@@ -1030,8 +1038,8 @@ def logTime(serial, ssh):
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
         return
-    serial.send_keys_with_delay(IcxConfig.key2OS)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.OS, timeout=30):
+    serial.send_keys_with_delay(SutConfig.key2OS)
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.OS, timeout=30):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
@@ -1042,7 +1050,7 @@ def logTime(serial, ssh):
     if not serial.is_msg_present_general('BIOS Log', delay=60):
         result.log_fail()
         return
-    with open(IcxConfig.SERIAL_LOG, 'r') as f:
+    with open(SutConfig.SERIAL_LOG, 'r') as f:
         while True:
             try:
                 line = f.readline()
@@ -1077,12 +1085,12 @@ def coreDisable(serial, ssh):
     if not icx2pAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(IcxConfig.w2key)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option2, timeout=60):
+    serial.send_keys_with_delay(SutConfig.w2key)
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.option2, timeout=60):
         result.log_fail()
         return
     serial.send_keys_with_delay([Key.ENTER, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option3):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.option3):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
@@ -1091,7 +1099,7 @@ def coreDisable(serial, ssh):
         return
     serial.send_keys(Key.ESC)
     serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pat, 'Active Processor Cores'):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.pat, 'Active Processor Cores'):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
@@ -1107,16 +1115,16 @@ def coreDisable(serial, ssh):
     if not icx2pAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(IcxConfig.w2key)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option2, timeout=60):
+    serial.send_keys_with_delay(SutConfig.w2key)
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.option2, timeout=60):
         result.log_fail()
         return
     serial.send_keys_with_delay([Key.ENTER, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option5):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.option5):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
-    if not icx2pAPI.verify_setup_options_up(serial, IcxConfig.DIMM_info, 20):
+    if not icx2pAPI.verify_setup_options_up(serial, SutConfig.DIMM_info, 20):
         result.log_fail()
         return
     serial.send_keys(Key.CTRL_ALT_DELETE)
@@ -1127,9 +1135,9 @@ def coreDisable(serial, ssh):
         result.log_fail()
         return
     cmd = 'dmidecode -t 4'
-    path = IcxConfig.LOG_DIR
+    path = SutConfig.LOG_DIR
     icx2pAPI.dump_smbios(ssh, cmd)
-    if not P.smbiosCheck(cmd, path, IcxConfig.SMBIOS_TEMPLATE):
+    if not P.smbiosCheck(cmd, path, SutConfig.SMBIOS_TEMPLATE):
         result.log_fail()
         return
     result.log_pass()
@@ -1140,12 +1148,12 @@ def coreDisable(serial, ssh):
 def auto_unitool_loop(serial, ssh):
     tc = ('061', 'auto unitool loop', '支持unitool loop')
     result = Misc.LogHeaderResult(tc, serial)
-    f = os.listdir(IcxConfig.INI_DIR)
+    f = os.listdir(SutConfig.INI_DIR)
     status = 0
-    for root, dirs, files in os.walk(IcxConfig.INI_DIR):
+    for root, dirs, files in os.walk(SutConfig.INI_DIR):
         for file in files:
             print(file)
-            fw = open(os.path.join('{0}/written_ini'.format(IcxConfig.INI_DIR), file), 'rb')
+            fw = open(os.path.join('{0}/written_ini'.format(SutConfig.INI_DIR), file), 'rb')
             data = fw.read().decode()
             for i in data.split('\r\n'):
                 # print(i)
@@ -1156,8 +1164,8 @@ def auto_unitool_loop(serial, ssh):
                     if not icx2pAPI.toBIOS(serial, ssh):
                         result.log_fail()
                         return
-                    serial.send_keys_with_delay(IcxConfig.key2OS)
-                    if not serial.find_setup_option(Key.DOWN, IcxConfig.SUSE, 10):
+                    serial.send_keys_with_delay(SutConfig.key2OS)
+                    if not serial.find_setup_option(Key.DOWN, SutConfig.SUSE, 10):
                         result.log_fail()
                         return
                     if not icx2pAPI.ping_sut():
@@ -1169,8 +1177,8 @@ def auto_unitool_loop(serial, ssh):
                         result.log_fail()
                         return
                     if icx2pAPI.toBIOSnp(serial):
-                        serial.send_keys_with_delay(IcxConfig.key2OS)
-                        if not serial.find_setup_option(Key.DOWN, IcxConfig.SUSE, 10):
+                        serial.send_keys_with_delay(SutConfig.key2OS)
+                        if not serial.find_setup_option(Key.DOWN, SutConfig.SUSE, 10):
                             result.log_fail()
                             return
                         if not icx2pAPI.ping_sut():
