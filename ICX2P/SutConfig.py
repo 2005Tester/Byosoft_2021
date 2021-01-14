@@ -70,7 +70,19 @@ class Key:
 # Messages to identify a spcific boot option, page, menu or system status 
 
 class Msg:
+    # Home screen with 6 icons
     HOME_PAGE = 'Continue'
+
+    # pages in bios configuration
+    PAGE_ADVANCED = 'CPU Configuration'
+    PAGE_BMC = 'Additional System Information'
+    PAGE_SECURITY = 'TPM Device'
+    PAGE_BOOT = '<UEFI Boot Type>'
+    PAGE_SAVE = 'Save Changes and Exit'
+
+    BIOS_BOOT_COMPLETE = 'BIOS boot completed'
+
+
 
 # pat
 pat = '[(\d+);\d+H[\w\s\d<>\[\]&-]'

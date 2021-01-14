@@ -9,7 +9,7 @@ from ICX2P.BaseLib import icx2pAPI
 
 # Boot to setup home page after a force reset
 def boot_to_setup(serial, ssh):
-    logging.info("SetUpLib: Boot to setup home page")
+    logging.info("SetUpLib: Boot to setup main page")
     logging.info("SetUpLib: Rebooting SUT...")
     if not icx2pAPI.force_reset(ssh):
         logging.info("SetUpLib: Rebooting SUT Failed.")
@@ -33,7 +33,7 @@ def continue_to_bootmanager(serial):
     return True
 
 
-# Boot to BIOS configuration page
+# Boot to BIOS configuration
 def boot_to_bios_config(serial, ssh):
     if not boot_to_setup(serial, ssh):
         return
@@ -45,7 +45,27 @@ def boot_to_bios_config(serial, ssh):
     logging.info("SetUpLib: Boot to BIOS Configuration successfully")
     return True
 
-# Boot to Virtulization Configuration Menu
-def boot_to_virtulization_config(serial, ssh):
+
+# boot to specific page in bios configuration
+def boot_to_page(page_name, serial, ssh):
     if not boot_to_bios_config(serial, ssh):
         return
+    logging.info("SetUpLib: Move to specified setup page")
+    if not serial.locate_setup_option(Key.RIGHT, page_name, 12, 'PAT1'):
+        logging.info("SetUpLib: Specified setup page not found.")
+        return
+    logging.info("SetUpLib: Specified setup page found.")
+    return True
+
+
+# Boot to Virtulization Configuration Menu
+def boot_to_advanced_config(serial, ssh):
+    if not boot_to_page(Msg.PAGE_ADVANCED, serial, ssh):
+        return
+    vt_d_menu = ["Virtualization Configuration", "Intel\(R\) VT for Directed I/O \(VT-d\)"]
+    if not serial.enter_menu(Key.DOWN, vt_d_menu, 20, "Directed", 'PAT1'):
+        logging.info("Failed to vir config")
+        return
+
+
+    
