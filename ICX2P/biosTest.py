@@ -10,9 +10,9 @@ import datetime
 import logging
 import time
 
-from ICX2P.SutConfig import Key
+from ICX2P.SutConfig import Key, Msg
 from ICX2P import SutConfig
-from ICX2P.BaseLib import icx2pAPI
+from ICX2P.BaseLib import icx2pAPI, SetUpLib
 from Common import Misc
 from Common.LogAnalyzer import LogAnalyzer
 
@@ -958,43 +958,39 @@ def tpm(serial, ssh):
 
 # Testcase_VTD_002
 def vtd(serial, ssh):
-    tc = ('025', '关闭VT-d功能启动测试', '支持VT-d')
+    tc = ('025', 'Testcase_VTD_002 关闭VT-d功能启动测试', '支持VT-d')
     result = Misc.LogHeaderResult(tc, serial)
-    #if not icx2pAPI.toBIOS(serial, ssh):
-    #    result.log_fail()
-    #    return
-    if not icx2pAPI.toBIOSConf(serial):
+    if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED, serial, ssh):
         result.log_fail()
         return
-    serial.send_keys(Key.RIGHT)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.VIRTUALIZATION_CONFIG, timeout=60):
+    vt_d_menu = ["Virtualization Configuration", "Intel\(R\) VT for Directed I/O \(VT-d\)"]
+    if not serial.enter_menu(Key.DOWN, vt_d_menu, 20, "Directed", 'PAT1'):
+        logging.info("Failed to vir config")
         result.log_fail()
         return
-    serial.send_keys_with_delay([Key.ENTER])
-    if not serial.locate_setup_option(Key.DOWN, 'Intel\(R\) VT for Directed I/O \(VT-d\)', 10, csi=False):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay([Key.ENTER])
-    if not serial.locate_setup_option(Key.DOWN, 'Intel\(R\) VT for Directed I/O', 3, csi=True):
+
+    if not serial.locate_setup_option(Key.RIGHT, "Virtualization Technology", 4):
         result.log_fail()
         return
     logging.info("Diasble VT-d")
     serial.send_keys(Key.F5)
     time.sleep(1)
     logging.info("Verify VT-d is disabled")
-    # serial.send_keys_with_delay([Key.ESC, Key.ENTER])
-    if not serial.is_msg_present("Disabled"):
+    serial.send_keys_with_delay([Key.UP, Key.DOWN])   # Refresh page
+    if not serial.is_msg_present("<Disabled>\s+Intel"):
         logging.info("VT-d option is not disaled.")
         result.log_fail()
         return
     logging.info("Save and reboot")
-    #serial.send_keys(Key.F10 + Key.Y)
-    #logging.info("Verify OS boot with VT-D disabled.")
-    #if not icx2pAPI.ping_sut():  # OS flag
-    #    result.log_fail()
-    #    return
-    #result.log_pass()
-    #return True
+    serial.send_keys(Key.F10 + Key.Y)
+    logging.info("Verify OS boot with VT-D disabled.")
+    if not serial.is_msg_present(Msg.BIOS_BOOT_COMPLETE):
+        logging.info("OS boot failed")
+        result.log_fail()
+        return
+
+    result.log_pass()
+    return True
 
 
 # Testcase_CPU_COMPA_015, 016 - TBD

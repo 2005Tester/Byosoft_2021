@@ -39,8 +39,8 @@ def gen_report():
     
 # for debug purpose
 def debug_run():
-#    biosTest.loadDefault(ser, ssh_bmc)
-    SetUpLib.boot_to_bios_config(ser, ssh_bmc)
+    biosTest.vtd(ser, ssh_bmc)
+#    SetUpLib.boot_to_advanced_config(ser, ssh_bmc)
 
 
 # Define test scope here
@@ -60,7 +60,7 @@ def run_test():
     biosTest.rrQIRQ(ser, ssh_bmc)
     biosTest.dramRAPL(ser, ssh_bmc)
     biosTest.securityBoot(ser, ssh_bmc)
-#    biosTest.vtd(ser, ssh_bmc)
+    biosTest.vtd(ser, ssh_bmc)
     biosTest.cpuCOMPA(ser, ssh_bmc)
 #    biosTest.logTime(ser, ssh_bmc)
 
