@@ -357,22 +357,38 @@ class SutControl:
 
 
     # Find a setup option and stop there, will not send "Enter" after option found 
-    def locate_setup_option(self, key, setupoption, try_counts, csi=False):
-        #highlight = "\x1B\[0m"
-        highlight = "\x1B"
-        if csi:
+    def locate_setup_option(self, key, setupoption, try_counts, patten=None):
+        patten1 = "\x1B"
+        patten2 = "\x1B\[0m"  
+        if patten==None:
             msg = setupoption
+        elif patten == 'PAT1':
+            msg = setupoption + patten1
+        elif patten == 'PAT2':
+            msg = setupoption + patten2
         else:
-            msg = setupoption + highlight
-        
+            msg = setupoption
+        self.receive_data(512)
         while try_counts:
-            self.send_keys(key)
             try_counts -= 1
             time.sleep(2)
             if self.is_msg_present_general(msg, 1, cleanup=False):
                 logging.info("{0} found".format(setupoption))
                 try_counts = 0
                 return True
+            self.send_keys(key)
+
+    # Enter specifc setup menu by goven path(list), will remove enter_setup_menu() later
+    def enter_menu(self, key, option_path, try_counts, confirm_msg, patten):
+        for option in option_path:
+            if not self.locate_setup_option(key, option, try_counts, patten):
+                logging.info("{0} not found".format(option))
+                return
+            self.send_keys(ENTER)
+        if not self.is_msg_present_general(confirm_msg):
+            logging.info("{0} not captured, may not enter corect menu")
+        logging.info("Enter {0} successfully".format(option_path[-1]))
+        return True
 
     # Will be replaced by locate_setup_option()
     def find_setup_option(self, key, setupoption, try_counts):
