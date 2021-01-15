@@ -11,9 +11,7 @@ import time
 import logging
 import os
 import re
-from pathlib import Path
 from Common import ssh, Misc, GitLab
-from HY5 import daily
 from ICX2P import SutConfig
 
 
@@ -22,41 +20,9 @@ def get_test_image(dst):
     gitlab_icx = GitLab.Gitlab(31, 'PbLqm_njsnGxCQBtHoMG')
     test_image = gitlab_icx.download_latest_image_master(dst)
     logging.info(test_image)
-    return(test_image)  
+    return(test_image)   
 
-   
-# For downgrade bios test, (updated by arthur)
-def get_previous_test_image(path):
-    if os.path.exists(path):
-        versions = os.listdir(path)
-        versions.sort(reverse=True)   # for hpm folder, mkdir the name rule like: e.g HY5-BIOS-Vxxx
-        res = [i for i in versions if 'BIOS' in i]
-        if res:
-            previous_version = versions[1]
-        else:
-            previous_version = versions[2]
-        logging.info("Previous Version is: {0}".format(previous_version))
-        if previous_version in daily.VER_TESTED:
-            logging.info("{0} has been tested".format(previous_version))
-            return
-    else:
-        logging.error("BIOS image directroy can't be accessed, please check VPN connection.")
-        return
-
-    current_image_dir = os.path.join(path, previous_version)
-    p = Path(current_image_dir)   # remote image dir of current version
-    types = ('HY5*_byo.bin', '*.hpm')
-    rp001_image = []
-    for files in types:
-        rp001_image.extend(p.rglob(files))
-    if not rp001_image:
-        logging.info("Image for {0} not found, please check whether build is finished.".format(previous_version))
-        return
-    else:
-        logging.info("BIOS image for test: %s" %(rp001_image[0]))
-        return rp001_image[0]
-
-
+# Upload BIOS image to SUT BMC
 def upload_bios(src):
     # Upload BIOS image (.bin. .hpm) to SUT
     bin_file = 'rp001.bin'

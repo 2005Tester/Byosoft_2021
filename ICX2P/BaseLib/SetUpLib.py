@@ -1,10 +1,18 @@
-import datetime
 import logging
-import time
 from ICX2P.SutConfig import Key
 from ICX2P import SutConfig
 from ICX2P.SutConfig import Msg
 from ICX2P.BaseLib import icx2pAPI
+
+
+# Enter setup menu
+def enter_menu(key, option_path, try_counts, confirm_msg, serial):
+    return serial.enter_menu(key, option_path, try_counts, confirm_msg)
+
+
+# locate a setup option by given option name and default value
+def locate_option(key, setupoption, try_counts, serial):
+    return serial.locate_setup_option(key, setupoption, try_counts)
 
 
 # Boot to setup home page after a force reset
@@ -51,21 +59,24 @@ def boot_to_page(page_name, serial, ssh):
     if not boot_to_bios_config(serial, ssh):
         return
     logging.info("SetUpLib: Move to specified setup page")
-    if not serial.locate_setup_option(Key.RIGHT, page_name, 12, 'PAT1'):
+    if not serial.locate_setup_option(Key.RIGHT, [page_name], 12):
         logging.info("SetUpLib: Specified setup page not found.")
         return
     logging.info("SetUpLib: Specified setup page found.")
     return True
 
 
-# Boot to Virtulization Configuration Menu
-def boot_to_advanced_config(serial, ssh):
-    if not boot_to_page(Msg.PAGE_ADVANCED, serial, ssh):
+# Verify supported values of a setup option, can be called after locate_setup_option()
+# valuses: string, e.g: DisabledAutoLowMediumHighManual
+def verify_supported_values(values, serial):
+    serial.send_keys(Key.ENTER)
+    if not serial.is_msg_present(values):
+        logging.info("Supported values are not correct.")
+        serial.send_keys(Key.ESC)
         return
-    vt_d_menu = ["Virtualization Configuration", "Intel\(R\) VT for Directed I/O \(VT-d\)"]
-    if not serial.enter_menu(Key.DOWN, vt_d_menu, 20, "Directed", 'PAT1'):
-        logging.info("Failed to vir config")
-        return
+    logging.info("Supported values are verified.")
+    serial.send_keys(Key.ESC)  
+    return True
 
 
     

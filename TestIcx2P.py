@@ -11,7 +11,7 @@ from sys import argv
 from Common import LogConfig
 from Common import SutSerial
 from Common import ssh
-from ICX2P import UpdateBIOS, SutConfig, biosTest
+from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest
 from Report.ReportGen import ReportGenerator
 from ICX2P.BaseLib import SetUpLib
 
@@ -39,7 +39,8 @@ def gen_report():
     
 # for debug purpose
 def debug_run():
-    biosTest.vtd(ser, ssh_bmc)
+    DefaultValueTest.rrqirq(ser, ssh_bmc)
+#    biosTest.vtd(ser, ssh_bmc)
 #    SetUpLib.boot_to_advanced_config(ser, ssh_bmc)
 
 
@@ -57,7 +58,7 @@ def run_test():
     biosTest.loadDefault(ser, ssh_bmc)
     biosTest.staticTurbo(ser, ssh_bmc)
     biosTest.ufs(ser, ssh_bmc)
-    biosTest.rrQIRQ(ser, ssh_bmc)
+    DefaultValueTest.rrqirq(ser, ssh_bmc)
     biosTest.dramRAPL(ser, ssh_bmc)
     biosTest.securityBoot(ser, ssh_bmc)
     biosTest.vtd(ser, ssh_bmc)

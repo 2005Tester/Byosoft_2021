@@ -22,9 +22,9 @@ SMBIOS_DIR = 'c:\\daily\\SMBIOS'
 # if not os.path.exists(SMBIOS_DIR):
 #     os.makedirs(SMBIOS_DIR)
 SERIAL_LOG = os.path.join(LOG_DIR, 'serial.log')
-# BINARY_DIR = '\\\\172.16.0.73\\HY5_Binary'
-HPM_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\HY5 HPM'
-INI_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\AT Tools'
+
+HPM_DIR = ''
+INI_DIR = ''
 SHAR_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\AT Report\\2288V6\\{0}'.format(timestamp)
 
 # Serial Port Configuration
@@ -72,6 +72,7 @@ class Key:
 class Msg:
     # Home screen with 6 icons
     HOME_PAGE = 'Continue'
+    BIOS_BOOT_COMPLETE = 'BIOS boot completed'
 
     # pages in bios configuration
     PAGE_ADVANCED = 'CPU Configuration'
@@ -80,7 +81,22 @@ class Msg:
     PAGE_BOOT = '<UEFI Boot Type>'
     PAGE_SAVE = 'Save Changes and Exit'
 
-    BIOS_BOOT_COMPLETE = 'BIOS boot completed'
+    # menus of CPU configuration
+    CPU_CONFIG = 'CPU Configuration'
+    PROCESSOR_CONFIG = 'Processor Configuration'
+    UNCORE_CONFIG = 'Uncore Configuration'
+    UNCORE_GENERAL = 'Uncore General Configuration'
+
+
+
+    # menus of PCH configuration
+    PCH_CONFIG = 'PCH CONFIGURATION'
+    NETWORK_CONFIG = 'Network Configuration'
+
+    # patch of setup menus
+    PATH_UNCORE_GENERAL = [CPU_CONFIG, UNCORE_CONFIG, UNCORE_GENERAL]
+
+    
 
 
 

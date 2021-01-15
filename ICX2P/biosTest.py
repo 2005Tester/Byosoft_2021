@@ -427,80 +427,6 @@ def ufs(serial, ssh):
     return True
 
 
-# Testcase_RRQIRQ_001
-def rrQIRQ(serial, ssh):
-    tc = ('014', 'Setup菜单RRQ和IRQ选项默认值测试', '支持RRQ&IRQ设置')
-    result = Misc.LogHeaderResult(tc, serial)
-    if not icx2pAPI.toBIOS(serial, ssh):
-        result.log_fail()
-        return
-    if not icx2pAPI.toBIOSConf(serial):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay(SutConfig.w2key)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.option2, timeout=60):
-        result.log_fail()
-        return
-    serial.send_data(chr(0x0D))
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.option9, timeout=30):
-        result.log_fail()
-        return
-    serial.send_data(chr(0x0D))
-    if not serial.find_setup_option(Key.DOWN, SutConfig.option12, 3):
-        result.log_fail()
-        return
-    if not icx2pAPI.verify_setup_options_down(serial, SutConfig.local_remote, 12):
-        result.log_fail()
-        return
-    serial.send_keys(Key.ESC)
-    serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.pat, 'Local/Remote Threshold', timeout=60):
-        result.log_fail()
-        return
-    serial.send_keys(Key.ENTER)
-    if not serial.verify_option_value(Key.DOWN, r'DisabledAutoLowMediumHigh'):
-        result.log_fail()
-        return
-    # not supported with current release bios, comfired with BIOS dev, TBD
-    # serial.send_keys(Key.ESC)
-    # serial.send_keys_with_delay([Key.F5, Key.F5, Key.F5, Key.F5])
-    # if not icx2pAPI.verify_setup_options_down(serial, ['\[7\]\s+IRQ Threshold', '\[7\]\s+RRQ Threshold'], 12):
-    #     result.log_fail()
-    #     return
-    # serial.send_keys(Key.ESC)
-    # serial.send_keys(Key.ENTER)
-    # if not serial.to_highlight_option(Key.DOWN, SutConfig.pat, 'IRQ Threshold', timeout=60):
-    #     result.log_fail()
-    #     return
-    # serial.send_keys(Key.ENTER)
-    # serial.send_data('10')
-    # serial.send_keys_with_delay([Key.ENTER, Key.DOWN, Key.ENTER])
-    # serial.send_data('20')
-    # serial.send_keys(Key.ENTER)
-    # serial.send_keys(Key.F10 + Key.Y)
-    # if not icx2pAPI.toBIOSnp(serial):
-    #     result.log_fail()
-    #     return
-    # if not icx2pAPI.toBIOSConf(serial):
-    #     result.log_fail()
-    #     return
-    # serial.send_keys_with_delay(SutConfig.w2key)
-    # if not serial.to_highlight_option(Key.DOWN, SutConfig.option2, timeout=60):
-    #     result.log_fail()
-    #     return
-    # serial.send_keys(Key.ENTER)
-    # if not serial.to_highlight_option(Key.DOWN, SutConfig.option9, timeout=30):
-    #     result.log_fail()
-    #     return
-    # serial.send_keys(Key.ENTER)
-    # if not serial.find_setup_option(Key.DOWN, SutConfig.option12, 3):
-    #     result.log_fail()
-    #     return
-    # if not icx2pAPI.verify_setup_options_down(serial, ['\[10\]\s+IRQ Threshold', '\[20\]\s+RRQ Threshold'], 12):
-    #     result.log_fail()
-    #     return
-    result.log_pass()
-    return True
 
 
 # Testcase_DRAM_RAPL_001
@@ -964,12 +890,12 @@ def vtd(serial, ssh):
         result.log_fail()
         return
     vt_d_menu = ["Virtualization Configuration", "Intel\(R\) VT for Directed I/O \(VT-d\)"]
-    if not serial.enter_menu(Key.DOWN, vt_d_menu, 20, "Directed", 'PAT1'):
+    if not SetUpLib.enter_menu(Key.DOWN, vt_d_menu, 20, "Directed", serial):
         logging.info("Failed to vir config")
         result.log_fail()
         return
-
-    if not serial.locate_setup_option(Key.RIGHT, "Virtualization Technology", 4):
+    opt_vt = ["Intel\(R\) VT for Directed I/O", "Enabled"]
+    if not SetUpLib.locate_option(Key.DOWN, opt_vt, 4, serial):
         result.log_fail()
         return
     logging.info("Diasble VT-d")

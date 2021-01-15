@@ -13,6 +13,7 @@ import re
 import logging
 
 ENTER = [chr(0x0D)]
+ES = "(\x1B[@-_][0-?]*[ -/]*[@-~]){1,5}"
 
 
 class SutControl:
@@ -357,31 +358,49 @@ class SutControl:
 
 
     # Find a setup option and stop there, will not send "Enter" after option found 
-    def locate_setup_option(self, key, setupoption, try_counts, patten=None):
-        patten1 = "\x1B"
-        patten2 = "\x1B\[0m"  
-        if patten==None:
-            msg = setupoption
-        elif patten == 'PAT1':
-            msg = setupoption + patten1
-        elif patten == 'PAT2':
-            msg = setupoption + patten2
+    # setupoption = ['name','value'] e.g. ['KTI Prefetch', 'Auto']
+    # Patten1: Only setup option is highlighted, name should be specified, value not required
+    # Patten2: Only value is highlighted, both name and value need to be specified
+    # Patten3: Both setup optin and value is highlighted, same process as patten1, but use [name + space + value]
+    def locate_setup_option(self, key, setupoption, try_counts):
+
+        if len(setupoption) == 1:
+            patten = setupoption[0] + ES
+
+        elif len(setupoption) == 2:
+            patten = ES + "<{0}>".format(setupoption[1]) + ES + "\s+" + ES + "\s+" + ES + "{0}".format(setupoption[0])
+
         else:
-            msg = setupoption
+            logging.info("Incorrect format of parameter: setupoption")
+            return
+
         self.receive_data(512)
         while try_counts:
             try_counts -= 1
             time.sleep(2)
-            if self.is_msg_present_general(msg, 1, cleanup=False):
+            if self.is_msg_present_general(patten, 1, cleanup = False):
                 logging.info("{0} found".format(setupoption))
                 try_counts = 0
                 return True
             self.send_keys(key)
 
+
+    def locate_menu(self, key, menuname, try_counts):
+        patten = menuname + ES
+        self.receive_data(512)
+        while try_counts:
+            try_counts -= 1
+            time.sleep(2)
+            if self.is_msg_present_general(patten, 1, cleanup = False):
+                logging.info("{0} found".format(menuname))
+                try_counts = 0
+                return True
+            self.send_keys(key)
+
     # Enter specifc setup menu by goven path(list), will remove enter_setup_menu() later
-    def enter_menu(self, key, option_path, try_counts, confirm_msg, patten):
+    def enter_menu(self, key, option_path, try_counts, confirm_msg):
         for option in option_path:
-            if not self.locate_setup_option(key, option, try_counts, patten):
+            if not self.locate_menu(key, option, try_counts):
                 logging.info("{0} not found".format(option))
                 return
             self.send_keys(ENTER)
