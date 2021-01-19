@@ -1,8 +1,38 @@
 import logging
+import time
 from ICX2P.SutConfig import Key
 from ICX2P import SutConfig
 from ICX2P.SutConfig import Msg
 from ICX2P.BaseLib import icx2pAPI
+
+
+# Send a single key, e.g. ENTER, DOWN, UP 
+def send_key(key, serial):
+    serial.send_keys(key)
+
+
+# send keys with default delay = 1s, e.g. [F10, Y]
+def send_keys(keys, serial, delay=1):
+    serial.send_keys_with_delay(keys, delay=1)
+
+
+
+# verify info
+def verify_info():
+    pass
+
+# Verify a few setup options and desired values in one setup page
+# options: list of setupoption and value e.g.[["IRQ Threshold", "\[7\]"],[RRQ Threshold", "\[7\]]
+def verify_options(key, options, trycounts, serial):
+    for option in options:
+        if serial.locate_setup_option(key, option, trycounts):
+            options.pop(options.index(option))
+    if len(options) == 0:
+        logging.info("All the setup options are verified")
+        return True
+    else:
+        for option in options:
+            logging.info("{0} not verified".format(option)) 
 
 
 # Enter setup menu
@@ -77,6 +107,8 @@ def verify_supported_values(values, serial):
     logging.info("Supported values are verified.")
     serial.send_keys(Key.ESC)  
     return True
+
+
 
 
     

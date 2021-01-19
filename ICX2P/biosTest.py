@@ -894,7 +894,7 @@ def vtd(serial, ssh):
         logging.info("Failed to vir config")
         result.log_fail()
         return
-    opt_vt = ["Intel\(R\) VT for Directed I/O", "Enabled"]
+    opt_vt = ["Intel\(R\) VT for Directed I/O", "<Enabled>"]
     if not SetUpLib.locate_option(Key.DOWN, opt_vt, 4, serial):
         result.log_fail()
         return
