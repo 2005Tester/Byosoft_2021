@@ -16,9 +16,9 @@ def rrqirq(serial, ssh):
     tc = ('101', 'Testcase_RRQIRQ_001 Setup菜单RRQ和IRQ选项默认值测试', '支持RRQ&IRQ设置')
     result = Misc.LogHeaderResult(tc, serial)
 
-#    if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED, serial, ssh):
-#        result.log_fail()
-#        return
+    if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED, serial, ssh):
+        result.log_fail()
+        return
     msg = 'Uncore Status'
     if not SetUpLib.enter_menu(Key.DOWN, Msg.PATH_UNCORE_GENERAL, 20, msg, serial):
         result.log_fail()
@@ -37,7 +37,7 @@ def rrqirq(serial, ssh):
 
     logging.info("Verify default value of RRQ and IRQ when set to manual.")
     SetUpLib.send_keys([Key.F5*4], serial)
-    manual_opts = [["IRQ Threshold", "\[8\]"],["RRQ Threshold", "\[8\]"]]
+    manual_opts = [["IRQ Threshold", "\[7\]"],["RRQ Threshold", "\[7\]"]]
     if not SetUpLib.verify_options(Key.DOWN, manual_opts, 12, serial):
         result.log_fail()
         return

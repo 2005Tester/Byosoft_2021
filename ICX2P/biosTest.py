@@ -12,7 +12,7 @@ import time
 
 from ICX2P.SutConfig import Key, Msg
 from ICX2P import SutConfig
-from ICX2P.BaseLib import icx2pAPI, SetUpLib
+from ICX2P.BaseLib import PowerLib, icx2pAPI, SetUpLib
 from Common import Misc
 from Common.LogAnalyzer import LogAnalyzer
 
@@ -23,7 +23,7 @@ P = LogAnalyzer(SutConfig.LOG_DIR)
 def POST_Test(serial, ssh):  # POST: POST Log(TBD) and Information Check
     tc = ('002', 'POST Information Test', 'POST Information Test')
     result = Misc.LogHeaderResult(tc, serial)
-    if not icx2pAPI.force_reset(ssh):
+    if not PowerLib.force_reset(ssh):
         result.log_fail()
         return
     msg_list = [SutConfig.msg, SutConfig.msg1, SutConfig.msg2, SutConfig.msg3]
@@ -200,7 +200,7 @@ def chipsecTest(serial, ssh):
 def pressF2(serial, ssh):
     tc = ('009', 'Setup菜单用户输入界面按F2切换键盘制式', '支持热键配置')
     result = Misc.LogHeaderResult(tc, serial)
-    if not icx2pAPI.force_reset(ssh):
+    if not PowerLib.force_reset(ssh):
         result.log_fail()
         return
     if not serial.waitString(SutConfig.msg, timeout=300):

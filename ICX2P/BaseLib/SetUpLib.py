@@ -1,9 +1,8 @@
 import logging
-import time
 from ICX2P.SutConfig import Key
 from ICX2P import SutConfig
 from ICX2P.SutConfig import Msg
-from ICX2P.BaseLib import icx2pAPI
+from ICX2P.BaseLib import icx2pAPI, PowerLib
 
 
 # Send a single key, e.g. ENTER, DOWN, UP 
@@ -16,9 +15,9 @@ def send_keys(keys, serial, delay=1):
     serial.send_keys_with_delay(keys, delay=1)
 
 
-
-# verify info
+# verify information like CPU, memory in one setup page
 def verify_info():
+    # todo
     pass
 
 # Verify a few setup options and desired values in one setup page
@@ -49,7 +48,7 @@ def locate_option(key, setupoption, try_counts, serial):
 def boot_to_setup(serial, ssh):
     logging.info("SetUpLib: Boot to setup main page")
     logging.info("SetUpLib: Rebooting SUT...")
-    if not icx2pAPI.force_reset(ssh):
+    if not PowerLib.force_reset(ssh):
         logging.info("SetUpLib: Rebooting SUT Failed.")
         return
     logging.info("SetUpLib: Booting to setup")
@@ -109,6 +108,7 @@ def verify_supported_values(values, serial):
     return True
 
 
-
+def boot_to_bootmanager():
+    pass
 
     

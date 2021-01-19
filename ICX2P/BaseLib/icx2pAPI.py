@@ -15,7 +15,7 @@ import Common.ssh as SSH
 from Common.ssh import sftp
 from ICX2P import SutConfig
 from ICX2P.SutConfig import Key
-from ICX2P.BaseLib import Update
+from ICX2P.BaseLib import Update, PowerLib
 
 # sftp, ssh(instantiation)
 s = sftp(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASSWORD)
@@ -51,82 +51,6 @@ def ping_sut():
             #     print(e)
 
 
-# update by arthur,
-def is_power_off(ssh):
-    logging.info("Check power status...")
-    cmd_on = 'ipmcget -d powerstate\n'
-    ret_confirm = 'Off'
-    if ssh.login(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD):
-        ret = ssh.execute_command_interaction(cmd_on)
-        if ret_confirm in ret.decode():
-            logging.info('Current power state is Off')
-            return True
-        else:
-            logging.info('Current power state is On')
-            return
-
-
-def power_on(ssh):
-    logging.info("Power on system.")
-    cmd_reset = 'ipmcset -d powerstate -v 1\n'
-    ret_reset = 'Do you want to continue'
-    cmd_confirm = 'Y\n'
-    ret_confirm = 'successfully'
-    cmds = [cmd_reset, cmd_confirm]
-    rets = [ret_reset, ret_confirm]
-    if ssh.login(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD):
-        return ssh.interaction(cmds, rets)
-    else:
-        logging.error("HY5 Common TC: Power on failed")
-        return
-
-
-def power_off(ssh):
-    logging.info("Power off system - force")
-    cmd_reset = 'ipmcset -d powerstate -v 2\n'
-    ret_reset = 'Do you want to continue'
-    cmd_confirm = 'Y\n'
-    ret_confirm = 'successfully'
-    cmds = [cmd_reset, cmd_confirm]
-    rets = [ret_reset, ret_confirm]
-    if ssh.login(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD):
-        return ssh.interaction(cmds, rets)
-    else:
-        logging.error("HY5 Common TC: Power off failed")
-        return
-
-
-def force_reset(ssh):
-    if is_power_off(ssh):
-        if power_on(ssh):
-            return True
-    else:
-        cmd_reset = 'ipmcset -d frucontrol -v 0\n'
-        ret_reset = 'Do you want to continue'
-        cmd_confirm = 'Y\n'
-        ret_confirm = 'successfully'
-        cmds = [cmd_reset, cmd_confirm]
-        rets = [ret_reset, ret_confirm]
-        if ssh.login(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD):
-            return ssh.interaction(cmds, rets)
-        else:
-            logging.error("HY5 Common TC: force system reset failed")
-            return
-
-
-def force_power_cycle(ssh):
-    logging.info("Force power cycle.")
-    cmd_powercycle = 'ipmcset -d frucontrol -v 2\n'
-    ret_powercycle = 'Do you want to continue'
-    cmd_confirm = 'Y\n'
-    ret_confirm = 'successfully'
-    cmds = [cmd_powercycle, cmd_confirm]
-    rets = [ret_powercycle, ret_confirm]
-    if ssh.login(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD):
-        return ssh.interaction(cmds, rets)
-    else:
-        logging.error("HY5 Common TC: force powercycle failed")
-        return
 
 
 # clear CMOS on BMC side
@@ -138,10 +62,10 @@ def clearCMOS(ssh):
     ret_confirm = 'successfully'
     cmds = [cmd_clearcoms, cmd_confirm]
     rets = [ret_clearcmos, ret_confirm]
-    if is_power_off(ssh):
+    if PowerLib.is_power_off(ssh):
         pass
     else:
-        if power_off(ssh):
+        if PowerLib.power_off(ssh):
             time.sleep(30)  # wait for 30s due to if in OS
             pass
 
@@ -277,7 +201,7 @@ def toBIOSConf(serial):
 
 # to BIOS with power action, for restore test Env,
 def toBIOS(serial, ssh, pwd='Admin@9000'):
-    if not force_reset(ssh):
+    if not PowerLib.force_reset(ssh):
         logging.info("Rebooting SUT Failed.")
         return
     logging.info("Booting to setup")
@@ -332,7 +256,7 @@ def toBIOSnp(serial, pwd='Admin@9000'):
 def dcCycle(serial, ssh):
     if not toBIOS(serial, ssh):
         return
-    if not force_power_cycle(ssh):
+    if not PowerLib.force_power_cycle(ssh):
         return
     logging.info("Booting to setup")
     if not toBIOSnp(serial):
@@ -358,7 +282,7 @@ def verify_setup_options_down(serial, setup_options, try_count):
 
 # updated by arthur, press Delete - common def, not test cases
 def pressDel(serial, ssh):
-    if not force_reset(ssh):
+    if not PowerLib.force_reset(ssh):
         return
     if not serial.waitString(SutConfig.msg, timeout=300):
         return
@@ -378,7 +302,7 @@ def pressDelnp(serial):
 
 
 def pressF12(serial, ssh):
-    if not force_reset(ssh):
+    if not PowerLib.force_reset(ssh):
         return
     if not serial.waitString(SutConfig.msg2, timeout=300):
         return
