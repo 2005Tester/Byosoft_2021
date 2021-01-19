@@ -38,7 +38,7 @@ PORT = 22
 
 # BIOS Configuration
 BIOS_USER = 'Admin@9001'
-BIOS_PASSWORD = 'Admin@9001'
+BIOS_PASSWORD = 'Admin@9000'
 
 # OS Configuration
 OS_IP = '192.168.3.200'
@@ -70,6 +70,9 @@ class Key:
 # Messages to identify a spcific boot option, page, menu or system status 
 
 class Msg:
+    HOTKEY_PROMPT = 'Press Del go to Setup Utility'
+    PW_PROMPT = 'Enter Current Password'
+
     # Home screen with 6 icons
     HOME_PAGE = 'Continue'
     BIOS_BOOT_COMPLETE = 'BIOS boot completed'

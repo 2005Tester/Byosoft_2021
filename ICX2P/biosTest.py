@@ -348,7 +348,7 @@ def loadDefault(serial, ssh):
 
 # updated by arthur, Testcase_Static_Turbo_001
 def staticTurbo(serial, ssh):
-    tc = ('012', '静态Turbo默认值测试', '支持静态turbo')
+    tc = ('012', 'Testcase_Static_Turbo_001, 静态Turbo默认值测试', '支持静态turbo')
     result = Misc.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
@@ -383,7 +383,7 @@ def staticTurbo(serial, ssh):
 
 # Testcase_UFS_001,
 def ufs(serial, ssh):
-    tc = ('013', 'UFS默认值测试', '支持UFS设置')
+    tc = ('013', 'Testcase_UFS_001, UFS默认值测试', '支持UFS设置')
     result = Misc.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
@@ -431,7 +431,7 @@ def ufs(serial, ssh):
 
 # Testcase_DRAM_RAPL_001
 def dramRAPL(serial, ssh):
-    tc = ('015', '菜单项DRAM RAPL选单检查', '支持DRAM RAPL设置')
+    tc = ('015', 'Testcase_DRAM_RAPL_001, 菜单项DRAM RAPL选单检查', '支持DRAM RAPL设置')
     result = Misc.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
@@ -884,7 +884,7 @@ def tpm(serial, ssh):
 
 # Testcase_VTD_002
 def vtd(serial, ssh):
-    tc = ('025', 'Testcase_VTD_002 关闭VT-d功能启动测试', '支持VT-d')
+    tc = ('025', 'Testcase_VTD_002, 关闭VT-d功能启动测试', '支持VT-d')
     result = Misc.LogHeaderResult(tc, serial)
     if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED, serial, ssh):
         result.log_fail()
@@ -955,7 +955,7 @@ def cpuCOMPA(serial, ssh):
 
 # Testcase_LogTime_001, 002 and 003 串口日志打印
 def logTime(serial, ssh):
-    tc = ('027', '串口日志打印测试', '支持BIOS启动开始和结束信息打印及上报')
+    tc = ('027', 'Testcase_LogTime_001, 002 and 003, 串口日志打印测试', '支持BIOS启动开始和结束信息打印及上报')
     result = Misc.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
@@ -993,75 +993,6 @@ def logTime(serial, ssh):
             except Exception as e:
                 print(str(e))
     f.close()
-    result.log_pass()
-    return True
-
-
-# Testcase_CoreDisable_001, 002, 003, 004, 005 and 007
-def coreDisable(serial, ssh):
-    tc = ('028', 'Setup菜单关核选项测试', '支持CPU关核')
-    result = Misc.LogHeaderResult(tc, serial)
-    if not icx2pAPI.toBIOS(serial, ssh):
-        result.log_fail()
-        return
-    if not icx2pAPI.toBIOSConf(serial):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay(SutConfig.w2key)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.option2, timeout=60):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay([Key.ENTER, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.option3):
-        result.log_fail()
-        return
-    serial.send_keys(Key.ENTER)
-    if not icx2pAPI.verify_setup_options_up(serial, ['<All>\s+Active Processor Cores'], 7):
-        result.log_fail()
-        return
-    serial.send_keys(Key.ESC)
-    serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.pat, 'Active Processor Cores'):
-        result.log_fail()
-        return
-    serial.send_keys(Key.ENTER)
-    if not serial.verify_option_value(Key.UP, r'1234567891011121314151617All', timeout=15):
-        result.log_fail()
-        return
-    serial.send_keys(Key.ESC)
-    serial.send_keys_with_delay([Key.F6, Key.F6])
-    serial.send_keys(Key.F10 + Key.Y)
-    if not icx2pAPI.toBIOSnp(serial):
-        result.log_fail()
-        return
-    if not icx2pAPI.toBIOSConf(serial):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay(SutConfig.w2key)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.option2, timeout=60):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay([Key.ENTER, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.option5):
-        result.log_fail()
-        return
-    serial.send_keys(Key.ENTER)
-    if not icx2pAPI.verify_setup_options_up(serial, SutConfig.DIMM_info, 20):
-        result.log_fail()
-        return
-    serial.send_keys(Key.CTRL_ALT_DELETE)
-    if not icx2pAPI.ping_sut():
-        result.log_fail()
-        return
-    if not icx2pAPI.chipsecMerge(ssh):
-        result.log_fail()
-        return
-    cmd = 'dmidecode -t 4'
-    path = SutConfig.LOG_DIR
-    icx2pAPI.dump_smbios(ssh, cmd)
-    if not P.smbiosCheck(cmd, path, SutConfig.SMBIOS_TEMPLATE):
-        result.log_fail()
-        return
     result.log_pass()
     return True
 

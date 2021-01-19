@@ -1,3 +1,4 @@
+from Common import ssh
 import logging
 from ICX2P.SutConfig import Key
 from ICX2P import SutConfig
@@ -60,6 +61,17 @@ def boot_to_setup(serial, ssh):
     logging.info("SetUpLib: Boot to setup main page successfully")
     return True
 
+def boot_with_hotkey(serial, ssh, key, msg, timeout):
+    hotkey_prompt = Msg.HOTKEY_PROMPT
+    pw_prompt = Msg.PW_PROMPT
+    password = SutConfig.BIOS_PASSWORD 
+    if not PowerLib.force_reset(ssh):
+        return
+    if not serial.boot_with_hotkey(key, msg, timeout, hotkey_prompt, pw_prompt, password):
+        return
+    logging.info("Boot with hotkey successfully.")
+    return True
+
 
 # Boot to boot manager without a force reset
 def continue_to_bootmanager(serial):
@@ -109,8 +121,11 @@ def verify_supported_values(values, serial):
     serial.send_keys(Key.ESC)  
     return True
 
-
-def boot_to_bootmanager():
-    pass
+# Boot to boot manager with hotkey
+def boot_to_bootmanager(serial, ssh):
+    key = Key.F11
+    msg = "Boot Manager Menu"
+    return boot_with_hotkey(serial, ssh, key, msg, 300)
+    
 
     

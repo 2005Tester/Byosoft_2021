@@ -285,35 +285,11 @@ class SutControl:
                 logging.info("Can not find strings(timeout):{0}".format(var))
                 return False
 
-    # boot with hotkey pressed, and check whether boot is successful
-    # key: the hotkey to be sent
-    # flag: message from SUT, which indicates it's time to press hotkey
-    # msg: message you expect to verify that SUT enters corresponding menu after hotky sent
-    # timeout: time to wait if msg not captured, will return None
-    def boot_with_hotkey_general(self, key, flag, msg, timeout):
-        start_time = time.time()
-        logging.info("Receiving data from SUT...")
-        while True:
-            if self.session.in_waiting:
-                try:
-                    data = self.session.read(256).decode("utf-8")
-                    data = self.cleanup_data(data)
-                except:
-                    pass
-                with open(self.log, 'a') as f:
-                    f.write(data)
-                if self.find_msg(flag, data):
-                    self.send_keys(key)
-                    #logging.info("Hot Key sent")
-                if self.find_msg(msg, data):
-                    return True
-            if self.is_timeout(start_time, timeout):
-                break
 
     # boot with hotkey pressed, and check whether boot is successful
-    def boot_with_hotkey(self, key, msg, timeout):
+    def boot_with_hotkey(self, key, msg, timeout, hotkey_prompt="Press Del go to Setup Utility", pw_prompt="Press F2", password="Admin@9000"):
         start_time = time.time()
-        logging.info("Receiving data from SUT...")
+        logging.debug("boot_with_hotkey: Receiving data from SUT...")
         while True:
             try:
                 if self.session.in_waiting:
@@ -321,11 +297,11 @@ class SutControl:
                     data = self.cleanup_data(data)
                     with open(self.log, 'a') as f:
                         f.write(data)
-                    if self.find_msg("Press Del go to Setup Utility", data):
+                    if self.find_msg(hotkey_prompt, data):
                         self.send_keys(key)
                         logging.info("Hot Key sent")
-                    if self.find_msg("Press F2", data):
-                        self.send_data("Admin@9000")
+                    if self.find_msg(pw_prompt, data):
+                        self.send_data(password)
                         self.send_data(chr(0x0D))  # Send Enter
                         self.send_data(chr(0x0D))  # Send Enter
                         logging.info("Send password...")
@@ -333,7 +309,7 @@ class SutControl:
                         return True
             except Exception as e:
                 logging.error(e)
-                logging.info("Please check whether COM port is in use.")
+                logging.debug("boot_with_hotkey: Please check whether COM port is in use.")
                 break
 
             if self.is_timeout(start_time, timeout):
