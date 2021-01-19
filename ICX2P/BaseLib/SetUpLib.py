@@ -20,19 +20,21 @@ def verify_info():
     # todo
     pass
 
+
 # Verify a few setup options and desired values in one setup page
 # options: list of setupoption and value e.g.[["IRQ Threshold", "\[7\]"],[RRQ Threshold", "\[7\]]
 def verify_options(key, options, trycounts, serial):
+    verified_items = []
     for option in options:
         if serial.locate_setup_option(key, option, trycounts):
-            options.pop(options.index(option))
-    if len(options) == 0:
+            verified_items.append(option)
+        else:
+            logging.info("Option: {0} not verified".format(option))
+    if len(verified_items) == len(options):
         logging.info("All the setup options are verified")
         return True
     else:
-        for option in options:
-            logging.info("{0} not verified".format(option)) 
-
+        logging.info("{0} options not verified".format(len(options)-len(verified_items)))    
 
 # Enter setup menu
 def enter_menu(key, option_path, try_counts, confirm_msg, serial):
