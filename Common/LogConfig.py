@@ -39,7 +39,7 @@ def gen_config(log_dir):
 
         },
         'loggers': {
-            'console': {'level': 'DEBUG',
+            'console': {'level': 'INFO',
                         'handlers': ['console','file'],
                         },
             'requests.packages.urllib3.connectionpool': {'level': 'ERROR'},

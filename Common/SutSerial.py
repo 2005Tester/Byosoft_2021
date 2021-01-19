@@ -79,7 +79,7 @@ class SutControl:
     @staticmethod
     def find_msg(msg, data):
         if re.search(msg, data):
-            logging.info("Found string: \"{0}\"".format(msg))
+            logging.debug("Found: \"{0}\"".format(msg))
             return True
     
     def write_data2log(self, data):
@@ -121,7 +121,7 @@ class SutControl:
                 break
 
     def is_msg_present_general(self, msg, delay=150, pw_prompt=None, pw=None, cleanup=True):
-        logging.info("Waiting for:\"{0}\"".format(msg))
+        logging.debug("Waiting for:\"{0}\"".format(msg))
         start_time = time.time()
         logging.debug("is_msg_present_general: receiving data from serial port...")
         while True:
@@ -362,27 +362,28 @@ class SutControl:
     # Patten1: Only setup option is highlighted, name should be specified, value not required
     # Patten2: Only value is highlighted, both name and value need to be specified
     # Patten3: Both setup optin and value is highlighted, same process as patten1, but use [name + space + value]
-    def locate_setup_option(self, key, setupoption, try_counts):
+    def locate_setup_option(self, key, setupoption, try_counts, delay=1):
 
         if len(setupoption) == 1:
             patten = setupoption[0] + ES
 
         elif len(setupoption) == 2:
-            patten = ES + "<{0}>".format(setupoption[1]) + ES + "\s+" + ES + "\s+" + ES + "{0}".format(setupoption[0])
+            patten = ES + "{0}".format(setupoption[1]) + ES + "\s+" + ES + "\s+" + ES + "{0}".format(setupoption[0])
 
         else:
             logging.info("Incorrect format of parameter: setupoption")
             return
-
+        logging.info("Locating option: {0}".format(setupoption))
         self.receive_data(512)
         while try_counts:
             try_counts -= 1
             time.sleep(2)
-            if self.is_msg_present_general(patten, 1, cleanup = False):
-                logging.info("{0} found".format(setupoption))
+            if self.is_msg_present_general(patten, delay, cleanup = False):
+                logging.info("Option found: {0}".format(setupoption))
                 try_counts = 0
                 return True
             self.send_keys(key)
+        logging.info("Option not found: {0}".format(setupoption))
 
 
     def locate_menu(self, key, menuname, try_counts):
@@ -392,7 +393,7 @@ class SutControl:
             try_counts -= 1
             time.sleep(2)
             if self.is_msg_present_general(patten, 1, cleanup = False):
-                logging.info("{0} found".format(menuname))
+                logging.info("Menu found: {0}".format(menuname))
                 try_counts = 0
                 return True
             self.send_keys(key)
@@ -400,13 +401,14 @@ class SutControl:
     # Enter specifc setup menu by goven path(list), will remove enter_setup_menu() later
     def enter_menu(self, key, option_path, try_counts, confirm_msg):
         for option in option_path:
+            logging.info("Locating menu: {0}".format(option))
             if not self.locate_menu(key, option, try_counts):
-                logging.info("{0} not found".format(option))
+                logging.info("Not Found: {0}".format(option))
                 return
             self.send_keys(ENTER)
         if not self.is_msg_present_general(confirm_msg):
             logging.info("{0} not captured, may not enter corect menu")
-        logging.info("Enter {0} successfully".format(option_path[-1]))
+        logging.info("Enter menu: {0} successfully".format(option_path[-1]))
         return True
 
     # Will be replaced by locate_setup_option()
