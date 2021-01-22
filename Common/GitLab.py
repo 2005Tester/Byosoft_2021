@@ -14,6 +14,7 @@ import requests
 import zipfile
 import json
 import os
+import re
 
 
 class Gitlab:
@@ -47,11 +48,14 @@ class Gitlab:
         logging.info("Commit: {0}".format(job['commit']['short_id']))
         logging.info("BuildFinishedTime:{0}".format(job['finished_at']))
 
-    def download_image(self, job, dir):
+
+    def download_image(self, job, dir, img_name):
+        logging.info("Downloading image to {0}".format(dir))
         img_zip = os.path.join(dir, "artifacts.zip")
         if os.path.exists(img_zip):
             os.remove(img_zip)
         if not job:
+            logging.info("Invalid job id.")
             return
 
         self.print_msg(job)
@@ -60,24 +64,31 @@ class Gitlab:
         cmd = "curl --output {0} --header \"PRIVATE-TOKEN: {1}\" {2}".format(img_zip, self.access_token, artifact_url)      
         if os.system(cmd) == 0:
             logging.info("Download image successfully")
-            image_path = self.unzip(img_zip, dir)
+            image_path = self.unzip(img_zip, dir, img_name)
+            logging.info("Remove artifacts zip file.")
             os.remove(img_zip)
             return image_path
         else:
             logging.info("Download image fail")
     
-    def download_latest_image_master(self, dir):
+    # Download latest image from gitlab, img_name is a regular expression whcih matches targer image for test
+    def download_latest_image_master(self, dir, img_name):
         latest_job = self.get_latest_job_master()
-        return self.download_image(latest_job, dir)
+        return self.download_image(latest_job, dir, img_name)
 
-    @staticmethod        
-    def unzip(file, dst):
-        uz = zipfile.ZipFile(file, 'r')
+    @staticmethod
+    #Unzip artifacts, search for img and return path of test image        
+    def unzip(artifacts, dst, img_name):
+        logging.info("Unzip artifacts...")
+        uz = zipfile.ZipFile(artifacts, 'r')
         for file in uz.namelist():
-            if '.bin' in file:
+            print(file)
+            if re.search(img_name, file):
                 file_path =  os.path.join(dst, file.replace("/", "\\"))
+                print(file_path)
                 if os.path.exists(file_path):
                     logging.info("Delete old file")
                     os.remove(file_path)
                 uz.extract(file, dst)
-                return os.path.join(dst, file_path)
+                img_path = os.path.join(dst, file_path)
+                return img_path

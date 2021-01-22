@@ -18,8 +18,8 @@ from ICX2P import SutConfig
 # Obtain the path of latest bios image from Gitlab artifacts
 def get_test_image(dst):
     gitlab_icx = GitLab.Gitlab(31, 'PbLqm_njsnGxCQBtHoMG')
-    test_image = gitlab_icx.download_latest_image_master(dst)
-    logging.info(test_image)
+    test_image = gitlab_icx.download_latest_image_master(dst, ".bin")
+    logging.info("Image for test: {0}".format(test_image))
     return(test_image)   
 
 # Upload BIOS image to SUT BMC
