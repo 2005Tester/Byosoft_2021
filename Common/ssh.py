@@ -62,6 +62,7 @@ class SshConnection:
     
     # execute command on SUT
     def execute_command(self, command):
+        logging.info("Sending: {0}".format(command))
         stdin, stdout, stderr = self.ssh_client.exec_command(command)
         res = stdout.read().decode()
         return res
@@ -87,24 +88,24 @@ class SshConnection:
     def interaction(self, cmds, strs):
         op = self.ssh_client.invoke_shell()
         for i in range(0, len(cmds)):
+            logging.info('Sending: {0}'.format(cmds[i].strip("\n")))
             op.send(cmds[i])
             time.sleep(4)
             res = op.recv(1024)
-            logging.debug('Sending command: {0}'.format(cmds[i].strip("\n")))
-            # logging.debug(res.decode('utf-8'))
             start_time = time.time()
             while not re.search(strs[i], res.decode('utf-8')):
-                logging.info("Checking command status...")
-                res = op.recv(1024)
-                # logging.info(res.decode('utf-8'))
+                if op.recv_ready():
+                    logging.info("Checking command status...")
+                    res = op.recv(1024)
+                    logging.info(res.decode('utf-8'))
                 now = time.time()
                 if re.search(strs[i], res.decode('utf-8')):
                     # Will reach here if command returns result after a while
                     break
                 if (now - start_time) > 300:
-                    logging.error("Run command {0} timeout.".format(cmds[i].strip("\n")))
+                    logging.error("Run command: {0} timeout.".format(cmds[i].strip("\n")))
                     return
-            logging.info('command successful:{0}'.format(cmds[i].strip("\n")))
+            logging.info('Command successful.')
         op.close()
         self.ssh_client.close()
         status = True
