@@ -141,7 +141,26 @@ class ReportGenerator:
                 version = re.findall("Latest Version is: (\d+)", line)
                 if not version:
                     version = re.findall("Commit: ([0-9a-z]{8})", line)
+                    version =version[0]
         return version
+
+    # get sut configuration info
+    def get_sut_config(self):
+        sut_config = "NA"
+        for line in self.load_test_log():
+            if re.search("SUT Configuration:", line):
+                sut_config = re.findall("SUT Configuration:(.+)", line)
+                sut_config = sut_config[0]
+        return sut_config
+
+    # get sut project info
+    def get_proj_name(self):
+        proj = "NA"
+        for line in self.load_test_log():
+            if re.search("Test Project:", line):
+                proj = re.findall("Test Project:(.+)", line)
+                proj = proj[0]
+        return proj
 
     # collect and update test case result
     def collect_test_result(self):
@@ -162,6 +181,8 @@ class ReportGenerator:
                     alltcResult.append(tcResult.copy())
         testReport['testResult'] = alltcResult
         testReport['testVersion'] = self.get_code_version()
+        testReport['testConfig'] = self.get_sut_config()
+        testReport['testProject'] = self.get_proj_name()
         testReport['testAll'] = len(alltcResult)
         testReport['testPass'] = self.get_result_count()[0]
         testReport['testFail'] = self.get_result_count()[1]

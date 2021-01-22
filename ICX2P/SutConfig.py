@@ -11,6 +11,8 @@ import os
 import datetime
 
 # Report Setting
+PROJECT_NAME = "2288V6"
+SUT_CONFIG = "SUT1-Full-DIMM"
 REPORT_TEMPLATE = "ICX2P\\Report\\template"
 
 # Environment settings
@@ -70,7 +72,11 @@ class Key:
 # Messages to identify a spcific boot option, page, menu or system status 
 
 class Msg:
-    HOTKEY_PROMPT = 'Press Del go to Setup Utility'
+    HOTKEY_PROMPT_DEL = 'Press Del go to Setup Utility'
+    HOTKEY_PROMPT_F11 = 'Press F11 go to BootManager'
+    HOTKEY_PROMPT_F12 = 'Press F12 go to PXE boot'
+    HOTKEY_PROMPT_F6 = 'Press F6 go to SP boot'
+
     PW_PROMPT = 'Enter Current Password'
 
     # Home screen with 6 icons
@@ -111,12 +117,7 @@ unitool_path = r'/root/flashtool/Linux_17.10/'
 chipsc_path = r'/home/byo/chipsec_merge/'
 
 # defined the msg info
-msg = 'Press Del go to Setup Utility'
 press_f2 = 'Press F2'
-msg1 = 'Press F11 go to BootManager'
-msg2 = 'Press F12 go to PXE boot'
-msg3 = 'Press F6 go to SP boot'
-msg4 = 'BIOS Configuration'
 msg5 = 'USB Mouse\s+1'
 msg6 = 'USB Keyboard\s+1'
 msg7 = 'USB Mass Storage\s+0'
