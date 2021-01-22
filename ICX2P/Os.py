@@ -18,4 +18,5 @@ def boot_to_suse(serial, ssh):
         result.log_fail()
         return
     logging.info("OS Boot Successful")
+    result.log_pass()
     return True

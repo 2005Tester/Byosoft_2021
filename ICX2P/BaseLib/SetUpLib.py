@@ -62,7 +62,7 @@ def boot_to_setup(serial, ssh):
     return True
 
 def boot_with_hotkey(serial, ssh, key, msg, timeout):
-    hotkey_prompt = Msg.HOTKEY_PROMPT
+    hotkey_prompt = Msg.HOTKEY_PROMPT_DEL
     pw_prompt = Msg.PW_PROMPT
     password = SutConfig.BIOS_PASSWORD 
     if not PowerLib.force_reset(ssh):

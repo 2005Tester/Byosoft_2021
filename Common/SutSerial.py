@@ -374,7 +374,7 @@ class SutControl:
                 return True
             self.send_keys(key)
 
-    # Enter specifc setup menu by goven path(list), will remove enter_setup_menu() later
+    # Enter specifc setup menu by given path(list)
     def enter_menu(self, key, option_path, try_counts, confirm_msg):
         for option in option_path:
             logging.info("Locating menu: {0}".format(option))
@@ -401,16 +401,6 @@ class SutControl:
                 return True
             self.send_keys(key)
     
-    def enter_setup_menu(self, key, option_path, try_counts, confirm_msg):
-        for option in option_path:
-            if not self.find_setup_option(key, option, try_counts):
-                logging.info("{0} not found".format(option))
-                return
-        if not self.is_msg_present_general(confirm_msg):
-            return
-        logging.info("Enter {0} successfully".format(option_path[-1]))
-        return True
-
     # issue: can not to the first item(WA: ENTER + UP, then can find the first option or item), to be enhanced, TBD
     # could be used to navigate to a option in boot manager page or a option in Setup,
     def to_highlight_option(self, key, msg, pat=None, timeout=15):

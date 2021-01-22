@@ -26,7 +26,7 @@ def POST_Test(serial, ssh):  # POST: POST Log(TBD) and Information Check
     if not PowerLib.force_reset(ssh):
         result.log_fail()
         return
-    msg_list = [SutConfig.msg, SutConfig.msg1, SutConfig.msg2, SutConfig.msg3]
+    msg_list = [Msg.HOTKEY_PROMPT_DEL, Msg.HOTKEY_PROMPT_F11, Msg.HOTKEY_PROMPT_F12, Msg.HOTKEY_PROMPT_F6]
     if not serial.waitStrings(msg_list, timeout=300):  # 考虑到满载配置
         result.log_fail()
         return
@@ -203,7 +203,7 @@ def pressF2(serial, ssh):
     if not PowerLib.force_reset(ssh):
         result.log_fail()
         return
-    if not serial.waitString(SutConfig.msg, timeout=300):
+    if not serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=300):
         result.log_fail()
         return
     serial.send_keys(Key.DEL)

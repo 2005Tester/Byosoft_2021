@@ -14,7 +14,7 @@ import time
 import Common.ssh as SSH
 from Common.ssh import sftp
 from ICX2P import SutConfig
-from ICX2P.SutConfig import Key
+from ICX2P.SutConfig import Key, Msg
 from ICX2P.BaseLib import Update, PowerLib
 
 # sftp, ssh(instantiation)
@@ -205,7 +205,7 @@ def toBIOS(serial, ssh, pwd='Admin@9000'):
         logging.info("Rebooting SUT Failed.")
         return
     logging.info("Booting to setup")
-    if not serial.waitString(SutConfig.msg, timeout=600):
+    if not serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=600):
         return
     serial.send_keys(Key.DEL)
     logging.info("Hot Key sent")
@@ -231,7 +231,7 @@ def toBIOS(serial, ssh, pwd='Admin@9000'):
 # to BIOS without power action
 def toBIOSnp(serial, pwd='Admin@9000'):
     logging.info("HaiYan5 Common Test Lib: boot to setup")
-    if not serial.waitString(SutConfig.msg, timeout=600):  # set to 600 开启全打印，启动时间较长
+    if not serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=600):  # set to 600 开启全打印，启动时间较长
         return
     serial.send_keys(Key.DEL)
     logging.info("Hot Key sent")
@@ -284,7 +284,7 @@ def verify_setup_options_down(serial, setup_options, try_count):
 def pressDel(serial, ssh):
     if not PowerLib.force_reset(ssh):
         return
-    if not serial.waitString(SutConfig.msg, timeout=300):
+    if not serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=300):
         return
     serial.send_keys(Key.DEL)
     if not serial.waitString(SutConfig.press_f2, timeout=60):
@@ -293,7 +293,7 @@ def pressDel(serial, ssh):
 
 
 def pressDelnp(serial):
-    if not serial.waitString(SutConfig.msg, timeout=300):
+    if not serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=300):
         return
     serial.send_keys(Key.DEL)
     if not serial.waitString(SutConfig.press_f2, timeout=60):
@@ -304,7 +304,7 @@ def pressDelnp(serial):
 def pressF12(serial, ssh):
     if not PowerLib.force_reset(ssh):
         return
-    if not serial.waitString(SutConfig.msg2, timeout=300):
+    if not serial.waitString(Msg.HOTKEY_PROMPT_F12, timeout=300):
         return
     serial.send_keys(Key.F12)
     if not serial.waitString(SutConfig.press_f2, timeout=60):
