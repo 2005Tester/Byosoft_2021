@@ -7002,6 +7002,12 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
+                                    <label class="col-sm-2 control-label text-black">Configuration:</label>
+                                    <div class="col-sm-5">
+                                        <span class="form-control" id="testConfig"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
                                     <label class="col-sm-2 control-label text-black">Total:</label>
                                     <div class="col-sm-5">
                                         <span class="form-control" id="testAll"></span>

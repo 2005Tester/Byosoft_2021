@@ -11,6 +11,8 @@ import os
 import datetime
 
 # Report Setting
+PROJECT_NAME = "HaiYan5"
+SUT_CONFIG = "SUT1-4P"
 REPORT_TEMPLATE = r"{0}\Report\template_HY5".format(os.getcwd())
 
 # Environment settings
