@@ -7,8 +7,11 @@
 #  means without the express written consent of Byosoft Corporation.
 # -*- encoding=utf8 -*-
 import re
+import os
 import time
 import logging
+import requests
+import glob
 from json2html import *
 
 
@@ -203,6 +206,7 @@ class ReportGenerator:
             with open(dst, 'w', encoding='utf-8') as new:
                 new.write(data)
 
+
     # collect and update test case result for email
     def collect_test_result_email_format(self):
         testReport = {}
@@ -240,3 +244,65 @@ class ReportGenerator:
             content = f.read()
             data = content.replace(old, new)
         return data
+
+
+    # get list of files to be uploaded
+    def get_upload_files(self):
+        dir, fi = os.path.split(self.log)
+        files = glob.glob(os.path.join(dir, '*.log'))    
+        html_report = os.path.join(dir,'report.html')
+        files.append(html_report)
+        files_for_upload = []
+        for file in files:
+            files_for_upload.append("('upload', ('serial.log', " + "open(" + file+ ", 'rb')))")
+        return files_for_upload
+
+
+    # post test result to web
+    def post_result(self):
+        result = self.collect_test_result()
+        #print(result)
+
+        #report_files = self.get_upload_files()
+    
+        dir, fi = os.path.split(self.log)
+ 
+        report_files = [
+        ('upload', ('serial.log', open(os.path.join(dir, 'serial.log'), 'rb'))),
+        ('upload', ('test.log', open(os.path.join(dir, 'test.log'), 'rb')))
+        ]
+
+    
+
+        report_params = {'pro_name': result['testProject'], 'conf_name': result['testConfig'], 'ver_name': result['testVersion']}
+        report_case = result['testResult']
+        cell_list = []
+        cell_desc_list = []
+        cell_dura_list = []
+        cell_res_list = []
+        for i in range(len(report_case)):
+            cell_list.append(report_case[i]['tcName'])
+            cell_desc_list.append(report_case[i]['description'])
+            cell_dura_list.append(report_case[i]['spendTime'])
+            cell_res_list.append(report_case[i]['status'])
+
+        report_data = {
+            "cell": cell_list,
+            "cell_desc": cell_desc_list,
+            "duration": cell_dura_list,
+            "result": cell_res_list,
+            "cell_all": result['testAll'],
+            "cell_pass": result['testPass'],
+            "cell_fail": result['testFail'],
+            "cell_skip": result['testSkip'],
+            "begin_time": result['beginTime'],
+            "total_time": result['totalTime'],
+        }
+
+        resp = requests.post(url='http://192.168.100.118/v1/report',
+                             params=report_params,
+                             data=report_data,
+                             files=report_files)
+        print(resp.json())
+        return resp.json()
+

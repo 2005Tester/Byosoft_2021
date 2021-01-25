@@ -37,11 +37,15 @@ def gen_report(log_dir):
     template = SutConfig.REPORT_TEMPLATE
     report = ReportGenerator(template, os.path.join(log_dir, "test.log"), os.path.join(log_dir, "report.html"))
     report.write_to_html()
+#    if argv[1] == "daily":
+    report.post_result()
 
     
 # for debug purpose
 def debug_run():
     log_dir = init_log()
+    UpdateBIOS.update_bios(ser, log_dir)
+#    DefaultValueTest.test(ssh_bmc)
     biosTest.pressF2(ser, ssh_bmc)
     gen_report(log_dir)
 
@@ -72,7 +76,7 @@ def run_test():
    
 
 if __name__ == '__main__':
-    if len(argv) == 1:
+    if len(argv) == 1 or argv[1] == "daily":
         run_test()
 
     elif argv[1] == "loop":
