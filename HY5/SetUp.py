@@ -208,7 +208,7 @@ def checkPWD(serial, pwd1, pwd2):
 
 # Setup: Load default and setting saving - AT test cases below,
 def loadDefault(serial, ssh):
-    tc = ('013', 'Load default and setting saving Test', 'BIOS Load default Test')
+    tc = ('041', 'BIOS Load default Test', '加载默认设置和参数并保存')
     result = Misc.LogHeaderResult(tc, serial)
     option_bfo = ['<UEFI Boot Type>', '<Boot Retry>']
     option_aft = ['<Legacy Boot Type>', '<Cold Boot>']
@@ -217,7 +217,7 @@ def loadDefault(serial, ssh):
     if not Hy5BaseAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(Hy5Config.key2type)
+    serial.send_keys_with_delay(Hy5Config.key2TPM)
     if not Hy5BaseAPI.verify_setup_options_down(serial, option_bfo, 14):
         result.log_fail()
         return
@@ -237,7 +237,7 @@ def loadDefault(serial, ssh):
     if not Hy5BaseAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(Hy5Config.key2type)
+    serial.send_keys_with_delay(Hy5Config.key2TPM)
     if not Hy5BaseAPI.verify_setup_options_down(serial, option_aft, 14):
         result.log_fail()
         if not reset_default(serial, ssh):
@@ -250,7 +250,7 @@ def loadDefault(serial, ssh):
     if not Hy5BaseAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(Hy5Config.key2type)
+    serial.send_keys_with_delay(Hy5Config.key2TPM)
     time.sleep(1)
     if not Hy5BaseAPI.verify_setup_options_down(serial, option_bfo, 14):
         result.log_fail()
@@ -262,7 +262,7 @@ def loadDefault(serial, ssh):
 
 # updated by arthur, Testcase_Static_Turbo_001
 def staticTurbo(serial, ssh):
-    tc = ('021', '静态Turbo默认值测试', '支持静态turbo')
+    tc = ('021', '静态Turbo默认值测试', '支持静态turbo,Testcase_Static_Turbo_001')
     result = Misc.LogHeaderResult(tc, serial)
     if not Hy5BaseAPI.toBIOS(serial, ssh):
         result.log_fail()
@@ -297,7 +297,7 @@ def staticTurbo(serial, ssh):
 
 # Testcase_UFS_001,
 def ufs(serial, ssh):
-    tc = ('022', 'UFS默认值测试', '支持UFS设置')
+    tc = ('022', 'UFS默认值测试', '支持UFS设置,Testcase_UFS_001')
     result = Misc.LogHeaderResult(tc, serial)
     if not boot_to_bios_config(serial, ssh):
         result.log_fail()
@@ -340,7 +340,7 @@ def ufs(serial, ssh):
 
 # Testcase_RRQIRQ_001
 def rrQIRQ(serial, ssh):
-    tc = ('023', 'Setup菜单RRQ和IRQ选项默认值测试', '支持RRQ&IRQ设置')
+    tc = ('023', 'Setup菜单RRQ和IRQ选项默认值测试', '支持RRQ&IRQ设置,Testcase_RRQIRQ_001')
     result = Misc.LogHeaderResult(tc, serial)
     if not Hy5BaseAPI.toBIOS(serial, ssh):
         result.log_fail()
@@ -415,7 +415,7 @@ def rrQIRQ(serial, ssh):
 
 # Testcase_DRAM_RAPL_001
 def dramRAPL(serial, ssh):
-    tc = ('024', '菜单项DRAM RAPL选单检查', '支持DRAM RAPL设置')
+    tc = ('024', '菜单项DRAM RAPL选单检查', '支持DRAM RAPL设置,Testcase_DRAM_RAPL_001')
     result = Misc.LogHeaderResult(tc, serial)
     if not Hy5BaseAPI.toBIOS(serial, ssh):
         result.log_fail()
@@ -453,7 +453,7 @@ def dramRAPL(serial, ssh):
 # Testcase_BiosPasswordSecurity_012, 013, 014
 # 输入错误密码次数测试_阈值内输入错误密码, 输入错误密码次数测试_阈值内连续输入错误密码后输入正确密码和输入错误密码次数测试_超出阈值不影响下一次登录
 def pwdSecurity(serial, ssh):
-    tc = ('025', '输入错误密码次数测试', '输入错误密码次数测试包含密码错误，次数测试和超出阈值不影响下一次登录')
+    tc = ('025','输入错误密码次数测试', '输入错误密码次数测试包含密码错误，次数测试和超出阈值不影响下一次登录,Testcase_BiosPasswordSecurity_012, 013, 014')
     result = Misc.LogHeaderResult(tc, serial)
     if not Hy5BaseAPI.pressDel(serial, ssh):
         result.log_fail()
@@ -519,7 +519,7 @@ def cnd(serial, ssh):
 
 # Testcase_BiosPasswordSecurity_007, 019, 020, 021, 022
 def pwdVerification1(serial, ssh):
-    tc = ('027', '密码修改验证', 'BIOS密码应满足产品网络安全要求')
+    tc = ('027', '密码修改验证', 'Testcase_BiosPasswordSecurity_007, 019, 020, 021, 022')
     result = Misc.LogHeaderResult(tc, serial)
     # if not Hy5BaseAPI.toBIOS(serial, ssh):
     #     result.log_fail()
@@ -598,7 +598,7 @@ def pwdVerification1(serial, ssh):
 
 # Testcase_BiosPasswordSecurity_003, 010 设置密码长度度测试_密码长度等于最少字符数(8)
 def pwdVerification2(serial, ssh):
-    tc = ('028', '设置密码长度度测试', 'BIOS密码应满足产品网络安全要求')
+    tc = ('028', '设置密码长度度测试','Testcase_BiosPasswordSecurity_003, 010设置密码长度度测试_密码长度等于最少字符数(8)')
     result = Misc.LogHeaderResult(tc, serial)
     if not Hy5BaseAPI.setPWD(serial, ssh, Hy5Config.new_pwd_9, Hy5Config.new_pwd_8):
         result.log_fail()
@@ -613,7 +613,7 @@ def pwdVerification2(serial, ssh):
 
 # Testcase_BiosPasswordSecurity_005, 006
 def pwdVerification3(serial, ssh):
-    tc = ('029', '设置密码最大字符数测试', 'BIOS密码应满足产品网络安全要求')
+    tc = ('029', '设置密码最大字符数测试', 'Testcase_BiosPasswordSecurity_005, 006')
     result = Misc.LogHeaderResult(tc, serial)
     if not Hy5BaseAPI.toBIOS(serial, ssh, Hy5Config.new_pwd_8):
         result.log_fail()
@@ -647,7 +647,7 @@ def pwdVerification3(serial, ssh):
 
 # Testcase_BiosPasswordSecurity_008, 009
 def pwdVerification4(serial, ssh):
-    tc = ('030', '设置密码最大字符数测试', 'BIOS密码应满足产品网络安全要求')
+    tc = ('030', '设置密码最大字符数测试', 'Testcase_BiosPasswordSecurity_008, 009')
     result = Misc.LogHeaderResult(tc, serial)
     if not Hy5BaseAPI.toBIOS(serial, ssh, Hy5Config.new_pwd_16):
         result.log_fail()
@@ -713,7 +713,7 @@ def pwdVerification4(serial, ssh):
 
 # Testcase_SimplePassword_001, 002, 003, 004 and 005
 def simplePWDTest(serial, ssh):
-    tc = ('034', '简易密码开关默认值测试', '支持关闭密码复杂度检测')
+    tc = ('034','简易密码开关默认值测试', '支持关闭密码复杂度检测,Testcase_SimplePassword_001, 002, 003, 004 and 005')
     result = Misc.LogHeaderResult(tc, serial)
     if not Hy5BaseAPI.toBIOS(serial, ssh, Hy5Config.new_pwd_16):
         result.log_fail()
@@ -785,7 +785,7 @@ def pwdSecurityTest(serial, ssh):
 
 # Testcase_SecurityBoot_001, 004
 def securityBoot(serial, ssh):
-    tc = ('031', 'Secure Boot默认值', 'Secure Boot默认值')
+    tc = ('031', 'Secure Boot默认值', 'Secure Boot默认值，Testcase_SecurityBoot_001, 004')
     result = Misc.LogHeaderResult(tc, serial)
     if not Hy5BaseAPI.toBIOS(serial, ssh):
         result.log_fail()
@@ -866,39 +866,30 @@ def tpm(serial, ssh):
     return True
 
 
-# Testcase_VTD_002
+#Testcase_VTD_002
 def vtd(serial, ssh):
-    tc = ('025', '关闭VT-d功能启动测试', '支持VT-d')
+    tc = ('037', '关闭VT-d功能启动测试', '支持VT-d')
     result = Misc.LogHeaderResult(tc, serial)
-    if not icx2pAPI.toBIOS(serial, ssh):
+    if not Hy5BaseAPI.toBIOS(serial, ssh):
         result.log_fail()
         return
-    if not icx2pAPI.toBIOSConf(serial):
+    if not Hy5BaseAPI.toBIOSConf(serial):
         result.log_fail()
         return
     serial.send_keys(Key.RIGHT)
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.option10, timeout=60):
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.option10, timeout=60):
         result.log_fail()
         return
     serial.send_keys_with_delay([Key.ENTER, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, 'Intel\(R\) VT for Directed I/O \(VT-d\)'):
+    if not serial.to_highlight_option(Key.DOWN,Hy5Config.pat, 'Intel(R) VT for Directed I/O (VT-d)'):
         result.log_fail()
+        print("55555")
         return
-    serial.send_keys_with_delay([Key.ENTER, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, IcxConfig.pat, 'Intel\(R\) VT for Directed I/O'):
-        result.log_fail()
-        return
+    serial.send_keys(Key.ENTER)
     serial.send_keys(Key.F5)
     time.sleep(1)
     serial.send_keys(Key.F10 + Key.Y)
-    if not icx2pAPI.toBIOSnp(serial, ssh):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay(IcxConfig.key2OS)
-    if not serial.find_setup_option(Key.DOWN, IcxConfig.SUSE, 10):
-        result.log_fail()
-        return
-    if not icx2pAPI.ping_sut():  # OS flag
+    if not Hy5TcLib.ping_sut():   # OS flag
         result.log_fail()
         return
     result.log_pass()
@@ -907,7 +898,7 @@ def vtd(serial, ssh):
 
 # Testcase_CPU_COMPA_015, 016 - TBD
 def cpuCOMPA(serial, ssh):
-    tc = ('038', 'UPI link链路检测测试', 'CPU兼容性测试')
+    tc = ('038', 'UPI link链路检测测试', 'CPU兼容性测试,Testcase_CPU_COMPA_015, 016')
     result = Misc.LogHeaderResult(tc, serial)
     if not Hy5BaseAPI.toBIOS(serial, ssh):
         result.log_fail()
@@ -947,7 +938,7 @@ def logTime(serial, ssh):
         result.log_fail()
         return
     serial.send_keys_with_delay(Hy5Config.key2OS)
-    if not serial.to_highlight_option(Key.DOWN, Hy5Config.OS, timeout=30):
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.SUSE, timeout=30):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
@@ -955,22 +946,36 @@ def logTime(serial, ssh):
         result.log_fail()
         return
     t1 = Hy5TcLib.osTime(ssh)
+    print('os_time',t1)
     if not serial.is_msg_present_general('BIOS Log', delay=60):
         result.log_fail()
         return
-    with open(Hy5Config.SERIAL_LOG, 'r') as f:
+    b = [x for x in open(Hy5Config.SERIAL_LOG).readlines() if x.find('BIOS Log') > -1]
+    with open('b.txt', 'a+') as f:
+
+        f.writelines(b)
+        print(b)
+
+        # lines = f.readlines()
+        last_line = b[-1]  # 取最后一行
+        print("last_line = ",last_line)
+        f.close()
         while True:
             try:
-                line = f.readline()
-                if 'BIOS Log' in line:
-                    t2 = line.split('@')[-1].rstrip().split('<')[0].lstrip().replace('.', '-').strip()
+                if 'BIOS Log' in last_line:
+                    t2 = last_line.split('@')[-1].rstrip().split('<')[0].lstrip().replace('.', '-').strip()
+                    print("t2",t2)
                     t3 = datetime.datetime.strptime(t2, '%Y-%m-%d %H:%M:%S')
-                    t_time = (t3 - t1)
+                    print("t3",t3)
+                    t_time = (t1 - t3)
+                    print("t_time",t_time)
                     hour = int(t_time.seconds / 60 / 60)
+                    print("hour",hour)
                     dela_time = int((t_time.seconds - hour * 60 * 60) / 60)
+                    print("dela_time",dela_time)
                     # print(t3, t1, hour, dela_time)
                     if dela_time < 5:  # if interval time is less than 5 mins,
-                        pass
+                        result.log_pass()
                     else:
                         print('The BIOS time is not matched with RTC time')
                         result.log_fail()
@@ -978,9 +983,12 @@ def logTime(serial, ssh):
                     break
             except Exception as e:
                 print(str(e))
-    f.close()
-    result.log_pass()
-    return True
+        f.truncate()  # 清空文件内容
+        f.close()
+        result.log_pass()
+        return True
+
+
 
 
 # Testcase_CoreDisable_001, 002, 003, 004, 005 and 007
@@ -1060,7 +1068,6 @@ def biosSetupTest(serial, ssh):
     rrQIRQ(serial, ssh)
     dramRAPL(serial, ssh)
     pwdSecurityTest(serial, ssh)
-    securityBoot(serial, ssh)
-    vtd(serial, ssh)
     cpuCOMPA(serial, ssh)
-    logTime(serial, ssh)
+    # logTime(serial, ssh)
+    # vtd(serial, ssh)

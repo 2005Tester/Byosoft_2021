@@ -16,18 +16,27 @@ REPORT_TEMPLATE = r"{0}\Report\template_HY5".format(os.getcwd())
 # Environment settings
 timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 LOG_DIR = 'c:\\daily\\HY5\\{0}'.format(timestamp)
+# LOG_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\AT Report\\Haiyan5\\{0}'.format(timestamp)
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 SMBIOS_DIR = 'c:\\daily\\SMBIOS'
-# if not os.path.exists(SMBIOS_DIR):   # if run SMBIOS related test cases, this line should not be annotated,
-#     os.makedirs(SMBIOS_DIR)
+# SMBIOS_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\AT Report\\Haiyan5\\{0}'.format(timestamp)
+if not os.path.exists(SMBIOS_DIR):   # if run SMBIOS related test cases, this line should not be annotated,
+    os.makedirs(SMBIOS_DIR)
 SERIAL_LOG = os.path.join(LOG_DIR, 'serial.log')
 BINARY_DIR = '\\\\172.16.0.73\\HY5_Binary'
+
+CHIPSEC_DIR = 'C:\daily\HY5\\{0}\\'.format(timestamp)
+# CHIPSEC_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\AT Report\\Haiyan5\\{0}\\'.format(timestamp)
+if not os.path.exists(CHIPSEC_DIR):
+    os.makedirs(CHIPSEC_DIR)
+
 HPM_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\HY5 HPM'
 INI_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\AT Tools'
-SHAR_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\AT Report\\Haiyan5\\{0}'.format(timestamp)
-# if not os.path.exists(SHAR_DIR):
-#     os.makedirs(SHAR_DIR)
+SHAR_DIR = 'C:\daily\HY5\\{0}'.format(timestamp)
+# SHAR_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\AT Report\\Haiyan5\\{0}'.format(timestamp)
+if not os.path.exists(SHAR_DIR):
+    os.makedirs(SHAR_DIR)
 
 # Serial Port Configuration
 BIOS_SERIAL = "com3"
@@ -43,9 +52,9 @@ BIOS_USER = 'Admin@9000'
 BIOS_PASSWORD = 'Admin@9000'
 
 # OS Configuration
-OS_IP = '192.168.100.91'
+OS_IP = '192.168.1.93'
 OS_USER = 'root'
-OS_PASSWORD = 'byosoft@123'
+OS_PASSWORD = 'root'
 
 
 # Key mapping
@@ -66,6 +75,7 @@ class Key:
     LEFT = [chr(0x1b), chr(0x5b), chr(0x44)]
     RIGHT = [chr(0x1b), chr(0x5b), chr(0x43)]
     Y = [chr(0x59)]
+    exit = ([chr(0x65), chr(0x65),chr(0x78), chr(0x69), chr(0x74)])
 
 # pat
 pat = '[(\d+);\d+H[\w\s\d<>\[\]&-]'
@@ -83,17 +93,17 @@ msg3 = 'Press F6 go to SP boot'
 msg4 = 'BIOS Configuration'
 msg5 = 'USB Mouse\s+1'
 msg6 = 'USB Keyboard\s+1'
-msg7 = 'USB Mass Storage\s+2'
+msg7 = 'USB Mass Storage\s+\d'
 pwd_info = 'The current password is the default password.Please update password!'
 default_pwd = 'Admin@9000'
 
 # BIOS Setup options,
 # level 1
-PXE_option = 'UEFI HTTPSv4: Network - Port00 SLOT1'
+PXE_option = 'UEFI HTTPSv4: Intel Network - Port00 SLOT5'
 option = 'PCH Configuration'
 option2 = 'CPU Configuration'
 OS = 'P0-ubuntu - HDD 0'
-SUSE = 'P0-SUSE Linux Enterprise - HDD 0'
+SUSE = 'P0-SUSE Linux Enterprise - HDD 1'
 pwd_item = 'Manage Supervisor Password'
 pwd_item1 = 'Simple Password'
 
@@ -131,8 +141,8 @@ tpm_info = ['TPM Device\s+TPM 2.0', 'TPM2 Active PCR Hash\s+Algorithm+\s+SHA1\, 
 upi_state = ['Current UPI Link Speed\s+Fast', 'Current UPI Link Frequency\s+10\.4\s+GT\/s']
 
 # CPU, DIMM info
-CPU_info = ['Processor ID\s+0005065B', 'Processor Frequency\s+2.500GHz', 'Microcode Revision\s+0700001F']
-DIMM_info = ['DIMM000\s+S0.CA.D0:2933MT/s Hynix DRx4 32GB RDIMM', 'DIMM100\s+S1.CA.D0:2933MT/s Hynix DRx4 32GB RDIMM']
+CPU_info = ['Processor ID\s+0005065B', 'Processor Frequency\s+2.800GHz', 'Microcode Revision\s+0700001F']
+DIMM_info = ['DIMM000\s+S0.CA.D0:3200MT/s Micron DRx8 16GB RDIMM', 'DIMM100\s+S1.CA.D0:3200MT/s Micron DRx8 16GB RDIMM']
 
 # set by arthur, a common key order
 key2default = [Key.F9, Key.Y, Key.F10, Key.Y]

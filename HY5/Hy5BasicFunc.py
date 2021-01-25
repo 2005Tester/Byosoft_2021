@@ -14,9 +14,9 @@ P = LogAnalyzer(Hy5Config.LOG_DIR)
 
 # Basic Function Test Case: Flash, POST, Boot, Setup, OS Installation, PM, Device, Chipsec Test and Source code cons.
 # Flash: Upgrade flash, Parallel flash and Downgrade flash
-def updateBios(serial, img):
-    tc = ('010', 'Update BIOS by BMC', 'Outband BIOS update')
-    result = Misc.LogHeaderResult(tc, serial)
+
+#Get_Bios_img interface
+def get_Bios_img(serial,img,result):
     if not img:
         result.log_fail()
         return
@@ -25,6 +25,24 @@ def updateBios(serial, img):
         return
     result.log_pass()
     return True
+
+def updateBios(serial,img):
+    tc = ('010', 'Update BIOS by BMC', '现有版本更新到最新版本.')
+    result = Misc.LogHeaderResult(tc, serial)
+    get_Bios_img(serial,img,result)
+
+def DowngradeBios(serial,img):
+    tc = ('011', 'Downgrade BIOS by BMC', '现有版本更新到上一个版本.')
+    result = Misc.LogHeaderResult(tc, serial)
+    get_Bios_img(serial, img,result)
+
+def parallelBios(serial,img):
+    tc = ('012', 'Update BIOS by BMC', '还原系统默认版本后，使用同样版本更新.')
+    result = Misc.LogHeaderResult(tc, serial)
+    get_Bios_img(serial,img,result)  # 还原系统默认版本
+    print("还原系统默认版本")
+    get_Bios_img(serial,img, result)  # 使用同一个版本更新
+    print("使用同一个版本更新")
 
 
 # hpm update-downgrade cases,
@@ -36,7 +54,7 @@ def updateHPM(serial, ssh, img):
         result.log_fail()
         return
     serial.send_keys_with_delay(Hy5Config.key2OS)
-    if not serial.to_highlight_option(Key.DOWN, Hy5Config.OS, timeout=30):
+    if not serial.to_highlight_option(Key.UP,Hy5Config.SUSE):
         result.log_fail()
         return
     if not Hy5TcLib.ping_sut():
@@ -64,7 +82,7 @@ def updateHPM(serial, ssh, img):
 
 # POST: POST Log(TBD) and Information Check
 def POST_Test(serial, ssh):
-    tc = ('012', 'POST Information Test', 'POST Information Test')
+    tc = ('013', 'POST Information Test', 'POST Logo，DEL/F11/F12/F6 检查')
     result = Misc.LogHeaderResult(tc, serial)
     if not Hy5TcLib.force_reset(ssh):
         result.log_fail()
@@ -79,7 +97,7 @@ def POST_Test(serial, ssh):
 
 # PM: Warm reset n times, Cold reset n times and AC (TBD)
 def PM(serial, ssh, n=5):
-    tc = ('014', 'Power Control Test', 'Power Control Test')
+    tc = ('014', 'Power Control Test', '热启动5次, 冷启动5次，AC启动3次')
     result = Misc.LogHeaderResult(tc, serial)
     status = 0
     if not Hy5BaseAPI.toBIOS(serial, ssh):
@@ -118,12 +136,16 @@ def PM(serial, ssh, n=5):
 
 # PXE Test
 def pxeTest(serial, ssh, n=1):
-    tc = ('015', 'PXE Test', 'PXE Test')
+    tc = ('015', 'PXE Test', 'PXE 启动测试')
     result = Misc.LogHeaderResult(tc, serial)
     for i in range(n):
         if not Hy5BaseAPI.pressF12(serial, ssh):
             result.log_fail()
             return
+        # if serial.waitString('Shell', timeout=60):
+        #     serial.send_keys_with_delay([Key.exit]) ## 在shell下，输入exit
+        #     serial.send_data(chr(0x0D))
+
         if not serial.waitString('NBP file downloaded successfully', timeout=60):
             result.log_fail()
             return
@@ -156,7 +178,7 @@ def httpsTest(serial, ssh):
 
 # USB Test
 def usbTest(serial, ssh):
-    tc = ('017', 'USB Test', 'USB Test')
+    tc = ('017', 'USB Test', 'USB设备（键盘-鼠标-DVD-HDD等）检查')
     result = Misc.LogHeaderResult(tc, serial)
     if not Hy5BaseAPI.toBIOS(serial, ssh):
         return
@@ -182,7 +204,7 @@ def usbTest(serial, ssh):
 
 # Processor/DIMM Test
 def ProcessorDIMM(serial, ssh):
-    tc = ('019', 'Processor/DIMM Test', 'CPU/DIMM Test')
+    tc = ('019', 'Processor/DIMM Test', 'CPU/DIMM information 检查')
     result = Misc.LogHeaderResult(tc, serial)
     if not Hy5BaseAPI.toBIOS(serial, ssh):
         return
@@ -230,7 +252,7 @@ def chipsecTest(serial, ssh):
     if not Hy5BaseAPI.toBIOS(serial, ssh):
         return
     serial.send_keys_with_delay(Hy5Config.key2OS)
-    if not serial.to_highlight_option(Key.DOWN, Hy5Config.OS, timeout=30):
+    if not serial.to_highlight_option(Key.DOWN, Hy5Config.SUSE, timeout=30):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
@@ -246,7 +268,7 @@ def chipsecTest(serial, ssh):
 
 # press F2
 def pressF2(serial, ssh):
-    tc = ('041', 'Setup菜单用户输入界面按F2切换键盘制式', '支持热键配置')
+    tc = ('040', 'F2热键检查', 'Setup输入界面按F2切换热键检查')
     result = Misc.LogHeaderResult(tc, serial)
     if not Hy5TcLib.force_reset(ssh):
         result.log_fail()
@@ -325,18 +347,20 @@ def hy5BasicTest(serial, ssh, n=1):
     prev_image = updatebios.get_previous_test_image(Hy5Config.HPM_DIR)
 
     lst_binary_img = updatebios.get_test_image(Hy5Config.BINARY_DIR)
+    # lst_binary_img = Hy5Config.BINARY_DIR
     prev_binary_img = updatebios.get_previous_test_image(Hy5Config.BINARY_DIR)
 
     # AT cases,
     updateBios(serial, lst_binary_img)
-    updateBios(serial, prev_binary_img)
-    updateHPM(serial, ssh, prev_image)
-    updateHPM(serial, ssh, lst_image)
-    POST_Test(serial, ssh)
+    DowngradeBios(serial, prev_binary_img)
+    parallelBios(serial, lst_binary_img)
+    # updateHPM(serial, ssh, prev_image)
+    # updateHPM(serial, ssh, lst_image)
+    # httpsTest(serial, ssh)
     PM(serial, ssh)
+    POST_Test(serial, ssh)
     pxeTest(serial, ssh)
-    httpsTest(serial, ssh)
     usbTest(serial, ssh)
     ProcessorDIMM(serial, ssh)
-    chipsecTest(serial, ssh)
     pressF2(serial, ssh)
+    chipsecTest(serial, ssh)
