@@ -7174,6 +7174,7 @@
     }
     $(function () {
         $("#testVersion").text(resultData["testVersion"]);
+        $("#testConfig").text(resultData["testConfig"]);
         $("#testPass").text(resultData["testPass"]);
         $("#testFail").text(resultData["testFail"]);
         $("#testSkip").text(resultData["testSkip"]);
