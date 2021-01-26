@@ -348,7 +348,7 @@ def loadDefault(serial, ssh):
 
 # updated by arthur, Testcase_Static_Turbo_001
 def staticTurbo(serial, ssh):
-    tc = ('012', 'Testcase_Static_Turbo_001, 静态Turbo默认值测试', '支持静态turbo')
+    tc = ('012', 'Testcase_Static_Turbo_001', '静态Turbo默认值测试')
     result = Misc.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
@@ -383,7 +383,7 @@ def staticTurbo(serial, ssh):
 
 # Testcase_UFS_001,
 def ufs(serial, ssh):
-    tc = ('013', 'Testcase_UFS_001, UFS默认值测试', '支持UFS设置')
+    tc = ('013', 'Testcase_UFS_001', 'UFS默认值测试')
     result = Misc.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
@@ -884,7 +884,7 @@ def tpm(serial, ssh):
 
 # Testcase_VTD_002
 def vtd(serial, ssh):
-    tc = ('025', 'Testcase_VTD_002, 关闭VT-d功能启动测试', '支持VT-d')
+    tc = ('025', 'Testcase_VTD_002', '关闭VT-d功能启动测试')
     result = Misc.LogHeaderResult(tc, serial)
     if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED, serial, ssh):
         result.log_fail()

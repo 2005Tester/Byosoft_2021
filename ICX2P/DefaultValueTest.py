@@ -13,7 +13,7 @@ from Common import Misc
 
 # Testcase_RRQIRQ_001
 def rrqirq(serial, ssh):
-    tc = ('101', 'Testcase_RRQIRQ_001 Setup菜单RRQ和IRQ选项默认值测试', '支持RRQ&IRQ设置')
+    tc = ('101', 'Testcase_RRQIRQ_001', 'Setup菜单RRQ和IRQ选项默认值测试')
     result = Misc.LogHeaderResult(tc, serial)
     if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED, serial, ssh):
         result.log_fail()

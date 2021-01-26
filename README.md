@@ -6,6 +6,17 @@
 3. pip install pyserial  
 
 
+## 2288V6 Usage
+1. 自动测试入口脚本：TestIcx2P.py, 所有调通的case, 添加到runtest()里面 
+   可选参数: 不跟任何参数 - runtest() 里面包含的所有case执行一遍  
+            daily - runtest() 里面包含的所有case执行一遍 并把执行结果写入数据库, 测试结果呈现到Web页面   
+            debug - debug_run() 里面包含的所有case执行一遍  
+            loop - 循环执行runtest() 里面包含的所有case  
+2. Case 开发尽可能使用BaseLib里面已有API， 如果不能满足需求, 在BaseLib里面添加, 不直接调用Common下面的module.  
+3. Case按照手动测试用例列表分类, 不要全部放在同一个文件里面. 比如Cpu相关的可以全部放在Cpu.py里面.  
+4. 开发新Case尽可能跟手动测试用例一一对应，用例的tittle直接使用用例列表里面Testcase_Number, 如Testcase_DRAM_RAPL_001. description使用Testcase_Name, 如01 菜单项DRAM RAPL选单检查.  
+
+
 # Allow root login from SSH in Linux  
 ## Ubuntu Instructions  
 sudo apt install openssh-server  
