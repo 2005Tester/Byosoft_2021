@@ -11,7 +11,7 @@ from sys import argv
 from Common import LogConfig
 from Common import SutSerial
 from Common import ssh
-from Pangea import SutConfig
+from Pangea import SutConfig, Pcie
 from Report.ReportGen import ReportGenerator
 from Pangea.BaseLib import SetUpLib
 
@@ -20,6 +20,7 @@ ser = SutSerial.SutControl(SutConfig.BIOS_SERIAL, 115200, 0.5, SutConfig.SERIAL_
 
 # init BMC SSH interface
 ssh_bmc = ssh.SshConnection()
+ssh_os = ssh.SshConnection()
 
 # Init log setting
 def init_log():
@@ -44,7 +45,7 @@ def gen_report(log_dir):
 # for debug purpose
 def debug_run():
     log_dir = init_log()
-
+    Pcie.pci_resource(ssh_os)
     gen_report(log_dir)
 
 

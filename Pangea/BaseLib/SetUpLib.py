@@ -1,9 +1,7 @@
 from Common import ssh
 import logging
-from ICX2P.SutConfig import Key
-from ICX2P import SutConfig
-from ICX2P.SutConfig import Msg
-from ICX2P.BaseLib import icx2pAPI, PowerLib
+from Pangea.SutConfig import Key, Msg
+from Pangea import SutConfig
 
 
 # Send a single key, e.g. ENTER, DOWN, UP 

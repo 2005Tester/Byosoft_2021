@@ -15,9 +15,11 @@ PROJECT_NAME = "Pangea"
 SUT_CONFIG = "NVME-SH"
 REPORT_TEMPLATE = "Pangea\\Report\\template"
 
+LKG_LOG_DIR = "Pangea\\Lkg"
+
 # Environment settings
 timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-LOG_DIR = 'c:\\daily\\ICX2P\\{0}'.format(timestamp)
+LOG_DIR = 'c:\\daily\\Pangea\\{0}'.format(timestamp)
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 SMBIOS_DIR = 'c:\\daily\\SMBIOS'
@@ -43,9 +45,9 @@ BIOS_USER = 'Admin@9001'
 BIOS_PASSWORD = 'Admin@9000'
 
 # OS Configuration
-OS_IP = '192.168.3.200'
-OS_USER = 'root'
-OS_PASSWORD = '1'
+OS_IP = '192.168.100.48'
+OS_USER = 'byosoft'
+OS_PASSWORD = 'byosoft@123'
 
 
 # Key mapping

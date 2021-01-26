@@ -10,6 +10,7 @@
 import re
 import os
 import logging
+import difflib
 
 
 class LogAnalyzer:
@@ -27,6 +28,26 @@ class LogAnalyzer:
             logging.info("{0} doesn't exist".format(log))
         return log_list
 
+    # Check difference of two log files
+    @staticmethod
+    def check_diff(log1, log2):
+        logging.info("Comparing {0} and {1}".format(log1, log2))
+        try:
+            with open(log1, 'r') as f:
+                content_log1 = f.read().splitlines()
+            with open(log2, 'r') as f:
+                content_log2 = f.read().splitlines()
+        except FileNotFoundError:
+            logging.error("Please check whether log file exists.")
+            return True
+        d = difflib.Differ()
+        diffs = list(d.compare(content_log1, content_log2))
+        res = []
+        for diff in diffs:
+            if not re.search("^\s", diff):
+                res.append(diff)
+        return res
+
     def check_bios_log(self):
         ast = 0
         exception = 0
@@ -36,11 +57,11 @@ class LogAnalyzer:
         for line in data:
             if re.search("_assert", line, re.IGNORECASE):
                 logging.info("Assert found in line {0}".format(data.index(line)+1))
-                logging.info(line)
+                # logging.info(line)
                 ast +=1
-            if re.search("Exception", line, re.IGNORECASE):
+            if re.search("X64 Exception", line, re.IGNORECASE):
                 logging.info("Exception found in line {0}".format(data.index(line)+1))
-                logging.info(line)
+                # logging.info(line)
                 exception +=1
         if ast == 0:
             logging.info("No assert found in serial log.")
