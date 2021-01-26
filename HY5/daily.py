@@ -70,7 +70,7 @@ def get_test_image(path):
         versions = os.listdir(path)
         versions.sort(reverse=True)
         latest_version = versions[1]
-        logging.info("Latest Version is: %s" % (latest_version))
+        logging.info("Latest Code Version is: %s" % (latest_version))
         if latest_version in VER_TESTED:
             print("%s has been tested" %(latest_version))
             return SKIP_TEST      

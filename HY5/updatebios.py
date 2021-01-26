@@ -28,7 +28,10 @@ def get_test_image(path):
             latest_version = versions[0]
         else:
             latest_version = versions[1]
-        logging.info("Latest Version is: {0}".format(latest_version))
+        if re.search("[0-9]{4}", latest_version):
+            logging.info("Latest Code Version is: {0}".format(latest_version))
+        else:
+            logging.info("Latest Version is: {0}".format(latest_version))
         if latest_version in daily.VER_TESTED:
             logging.info("{0} has been tested".format(latest_version))
             return

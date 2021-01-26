@@ -140,8 +140,8 @@ class ReportGenerator:
     def get_code_version(self):
         version = "NA"
         for line in self.load_test_log():
-            if re.search("Latest Version is:|Commit:", line):
-                version = re.findall("Latest Version is: (\d+)", line)
+            if re.search("Latest Code Version is:|Commit:", line):
+                version = re.findall("Latest Code Version is: (\d+)", line)
                 if not version:
                     version = re.findall("Commit: ([0-9a-z]{8})", line)
                     version =version[0]
