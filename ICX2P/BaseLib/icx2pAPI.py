@@ -19,11 +19,10 @@ from ICX2P.BaseLib import Update, PowerLib
 
 # sftp, ssh(instantiation)
 s = sftp(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASSWORD)
-h = SSH.SshConnection()
 
 
 def dump_smbios(ssh, cmd='dmidecode'):
-    if ssh.login(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASSWORD):
+    if ssh.login():
         logging.info("Dumping smbios table...")
         return ssh.dump_info(cmd, SutConfig.LOG_DIR)
 
@@ -69,7 +68,7 @@ def clearCMOS(ssh):
             time.sleep(30)  # wait for 30s due to if in OS
             pass
 
-    if ssh.login(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD):
+    if ssh.login():
         return ssh.interaction(cmds, rets)
     else:
         logging.error("HY5 Common TC: clear CMOS failed")
@@ -84,7 +83,7 @@ def sftpFile(ssh):
     b = '{0}\\AT\\unitool.ini'.format(SutConfig.HPM_DIR)  # the level 2 folder name must be app, {0} - unitool path
     s.sftp.put(b, r'{0}/app/1.ini'.format(SutConfig.unitool_path), confirm=True)
     s.sftp.close()
-    if ssh.login(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASSWORD):
+    if ssh.login():
         logging.info("unitool...")
         ssh.execute_command(r'cd {0}/kernel;insmod ufudev.ko'.format(SutConfig.unitool_path))
         res = ssh.execute_command(r'cd {0}/app;./unitool -rf 1.ini | grep error'.format(SutConfig.unitool_path))
@@ -97,13 +96,13 @@ def sftpFile(ssh):
             if 'error' in res1:
                 logging.debug(res1)
                 return
-    h.close_session()
+    s.close_session()
     return True
 
 
 # cmp the diff files,
 def cmpFile(ssh):
-    if ssh.login(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASSWORD):
+    if ssh.login():
         logging.info("cmp the config ini file...")
         res = ssh.execute_command(r'cd {0}/app;./unitool -rf 1.ini | grep error'.format(SutConfig.unitool_path))
         if 'error' in res:
@@ -114,27 +113,25 @@ def cmpFile(ssh):
             if len(res1) != 0:
                 logging.debug(res1)
                 return
-    h.close_session()
     return True
 
 
 # chipsec_test,
 def chipsecMerge(ssh):
-    if ssh.login(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASSWORD):
+    if ssh.login():
         logging.info("chipsec Test...")
         res = ssh.execute_command(r'cd {0};python chipsec_main.py | grep -i failed'.format(SutConfig.chipsc_path))
         # print(res.decode())
         if 'FAILED:' in res:
             logging.debug(res)
             return
-    h.close_session()
     return True
 
 
 # OS - capture time,
 def osTime(ssh):
     t1 = ''
-    if ssh.login(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASSWORD):
+    if ssh.login():
         logging.info("Capture time...")
         res = ssh.execute_command(r'hwclock --show')
         t = res.decode()
@@ -142,7 +139,6 @@ def osTime(ssh):
         t1 = datetime.datetime.strptime(t0, '%Y-%m-%d %H:%M:%S')
         time.sleep(1)
     ssh.execute_command('reboot')
-    h.close_session()
     return t1
 
 
@@ -152,7 +148,7 @@ def equipment(ssh):
     b = '{0}\\AT\\equipment.ini'.format(SutConfig.HPM_DIR)  # the level 2 folder name must be app, {0} - unitool path
     s.sftp.put(b, r'{0}/app/2.ini'.format(SutConfig.unitool_path), confirm=True)
     s.sftp.close()
-    if ssh.login(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASSWORD):
+    if ssh.login():
         logging.info("unitool...")
         ssh.execute_command(r'cd {0}/kernel;insmod ufudev.ko'.format(SutConfig.unitool_path))
         res = ssh.execute_command(r'cd {0}/app;./unitool -wf 2.ini | grep error'.format(SutConfig.unitool_path))
@@ -160,14 +156,14 @@ def equipment(ssh):
             logging.debug(res)
             return
     ssh.execute_command('reboot')
-    h.close_session()
+    s.close_session()
     return True
 
 
 # used for unitool test
 def unitool(ssh, data):
     time.sleep(5)
-    if ssh.login(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASSWORD):
+    if ssh.login():
         ssh.execute_command(r'cd {0}/kernel;insmod ufudev.ko'.format(SutConfig.unitool_path))
         logging.info('Start to set the value...')
         print(data)
@@ -178,7 +174,6 @@ def unitool(ssh, data):
             logging.debug(res)
             pass
     ssh.execute_command('reboot')
-    h.close_session()
     return True
 
 

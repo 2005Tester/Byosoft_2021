@@ -103,11 +103,11 @@ def hpm_update():
         print(res)
         op.close()
         s.close()
-        return  
+        return
 
 
 def program_flash():
-    sshconn = ssh.SshConnection()
+    sshconn = ssh.SshConnection(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)
     # Program flash procedure: power off->maint mode->attach upgrade ->load bin
     cmd_shutdown = 'ipmcset -d powerstate -v 2\n'
     ret_shutdown = 'Do you want to continue'
@@ -121,13 +121,13 @@ def program_flash():
     ret_load = 'load bios succefully'
     cmds = [cmd_shutdown, cmd_confirm, cmd_maint_mode, cmd_upgrade_mode, cmd_load]
     rets = [ret_shutdown, ret_confirm, ret_maint_mode, ret_upgrade_mode, ret_load]
-    
-    if sshconn.login(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD):
+
+    if sshconn.login():
         return sshconn.interaction(cmds, rets)
-        
-  
+
+
 def poweron_sut():
-    sshconn = ssh.SshConnection()
+    sshconn = ssh.SshConnection(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)
     cmd_power_on = 'ipmcset -d powerstate -v 1\n'
     ret_power_on = 'Do you want to continue'
     cmd_confirm = 'Y\n'
@@ -139,9 +139,9 @@ def poweron_sut():
     cmds = [cmd_power_on, cmd_confirm, cmd_fan_manual_mode, cmd_fan_40]
     rets = [ret_power_on, ret_confirm, ret_fan_manual_mode, ret_fan_40]
 
-    if sshconn.login(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD):
-        return sshconn.interaction(cmds, rets)
-    
+    if sshconn.login():
+        return sshconn.interaction(cmds, rets)   
+
 
 def update_specific_img(bios, serial):
     if not upload_bios(bios):

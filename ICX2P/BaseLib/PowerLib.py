@@ -7,7 +7,7 @@ def is_power_off(ssh):
     logging.info("Check power status...")
     cmd_on = 'ipmcget -d powerstate\n'
     ret_confirm = 'Off'
-    if ssh.login(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD):
+    if ssh.login():
         ret = ssh.execute_command_interaction(cmd_on)
         if ret_confirm in ret.decode():
             logging.info('Current power state is Off')
@@ -16,7 +16,8 @@ def is_power_off(ssh):
             logging.info('Current power state is On')
             return
 
-# power on SUT by BMC commaand            
+
+# power on SUT by BMC command
 def power_on(ssh):
     logging.info("Power on system.")
     cmd_reset = 'ipmcset -d powerstate -v 1\n'
@@ -25,11 +26,12 @@ def power_on(ssh):
     ret_confirm = 'successfully'
     cmds = [cmd_reset, cmd_confirm]
     rets = [ret_reset, ret_confirm]
-    if ssh.login(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD):
+    if ssh.login():
         return ssh.interaction(cmds, rets)
     else:
         logging.error("HY5 Common TC: Power on failed")
         return
+
 
 # power off sut by BMC command
 def power_off(ssh):
@@ -40,11 +42,12 @@ def power_off(ssh):
     ret_confirm = 'successfully'
     cmds = [cmd_reset, cmd_confirm]
     rets = [ret_reset, ret_confirm]
-    if ssh.login(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD):
+    if ssh.login():
         return ssh.interaction(cmds, rets)
     else:
         logging.error("Power off failed")
         return
+
 
 # Force reset SUT by BMC command
 def force_reset(ssh):
@@ -58,11 +61,12 @@ def force_reset(ssh):
         ret_confirm = 'successfully'
         cmds = [cmd_reset, cmd_confirm]
         rets = [ret_reset, ret_confirm]
-        if ssh.login(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD):
+        if ssh.login():
             return ssh.interaction(cmds, rets)
         else:
             logging.error("Force system reset failed")
             return
+
 
 # Force power cycle by BMC command
 def force_power_cycle(ssh):
@@ -73,7 +77,7 @@ def force_power_cycle(ssh):
     ret_confirm = 'successfully'
     cmds = [cmd_powercycle, cmd_confirm]
     rets = [ret_powercycle, ret_confirm]
-    if ssh.login(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD):
+    if ssh.login():
         return ssh.interaction(cmds, rets)
     else:
         logging.error("HY5 Common TC: force powercycle failed")
