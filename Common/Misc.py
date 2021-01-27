@@ -34,3 +34,6 @@ class LogHeaderResult:
         logging.info(self.msg_fail)
         logging.info("-"*80)
 
+    def log_skip(self):
+        logging.info(self.msg_skip)
+        logging.info("-"*80)

@@ -16,6 +16,7 @@ import datetime
 # Report and logging Settings
 PROJECT_NAME = "Pangea"
 SUT_CONFIG = "NVME-SH"
+BOARD_TYPE = "NVME2P"
 REPORT_TEMPLATE = "Pangea\\Report\\template"
 # timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 LOG_DIR = 'c:\\daily\\Pangea\\{0}'.format(datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
@@ -107,22 +108,21 @@ class Msg:
 #     Pcie Resource Table for TC201      #
 ##########################################
 # PCIE Resource for NVME2P board
-PCI_NVME_2P = []
 ROOT_PORT_17 = ("00:1b.0", ["Memory behind bridge: 9e400000-a03fffff [size=32M]", "Prefetchable memory behind bridge: 0000200f7ae00000-0000200fbadfffff [size=1G]"])
 ROOT_PORT_18 = ("00:1b.1", ["Memory behind bridge: 9c400000-9e3fffff [size=32M]", "Prefetchable memory behind bridge: 0000200fbae00000-0000200ffadfffff [size=1G]"])
 ROOT_PORT_19 = ("00:1b.2", ["Memory behind bridge: 94000000-9bffffff [size=128M]", "Prefetchable memory behind bridge: 0000200ffae00000-0000200ffedfffff [size=64M]"])
 ROOT_PORT_20 = ("00:1b.3", ["Memory behind bridge: [disabled]", "Prefetchable memory behind bridge: [disabled]"])
 ROOT_PORT_13 = ("00:1d.0", ["Memory behind bridge: [disabled]", "Prefetchable memory behind bridge: [disabled]"])
 ROOT_PORT_15 = ("00:1d.6", ["Memory behind bridge: 9c000000-9c3fffff [size=4M]", "Prefetchable memory behind bridge: 0000200ffee00000-0000200fffdfffff [size=16M]"])
-DEV_16_04_0 =  ("16:04.0", ["Memory behind bridge: a4800000-a87fffff [size=64M]", "Prefetchable memory behind bridge: 0000201fbff00000-0000201fffefffff [size=1G]"])
-TBD =          ("30:02.0", ["Memory behind bridge: adc00000-b1bfffff [size=64M]", "Prefetchable memory behind bridge: 0000202f7ff00000-0000202fbfefffff [size=1G]"])
-TBD =          ("30:04.0", ["Memory behind bridge: a9c00000-adbfffff [size=64M]", "Prefetchable memory behind bridge: 0000202fbff00000-0000202fffefffff [size=1G]"])
-TBD =          ("4a:02.0", ["Memory behind bridge: bc400000-c03fffff [size=64M]", "Prefetchable memory behind bridge: 0000203fbfc00000-0000203fffbfffff [size=1G]"])
-TBD =          ("4a:04.0", ["Memory behind bridge: b4400000-bc3fffff [size=128M]", "Prefetchable memory behind bridge: 0000203f7fc00000-0000203fbfbfffff [size=1G]"])
-TBD =          ("57:00.0", ["Memory behind bridge: b4400000-b73fffff [size=48M]", "Prefetchable memory behind bridge: 0000203f80000000-0000203f8bffffff [size=192M]"])
-TBD =          ("58:00.0", ["Memory behind bridge: b7000000-b73fffff [size=4M]", "Prefetchable memory behind bridge: 0000203f8b000000-0000203f8bffffff [size=16M]"])
-TBD =          ("58:01.0", ["Memory behind bridge: b6c00000-b6ffffff [size=4M]", "Prefetchable memory behind bridge: 0000203f8a000000-0000203f8affffff [size=16M]"])
-TBD =          ("58:02.0", ["Memory behind bridge: b6800000-b6bfffff [size=4M]", "Prefetchable memory behind bridge: 0000203f89000000-0000203f89ffffff [size=16M]"])
+DEV_16_04_0 = ("16:04.0", ["Memory behind bridge: a4800000-a87fffff [size=64M]", "Prefetchable memory behind bridge: 0000201fbff00000-0000201fffefffff [size=1G]"])
+DEV_30_02_0 = ("30:02.0", ["Memory behind bridge: adc00000-b1bfffff [size=64M]", "Prefetchable memory behind bridge: 0000202f7ff00000-0000202fbfefffff [size=1G]"])
+DEV_30_04_0 = ("30:04.0", ["Memory behind bridge: a9c00000-adbfffff [size=64M]", "Prefetchable memory behind bridge: 0000202fbff00000-0000202fffefffff [size=1G]"])
+DEV_4A_02_0 = ("4a:02.0", ["Memory behind bridge: bc400000-c03fffff [size=64M]", "Prefetchable memory behind bridge: 0000203fbfc00000-0000203fffbfffff [size=1G]"])
+DEV_4A_04_0 = ("4a:04.0", ["Memory behind bridge: b4400000-bc3fffff [size=128M]", "Prefetchable memory behind bridge: 0000203f7fc00000-0000203fbfbfffff [size=1G]"])
+DEV_57_00_0 = ("57:00.0", ["Memory behind bridge: b4400000-b73fffff [size=48M]", "Prefetchable memory behind bridge: 0000203f80000000-0000203f8bffffff [size=192M]"])
+DEV_58_00_0 = ("58:00.0", ["Memory behind bridge: b7000000-b73fffff [size=4M]", "Prefetchable memory behind bridge: 0000203f8b000000-0000203f8bffffff [size=16M]"])
+DEV_58_01_0 = ("58:01.0", ["Memory behind bridge: b6c00000-b6ffffff [size=4M]", "Prefetchable memory behind bridge: 0000203f8a000000-0000203f8affffff [size=16M]"])
+DEV_58_02_0 = ("58:02.0", ["Memory behind bridge: b6800000-b6bfffff [size=4M]", "Prefetchable memory behind bridge: 0000203f89000000-0000203f89ffffff [size=16M]"])
 TBD =          ("58:03.0", ["Memory behind bridge: b6400000-b67fffff [size=4M]", ""])
 TBD =          ("58:04.0", ["", ""])
 TBD =          ("58:05.0", ["", ""])
@@ -170,7 +170,9 @@ TBD =          ("df:09.0", ["", ""])
 TBD =          ("df:0a.0", ["", ""])
 TBD =          ("df:0b.0", ["", ""])
 
-
+PCI_NVME_2P = [ROOT_PORT_17, ROOT_PORT_18, ROOT_PORT_19, ROOT_PORT_20, ROOT_PORT_13, ROOT_PORT_15,
+               DEV_16_04_0, DEV_30_02_0, DEV_30_04_0, DEV_4A_02_0, DEV_4A_04_0, DEV_57_00_0,
+               DEV_58_00_0, DEV_58_01_0, DEV_58_02_0]
 
 
 

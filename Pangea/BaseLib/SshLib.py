@@ -35,7 +35,7 @@ def dump_info(ssh, command, log_name=None):
 # Check difference of a test log (obtaind from ssh) with a standard log
 def check_diff(ssh, command, lkg):
     if not os.path.exists(lkg):
-        logging.info("Last known good log for comparision doesn't exist")
+        logging.info("Log: {0} for comparision not found".format(lkg))
         return
     logging.info("Dumping log for: {0}".format(command))
     current_log = dump_info(ssh, command)
