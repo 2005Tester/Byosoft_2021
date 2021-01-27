@@ -70,9 +70,7 @@ class Key:
     Y = [chr(0x59)]
 
 
-
 # Messages to identify a spcific boot option, page, menu or system status 
-
 class Msg:
     HOTKEY_PROMPT_DEL = 'Press Del go to Setup Utility'
     HOTKEY_PROMPT_F11 = 'Press F11 go to BootManager'
@@ -98,8 +96,6 @@ class Msg:
     UNCORE_CONFIG = 'Uncore Configuration'
     UNCORE_GENERAL = 'Uncore General Configuration'
 
-
-
     # menus of PCH configuration
     PCH_CONFIG = 'PCH CONFIGURATION'
     NETWORK_CONFIG = 'Network Configuration'
@@ -107,8 +103,12 @@ class Msg:
     # patch of setup menus
     PATH_UNCORE_GENERAL = [CPU_CONFIG, UNCORE_CONFIG, UNCORE_GENERAL]
 
-    
 
+# Pcie Resource Table for TC201
+ROOT_PORT_17 = ("00:1b.0", ["Memory behind bridge: 9e400000-a03fffff [size=32M]", "Prefetchable memory behind bridge: 0000200f7ae00000-0000200fbadfffff [size=1G]"])
+ROOT_PORT_18 = ("00:1b.1", ["Memory behind bridge: 9c400000-9e3fffff [size=32M]", "Prefetchable memory behind bridge: 0000200fbae00000-0000200ffadfffff [size=1G]"])
+ROOT_PORT_19 = ("00:1b.1", ["Memory behind bridge: 94000000-9bffffff [size=128M]", "Prefetchable memory behind bridge: 0000200ffae00000-0000200ffedfffff [size=64M]"])
+ROOT_PORT_15 = ("00:1d.6", ["Memory behind bridge: 9c000000-9c3fffff [size=4M]", "Prefetchable memory behind bridge: 0000200ffee00000-0000200fffdfffff [size=16M]"])
 
 
 # pat
@@ -138,13 +138,7 @@ pwd_item = 'Manage Supervisor Password'
 pwd_item1 = 'Simple Password'
 
 # level 2
-option3 = 'Processor Configuration'
-option5 = 'Memory Topology'
-option1 = 'USB Configuration'
-option6 = 'Advanced Power Mgmt. Configuration'
-option7 = 'Miscellaneous Configuration'
-option8 = 'CPU P State Control'
-option9 = 'Uncore Configuration'
+
 VIRTUALIZATION_CONFIG = 'Virtualization Configuration'
 
 # level 3

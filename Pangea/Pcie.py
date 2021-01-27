@@ -5,8 +5,8 @@ from Pangea.BaseLib import SshLib
 from Pangea import SutConfig
 
 ##########################################
-####        PCIE Test Cases          #####
-####        Testcase ID: 2xx         #####
+#        PCIE Test Cases                 #
+#        Testcase ID: 2xx                #
 ##########################################
 
 
@@ -24,18 +24,27 @@ def pci_resource_tree_view(ssh):
     result.log_pass()
     return True
 
-# tests case to check whetehr resource allocated for root ports are correct 
+
+# tests case to check whetehr resource allocated for root ports are correct
 # Precondition: Network is connected, OS can be accessed via ssh
 # On Start: in OS
 # On Complete: in OS
 def pci_resource_root_port(ssh):
     tc = ('201', 'PCIE Resource Test 02', 'check whetehr resource allocated for root ports are correct')
     result = Misc.LogHeaderResult(tc)
-    logging.info("Check resource allocation for root port 1")
-    root_port1 = ["Memory behind bridge: 9b800000-9b9fffff", "Prefetchable memory behind bridge: 0000000098000000-0000000099ffffff"]
-    if not SshLib.verify_info(ssh, "OS", "lspci -s 00:1c.0 -vv", root_port1):
+    fail_cnt = 0
+    ports = [SutConfig.ROOT_PORT_17, SutConfig.ROOT_PORT_18, SutConfig.ROOT_PORT_19, SutConfig.ROOT_PORT_15]
+    for port in ports:
+        logging.info("Check resource allocation for: {0}".format(port[0]))
+        if not SshLib.verify_info(ssh, "OS", "lspci -s {0} -vv".format(port[0]), port[1]):
+            fail_cnt += 1
+        else:
+            logging.info("Verified: {0}".format(port(0)))
+    if fail_cnt == 0:
+        logging.info("Resource allocation for all root port verified")
+        result.log_pass()
+        return True
+    else:
+        logging.info("{0} out of {1} test failed".format(fail_cnt, len(ports)))
         result.log_fail()
         return
-    logging.info("Resource allocation for root port 1 verified")
-    result.log_pass()
-    return True
