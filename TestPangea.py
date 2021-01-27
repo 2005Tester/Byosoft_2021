@@ -39,10 +39,10 @@ def gen_report(log_dir):
     template = SutConfig.REPORT_TEMPLATE
     report = ReportGenerator(template, os.path.join(log_dir, "test.log"), os.path.join(log_dir, "report.html"))
     report.write_to_html()
-    if argv[1] == "daily":
+    if argv[1] and argv[1] == "daily":
         report.post_result()
 
-    
+
 # for debug purpose
 def debug_run():
     log_dir = init_log()
@@ -56,7 +56,7 @@ def run_test():
     log_dir = init_log()
 
     gen_report(log_dir)
-   
+
 
 if __name__ == '__main__':
     if len(argv) == 1 or argv[1] == "daily":
@@ -68,7 +68,7 @@ if __name__ == '__main__':
             logging.info("-"*50 + "\n" + " "*45 + "Test Cycle:{0}".format(cycle))
             logging.info("-"*50)
             run_test()
-            cycle +=1
+            cycle += 1
     elif argv[1] == "debug":
         debug_run()
 

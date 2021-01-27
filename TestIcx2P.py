@@ -19,11 +19,12 @@ from ICX2P.BaseLib import SetUpLib
 ser = SutSerial.SutControl(SutConfig.BIOS_SERIAL, 115200, 0.5, SutConfig.SERIAL_LOG)
 
 # init BMC SSH interface
-ssh_bmc = ssh.SshConnection()
+ssh_bmc = ssh.SshConnection(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)
+
 
 # Init log setting
 def init_log():
-    log_dir = SutConfig.LOG_DIR 
+    log_dir = SutConfig.LOG_DIR
     log_format = LogConfig.gen_config(log_dir)
     logging.config.dictConfig(log_format)
     logging.getLogger("paramiko").setLevel(logging.WARNING)
@@ -37,10 +38,10 @@ def gen_report(log_dir):
     template = SutConfig.REPORT_TEMPLATE
     report = ReportGenerator(template, os.path.join(log_dir, "test.log"), os.path.join(log_dir, "report.html"))
     report.write_to_html()
-    if argv[1] == "daily":
+    if argv[1] and argv[1] == "daily":
         report.post_result()
 
-    
+
 # for debug purpose
 def debug_run():
     log_dir = init_log()
@@ -73,7 +74,7 @@ def run_test():
     Os.boot_to_suse(ser, ssh_bmc)
 #    biosTest.logTime(ser, ssh_bmc)
     gen_report(log_dir)
-   
+
 
 if __name__ == '__main__':
     if len(argv) == 1 or argv[1] == "daily":
@@ -85,7 +86,6 @@ if __name__ == '__main__':
             logging.info("-"*50 + "\n" + " "*45 + "Test Cycle:{0}".format(cycle))
             logging.info("-"*50)
             run_test()
-            cycle +=1
+            cycle += 1
     elif argv[1] == "debug":
         debug_run()
-
