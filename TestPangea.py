@@ -19,12 +19,13 @@ from Pangea.BaseLib import SetUpLib
 ser = SutSerial.SutControl(SutConfig.BIOS_SERIAL, 115200, 0.5, SutConfig.SERIAL_LOG)
 
 # init BMC SSH interface
-ssh_bmc = ssh.SshConnection()
-ssh_os = ssh.SshConnection()
+ssh_bmc = ssh.SshConnection(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)
+ssh_os = ssh.SshConnection(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASSWORD)
+
 
 # Init log setting
 def init_log():
-    log_dir = SutConfig.LOG_DIR 
+    log_dir = SutConfig.LOG_DIR
     log_format = LogConfig.gen_config(log_dir)
     logging.config.dictConfig(log_format)
     logging.getLogger("paramiko").setLevel(logging.WARNING)

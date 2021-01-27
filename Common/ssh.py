@@ -37,14 +37,17 @@ class sftp:
 
 
 class SshConnection:
-    def __init__(self):
+    def __init__(self, host_ip, usernmae, password):
+        self.host_ip = host_ip
+        self.username = usernmae
+        self.password = password
         self.ssh_client = paramiko.SSHClient()
- 
-    def login(self, host_ip, username, password):
-        logging.debug("SSH login: {0}".format(host_ip))
+
+    def login(self):
+        logging.debug("SSH login: {0}".format(self.host_ip))
         try:
             self.ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            self.ssh_client.connect(host_ip, port=22, username=username, password=password)
+            self.ssh_client.connect(self.host_ip, port=22, username=self.username, password=self.password)
         except AuthenticationException:
             logging.error('Error in ssh connection: Incorrect Username or Password.')
             return
@@ -54,12 +57,12 @@ class SshConnection:
         except TimeoutError:
             logging.info("Timeout..., retry aftre 15 seconds...")
             time.sleep(15)
-            self.login(host_ip, username, password)
+            self.login(self.host_ip, self.username, self.password)
         except:
             logging.error("Error in ssh connection:", sys.exc_info()[0])
             return
         return True
-    
+
     # execute command on SUT
     def execute_command(self, command):
         logging.info("Sending: {0}".format(command))

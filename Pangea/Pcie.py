@@ -18,7 +18,7 @@ def pci_resource_tree_view(ssh):
     tc = ('200', 'PCIE Resource Test 01', 'check whetehr lspci -tv result is different after bios update')
     result = Misc.LogHeaderResult(tc)
     lkg_log = os.path.join(SutConfig.LKG_LOG_DIR, "lspci_tv.log")
-    if not SshLib.check_diff(ssh, "OS", "lspci -tv", lkg_log):
+    if not SshLib.check_diff(ssh, "lspci -tv", lkg_log):
         result.log_fail()
         return
     result.log_pass()
@@ -36,7 +36,7 @@ def pci_resource_root_port(ssh):
     ports = [SutConfig.ROOT_PORT_17, SutConfig.ROOT_PORT_18, SutConfig.ROOT_PORT_19, SutConfig.ROOT_PORT_15]
     for port in ports:
         logging.info("Check resource allocation for: {0}".format(port[0]))
-        if not SshLib.verify_info(ssh, "OS", "lspci -s {0} -vv".format(port[0]), port[1]):
+        if not SshLib.verify_info(ssh, "lspci -s {0} -vv".format(port[0]), port[1]):
             fail_cnt += 1
         else:
             logging.info("Verified: {0}".format(port(0)))

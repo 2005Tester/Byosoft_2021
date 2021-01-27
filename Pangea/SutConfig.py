@@ -10,47 +10,44 @@
 import os
 import datetime
 
-# Report Setting
+###################################################
+#     Test Execution and SUT Global Settings      #
+###################################################
+# Report and logging Settings
 PROJECT_NAME = "Pangea"
 SUT_CONFIG = "NVME-SH"
 REPORT_TEMPLATE = "Pangea\\Report\\template"
-
-LKG_LOG_DIR = "Pangea\\Lkg"
-
-# Environment settings
-timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-LOG_DIR = 'c:\\daily\\Pangea\\{0}'.format(timestamp)
+# timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+LOG_DIR = 'c:\\daily\\Pangea\\{0}'.format(datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
-SMBIOS_DIR = 'c:\\daily\\SMBIOS'
-# if not os.path.exists(SMBIOS_DIR):
-#     os.makedirs(SMBIOS_DIR)
 SERIAL_LOG = os.path.join(LOG_DIR, 'serial.log')
-
-HPM_DIR = ''
-INI_DIR = ''
-SHAR_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\AT Report\\2288V6\\{0}'.format(timestamp)
 
 # Serial Port Configuration
 BIOS_SERIAL = "com3"
 
-# BMC Configuration
+# BMC Network Configuration
 BMC_IP = '192.168.2.102'
 BMC_USER = 'Administrator'
 BMC_PASSWORD = 'Admin@9001'
 PORT = 22
 
-# BIOS Configuration
+# BIOS Auth Configuration
 BIOS_USER = 'Admin@9001'
 BIOS_PASSWORD = 'Admin@9000'
 
-# OS Configuration
+# OS Network Configuration
 OS_IP = '192.168.100.48'
 OS_USER = 'byosoft'
 OS_PASSWORD = 'byosoft@123'
 
+# Some test cases may depends on below settings
+LKG_LOG_DIR = "Pangea\\Lkg"
 
-# Key mapping
+
+##########################################
+#               Key Mapping              #
+##########################################
 class Key:
     ENTER = [chr(0x0D)]
     DEL = [chr(0x7F)]
@@ -70,7 +67,9 @@ class Key:
     Y = [chr(0x59)]
 
 
-# Messages to identify a spcific boot option, page, menu or system status 
+####################################################################################
+#     Messages to identify a spcific boot option, page, menu or system status      #
+####################################################################################
 class Msg:
     HOTKEY_PROMPT_DEL = 'Press Del go to Setup Utility'
     HOTKEY_PROMPT_F11 = 'Press F11 go to BootManager'
@@ -104,11 +103,76 @@ class Msg:
     PATH_UNCORE_GENERAL = [CPU_CONFIG, UNCORE_CONFIG, UNCORE_GENERAL]
 
 
-# Pcie Resource Table for TC201
+##########################################
+#     Pcie Resource Table for TC201      #
+##########################################
+# PCIE Resource for NVME2P board
+PCI_NVME_2P = []
 ROOT_PORT_17 = ("00:1b.0", ["Memory behind bridge: 9e400000-a03fffff [size=32M]", "Prefetchable memory behind bridge: 0000200f7ae00000-0000200fbadfffff [size=1G]"])
 ROOT_PORT_18 = ("00:1b.1", ["Memory behind bridge: 9c400000-9e3fffff [size=32M]", "Prefetchable memory behind bridge: 0000200fbae00000-0000200ffadfffff [size=1G]"])
-ROOT_PORT_19 = ("00:1b.1", ["Memory behind bridge: 94000000-9bffffff [size=128M]", "Prefetchable memory behind bridge: 0000200ffae00000-0000200ffedfffff [size=64M]"])
+ROOT_PORT_19 = ("00:1b.2", ["Memory behind bridge: 94000000-9bffffff [size=128M]", "Prefetchable memory behind bridge: 0000200ffae00000-0000200ffedfffff [size=64M]"])
+ROOT_PORT_20 = ("00:1b.3", ["Memory behind bridge: [disabled]", "Prefetchable memory behind bridge: [disabled]"])
+ROOT_PORT_13 = ("00:1d.0", ["Memory behind bridge: [disabled]", "Prefetchable memory behind bridge: [disabled]"])
 ROOT_PORT_15 = ("00:1d.6", ["Memory behind bridge: 9c000000-9c3fffff [size=4M]", "Prefetchable memory behind bridge: 0000200ffee00000-0000200fffdfffff [size=16M]"])
+DEV_16_04_0 =  ("16:04.0", ["Memory behind bridge: a4800000-a87fffff [size=64M]", "Prefetchable memory behind bridge: 0000201fbff00000-0000201fffefffff [size=1G]"])
+TBD =          ("30:02.0", ["Memory behind bridge: adc00000-b1bfffff [size=64M]", "Prefetchable memory behind bridge: 0000202f7ff00000-0000202fbfefffff [size=1G]"])
+TBD =          ("30:04.0", ["Memory behind bridge: a9c00000-adbfffff [size=64M]", "Prefetchable memory behind bridge: 0000202fbff00000-0000202fffefffff [size=1G]"])
+TBD =          ("4a:02.0", ["Memory behind bridge: bc400000-c03fffff [size=64M]", "Prefetchable memory behind bridge: 0000203fbfc00000-0000203fffbfffff [size=1G]"])
+TBD =          ("4a:04.0", ["Memory behind bridge: b4400000-bc3fffff [size=128M]", "Prefetchable memory behind bridge: 0000203f7fc00000-0000203fbfbfffff [size=1G]"])
+TBD =          ("57:00.0", ["Memory behind bridge: b4400000-b73fffff [size=48M]", "Prefetchable memory behind bridge: 0000203f80000000-0000203f8bffffff [size=192M]"])
+TBD =          ("58:00.0", ["Memory behind bridge: b7000000-b73fffff [size=4M]", "Prefetchable memory behind bridge: 0000203f8b000000-0000203f8bffffff [size=16M]"])
+TBD =          ("58:01.0", ["Memory behind bridge: b6c00000-b6ffffff [size=4M]", "Prefetchable memory behind bridge: 0000203f8a000000-0000203f8affffff [size=16M]"])
+TBD =          ("58:02.0", ["Memory behind bridge: b6800000-b6bfffff [size=4M]", "Prefetchable memory behind bridge: 0000203f89000000-0000203f89ffffff [size=16M]"])
+TBD =          ("58:03.0", ["Memory behind bridge: b6400000-b67fffff [size=4M]", ""])
+TBD =          ("58:04.0", ["", ""])
+TBD =          ("58:05.0", ["", ""])
+TBD =          ("58:06.0", ["", ""])
+TBD =          ("58:07.0", ["", ""])
+TBD =          ("58:08.0", ["", ""])
+TBD =          ("58:09.0", ["", ""])
+TBD =          ("58:09.0", ["", ""])
+TBD =          ("58:0a.0", ["", ""])
+TBD =          ("58:0b.0", ["", ""])
+TBD =          ("74:02.0", ["", ""])
+TBD =          ("97:02.0", ["", ""])
+TBD =          ("98:00.0", ["", ""])
+TBD =          ("9f:02.0", ["", ""])
+TBD =          ("9f:04.0", ["", ""])
+TBD =          ("ac:00.0", ["", ""])
+TBD =          ("ad:00.0", ["", ""])
+TBD =          ("b3:02.0", ["", ""])
+TBD =          ("c5:02.0", ["", ""])
+TBD =          ("c6:00.0", ["", ""])
+TBD =          ("c7:00.0", ["", ""])
+TBD =          ("c7:01.0", ["", ""])
+TBD =          ("c7:02.0", ["", ""])
+TBD =          ("c7:03.0", ["", ""])
+TBD =          ("c7:04.0", ["", ""])
+TBD =          ("c7:05.0", ["", ""])
+TBD =          ("c7:06.0", ["", ""])
+TBD =          ("c7:07.0", ["", ""])
+TBD =          ("c7:08.0", ["", ""])
+TBD =          ("c7:09.0", ["", ""])
+TBD =          ("c7:0a.0", ["", ""])
+TBD =          ("c7:0b.0", ["", ""])
+TBD =          ("c5:04.0", ["", ""])
+TBD =          ("de:00.0", ["", ""])
+TBD =          ("df:00.0", ["", ""])
+TBD =          ("df:01.0", ["", ""])
+TBD =          ("df:02.0", ["", ""])
+TBD =          ("df:03.0", ["", ""])
+TBD =          ("df:04.0", ["", ""])
+TBD =          ("df:05.0", ["", ""])
+TBD =          ("df:06.0", ["", ""])
+TBD =          ("df:07.0", ["", ""])
+TBD =          ("df:08.0", ["", ""])
+TBD =          ("df:09.0", ["", ""])
+TBD =          ("df:0a.0", ["", ""])
+TBD =          ("df:0b.0", ["", ""])
+
+
+
+
 
 
 # pat
