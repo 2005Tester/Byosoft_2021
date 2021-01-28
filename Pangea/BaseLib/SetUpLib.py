@@ -1,14 +1,16 @@
-from Common import ssh
 import logging
 from Pangea.SutConfig import Key, Msg
-from Pangea.BaseLib import SerialLib, SshLib
+from Pangea.BaseLib import SerialLib
 from Pangea import SutConfig
 
 
 # verify information like CPU, memory in one setup page
-def verify_info():
-    # todo
-    pass
+def verify_info(serial, setup_options, try_count):
+    if serial.navigate_and_verify(Key.DOWN, setup_options, try_count):
+        return True
+    if not len(setup_options) == 0:
+        if serial.navigate_and_verify(Key.UP, setup_options, try_count):
+            return True
 
 
 # Verify a few setup options and desired values in one setup page

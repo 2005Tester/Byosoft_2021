@@ -25,8 +25,7 @@ class SutControl:
         try:
             self.session = serial.Serial(self.port, self.baudrate, timeout=self.timeout)
             if self.session.is_open:
-                logging.info("Serial port opened.")
-                
+                logging.info("Serial port opened.")               
         except Exception as e:
             logging.error(e)
             logging.info("SutControl: init failed.")
@@ -81,7 +80,7 @@ class SutControl:
         if re.search(msg, data):
             logging.debug("Found: \"{0}\"".format(msg))
             return True
-    
+
     def write_data2log(self, data):
         with open(self.log, 'a') as f:
             f.write(data)
@@ -90,7 +89,7 @@ class SutControl:
         pat1 = "\x1B[@-_][0-?]*[ -/]*[@-~]"
         pat2 = "[-\+^]{3,}"
         pat3 = "/\s+\\\\"
-        dic = {pat1: "", pat2: "", pat3:""}
+        dic = {pat1: "", pat2: "", pat3: ""}
         for k, v in dic.items():
             data = re.compile(k).sub(v, data)
         with open(self.log, 'a') as f:
@@ -285,7 +284,6 @@ class SutControl:
                 logging.info("Can not find strings(timeout):{0}".format(var))
                 return False
 
-
     # boot with hotkey pressed, and check whether boot is successful
     def boot_with_hotkey(self, key, msg, timeout, hotkey_prompt="Press Del go to Setup Utility", pw_prompt="Press F2", password="Admin@9000"):
         start_time = time.time()
@@ -320,7 +318,7 @@ class SutControl:
         # for i in range(0, try_counts):
         while setup_options and try_counts:
             self.send_keys(key)
-            try_counts -=1
+            try_counts -= 1
             time.sleep(2)
             for option in setup_options:
                 if self.is_msg_present_general(option, 3):
@@ -330,10 +328,9 @@ class SutControl:
             return True
         else:
             for option in setup_options:
-                logging.info("{0} not verified".format(option)) 
+                logging.info("{0} not verified".format(option))
 
-
-    # Find a setup option and stop there, will not send "Enter" after option found 
+    # Find a setup option and stop there, will not send "Enter" after option found
     # setupoption = ['name','value'] e.g. ['KTI Prefetch', 'Auto']
     # Patten1: Only setup option is highlighted, name should be specified, value not required
     # Patten2: Only value is highlighted, both name and value need to be specified
@@ -354,13 +351,12 @@ class SutControl:
         while try_counts:
             try_counts -= 1
             time.sleep(2)
-            if self.is_msg_present_general(patten, delay, cleanup = False):
+            if self.is_msg_present_general(patten, delay, cleanup=False):
                 logging.info("Option found: {0}".format(setupoption))
                 try_counts = 0
                 return True
             self.send_keys(key)
         logging.info("Option not found: {0}".format(setupoption))
-
 
     def locate_menu(self, key, menuname, try_counts):
         patten = menuname + ES
@@ -368,7 +364,7 @@ class SutControl:
         while try_counts:
             try_counts -= 1
             time.sleep(2)
-            if self.is_msg_present_general(patten, 1, cleanup = False):
+            if self.is_msg_present_general(patten, 1, cleanup=False):
                 logging.info("Menu found: {0}".format(menuname))
                 try_counts = 0
                 return True
@@ -400,7 +396,7 @@ class SutControl:
                 try_counts = 0
                 return True
             self.send_keys(key)
-    
+
     # issue: can not to the first item(WA: ENTER + UP, then can find the first option or item), to be enhanced, TBD
     # could be used to navigate to a option in boot manager page or a option in Setup,
     def to_highlight_option(self, key, msg, pat=None, timeout=15):
