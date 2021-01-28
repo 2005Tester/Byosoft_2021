@@ -1,17 +1,8 @@
 from Common import ssh
 import logging
 from Pangea.SutConfig import Key, Msg
+from Pangea.BaseLib import SerialLib, SshLib
 from Pangea import SutConfig
-
-
-# Send a single key, e.g. ENTER, DOWN, UP 
-def send_key(key, serial):
-    serial.send_keys(key)
-
-
-# send keys with default delay = 1s, e.g. [F10, Y]
-def send_keys(keys, serial, delay=1):
-    serial.send_keys_with_delay(keys, delay=1)
 
 
 # verify information like CPU, memory in one setup page
@@ -34,6 +25,7 @@ def verify_options(key, options, trycounts, serial):
         return True
     else:
         logging.info("{0} options not verified".format(len(options)-len(verified_items)))    
+
 
 # Enter setup menu
 def enter_menu(key, option_path, try_counts, confirm_msg, serial):
@@ -58,6 +50,7 @@ def boot_to_setup(serial, ssh):
         return
     logging.info("SetUpLib: Boot to setup main page successfully")
     return True
+
 
 def boot_with_hotkey(serial, ssh, key, msg, timeout):
     hotkey_prompt = Msg.HOTKEY_PROMPT_DEL
@@ -87,7 +80,7 @@ def boot_to_bios_config(serial, ssh):
     if not boot_to_setup(serial, ssh):
         return
     logging.info("Move to \"BIOS Configuration\"")
-    serial.send_keys_with_delay(SutConfig.key2Setup)
+    SerialLib.send_keys_with_delay(SutConfig.key2Setup)
     if not serial.is_msg_present('System Time'):
         logging.info("SetUpLib: Boot to BIOS Configuration Failed")
         return
@@ -110,20 +103,19 @@ def boot_to_page(page_name, serial, ssh):
 # Verify supported values of a setup option, can be called after locate_setup_option()
 # valuses: string, e.g: DisabledAutoLowMediumHighManual
 def verify_supported_values(values, serial):
-    serial.send_keys(Key.ENTER)
+    SerialLib.send_keys(Key.ENTER)
     if not serial.is_msg_present(values):
         logging.info("Supported values are not correct.")
-        serial.send_keys(Key.ESC)
+        SerialLib.send_keys(Key.ESC)
         return
     logging.info("Supported values are verified.")
-    serial.send_keys(Key.ESC)  
+    SerialLib.send_keys(Key.ESC)  
     return True
+
 
 # Boot to boot manager with hotkey
 def boot_to_bootmanager(serial, ssh):
     key = Key.F11
     msg = "Boot Manager Menu"
     return boot_with_hotkey(serial, ssh, key, msg, 300)
-    
 
-    

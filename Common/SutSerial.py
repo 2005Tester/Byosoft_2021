@@ -497,3 +497,12 @@ class SutControl:
                 break
 
         return True
+
+    # run command from serial port until spefified message occur
+    def run_command(self, cmd, msg):
+        logging.info("Sending command: {0}".format(cmd.strip("\n")))
+        self.send_data(cmd)  
+        logging.info("Receiving data...")
+        data = self.session.read_until(expected=msg).decode('utf-8')
+        data = self.cleanup_data(data)
+        return data
