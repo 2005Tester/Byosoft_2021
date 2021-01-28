@@ -62,7 +62,16 @@ def pci_resource_root_port(ssh):
     tc = ('202', 'PCIE Resource Test 03', 'check whetehr resource allocated for root ports are correct')
     result = Misc.LogHeaderResult(tc)
     fail_cnt = 0
-    ports = SutConfig.PCI_NVME_2P
+
+    if SutConfig.BOARD_TYPE == "NVME2P":
+        ports = SutConfig.PCI_NVME_2P
+    elif SutConfig.BOARD_TYPE == "SAS2P":
+        ports = SutConfig.PCI_SAS_2P
+    else:
+        logging.info("Board type defined in SutConfig is not valid.")
+        result.log_skip()
+        return
+
     for port in ports:
         logging.info("Check resource allocation for: {0}".format(port[0]))
         if not SshLib.verify_info(ssh, "lspci -s {0} -vv".format(port[0]), port[1]):

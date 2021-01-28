@@ -48,6 +48,7 @@ def debug_run():
     log_dir = init_log()
     Pcie.pci_resource_tree_view(ssh_os)
     Pcie.pci_resource_root_port(ssh_os)
+    Pcie.lspci_diff(ssh_os)
     gen_report(log_dir)
 
 
