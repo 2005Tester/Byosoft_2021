@@ -1,0 +1,358 @@
+
+localhost:/etc/sysconfig/network # lspci -tv
+-+-[0000:ff]-+-00.0  Intel Corporation Device 344c
+ |           +-00.1  Intel Corporation Device 344c
+ |           +-00.2  Intel Corporation Device 344c
+ |           +-00.3  Intel Corporation Device 344c
+ |           +-00.4  Intel Corporation Device 344c
+ |           +-00.5  Intel Corporation Device 344c
+ |           +-00.6  Intel Corporation Device 344c
+ |           +-00.7  Intel Corporation Device 344c
+ |           +-01.0  Intel Corporation Device 344c
+ |           +-01.1  Intel Corporation Device 344c
+ |           +-01.2  Intel Corporation Device 344c
+ |           +-01.3  Intel Corporation Device 344c
+ |           +-01.4  Intel Corporation Device 344c
+ |           +-01.5  Intel Corporation Device 344c
+ |           +-01.6  Intel Corporation Device 344c
+ |           +-01.7  Intel Corporation Device 344c
+ |           +-02.0  Intel Corporation Device 344c
+ |           +-02.1  Intel Corporation Device 344c
+ |           +-02.2  Intel Corporation Device 344c
+ |           +-02.3  Intel Corporation Device 344c
+ |           +-02.4  Intel Corporation Device 344c
+ |           +-02.5  Intel Corporation Device 344c
+ |           +-02.6  Intel Corporation Device 344c
+ |           +-02.7  Intel Corporation Device 344c
+ |           +-03.0  Intel Corporation Device 344c
+ |           +-03.1  Intel Corporation Device 344c
+ |           +-03.2  Intel Corporation Device 344c
+ |           +-03.3  Intel Corporation Device 344c
+ |           +-03.4  Intel Corporation Device 344c
+ |           +-03.5  Intel Corporation Device 344c
+ |           +-03.6  Intel Corporation Device 344c
+ |           +-03.7  Intel Corporation Device 344c
+ |           +-04.0  Intel Corporation Device 344c
+ |           +-04.1  Intel Corporation Device 344c
+ |           +-04.2  Intel Corporation Device 344c
+ |           +-04.3  Intel Corporation Device 344c
+ |           +-04.4  Intel Corporation Device 344c
+ |           +-04.5  Intel Corporation Device 344c
+ |           +-04.6  Intel Corporation Device 344c
+ |           +-04.7  Intel Corporation Device 344c
+ |           +-0a.0  Intel Corporation Device 344d
+ |           +-0a.1  Intel Corporation Device 344d
+ |           +-0a.2  Intel Corporation Device 344d
+ |           +-0a.3  Intel Corporation Device 344d
+ |           +-0a.4  Intel Corporation Device 344d
+ |           +-0a.5  Intel Corporation Device 344d
+ |           +-0a.6  Intel Corporation Device 344d
+ |           +-0a.7  Intel Corporation Device 344d
+ |           +-0b.0  Intel Corporation Device 344d
+ |           +-0b.1  Intel Corporation Device 344d
+ |           +-0b.2  Intel Corporation Device 344d
+ |           +-0b.3  Intel Corporation Device 344d
+ |           +-0b.4  Intel Corporation Device 344d
+ |           +-0b.5  Intel Corporation Device 344d
+ |           +-0b.6  Intel Corporation Device 344d
+ |           +-0b.7  Intel Corporation Device 344d
+ |           +-0c.0  Intel Corporation Device 344d
+ |           +-0c.1  Intel Corporation Device 344d
+ |           +-0c.2  Intel Corporation Device 344d
+ |           +-0c.3  Intel Corporation Device 344d
+ |           +-0c.4  Intel Corporation Device 344d
+ |           +-0c.5  Intel Corporation Device 344d
+ |           +-0c.6  Intel Corporation Device 344d
+ |           +-0c.7  Intel Corporation Device 344d
+ |           +-0d.0  Intel Corporation Device 344d
+ |           +-0d.1  Intel Corporation Device 344d
+ |           +-0d.2  Intel Corporation Device 344d
+ |           +-0d.3  Intel Corporation Device 344d
+ |           +-0d.4  Intel Corporation Device 344d
+ |           +-0d.5  Intel Corporation Device 344d
+ |           +-0d.6  Intel Corporation Device 344d
+ |           +-0d.7  Intel Corporation Device 344d
+ |           +-0e.0  Intel Corporation Device 344d
+ |           +-0e.1  Intel Corporation Device 344d
+ |           +-0e.2  Intel Corporation Device 344d
+ |           +-0e.3  Intel Corporation Device 344d
+ |           +-0e.4  Intel Corporation Device 344d
+ |           +-0e.5  Intel Corporation Device 344d
+ |           +-0e.6  Intel Corporation Device 344d
+ |           +-0e.7  Intel Corporation Device 344d
+ |           +-1d.0  Intel Corporation Device 344f
+ |           +-1d.1  Intel Corporation Device 3457
+ |           +-1e.0  Intel Corporation Device 3458
+ |           +-1e.1  Intel Corporation Device 3459
+ |           +-1e.2  Intel Corporation Device 345a
+ |           +-1e.3  Intel Corporation Device 345b
+ |           +-1e.4  Intel Corporation Device 345c
+ |           +-1e.5  Intel Corporation Device 345d
+ |           +-1e.6  Intel Corporation Device 345e
+ |           \-1e.7  Intel Corporation Device 345f
+ +-[0000:fe]-+-00.0  Intel Corporation Device 3450
+ |           +-00.1  Intel Corporation Device 3451
+ |           +-00.2  Intel Corporation Device 3452
+ |           +-00.3  Intel Corporation Device 0998
+ |           +-00.5  Intel Corporation Device 3455
+ |           +-02.0  Intel Corporation Device 3440
+ |           +-02.1  Intel Corporation Device 3441
+ |           +-02.2  Intel Corporation Device 3442
+ |           +-03.0  Intel Corporation Device 3440
+ |           +-03.1  Intel Corporation Device 3441
+ |           +-03.2  Intel Corporation Device 3442
+ |           +-04.0  Intel Corporation Device 3440
+ |           +-04.1  Intel Corporation Device 3441
+ |           +-04.2  Intel Corporation Device 3442
+ |           +-04.3  Intel Corporation Device 3443
+ |           +-05.0  Intel Corporation Device 3445
+ |           +-05.1  Intel Corporation Device 3446
+ |           +-05.2  Intel Corporation Device 3447
+ |           +-06.0  Intel Corporation Device 3445
+ |           +-06.1  Intel Corporation Device 3446
+ |           +-06.2  Intel Corporation Device 3447
+ |           +-07.0  Intel Corporation Device 3445
+ |           +-07.1  Intel Corporation Device 3446
+ |           +-07.2  Intel Corporation Device 3447
+ |           +-0b.0  Intel Corporation Device 3448
+ |           +-0b.1  Intel Corporation Device 3448
+ |           +-0b.2  Intel Corporation Device 344b
+ |           +-0c.0  Intel Corporation Device 344a
+ |           +-0d.0  Intel Corporation Device 344a
+ |           +-0e.0  Intel Corporation Device 344a
+ |           +-0f.0  Intel Corporation Device 344a
+ |           +-1a.0  Intel Corporation Device 2880
+ |           +-1b.0  Intel Corporation Device 2880
+ |           +-1c.0  Intel Corporation Device 2880
+ |           \-1d.0  Intel Corporation Device 2880
+ +-[0000:c5]-+-00.0  Intel Corporation Device 09a2
+ |           +-00.1  Intel Corporation Device 09a4
+ |           +-00.2  Intel Corporation Device 09a3
+ |           +-00.4  Intel Corporation Device 0998
+ |           +-02.0-[c6-dd]--+-00.0-[c7-d3]--+-00.0-[c8]--
+ |           |               |               +-01.0-[c9]--
+ |           |               |               +-02.0-[ca]--
+ |           |               |               +-03.0-[cb]--
+ |           |               |               +-04.0-[cc]--
+ |           |               |               +-05.0-[cd]--
+ |           |               |               +-06.0-[ce]--
+ |           |               |               +-07.0-[cf]--
+ |           |               |               +-08.0-[d0]--
+ |           |               |               +-09.0-[d1]--
+ |           |               |               +-0a.0-[d2]--
+ |           |               |               \-0b.0-[d3]--
+ |           |               \-00.1  PMC-Sierra Inc. Device 8532
+ |           \-04.0-[de-e2]----00.0  PMC-Sierra Inc. PM8072 Tachyon SPCv 12G 16-port SAS/SATA controller
+ +-[0000:b3]-+-00.0  Intel Corporation Device 09a2
+ |           +-00.1  Intel Corporation Device 09a4
+ |           +-00.2  Intel Corporation Device 09a3
+ |           +-00.4  Intel Corporation Device 0998
+ |           \-02.0-[b4-bf]--
+ +-[0000:9f]-+-00.0  Intel Corporation Device 09a2
+ |           +-00.1  Intel Corporation Device 09a4
+ |           +-00.2  Intel Corporation Device 09a3
+ |           +-00.4  Intel Corporation Device 0998
+ |           +-02.0-[a0-a4]--
+ |           \-04.0-[a5-b0]--
+ +-[0000:97]-+-00.0  Intel Corporation Device 09a2
+ |           +-00.1  Intel Corporation Device 09a4
+ |           +-00.2  Intel Corporation Device 09a3
+ |           +-00.4  Intel Corporation Device 0998
+ |           \-02.0-[98-99]----00.0-[99]--
+ +-[0000:80]-+-00.0  Intel Corporation Device 09a2
+ |           +-00.1  Intel Corporation Device 09a4
+ |           +-00.2  Intel Corporation Device 09a3
+ |           +-00.4  Intel Corporation Device 0998
+ |           +-01.0  Intel Corporation Device 0b00
+ |           +-01.1  Intel Corporation Device 0b00
+ |           +-01.2  Intel Corporation Device 0b00
+ |           +-01.3  Intel Corporation Device 0b00
+ |           +-01.4  Intel Corporation Device 0b00
+ |           +-01.5  Intel Corporation Device 0b00
+ |           +-01.6  Intel Corporation Device 0b00
+ |           +-01.7  Intel Corporation Device 0b00
+ |           +-02.0  Intel Corporation Device 09a6
+ |           +-02.1  Intel Corporation Device 09a7
+ |           \-02.4  Intel Corporation Device 3456
+ +-[0000:7f]-+-00.0  Intel Corporation Device 344c
+ |           +-00.1  Intel Corporation Device 344c
+ |           +-00.2  Intel Corporation Device 344c
+ |           +-00.3  Intel Corporation Device 344c
+ |           +-00.4  Intel Corporation Device 344c
+ |           +-00.5  Intel Corporation Device 344c
+ |           +-00.6  Intel Corporation Device 344c
+ |           +-00.7  Intel Corporation Device 344c
+ |           +-01.0  Intel Corporation Device 344c
+ |           +-01.1  Intel Corporation Device 344c
+ |           +-01.2  Intel Corporation Device 344c
+ |           +-01.3  Intel Corporation Device 344c
+ |           +-01.4  Intel Corporation Device 344c
+ |           +-01.5  Intel Corporation Device 344c
+ |           +-01.6  Intel Corporation Device 344c
+ |           +-01.7  Intel Corporation Device 344c
+ |           +-02.0  Intel Corporation Device 344c
+ |           +-02.1  Intel Corporation Device 344c
+ |           +-02.2  Intel Corporation Device 344c
+ |           +-02.3  Intel Corporation Device 344c
+ |           +-02.4  Intel Corporation Device 344c
+ |           +-02.5  Intel Corporation Device 344c
+ |           +-02.6  Intel Corporation Device 344c
+ |           +-02.7  Intel Corporation Device 344c
+ |           +-03.0  Intel Corporation Device 344c
+ |           +-03.1  Intel Corporation Device 344c
+ |           +-03.2  Intel Corporation Device 344c
+ |           +-03.3  Intel Corporation Device 344c
+ |           +-03.4  Intel Corporation Device 344c
+ |           +-03.5  Intel Corporation Device 344c
+ |           +-03.6  Intel Corporation Device 344c
+ |           +-03.7  Intel Corporation Device 344c
+ |           +-04.0  Intel Corporation Device 344c
+ |           +-04.1  Intel Corporation Device 344c
+ |           +-04.2  Intel Corporation Device 344c
+ |           +-04.3  Intel Corporation Device 344c
+ |           +-04.4  Intel Corporation Device 344c
+ |           +-04.5  Intel Corporation Device 344c
+ |           +-04.6  Intel Corporation Device 344c
+ |           +-04.7  Intel Corporation Device 344c
+ |           +-0a.0  Intel Corporation Device 344d
+ |           +-0a.1  Intel Corporation Device 344d
+ |           +-0a.2  Intel Corporation Device 344d
+ |           +-0a.3  Intel Corporation Device 344d
+ |           +-0a.4  Intel Corporation Device 344d
+ |           +-0a.5  Intel Corporation Device 344d
+ |           +-0a.6  Intel Corporation Device 344d
+ |           +-0a.7  Intel Corporation Device 344d
+ |           +-0b.0  Intel Corporation Device 344d
+ |           +-0b.1  Intel Corporation Device 344d
+ |           +-0b.2  Intel Corporation Device 344d
+ |           +-0b.3  Intel Corporation Device 344d
+ |           +-0b.4  Intel Corporation Device 344d
+ |           +-0b.5  Intel Corporation Device 344d
+ |           +-0b.6  Intel Corporation Device 344d
+ |           +-0b.7  Intel Corporation Device 344d
+ |           +-0c.0  Intel Corporation Device 344d
+ |           +-0c.1  Intel Corporation Device 344d
+ |           +-0c.2  Intel Corporation Device 344d
+ |           +-0c.3  Intel Corporation Device 344d
+ |           +-0c.4  Intel Corporation Device 344d
+ |           +-0c.5  Intel Corporation Device 344d
+ |           +-0c.6  Intel Corporation Device 344d
+ |           +-0c.7  Intel Corporation Device 344d
+ |           +-0d.0  Intel Corporation Device 344d
+ |           +-0d.1  Intel Corporation Device 344d
+ |           +-0d.2  Intel Corporation Device 344d
+ |           +-0d.3  Intel Corporation Device 344d
+ |           +-0d.4  Intel Corporation Device 344d
+ |           +-0d.5  Intel Corporation Device 344d
+ |           +-0d.6  Intel Corporation Device 344d
+ |           +-0d.7  Intel Corporation Device 344d
+ |           +-0e.0  Intel Corporation Device 344d
+ |           +-0e.1  Intel Corporation Device 344d
+ |           +-0e.2  Intel Corporation Device 344d
+ |           +-0e.3  Intel Corporation Device 344d
+ |           +-0e.4  Intel Corporation Device 344d
+ |           +-0e.5  Intel Corporation Device 344d
+ |           +-0e.6  Intel Corporation Device 344d
+ |           +-0e.7  Intel Corporation Device 344d
+ |           +-1d.0  Intel Corporation Device 344f
+ |           +-1d.1  Intel Corporation Device 3457
+ |           +-1e.0  Intel Corporation Device 3458
+ |           +-1e.1  Intel Corporation Device 3459
+ |           +-1e.2  Intel Corporation Device 345a
+ |           +-1e.3  Intel Corporation Device 345b
+ |           +-1e.4  Intel Corporation Device 345c
+ |           +-1e.5  Intel Corporation Device 345d
+ |           +-1e.6  Intel Corporation Device 345e
+ |           \-1e.7  Intel Corporation Device 345f
+ +-[0000:7e]-+-00.0  Intel Corporation Device 3450
+ |           +-00.1  Intel Corporation Device 3451
+ |           +-00.2  Intel Corporation Device 3452
+ |           +-00.3  Intel Corporation Device 0998
+ |           +-00.5  Intel Corporation Device 3455
+ |           +-02.0  Intel Corporation Device 3440
+ |           +-02.1  Intel Corporation Device 3441
+ |           +-02.2  Intel Corporation Device 3442
+ |           +-03.0  Intel Corporation Device 3440
+ |           +-03.1  Intel Corporation Device 3441
+ |           +-03.2  Intel Corporation Device 3442
+ |           +-04.0  Intel Corporation Device 3440
+ |           +-04.1  Intel Corporation Device 3441
+ |           +-04.2  Intel Corporation Device 3442
+ |           +-04.3  Intel Corporation Device 3443
+ |           +-05.0  Intel Corporation Device 3445
+ |           +-05.1  Intel Corporation Device 3446
+ |           +-05.2  Intel Corporation Device 3447
+ |           +-06.0  Intel Corporation Device 3445
+ |           +-06.1  Intel Corporation Device 3446
+ |           +-06.2  Intel Corporation Device 3447
+ |           +-07.0  Intel Corporation Device 3445
+ |           +-07.1  Intel Corporation Device 3446
+ |           +-07.2  Intel Corporation Device 3447
+ |           +-0b.0  Intel Corporation Device 3448
+ |           +-0b.1  Intel Corporation Device 3448
+ |           +-0b.2  Intel Corporation Device 344b
+ |           +-0c.0  Intel Corporation Device 344a
+ |           +-0d.0  Intel Corporation Device 344a
+ |           +-0e.0  Intel Corporation Device 344a
+ |           +-0f.0  Intel Corporation Device 344a
+ |           +-1a.0  Intel Corporation Device 2880
+ |           +-1b.0  Intel Corporation Device 2880
+ |           +-1c.0  Intel Corporation Device 2880
+ |           \-1d.0  Intel Corporation Device 2880
+ +-[0000:74]-+-00.0  Intel Corporation Device 09a2
+ |           +-00.1  Intel Corporation Device 09a4
+ |           +-00.2  Intel Corporation Device 09a3
+ |           +-00.4  Intel Corporation Device 0998
+ |           \-02.0-[75-79]--+-00.0  Mellanox Technologies MT2892 Family [ConnectX-6 Dx]
+ |                           \-00.1  Mellanox Technologies MT2892 Family [ConnectX-6 Dx]
+ +-[0000:4a]-+-00.0  Intel Corporation Device 09a2
+ |           +-00.1  Intel Corporation Device 09a4
+ |           +-00.2  Intel Corporation Device 09a3
+ |           +-00.4  Intel Corporation Device 0998
+ |           +-02.0-[4b-56]--
+ |           \-04.0-[57-5b]----00.0  PMC-Sierra Inc. PM8072 Tachyon SPCv 12G 16-port SAS/SATA controller
+ +-[0000:30]-+-00.0  Intel Corporation Device 09a2
+ |           +-00.1  Intel Corporation Device 09a4
+ |           +-00.2  Intel Corporation Device 09a3
+ |           +-00.4  Intel Corporation Device 0998
+ |           +-02.0-[31-3c]--
+ |           \-04.0-[3d-48]--
+ +-[0000:16]-+-00.0  Intel Corporation Device 09a2
+ |           +-00.1  Intel Corporation Device 09a4
+ |           +-00.2  Intel Corporation Device 09a3
+ |           +-00.4  Intel Corporation Device 0998
+ |           \-04.0-[17-22]--
+ \-[0000:00]-+-00.0  Intel Corporation Device 09a2
+             +-00.1  Intel Corporation Device 09a4
+             +-00.2  Intel Corporation Device 09a3
+             +-00.4  Intel Corporation Device 0998
+             +-01.0  Intel Corporation Device 0b00
+             +-01.1  Intel Corporation Device 0b00
+             +-01.2  Intel Corporation Device 0b00
+             +-01.3  Intel Corporation Device 0b00
+             +-01.4  Intel Corporation Device 0b00
+             +-01.5  Intel Corporation Device 0b00
+             +-01.6  Intel Corporation Device 0b00
+             +-01.7  Intel Corporation Device 0b00
+             +-02.0  Intel Corporation Device 09a6
+             +-02.1  Intel Corporation Device 09a7
+             +-02.4  Intel Corporation Device 3456
+             +-11.0  Intel Corporation C620 Series Chipset Family MROM 0
+             +-11.1  Intel Corporation C620 Series Chipset Family MROM 1
+             +-14.0  Intel Corporation C620 Series Chipset Family USB 3.0 xHCI Controller
+             +-14.2  Intel Corporation C620 Series Chipset Family Thermal Subsystem
+             +-16.0  Intel Corporation C620 Series Chipset Family MEI Controller #1
+             +-16.1  Intel Corporation C620 Series Chipset Family MEI Controller #2
+             +-16.4  Intel Corporation C620 Series Chipset Family MEI Controller #3
+             +-17.0  Intel Corporation C620 Series Chipset Family SATA Controller [AHCI mode]
+             +-1b.0-[01]----00.0  Intel Corporation I210 Gigabit Network Connection
+             +-1b.1-[02]----00.0  Intel Corporation I210 Gigabit Network Connection
+             +-1b.2-[03]----00.0  Huawei Technologies Co., Ltd. iBMA Virtual Network Adapter
+             +-1b.3-[04]--
+             +-1d.0-[05]--
+             +-1d.6-[06]--
+             +-1f.0  Intel Corporation Device a1cb
+             +-1f.2  Intel Corporation C620 Series Chipset Family Power Management Controller
+             +-1f.4  Intel Corporation C620 Series Chipset Family SMBus
+             \-1f.5  Intel Corporation C620 Series Chipset Family SPI Controller
+localhost:/etc/sysconfig/network #
