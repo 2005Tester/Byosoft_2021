@@ -14,7 +14,7 @@ def boot_to_suse(serial, ssh):
         return
     suse_linux = ["SUSE Linux Enterprise\(LUN0\)"]
     msg = Msg.BIOS_BOOT_COMPLETE
-    if not SetUpLib.enter_menu(Key.DOWN, suse_linux, 8, msg, serial):
+    if not SetUpLib.enter_menu(serial, Key.DOWN, suse_linux, 8, msg):
         result.log_fail()
         return
     logging.info("OS Boot Successful")

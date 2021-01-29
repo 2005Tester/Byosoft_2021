@@ -15,28 +15,28 @@ from Common import Misc
 def rrqirq(serial, ssh):
     tc = ('101', 'Testcase_RRQIRQ_001', 'Setup菜单RRQ和IRQ选项默认值测试')
     result = Misc.LogHeaderResult(tc, serial)
-    if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED, serial, ssh):
+    if not SetUpLib.boot_to_page(serial, Msg.PAGE_ADVANCED, ssh):
         result.log_fail()
         return
     msg = 'Uncore Status'
-    if not SetUpLib.enter_menu(Key.DOWN, Msg.PATH_UNCORE_GENERAL, 20, msg, serial):
+    if not SetUpLib.enter_menu(serial, Key.DOWN, Msg.PATH_UNCORE_GENERAL, 20, msg):
         result.log_fail()
         return
 
     logging.info("Find option and verify default value.")
-    if not SetUpLib.locate_option(Key.DOWN, ["Local/Remote Threshold", "<Auto>"], 20, serial):
+    if not SetUpLib.locate_option(serial, Key.DOWN, ["Local/Remote Threshold", "<Auto>"], 20):
         result.log_fail()
         return
 
     logging.info("Verify supported values.")
     values = 'DisabledAutoLowMediumHighManual'
-    if not SetUpLib.verify_supported_values(values, serial):
+    if not SetUpLib.verify_supported_values(serial, values):
         result.log_fail()
         return
     logging.info("Verify default value of RRQ and IRQ when set to manual.")
-    SetUpLib.send_keys([Key.F5*4], serial)
+    SetUpLib.send_keys(serial, [Key.F5, Key.F5, Key.F5, Key.F5])
     manual_opts = [["IRQ Threshold", "\[7\]"],["RRQ Threshold", "\[7\]"]]
-    if not SetUpLib.verify_options(Key.DOWN, manual_opts, 12, serial):
+    if not SetUpLib.verify_options(serial, Key.DOWN, manual_opts, 12):
         result.log_fail()
         return
 

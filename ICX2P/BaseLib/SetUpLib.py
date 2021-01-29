@@ -7,12 +7,12 @@ from ICX2P.BaseLib import icx2pAPI, PowerLib
 
 
 # Send a single key, e.g. ENTER, DOWN, UP 
-def send_key(key, serial):
+def send_key(serial, key):
     serial.send_keys(key)
 
 
 # send keys with default delay = 1s, e.g. [F10, Y]
-def send_keys(keys, serial, delay=1):
+def send_keys(serial, keys, delay=1):
     serial.send_keys_with_delay(keys, delay=1)
 
 
@@ -24,7 +24,7 @@ def verify_info():
 
 # Verify a few setup options and desired values in one setup page
 # options: list of setupoption and value e.g.[["IRQ Threshold", "\[7\]"],[RRQ Threshold", "\[7\]]
-def verify_options(key, options, trycounts, serial):
+def verify_options(serial, key, options, trycounts):
     verified_items = []
     for option in options:
         if serial.locate_setup_option(key, option, trycounts):
@@ -38,12 +38,12 @@ def verify_options(key, options, trycounts, serial):
         logging.info("{0} options not verified".format(len(options)-len(verified_items)))    
 
 # Enter setup menu
-def enter_menu(key, option_path, try_counts, confirm_msg, serial):
+def enter_menu(serial, key, option_path, try_counts, confirm_msg):
     return serial.enter_menu(key, option_path, try_counts, confirm_msg)
 
 
 # locate a setup option by given option name and default value
-def locate_option(key, setupoption, try_counts, serial):
+def locate_option(serial, key, setupoption, try_counts):
     return serial.locate_setup_option(key, setupoption, try_counts)
 
 
@@ -98,7 +98,7 @@ def boot_to_bios_config(serial, ssh):
 
 
 # boot to specific page in bios configuration
-def boot_to_page(page_name, serial, ssh):
+def boot_to_page(serial, page_name, ssh):
     if not boot_to_bios_config(serial, ssh):
         return
     logging.info("SetUpLib: Move to specified setup page")
@@ -111,7 +111,7 @@ def boot_to_page(page_name, serial, ssh):
 
 # Verify supported values of a setup option, can be called after locate_setup_option()
 # valuses: string, e.g: DisabledAutoLowMediumHighManual
-def verify_supported_values(values, serial):
+def verify_supported_values(serial, values):
     serial.send_keys(Key.ENTER)
     if not serial.is_msg_present(values):
         logging.info("Supported values are not correct.")

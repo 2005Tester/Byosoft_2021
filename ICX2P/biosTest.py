@@ -886,16 +886,16 @@ def tpm(serial, ssh):
 def vtd(serial, ssh):
     tc = ('025', 'Testcase_VTD_002', '关闭VT-d功能启动测试')
     result = Misc.LogHeaderResult(tc, serial)
-    if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED, serial, ssh):
+    if not SetUpLib.boot_to_page(serial, Msg.PAGE_ADVANCED, ssh):
         result.log_fail()
         return
     vt_d_menu = ["Virtualization Configuration", "Intel\(R\) VT for Directed I/O \(VT-d\)"]
-    if not SetUpLib.enter_menu(Key.DOWN, vt_d_menu, 20, "Directed", serial):
+    if not SetUpLib.enter_menu(serial, Key.DOWN, vt_d_menu, 20, "Directed"):
         logging.info("Failed to vir config")
         result.log_fail()
         return
     opt_vt = ["Intel\(R\) VT for Directed I/O", "<Enabled>"]
-    if not SetUpLib.locate_option(Key.DOWN, opt_vt, 4, serial):
+    if not SetUpLib.locate_option(serial, Key.DOWN, opt_vt, 4):
         result.log_fail()
         return
     logging.info("Diasble VT-d")
