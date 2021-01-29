@@ -15,6 +15,8 @@ from paramiko import AuthenticationException
 from paramiko.ssh_exception import NoValidConnectionsError
 import sys
 import os
+from scp import SCPClient
+import scp
 
 
 class sftp:
@@ -144,6 +146,28 @@ class SshConnection:
         self.ssh_client.close()
         return status
 
+    # On some platform paramiko sftp not work, use SCPClien
+    def sftp_put_via_scp(self, src, dst, timeout):
+        scpclient = SCPClient(self.ssh_client.get_transport(), socket_timeout=timeout)
+        try:
+            scpclient.put(src, dst)
+        except FileNotFoundError as e:
+            logging.info("Error in uploading file: {0}".format(e))
+            scpclient.close()
+            return
+        scpclient.close()
+        return True
+
+    def sftp_get_via_scp(self, src, dst, timeout):
+        scpclient = SCPClient(self.ssh_client.get_transport(), socket_timeout=timeout)
+        try:
+            scpclient.get(src, dst)
+        except scp.SCPException as e:
+            logging.info("Error in downloading file: {0}".format(e))
+            scpclient.close()
+            return
+        scpclient.close()
+        return True
+
     def close_session(self):
         self.ssh_client.close()
-

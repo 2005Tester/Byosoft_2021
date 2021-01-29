@@ -64,3 +64,19 @@ def verify_info(ssh, command, infos):
     else:
         logging.info("{0} items not verified.".format(failures))
         return
+
+
+# sftp put by using SCPClient
+def sftp_put_via_scp(ssh, src, dst, timeout):
+    if not ssh.login():
+        logging.error("SSH login failed")
+        return
+    return ssh.sftp_put_via_scp(src, dst, timeout)
+
+
+# sftp put by using SCPClient
+def sftp_get_via_scp(ssh, src, dst, timeout):
+    if not ssh.login():
+        logging.error("SSH login failed")
+        return
+    return ssh.sftp_get_via_scp(src, dst, timeout)
