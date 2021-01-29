@@ -154,7 +154,7 @@ def ProcessorDIMM(serial, ssh):
     if not serial.to_highlight_option(Key.DOWN, SutConfig.option3):
         result.log_fail()
         return
-    serial.send_keys(Key.ENTER)
+    serial.send_keys_with_delay([Key.ENTER, Key.UP])
     if not serial.to_highlight_option(Key.DOWN, SutConfig.option4):
         result.log_fail()
         return
