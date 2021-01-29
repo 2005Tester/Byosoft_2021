@@ -43,7 +43,7 @@ def locate_option(serial, key, setupoption, try_counts):
 def boot_to_setup(serial, ssh):
     logging.info("SetUpLib: Boot to setup main page")
     logging.info("SetUpLib: Rebooting SUT...")
-    if not PowerLib.reboot_system(ssh):
+    if not PowerLib.force_reset(ssh):
         logging.info("SetUpLib: Rebooting SUT Failed.")
         return
     logging.info("SetUpLib: Booting to setup")
@@ -104,7 +104,7 @@ def boot_to_page(serial, ssh, page_name):
 
 # Verify supported values of a setup option, can be called after locate_setup_option()
 # valuses: string, e.g: DisabledAutoLowMediumHighManual
-def verify_supported_values(serial, values):
+def verify_supported_values(serial, value):
     SerialLib.send_keys(Key.ENTER)
     if not serial.is_msg_present(values):
         logging.info("Supported values are not correct.")

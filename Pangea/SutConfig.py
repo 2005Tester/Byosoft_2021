@@ -28,14 +28,10 @@ SERIAL_LOG = os.path.join(LOG_DIR, 'serial.log')
 BIOS_SERIAL = "com3"
 
 # BMC Network Configuration
-BMC_IP = '192.168.2.102'
-BMC_USER = 'Administrator'
-BMC_PASSWORD = 'Admin@9001'
+BMC_IP = '172.30.129.102'
+BMC_USER = 'root'
+BMC_PASSWORD = 'Huawei12#$'
 PORT = 22
-
-# BIOS Auth Configuration
-BIOS_USER = 'Admin@9001'
-BIOS_PASSWORD = 'Admin@9000'
 
 # OS Network Configuration
 OS_IP = '192.168.100.48'
@@ -52,13 +48,13 @@ LKG_LOG_DIR = "Pangea\\Lkg"
 class Key:
     ENTER = [chr(0x0D)]
     DEL = [chr(0x7F)]
-    F2 = [chr(0x1b), chr(0x5b), chr(0x31), chr(0x32), chr(0x7e)]
-    F5 = [chr(0x1b), chr(0x5b), chr(0x31), chr(0x35), chr(0x7e)]
-    F6 = [chr(0x1b), chr(0x5b), chr(0x31), chr(0x37), chr(0x7e)]
+    F2 = '\33' + '2'
+    # F2 = [chr(0x1b), chr(0x5b), chr(0x31), chr(0x32), chr(0x7e)]
+    # F5 = [chr(0x1b), chr(0x5b), chr(0x31), chr(0x35), chr(0x7e)]
+    # F6 = [chr(0x1b), chr(0x5b), chr(0x31), chr(0x37), chr(0x7e)]
+    F7 = '\33' + '7'
     F9 = [chr(0x1b), chr(0x5b), chr(0x32), chr(0x30), chr(0x7e)]
     F10 = [chr(0x1b), chr(0x5b), chr(0x32), chr(0x31), chr(0x7e)]
-    F11 = [chr(0x1b), chr(0x5b), chr(0x32), chr(0x33), chr(0x7e)]
-    F12 = [chr(0x1b), chr(0x5b), chr(0x32), chr(0x34), chr(0x7e)]
     ESC = '\33' + ' '
     CTRL_ALT_DELETE = '\33R\33r\33R'
     UP = [chr(0x1b), chr(0x5b), chr(0x41)]
@@ -68,40 +64,41 @@ class Key:
     Y = [chr(0x59)]
 
 
+# Common key order
+key2default = [Key.F9, Key.Y, Key.F10, Key.Y]
+
+
 ####################################################################################
-#     Messages to identify a spcific boot option, page, menu or system status      #
+#     Messages to identify a specific boot option, page, menu or system status      #
 ####################################################################################
 class Msg:
-    HOTKEY_PROMPT_DEL = 'Press Del go to Setup Utility'
-    HOTKEY_PROMPT_F11 = 'Press F11 go to BootManager'
-    HOTKEY_PROMPT_F12 = 'Press F12 go to PXE boot'
-    HOTKEY_PROMPT_F6 = 'Press F6 go to SP boot'
-
-    PW_PROMPT = 'Enter Current Password'
+    HOTKEY_PROMPT = 'Press [Enter] to directly boot'
+    HOTKEY_PROMPT_F2 = 'Press [F2]    to enter setup and select boot options'
+    HOTKEY_PROMPT_F7 = 'Press [F7]    to show boot menu options'
 
     # Home screen with 6 icons
-    HOME_PAGE = 'Continue'
-    BIOS_BOOT_COMPLETE = 'BIOS boot completed'
+    HOME_PAGE = 'System Information'
+    BIOS_BOOT_COMPLETE = 'BIOS startup is complete'
 
-    # pages in bios configuration
-    PAGE_ADVANCED = 'CPU Configuration'
-    PAGE_BMC = 'Additional System Information'
-    PAGE_SECURITY = 'TPM Device'
-    PAGE_BOOT = '<UEFI Boot Type>'
-    PAGE_SAVE = 'Save Changes and Exit'
+    # pages in BIOS configuration
+    PAGE_ADVANCED = 'Advanced'
+    PAGE_SECURITY = 'Security'
+    PAGE_BOOT = 'Boot'
+    PAGE_SAVE = 'Exit'
 
     # menus of CPU configuration
-    CPU_CONFIG = 'CPU Configuration'
+    CPU_MENU = 'All Cpu Information'
+    CPU_CONFIG = 'Socket Configuration'
     PROCESSOR_CONFIG = 'Processor Configuration'
-    UNCORE_CONFIG = 'Uncore Configuration'
-    UNCORE_GENERAL = 'Uncore General Configuration'
+    MEMORY_CONFIG = 'Memory Configuration'
+    MEMORY_TOPOLOGY = 'Memory Topology'
 
-    # menus of PCH configuration
-    PCH_CONFIG = 'PCH CONFIGURATION'
-    NETWORK_CONFIG = 'Network Configuration'
-
-    # patch of setup menus
-    PATH_UNCORE_GENERAL = [CPU_CONFIG, UNCORE_CONFIG, UNCORE_GENERAL]
+    # menus of Boot page
+    Boot_MENU = 'Boot'
+    Boot_OPTION = 'Boot Options'
+    Boot_MANAGER = 'Boot Manager'
+    PXE_PORT = 'UEFI PXEv4 (MAC:B8E3B18B06C9)\-Port1 Mgmt'
+    OS_PORT = 'Euler Linux Boot'
 
 
 ##########################################

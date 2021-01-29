@@ -11,8 +11,8 @@ import subprocess
 import time
 
 from Pangea import SutConfig
-from Pangea.SutConfig import Key
 from Pangea.BaseLib import PowerLib
+from Pangea.SutConfig import Key, Msg
 
 
 def ping_sut():
@@ -32,12 +32,12 @@ def ping_sut():
             return False
 
 
-# to BIOS with power action, for restore test Env,
+# to BIOS with power action,
 def toBIOS(serial, ssh):
     if not PowerLib.reboot_system(ssh):
         return
     logging.info("Booting to setup")
-    if not serial.waitString(SutConfig.msg1, timeout=600):
+    if not serial.waitString(Msg.HOTKEY_PROMPT_F2, timeout=600):
         return
     serial.send_keys(Key.F2)
     logging.info("Hot Key sent")
@@ -47,10 +47,10 @@ def toBIOS(serial, ssh):
     return True
 
 
-# to BIOS without power action
+# to BIOS without power action,
 def toBIOSnp(serial):
     logging.info("Booting to setup")
-    if not serial.waitString(SutConfig.msg1, timeout=600):
+    if not serial.waitString(Msg.HOTKEY_PROMPT_F2, timeout=600):
         return
     serial.send_keys(Key.F2)
     logging.info("Hot Key sent")
@@ -61,15 +61,14 @@ def toBIOSnp(serial):
 
 
 def reset_default(serial, ssh):
-    logging.info("Reset BIOS to dafault by F9")
+    logging.info("Reset BIOS to default by F9")
     keys = Key.F9 + Key.Y + Key.F10 + Key.Y
     if not toBIOS(serial, ssh):
         return
     time.sleep(1)
     serial.send_keys(keys)
-    if not serial.waitString('BIOS startup is complete', timeout=300):
-        logging.info("Reset dafault by F9:Fail")
+    if not serial.waitString(Msg.BIOS_BOOT_COMPLETE, timeout=300):
+        logging.info("Reset default by F9:Fail")
         return
-    logging.info("Reset dafault by F9:Pass")
-
+    logging.info("Reset default by F9:Pass")
     return True

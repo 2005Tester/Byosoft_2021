@@ -13,8 +13,8 @@ import time
 def power_on(ssh):
     logging.info("Power on system...")
     cmd_reset = 'cliset -d cpldreg -v 0xe8 0\n'
-    cmd_reset_1 = 'cliset-dc pld bit-v0xe7 0 0\n'
-    cmd_reset_2 = 'cliset-dc pld bit-vOxe7 0 1\n'
+    cmd_reset_1 = 'cliset -d cpldbit -v 0xe7 0 0\n'
+    cmd_reset_2 = 'cliset -d cpldbit -v 0xe7 0 1\n'
     ret_confirm = 'ok'
     cmds = [cmd_reset, cmd_reset_1, cmd_reset_2]
     rets = [ret_confirm, ret_confirm, ret_confirm]
@@ -27,13 +27,12 @@ def power_on(ssh):
 
 def power_off(ssh):
     logging.info("Power off system...")
-    cmd = 'TMOUT=0'
     cmd_reset = 'cliset -d cpldreg -v 0xe8 0\n'
-    cmd_reset_1 = 'cliset-dc pld bit-v0xe7 1 0\n'
-    cmd_reset_2 = 'cliset-dc pld bit-vOxe7 1 1\n'
+    cmd_reset_1 = 'cliset -d cpldbit -v 0xe7 1 0\n'
+    cmd_reset_2 = 'cliset -d cpldbit -v 0xe7 1 1\n'
     ret_confirm = 'ok'
-    cmds = [cmd, cmd_reset, cmd_reset_1, cmd_reset_2]
-    rets = ['', ret_confirm, ret_confirm, ret_confirm]
+    cmds = [cmd_reset, cmd_reset_1, cmd_reset_2]
+    rets = [ret_confirm, ret_confirm, ret_confirm]
     if ssh.login():
         return ssh.interaction(cmds, rets)
     else:

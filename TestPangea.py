@@ -58,10 +58,10 @@ def run_test():
     log_dir = init_log()
     UpdateBIOS.update_bios(ser, log_dir, ssh_bmc)
     ReleaseTest.post_test(ser, ssh_bmc)
-    ReleaseTest.warm_reboot_cycling(ser, ssh_bmc, 5)
+    ReleaseTest.warm_reboot_cycling(ser, ssh_bmc, 2)
     ReleaseTest.pxeTest(ser, ssh_bmc)
     ReleaseTest.processor_dimm_basic_info(ser, ssh_bmc)
-    ReleaseTest.loadDefault(ser, ssh_bmc)
+    ReleaseTest.load_default_save_reset(ser, ssh_bmc)
     ReleaseTest.boot_eulerOS(ser, ssh_bmc)
 
     gen_report(log_dir)
