@@ -1,6 +1,6 @@
 import logging
 from Pangea.SutConfig import Key, Msg
-from Pangea.BaseLib import SerialLib
+from Pangea.BaseLib import SerialLib, PowerLib
 from Pangea import SutConfig
 
 
@@ -15,7 +15,7 @@ def verify_info(serial, setup_options, try_count):
 
 # Verify a few setup options and desired values in one setup page
 # options: list of setupoption and value e.g.[["IRQ Threshold", "\[7\]"],[RRQ Threshold", "\[7\]]
-def verify_options(key, options, trycounts, serial):
+def verify_options(serial, key, options, trycounts):
     verified_items = []
     for option in options:
         if serial.locate_setup_option(key, option, trycounts):
@@ -30,12 +30,12 @@ def verify_options(key, options, trycounts, serial):
 
 
 # Enter setup menu
-def enter_menu(key, option_path, try_counts, confirm_msg, serial):
+def enter_menu(serial, key, option_path, try_counts, confirm_msg):
     return serial.enter_menu(key, option_path, try_counts, confirm_msg)
 
 
 # locate a setup option by given option name and default value
-def locate_option(key, setupoption, try_counts, serial):
+def locate_option(serial, key, setupoption, try_counts):
     return serial.locate_setup_option(key, setupoption, try_counts)
 
 
@@ -43,7 +43,7 @@ def locate_option(key, setupoption, try_counts, serial):
 def boot_to_setup(serial, ssh):
     logging.info("SetUpLib: Boot to setup main page")
     logging.info("SetUpLib: Rebooting SUT...")
-    if not PowerLib.force_reset(ssh):
+    if not PowerLib.reboot_system(ssh):
         logging.info("SetUpLib: Rebooting SUT Failed.")
         return
     logging.info("SetUpLib: Booting to setup")
@@ -58,7 +58,7 @@ def boot_with_hotkey(serial, ssh, key, msg, timeout):
     hotkey_prompt = Msg.HOTKEY_PROMPT_DEL
     pw_prompt = Msg.PW_PROMPT
     password = SutConfig.BIOS_PASSWORD 
-    if not PowerLib.force_reset(ssh):
+    if not PowerLib.reboot_system(ssh):
         return
     if not serial.boot_with_hotkey(key, msg, timeout, hotkey_prompt, pw_prompt, password):
         return
@@ -91,7 +91,7 @@ def boot_to_bios_config(serial, ssh):
 
 
 # boot to specific page in bios configuration
-def boot_to_page(page_name, serial, ssh):
+def boot_to_page(serial, ssh, page_name):
     if not boot_to_bios_config(serial, ssh):
         return
     logging.info("SetUpLib: Move to specified setup page")
@@ -104,7 +104,7 @@ def boot_to_page(page_name, serial, ssh):
 
 # Verify supported values of a setup option, can be called after locate_setup_option()
 # valuses: string, e.g: DisabledAutoLowMediumHighManual
-def verify_supported_values(values, serial):
+def verify_supported_values(serial, values):
     SerialLib.send_keys(Key.ENTER)
     if not serial.is_msg_present(values):
         logging.info("Supported values are not correct.")

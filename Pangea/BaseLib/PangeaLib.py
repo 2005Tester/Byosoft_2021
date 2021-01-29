@@ -60,18 +60,6 @@ def toBIOSnp(serial):
     return True
 
 
-def pressF7(serial, ssh):
-    if not PowerLib.reboot_system(ssh):
-        return
-    if not serial.waitString(SutConfig.msg2, timeout=300):
-        return
-    serial.send_keys(Key.F7)
-    if not serial.waitString('Boot Manager', timeout=60):
-        return
-
-    return True
-
-
 def reset_default(serial, ssh):
     logging.info("Reset BIOS to dafault by F9")
     keys = Key.F9 + Key.Y + Key.F10 + Key.Y

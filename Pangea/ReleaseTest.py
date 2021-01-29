@@ -17,7 +17,7 @@ from Pangea.BaseLib import PangeaLib, SetUpLib, PowerLib
 
 
 # POST, Boot, Setup, OS Installation, PM, Device, Chipsec Test and Source code cons.
-def POST_Test(serial, ssh):  # POST: POST Log(TBD) and Information Check
+def post_test(serial, ssh):  # POST: POST Log(TBD) and Information Check
     tc = ('002', 'POST Information Test', 'POST Information Test')
     result = Misc.LogHeaderResult(tc, serial)
     if not PowerLib.reboot_system(ssh):
@@ -32,7 +32,7 @@ def POST_Test(serial, ssh):  # POST: POST Log(TBD) and Information Check
 
 
 # PM: Warm reset n times, Cold reset n times and AC (TBD)
-def PM(serial, ssh, n=1):
+def warm_reboot_cycling(serial, ssh, n=1):
     tc = ('003', 'Power Control Test', 'Power Control Test + F2')
     result = Misc.LogHeaderResult(tc, serial)
     status = 0
@@ -80,35 +80,35 @@ def pxeTest(serial, ssh, n=1):
         if not PangeaLib.toBIOS(serial, ssh):
             result.log_fail()
             return
-        if not SetUpLib.enter_menu(Key.RIGHT, ['Boot'], 12, 'Boot Options', serial):
+        if not SetUpLib.enter_menu(serial, Key.RIGHT, ['Boot'], 12, 'Boot Options'):
             result.log_fail()
             return
-        if not SetUpLib.locate_option(Key.DOWN, ['Boot Manager'], 7, serial):
+        if not SetUpLib.locate_option(serial, Key.DOWN, ['Boot Manager'], 7):
             result.log_fail()
             return
         serial.send_keys(Key.ENTER)
-        if not SetUpLib.enter_menu(Key.DOWN, [pxe_port], 12, msg, serial):
+        if not SetUpLib.enter_menu(serial, Key.DOWN, [pxe_port], 12, msg):
             result.log_fail()
             return
     result.log_pass()
     return True
 
 
-# Processor/DIMM Test
-def ProcessorDIMM(serial, ssh):
+# Processor/DIMM information check
+def processor_dimm_basic_info(serial, ssh):
     tc = ('007', 'Processor/DIMM Test', 'CPU/DIMM Test')
     result = Misc.LogHeaderResult(tc, serial)
     if not PangeaLib.toBIOS(serial, ssh):
         result.log_fail()
         return
-    if not SetUpLib.locate_option(Key.RIGHT, ['All Cpu Information'], 7, serial):
+    if not SetUpLib.locate_option(serial, Key.RIGHT, ['All Cpu Information'], 7):
         result.log_fail()
         return
-    if not SetUpLib.locate_option(Key.DOWN, ['Socket Configuration'], 12, serial):
+    if not SetUpLib.locate_option(serial, Key.DOWN, ['Socket Configuration'], 12):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
-    if not SetUpLib.locate_option(Key.DOWN, ['Processor Configuration'], 12, serial):
+    if not SetUpLib.locate_option(serial, Key.DOWN, ['Processor Configuration'], 12):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
@@ -116,11 +116,11 @@ def ProcessorDIMM(serial, ssh):
         result.log_fail()
         return
     serial.send_keys(Key.ESC)
-    if not SetUpLib.locate_option(Key.DOWN, ['Memory Configuration'], 12, serial):
+    if not SetUpLib.locate_option(serial, Key.DOWN, ['Memory Configuration'], 12):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
-    if not SetUpLib.locate_option(Key.DOWN, ['Memory Topology'], 70, serial):
+    if not SetUpLib.locate_option(serial, Key.DOWN, ['Memory Topology'], 70):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
@@ -141,7 +141,7 @@ def loadDefault(serial, ssh):
     if not PangeaLib.toBIOS(serial, ssh):
         result.log_fail()
         return
-    if not SetUpLib.enter_menu(Key.RIGHT, ['Boot'], 12, 'Boot Options', serial):
+    if not SetUpLib.enter_menu(serial, Key.RIGHT, ['Boot'], 12, 'Boot Options'):
         result.log_fail()
         return
     if not SetUpLib.verify_info(serial, option_bfo, 7):
@@ -157,7 +157,7 @@ def loadDefault(serial, ssh):
     if not PangeaLib.toBIOSnp(serial):
         result.log_fail()
         return
-    if not SetUpLib.enter_menu(Key.RIGHT, ['Boot'], 12, 'Boot Options', serial):
+    if not SetUpLib.enter_menu(serial, Key.RIGHT, ['Boot'], 12, 'Boot Options'):
         result.log_fail()
         return
     if not SetUpLib.verify_info(serial, option_aft, 7):
@@ -180,34 +180,26 @@ def loadDefault(serial, ssh):
 
 
 # OS Test
-def eulerOS(serial, ssh, n=1):
+def boot_eulerOS(serial, ssh, n=1):
     tc = ('012', 'Boot to UEFI OS Test', 'OS Test')
     result = Misc.LogHeaderResult(tc, serial)
     os_port = 'Euler Linux Boot'
-    msg = 'login in'
+    msg = 'Storage login'
     for i in range(n):
         if not PangeaLib.toBIOS(serial, ssh):
             result.log_fail()
             return
-        if not SetUpLib.enter_menu(Key.RIGHT, ['Boot'], 12, 'Boot Options', serial):
+        if not SetUpLib.locate_option(serial, Key.RIGHT, ['Boot'], 12, 'Boot Options'):
             result.log_fail()
             return
         serial.send_keys(Key.ESC)
-        if not SetUpLib.locate_option(Key.DOWN, ['Boot Manager'], 7, serial):
+        if not SetUpLib.locate_option(serial, Key.DOWN, ['Boot Manager'], 7):
             result.log_fail()
             return
         serial.send_keys(Key.ENTER)
-        if not SetUpLib.enter_menu(Key.DOWN, [os_port], 12, msg, serial):
+        if not SetUpLib.enter_menu(serial, Key.DOWN, [os_port], 12, msg):
             result.log_fail()
             return
     result.log_pass()
     return True
 
-
-# Main function
-def basicTest(serial, ssh):
-    POST_Test(serial, ssh)
-    PM(serial, ssh, 5)
-    pxeTest(serial, ssh)
-    ProcessorDIMM(serial, ssh)
-    loadDefault(serial, ssh)
