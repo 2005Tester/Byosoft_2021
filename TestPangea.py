@@ -14,6 +14,7 @@ from Common import ssh
 from Pangea import SutConfig, Pcie
 from Report.ReportGen import ReportGenerator
 from Pangea.BaseLib import SetUpLib
+from Pangea import biosTest, UpdateBIOS
 
 # init seril
 ser = SutSerial.SutControl(SutConfig.BIOS_SERIAL, 115200, 0.5, SutConfig.SERIAL_LOG)
@@ -55,7 +56,9 @@ def debug_run():
 # Define test scope here
 def run_test():
     log_dir = init_log()
-
+    UpdateBIOS.update_bios(ser, log_dir, ssh_bmc)
+    biosTest.basicTest(ser, ssh_bmc)
+    biosTest.eulerOS(ser, ssh_os)
     gen_report(log_dir)
 
 
