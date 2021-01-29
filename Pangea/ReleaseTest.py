@@ -189,7 +189,7 @@ def boot_eulerOS(serial, ssh, n=1):
         if not PangeaLib.toBIOS(serial, ssh):
             result.log_fail()
             return
-        if not SetUpLib.locate_option(serial, Key.RIGHT, ['Boot'], 12, 'Boot Options'):
+        if not SetUpLib.locate_option(serial, Key.RIGHT, ['Boot'], 12):
             result.log_fail()
             return
         serial.send_keys(Key.ESC)
