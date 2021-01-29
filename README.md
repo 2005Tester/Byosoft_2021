@@ -5,6 +5,8 @@
 2. pip install paramiko  
 3. pip install pyserial  
 
+or Run pip install -r requirements.txt  
+
 
 ## Test Case Development Rules
 1. 自动测试入口脚本：Test[projectname].py, 所有调通的case, 添加到runtest()里面   
