@@ -23,6 +23,7 @@ LOG_DIR = 'c:\\daily\\Pangea\\{0}'.format(datetime.datetime.now().strftime('%Y-%
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 SERIAL_LOG = os.path.join(LOG_DIR, 'serial.log')
+SHAR_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\AT Report\\Pangea\\{0}'.format(datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 
 # Serial Port Configuration
 BIOS_SERIAL = "com3"
@@ -53,19 +54,18 @@ class Key:
     # F5 = [chr(0x1b), chr(0x5b), chr(0x31), chr(0x35), chr(0x7e)]
     # F6 = [chr(0x1b), chr(0x5b), chr(0x31), chr(0x37), chr(0x7e)]
     F7 = '\33' + '7'
-    F9 = [chr(0x1b), chr(0x5b), chr(0x32), chr(0x30), chr(0x7e)]
-    F10 = [chr(0x1b), chr(0x5b), chr(0x32), chr(0x31), chr(0x7e)]
+    F9 = '\33' + '9'
+    F10 = '\33' + '0'
+    # F9 = [chr(0x1b), chr(0x5b), chr(0x32), chr(0x30), chr(0x7e)]
+    # F10 = [chr(0x1b), chr(0x5b), chr(0x32), chr(0x31), chr(0x7e)]
     ESC = '\33' + ' '
     CTRL_ALT_DELETE = '\33R\33r\33R'
     UP = [chr(0x1b), chr(0x5b), chr(0x41)]
     DOWN = [chr(0x1b), chr(0x5b), chr(0x42)]
     LEFT = [chr(0x1b), chr(0x5b), chr(0x44)]
     RIGHT = [chr(0x1b), chr(0x5b), chr(0x43)]
-    Y = [chr(0x59)]
-
-
-# Common key order
-key2default = [Key.F9, Key.Y, Key.F10, Key.Y]
+    Y = 'y'
+    # Y = [chr(0x59)]
 
 
 ####################################################################################
@@ -80,11 +80,12 @@ class Msg:
     HOME_PAGE = 'System Information'
     BIOS_BOOT_COMPLETE = 'BIOS startup is complete'
 
-    # pages in BIOS configuration
-    PAGE_ADVANCED = 'Advanced'
-    PAGE_SECURITY = 'Security'
-    PAGE_BOOT = 'Boot'
-    PAGE_SAVE = 'Exit'
+    # pages in bios configuration
+    PAGE_ADVANCED = 'CPU Configuration'
+    PAGE_BMC = 'Additional System Information'
+    PAGE_SECURITY = 'TPM Device'
+    PAGE_BOOT = '<UEFI Boot Type>'
+    PAGE_SAVE = 'Save Changes and Exit'
 
     # menus of CPU configuration
     CPU_MENU = 'All Cpu Information'
@@ -97,7 +98,7 @@ class Msg:
     Boot_MENU = 'Boot'
     Boot_OPTION = 'Boot Options'
     Boot_MANAGER = 'Boot Manager'
-    PXE_PORT = 'UEFI PXEv4 (MAC:B8E3B18B06C9)\-Port1 Mgmt'
+    PXE_PORT = 'UEFI PXEv4 \(MAC:B8E3B18B06C9\)\-Port1 Mgmt'
     OS_PORT = 'Euler Linux Boot'
 
 

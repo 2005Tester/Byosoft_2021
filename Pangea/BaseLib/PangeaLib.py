@@ -62,11 +62,16 @@ def toBIOSnp(serial):
 
 def reset_default(serial, ssh):
     logging.info("Reset BIOS to default by F9")
-    keys = Key.F9 + Key.Y + Key.F10 + Key.Y
     if not toBIOS(serial, ssh):
         return
     time.sleep(1)
-    serial.send_keys(keys)
+    serial.send_keys(Key.F9)
+    time.sleep(0.1)
+    serial.send_data(Key.Y)
+    time.sleep(20)
+    serial.send_keys(Key.F10)
+    time.sleep(0.1)
+    serial.send_data(Key.Y)
     if not serial.waitString(Msg.BIOS_BOOT_COMPLETE, timeout=300):
         logging.info("Reset default by F9:Fail")
         return

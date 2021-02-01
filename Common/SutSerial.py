@@ -380,6 +380,7 @@ class SutControl:
             self.send_keys(ENTER)
         if not self.is_msg_present_general(confirm_msg):
             logging.info("{0} not captured, may not enter corect menu")
+            return
         logging.info("Enter menu: {0} successfully".format(option_path[-1]))
         return True
 

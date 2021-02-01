@@ -7,7 +7,10 @@
 #  means without the express written consent of Byosoft Corporation.
 import logging.config
 import os
+import shutil
+import time
 from sys import argv
+
 from Common import LogConfig
 from Common import SutSerial
 from Common import ssh
@@ -16,6 +19,12 @@ from Report.ReportGen import ReportGenerator
 from Pangea.BaseLib import SetUpLib
 from Pangea import ReleaseTest, UpdateBIOS
 
+# close the putty, xterm
+os.system('taskkill /IM ttermpro.exe /F')
+time.sleep(5)
+os.system('taskkill /IM putty.exe /F')
+time.sleep(5)
+
 # init seril
 ser = SutSerial.SutControl(SutConfig.BIOS_SERIAL, 115200, 0.5, SutConfig.SERIAL_LOG)
 
@@ -23,6 +32,7 @@ ser = SutSerial.SutControl(SutConfig.BIOS_SERIAL, 115200, 0.5, SutConfig.SERIAL_
 ssh_bmc = ssh.SshConnection(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)
 ssh_os = ssh.SshConnection(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASSWORD)
 
+shar_dir = SutConfig.SHAR_DIR
 
 # Init log setting
 def init_log():
@@ -40,6 +50,7 @@ def gen_report(log_dir):
     template = SutConfig.REPORT_TEMPLATE
     report = ReportGenerator(template, os.path.join(log_dir, "test.log"), os.path.join(log_dir, "report.html"))
     report.write_to_html()
+    shutil.copytree(log_dir, shar_dir, ignore=None)  # if local debug, this line should be annotated
     if len(argv)==2 and argv[1] == "daily":
         report.post_result()
 
@@ -58,7 +69,7 @@ def run_test():
     log_dir = init_log()
     UpdateBIOS.update_bios(ser, log_dir, ssh_bmc)
     ReleaseTest.post_test(ser, ssh_bmc)
-    ReleaseTest.warm_reboot_cycling(ser, ssh_bmc, 2)
+    ReleaseTest.warm_reboot_cycling(ser, ssh_bmc, 5)
     ReleaseTest.pxeTest(ser, ssh_bmc)
     ReleaseTest.processor_dimm_basic_info(ser, ssh_bmc)
     ReleaseTest.load_default_save_reset(ser, ssh_bmc)

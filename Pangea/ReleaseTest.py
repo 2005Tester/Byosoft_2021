@@ -10,7 +10,6 @@ import logging
 import time
 
 from Common import Misc
-from Pangea import SutConfig
 from Pangea.SutConfig import Key, Msg
 from Pangea.BaseLib import PangeaLib, SetUpLib, PowerLib
 
@@ -141,7 +140,7 @@ def load_default_save_reset(serial, ssh):
     if not PangeaLib.toBIOS(serial, ssh):
         result.log_fail()
         return
-    if not SetUpLib.enter_menu(serial, Key.RIGHT, ['Boot'], 12, 'Boot Options'):
+    if not SetUpLib.enter_menu(serial, Key.RIGHT, [Msg.Boot_MENU], 12, Msg.Boot_OPTION):
         result.log_fail()
         return
     if not SetUpLib.verify_info(serial, option_bfo, 7):
@@ -152,8 +151,10 @@ def load_default_save_reset(serial, ssh):
     serial.send_keys_with_delay([Key.DOWN, Key.ENTER])
     serial.send_data('15')
     serial.send_keys(Key.ENTER)
+    time.sleep(1)
+    serial.send_keys(Key.F10)
     time.sleep(0.1)
-    serial.send_keys_with_delay(Key.F10 + Key.Y)
+    serial.send_data(Key.Y)
     if not PangeaLib.toBIOSnp(serial):
         result.log_fail()
         return
@@ -164,7 +165,13 @@ def load_default_save_reset(serial, ssh):
         result.log_fail()
         if not PangeaLib.reset_default(serial, ssh):
             return
-    serial.send_keys_with_delay(SutConfig.key2default)
+    serial.send_keys(Key.F9)
+    time.sleep(0.1)
+    serial.send_data(Key.Y)
+    time.sleep(20)
+    serial.send_keys(Key.F10)
+    time.sleep(0.1)
+    serial.send_data(Key.Y)
     if not PangeaLib.toBIOSnp(serial):
         result.log_fail()
         if not PangeaLib.reset_default(serial, ssh):
