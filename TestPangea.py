@@ -40,7 +40,7 @@ def gen_report(log_dir):
     template = SutConfig.REPORT_TEMPLATE
     report = ReportGenerator(template, os.path.join(log_dir, "test.log"), os.path.join(log_dir, "report.html"))
     report.write_to_html()
-    if argv[1] and argv[1] == "daily":
+    if len(argv)==2 and argv[1] == "daily":
         report.post_result()
 
 
