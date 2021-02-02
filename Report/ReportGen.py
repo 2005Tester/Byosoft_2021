@@ -280,17 +280,20 @@ class ReportGenerator:
         cell_desc_list = []
         cell_dura_list = []
         cell_res_list = []
+        cell_log = []
         for i in range(len(report_case)):
             cell_list.append(report_case[i]['tcName'])
             cell_desc_list.append(report_case[i]['description'])
             cell_dura_list.append(report_case[i]['spendTime'])
             cell_res_list.append(report_case[i]['status'])
+            cell_log.append(report_case[i]['log'])
 
         report_data = {
             "cell": cell_list,
             "cell_desc": cell_desc_list,
             "duration": cell_dura_list,
             "result": cell_res_list,
+            "log": cell_log,
             "cell_all": result['testAll'],
             "cell_pass": result['testPass'],
             "cell_fail": result['testFail'],
@@ -299,10 +302,10 @@ class ReportGenerator:
             "total_time": result['totalTime'],
         }
 
-        resp = requests.post(url='http://192.168.100.118/v1/report',
+        resp = requests.post(url='http://192.168.100.162/api/v1/report',
                              params=report_params,
                              data=report_data,
                              files=report_files)
-        print(resp.json())
-        return resp.json()
+        print(resp)
+        return resp
 
