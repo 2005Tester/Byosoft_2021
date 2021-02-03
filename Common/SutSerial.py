@@ -371,14 +371,14 @@ class SutControl:
             self.send_keys(key)
 
     # Enter specifc setup menu by given path(list)
-    def enter_menu(self, key, option_path, try_counts, confirm_msg):
+    def enter_menu(self, key, option_path, try_counts, confirm_msg, timeout=15):
         for option in option_path:
             logging.info("Locating menu: {0}".format(option))
             if not self.locate_menu(key, option, try_counts):
                 logging.info("Not Found: {0}".format(option))
                 return
             self.send_keys(ENTER)
-        if not self.is_msg_present_general(confirm_msg):
+        if not self.is_msg_present_general(confirm_msg, timeout):
             logging.info("{0} not captured, may not enter corect menu")
             return
         logging.info("Enter menu: {0} successfully".format(option_path[-1]))
