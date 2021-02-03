@@ -1,1 +1,1 @@
-python TestIcx2P.py
+python TestIcx2P.py daily
