@@ -1,7 +1,7 @@
 from ICX2P import SutConfig
 from ICX2P.SutConfig import Key
 from ICX2P.BaseLib import PowerLib, icx2pAPI, SetUpLib
-from Common import Misc
+from Report import ReportGen
 
 
 # Cpu Related Test case, test case ID, 2xx
@@ -9,7 +9,7 @@ from Common import Misc
 # Testcase_CoreDisable_001, 002, 003, 004, 005 and 007
 def coreDisable(serial, ssh):
     tc = ('200', 'Setup菜单关核选项测试', '支持CPU关核')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
         return

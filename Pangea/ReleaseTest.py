@@ -9,7 +9,7 @@
 import logging
 import time
 
-from Common import Misc
+from Report import ReportGen
 from Pangea.SutConfig import Key, Msg
 from Pangea.BaseLib import PangeaLib, SetUpLib, PowerLib
 
@@ -17,7 +17,7 @@ from Pangea.BaseLib import PangeaLib, SetUpLib, PowerLib
 # POST, Boot, Setup, OS Installation, PM, Device, Chipsec Test and Source code cons.
 def post_test(serial, ssh):  # POST: POST Log(TBD) and Information Check
     tc = ('002', 'POST Information Test', 'POST Information Test')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     if not PowerLib.reboot_system(ssh):
         result.log_fail()
         return
@@ -32,7 +32,7 @@ def post_test(serial, ssh):  # POST: POST Log(TBD) and Information Check
 # PM: Warm reset n times, Cold reset n times and AC (TBD)
 def warm_reboot_cycling(serial, ssh, n=1):
     tc = ('003', 'Power Control Test', 'Power Control Test + F2')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     status = 0
     if not PangeaLib.toBIOS(serial, ssh):
         result.log_fail()
@@ -73,7 +73,7 @@ def warm_reboot_cycling(serial, ssh, n=1):
 # PXE Test
 def pxeTest(serial, ssh, n=1):
     tc = ('004', 'PXE Test', 'PXE Test')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     msg = 'NBP file downloaded successfully'
     for i in range(n):
         if not PangeaLib.toBIOS(serial, ssh):
@@ -96,7 +96,7 @@ def pxeTest(serial, ssh, n=1):
 # Processor/DIMM information check
 def processor_dimm_basic_info(serial, ssh):
     tc = ('007', 'Processor/DIMM Test', 'CPU/DIMM Test')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     if not PangeaLib.toBIOS(serial, ssh):
         result.log_fail()
         return
@@ -134,7 +134,7 @@ def processor_dimm_basic_info(serial, ssh):
 # Setup: Load default and setting saving - AT test cases below,
 def load_default_save_reset(serial, ssh):
     tc = ('011', 'Load default and setting saving Test', 'BIOS Load default Test')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     option_bfo = ['\[5\]\s+System Shell Timeout', '\<Disable\>\s+Boot Shell First']
     option_aft = ['\[15\]\s+System Shell Timeout', '\<Enable\>\s+Boot Shell First']
     if not PangeaLib.toBIOS(serial, ssh):
@@ -189,7 +189,7 @@ def load_default_save_reset(serial, ssh):
 # OS Test
 def boot_eulerOS(serial, ssh, n=1):
     tc = ('012', 'Boot to UEFI OS Test', 'OS Test')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     msg = 'Storage login'
     for i in range(n):
         if not PangeaLib.toBIOS(serial, ssh):

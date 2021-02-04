@@ -2,13 +2,13 @@ import logging
 from ICX2P import SutConfig
 from ICX2P.SutConfig import Key, Msg
 from ICX2P.BaseLib import SetUpLib
-from Common import Misc
+from Report import ReportGen
 
 
 # Boot to SUSE Linux from boot manager
 def boot_to_suse(serial, ssh):
     tc = ('300', 'Boot to UEFI SUSE Linux', 'Boot to UEFI SUSE Linux')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     if not SetUpLib.boot_to_bootmanager(serial, ssh):
         result.log_fail()
         return

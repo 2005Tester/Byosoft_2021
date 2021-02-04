@@ -11,7 +11,8 @@ import time
 import logging
 import os
 import re
-from Common import ssh, Misc, GitLab
+from Common import ssh, GitLab
+from Report import ReportGen
 from ICX2P import SutConfig
 
 
@@ -162,7 +163,7 @@ def update_specific_img(bios, serial):
 # Update BIOS to latest CI build
 def update_bios_ci(serial):
     tc = ('000', 'Update BIOS by BMC', 'Outband BIOS update')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     image = get_test_image(SutConfig.BINARY_DIR)
     if not image:
         result.log_skip()

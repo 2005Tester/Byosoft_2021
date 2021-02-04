@@ -2,7 +2,7 @@ import logging
 from ICX2P.SutConfig import Key, Msg
 from ICX2P import SutConfig
 from ICX2P.BaseLib import icx2pAPI, SetUpLib
-from Common import Misc
+from Report import ReportGen
 
 
 # Test case ID: 1xx
@@ -14,7 +14,7 @@ from Common import Misc
 # Testcase_RRQIRQ_001
 def rrqirq(serial, ssh):
     tc = ('101', 'Testcase_RRQIRQ_001', 'Setup菜单RRQ和IRQ选项默认值测试')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     if not SetUpLib.boot_to_page(serial, Msg.PAGE_ADVANCED, ssh):
         result.log_fail()
         return

@@ -13,7 +13,7 @@ import time
 from ICX2P.SutConfig import Key, Msg
 from ICX2P import SutConfig
 from ICX2P.BaseLib import PowerLib, icx2pAPI, SetUpLib
-from Common import Misc
+from Report import ReportGen
 from Common.LogAnalyzer import LogAnalyzer
 
 P = LogAnalyzer(SutConfig.LOG_DIR)
@@ -22,7 +22,7 @@ P = LogAnalyzer(SutConfig.LOG_DIR)
 # POST, Boot, Setup, OS Installation, PM, Device, Chipsec Test and Source code cons.
 def POST_Test(serial, ssh):  # POST: POST Log(TBD) and Information Check
     tc = ('002', 'POST Information Test', 'POST Information Test')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     if not PowerLib.force_reset(ssh):
         result.log_fail()
         return
@@ -37,7 +37,7 @@ def POST_Test(serial, ssh):  # POST: POST Log(TBD) and Information Check
 # PM: Warm reset n times, Cold reset n times and AC (TBD)
 def PM(serial, ssh, n=5):
     tc = ('003', 'Power Control Test', 'Power Control Test')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     status = 0
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
@@ -76,7 +76,7 @@ def PM(serial, ssh, n=5):
 # PXE Test
 def pxeTest(serial, ssh, n=1):
     tc = ('004', 'PXE Test', 'PXE Test')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     for i in range(n):
         if not icx2pAPI.pressF12(serial, ssh):
             result.log_fail()
@@ -91,7 +91,7 @@ def pxeTest(serial, ssh, n=1):
 # Https Test
 def httpsTest(serial, ssh):
     tc = ('005', 'Https Test', 'Https Test')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
         return
@@ -114,7 +114,7 @@ def httpsTest(serial, ssh):
 # USB Test
 def usbTest(serial, ssh):
     tc = ('006', 'USB Test', 'USB Test')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
         return
     if not icx2pAPI.toBIOSConf(serial):
@@ -140,7 +140,7 @@ def usbTest(serial, ssh):
 # Processor/DIMM Test
 def ProcessorDIMM(serial, ssh):
     tc = ('007', 'Processor/DIMM Test', 'CPU/DIMM Test')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
         return
     if not icx2pAPI.toBIOSConf(serial):
@@ -178,7 +178,7 @@ def ProcessorDIMM(serial, ssh):
 def chipsecTest(serial, ssh):
     # username - OS user name, pwd - OS user password
     tc = ('008', 'chipsec Test', 'chipsec Test')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
         return
     serial.send_keys_with_delay(SutConfig.key2OS)
@@ -199,7 +199,7 @@ def chipsecTest(serial, ssh):
 # press F2
 def pressF2(serial, ssh):
     tc = ('009', 'Setup菜单用户输入界面按F2切换键盘制式', '支持热键配置')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     if not PowerLib.force_reset(ssh):
         result.log_fail()
         return
@@ -234,7 +234,7 @@ def pressF2(serial, ssh):
 
 def equipmentMode(serial, ssh):
     tc = ('010', 'Equipment Mode Test', '支持Equipment Mode')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
         return
@@ -295,7 +295,7 @@ def checkPWD(serial, pwd1, pwd2):
 # Setup: Load default and setting saving - AT test cases below,
 def loadDefault(serial, ssh):
     tc = ('011', 'Load default and setting saving Test', 'BIOS Load default Test')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     option_bfo = ['<UEFI Boot Type>', '<Boot Retry>']
     option_aft = ['<Legacy Boot Type>', '<Cold Boot>']
     if not icx2pAPI.toBIOS(serial, ssh):
@@ -349,7 +349,7 @@ def loadDefault(serial, ssh):
 # updated by arthur, Testcase_Static_Turbo_001
 def staticTurbo(serial, ssh):
     tc = ('012', 'Testcase_Static_Turbo_001', '静态Turbo默认值测试')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
         return
@@ -384,7 +384,7 @@ def staticTurbo(serial, ssh):
 # Testcase_UFS_001,
 def ufs(serial, ssh):
     tc = ('013', 'Testcase_UFS_001', 'UFS默认值测试')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
         return
@@ -432,7 +432,7 @@ def ufs(serial, ssh):
 # Testcase_DRAM_RAPL_001
 def dramRAPL(serial, ssh):
     tc = ('015', 'Testcase_DRAM_RAPL_001, 菜单项DRAM RAPL选单检查', '支持DRAM RAPL设置')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
         return
@@ -470,7 +470,7 @@ def dramRAPL(serial, ssh):
 # 输入错误密码次数测试_阈值内输入错误密码, 输入错误密码次数测试_阈值内连续输入错误密码后输入正确密码和输入错误密码次数测试_超出阈值不影响下一次登录
 def pwdSecurity(serial, ssh):
     tc = ('016', '输入错误密码次数测试', '输入错误密码次数测试包含密码错误，次数测试和超出阈值不影响下一次登录')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     if not icx2pAPI.pressDel(serial, ssh):
         result.log_fail()
         return
@@ -515,7 +515,7 @@ def pwdSecurity(serial, ssh):
 # 检查CDN开关默认值
 def cnd(serial, ssh):
     tc = ('017', '检查CDN开关默认值', '支持网口CDN特性开关')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
         return
@@ -536,7 +536,7 @@ def cnd(serial, ssh):
 # Testcase_BiosPasswordSecurity_007, 019, 020, 021, 022
 def pwdVerification1(serial, ssh):
     tc = ('018', '密码修改验证', 'BIOS密码应满足产品网络安全要求')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     # if not toBIOS(serial, ssh):
     #     result.log_fail()
     #     return
@@ -615,7 +615,7 @@ def pwdVerification1(serial, ssh):
 # Testcase_BiosPasswordSecurity_003, 010 设置密码长度度测试_密码长度等于最少字符数(8)
 def pwdVerification2(serial, ssh):
     tc = ('019', '设置密码长度度测试', 'BIOS密码应满足产品网络安全要求')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     if not icx2pAPI.setPWD(serial, ssh, SutConfig.new_pwd_9, SutConfig.new_pwd_8):
         result.log_fail()
         return
@@ -630,7 +630,7 @@ def pwdVerification2(serial, ssh):
 # Testcase_BiosPasswordSecurity_005, 006
 def pwdVerification3(serial, ssh):
     tc = ('020', '设置密码最大字符数测试', 'BIOS密码应满足产品网络安全要求')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh, SutConfig.new_pwd_8):
         result.log_fail()
         return
@@ -664,7 +664,7 @@ def pwdVerification3(serial, ssh):
 # Testcase_BiosPasswordSecurity_008, 009
 def pwdVerification4(serial, ssh):
     tc = ('021', '设置密码最大字符数测试', 'BIOS密码应满足产品网络安全要求')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh, SutConfig.new_pwd_16):
         result.log_fail()
         return
@@ -730,7 +730,7 @@ def pwdVerification4(serial, ssh):
 # Testcase_SimplePassword_001, 002, 003, 004 and 005
 def simplePWDTest(serial, ssh):
     tc = ('022', '简易密码开关默认值测试', '支持关闭密码复杂度检测')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh, SutConfig.new_pwd_16):
         result.log_fail()
         return
@@ -802,7 +802,7 @@ def pwdSecurityTest(serial, ssh, dst):
 # Testcase_SecurityBoot_001, 004
 def securityBoot(serial, ssh):
     tc = ('023', 'Secure Boot默认值', 'Secure Boot默认值')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
         return
@@ -837,7 +837,7 @@ def securityBoot(serial, ssh):
 # TXT + TPM Test Testcase_TPM_013 单板已插TPM卡 - 待在新板上验证，旧板不支持TXT（或rework板子开启TXT）
 def tpm(serial, ssh):
     tc = ('024', 'TPM芯片测试', '支持CBNT')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
         return
@@ -885,7 +885,7 @@ def tpm(serial, ssh):
 # Testcase_VTD_002
 def vtd(serial, ssh):
     tc = ('025', 'Testcase_VTD_002', '关闭VT-d功能启动测试')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     if not SetUpLib.boot_to_page(serial, Msg.PAGE_ADVANCED, ssh):
         result.log_fail()
         return
@@ -922,7 +922,7 @@ def vtd(serial, ssh):
 # Testcase_CPU_COMPA_015, 016 - TBD
 def cpuCOMPA(serial, ssh):
     tc = ('026', 'UPI link链路检测测试', 'CPU兼容性测试')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
         return
@@ -956,7 +956,7 @@ def cpuCOMPA(serial, ssh):
 # Testcase_LogTime_001, 002 and 003 串口日志打印
 def logTime(serial, ssh):
     tc = ('027', 'Testcase_LogTime_001, 002 and 003, 串口日志打印测试', '支持BIOS启动开始和结束信息打印及上报')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
         return
@@ -1000,7 +1000,7 @@ def logTime(serial, ssh):
 # unitool
 def auto_unitool_loop(serial, ssh):
     tc = ('061', 'auto unitool loop', '支持unitool loop')
-    result = Misc.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial)
     f = os.listdir(SutConfig.INI_DIR)
     status = 0
     for root, dirs, files in os.walk(SutConfig.INI_DIR):

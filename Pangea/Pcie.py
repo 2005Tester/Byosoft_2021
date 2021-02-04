@@ -1,6 +1,6 @@
 import os
 import logging
-from Common import Misc
+from Report import ReportGen
 from Pangea.BaseLib import SshLib
 from Pangea import SutConfig
 
@@ -16,7 +16,7 @@ from Pangea import SutConfig
 # On Complete: in OS
 def pci_resource_tree_view(ssh):
     tc = ('200', 'PCIE Resource Test 01', 'check whetehr lspci -tv result is different after bios update')
-    result = Misc.LogHeaderResult(tc)
+    result = ReportGen.LogHeaderResult(tc)
     if SutConfig.BOARD_TYPE == "NVME2P":
         lkg_log = os.path.join(SutConfig.LKG_LOG_DIR, "lspci_tv_nvme2p.log")
     elif SutConfig.BOARD_TYPE == "SAS2P":
@@ -38,7 +38,7 @@ def pci_resource_tree_view(ssh):
 # On Complete: in OS
 def lspci_diff(ssh):
     tc = ('201', 'PCIE Resource Test 01', 'check whetehr lspci -vv result is different after bios update')
-    result = Misc.LogHeaderResult(tc)
+    result = ReportGen.LogHeaderResult(tc)
     if SutConfig.BOARD_TYPE == "NVME2P":
         lkg_log = os.path.join(SutConfig.LKG_LOG_DIR, "lspci_vv_nvme2p.log")
     elif SutConfig.BOARD_TYPE == "SAS2P":
@@ -60,7 +60,7 @@ def lspci_diff(ssh):
 # On Complete: in OS
 def pci_resource_root_port(ssh):
     tc = ('202', 'PCIE Resource Test 03', 'check whetehr resource allocated for root ports are correct')
-    result = Misc.LogHeaderResult(tc)
+    result = ReportGen.LogHeaderResult(tc)
     fail_cnt = 0
 
     if SutConfig.BOARD_TYPE == "NVME2P":
