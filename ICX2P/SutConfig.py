@@ -122,7 +122,7 @@ msg5 = 'USB Mouse\s+1'
 msg6 = 'USB Keyboard\s+1'
 msg7 = 'USB Mass Storage\s+0'
 pwd_info = 'The current password is the default password.Please update password!'
-default_pwd = 'Admin@9001'
+default_pwd = 'Admin@9000'
 
 # BIOS Setup options,
 # level 1
@@ -184,23 +184,3 @@ key2type = [Key.RIGHT, Key.RIGHT, Key.RIGHT, Key.RIGHT]
 # WA
 w2key = [Key.RIGHT, Key.UP]
 
-new_pwd_9 = 'Admin@9002'
-new_pwd_8 = 'Admin@9!'
-new_pwd_16 = 'Admin@9001Admin@90'
-new_pwd_17 = 'Admin@9001Admin@900'
-simple_pwd = '11111111'
-weak_pwd = 'Huawei@CLOUD8!'
-# 新密码为2种字符类型，尝试各种组合（共6种组合）
-pwd_list1 = ['ADMIN123', 'admin123', 'admin###', 'ADMIN###', 'ADMINadm', '1234####']
-# System will be locked after send wrong pwd 3 times
-# 新密码为3种字符类型，尝试各种组合（共4种组合）
-pwd_list2 = ['Administrator@', 'admin@123', 'Administrator1', 'ADMIN@123']
-# common error msg
-pwd_info_1 = 'Please type in your password'
-pwd_info_2 = 'Please type in your new password'
-pwd_info_3 = 'Please confirm your new password'
-pwd_info_4 = 'Changes have been saved after press'
-invalid_info = 'Invalid Password'
-error_info = 'Enter incorrect password 3 times,System Locked'
-enable_simple_pwd = 'Enabling simple password poses security risks'
-simple_pwd_warning = 'The password fails the dictionary check - it is too simplistic/systematic'

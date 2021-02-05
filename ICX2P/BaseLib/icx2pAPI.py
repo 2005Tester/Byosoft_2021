@@ -408,12 +408,12 @@ def setPWDwithoutF10(serial, pwd1, pwd2):
     return True
 
 
-def restore_env(serial, dst):
-    if not Update.get_test_image(dst):
-        return
-    if not Update.update_specific_img(dst, serial):
-        return
-    return True
+# def restore_env(serial, dst):
+#     if not Update.get_test_image(dst):
+#         return
+#     if not Update.update_specific_img(serial,dst):
+#         return
+#     return True
 
 
 def reset_default(serial, ssh):

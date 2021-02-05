@@ -1,5 +1,6 @@
 from Common import ssh
 import logging
+import time
 from ICX2P.SutConfig import Key
 from ICX2P import SutConfig
 from ICX2P.SutConfig import Msg
@@ -128,4 +129,43 @@ def boot_to_bootmanager(serial, ssh):
     return boot_with_hotkey(serial, ssh, key, msg, 300)
     
 
-    
+def msg_Strings(self, msg_list=None, timeout=10):
+    """
+    Read data from Console Redirection port, and wait more than 1 string
+    :param msg_list: Multiple strings wait to be captured
+    :param timeout: Timeout of wait duration
+    :return: True, if all strings get from COM port
+             False, script has not captured all strings after timeout
+    """
+    if msg_list is None:
+        msg_list = []
+    t_start = time.time()
+    tmp = []
+    var = ''
+    # self.buffer = ""
+    while True:
+        try:
+            count = self.session.inWaiting()  # Serial port buffer data
+            if count != 0:
+                rev = self.session.read(count).decode()
+                self.buffer += rev
+                rev = self.cleanup_data(self.buffer)
+                for i in range(len(msg_list)):
+                    if msg_list[i] not in rev:
+                        var = msg_list[i]
+                    else:
+                        tmp.append(msg_list[i])
+
+            time.sleep(0.1)
+        except Exception as e:
+            logging.error("Error:{0}".format(e))
+
+        if tmp == msg_list:
+            logging.info('Find strings:{0}'.format(tmp))
+            return True
+
+        now = time.time()
+        spent_time = (now - t_start)
+        if spent_time > timeout:
+            logging.info("Can not find strings(timeout):{0}".format(var))
+            return False

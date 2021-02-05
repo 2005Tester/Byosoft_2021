@@ -7,6 +7,7 @@
 #  means without the express written consent of Byosoft Corporation.
 import logging.config
 import os
+from ICX2P import Pwd
 from sys import argv
 from Common import LogConfig
 from Common import SutSerial
@@ -73,6 +74,7 @@ def run_test():
     biosTest.cpuCOMPA(ser, ssh_bmc)
     Os.boot_to_suse(ser, ssh_bmc)
 #    biosTest.logTime(ser, ssh_bmc)
+    Pwd.simplePWDTest(ser, ssh_bmc)
     gen_report(log_dir)
 
 
