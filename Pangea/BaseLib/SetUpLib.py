@@ -57,7 +57,7 @@ def boot_to_setup(serial, ssh):
 def boot_with_hotkey(serial, ssh, key, msg, timeout):
     hotkey_prompt = Msg.HOTKEY_PROMPT_DEL
     pw_prompt = Msg.PW_PROMPT
-    password = SutConfig.BIOS_PASSWORD 
+    password = SutConfig.BIOS_PASSWORD
     if not PowerLib.reboot_system(ssh):
         return
     if not serial.boot_with_hotkey(key, msg, timeout, hotkey_prompt, pw_prompt, password):
@@ -104,14 +104,14 @@ def boot_to_page(serial, ssh, page_name):
 
 # Verify supported values of a setup option, can be called after locate_setup_option()
 # valuses: string, e.g: DisabledAutoLowMediumHighManual
-def verify_supported_values(serial, value):
+def verify_supported_values(serial, values):
     SerialLib.send_keys(Key.ENTER)
     if not serial.is_msg_present(values):
         logging.info("Supported values are not correct.")
         SerialLib.send_keys(Key.ESC)
         return
     logging.info("Supported values are verified.")
-    SerialLib.send_keys(Key.ESC)  
+    SerialLib.send_keys(Key.ESC)
     return True
 
 
@@ -120,4 +120,3 @@ def boot_to_bootmanager(serial, ssh):
     key = Key.F11
     msg = "Boot Manager Menu"
     return boot_with_hotkey(serial, ssh, key, msg, 300)
-

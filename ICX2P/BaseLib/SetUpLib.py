@@ -1,13 +1,11 @@
-from Common import ssh
 import logging
 import time
-from ICX2P.SutConfig import Key
 from ICX2P import SutConfig
-from ICX2P.SutConfig import Msg
-from ICX2P.BaseLib import icx2pAPI, PowerLib
+from ICX2P.SutConfig import Key, Msg
+from ICX2P.BaseLib import PowerLib
 
 
-# Send a single key, e.g. ENTER, DOWN, UP 
+# Send a single key, e.g. ENTER, DOWN, UP
 def send_key(serial, key):
     serial.send_keys(key)
 
@@ -38,6 +36,7 @@ def verify_options(serial, key, options, trycounts):
     else:
         logging.info("{0} options not verified".format(len(options)-len(verified_items)))    
 
+
 # Enter setup menu
 def enter_menu(serial, key, option_path, try_counts, confirm_msg):
     return serial.enter_menu(key, option_path, try_counts, confirm_msg)
@@ -62,10 +61,11 @@ def boot_to_setup(serial, ssh):
     logging.info("SetUpLib: Boot to setup main page successfully")
     return True
 
+
 def boot_with_hotkey(serial, ssh, key, msg, timeout):
     hotkey_prompt = Msg.HOTKEY_PROMPT_DEL
     pw_prompt = Msg.PW_PROMPT
-    password = SutConfig.BIOS_PASSWORD 
+    password = SutConfig.BIOS_PASSWORD
     if not PowerLib.force_reset(ssh):
         return
     if not serial.boot_with_hotkey(key, msg, timeout, hotkey_prompt, pw_prompt, password):
@@ -119,15 +119,16 @@ def verify_supported_values(serial, values):
         serial.send_keys(Key.ESC)
         return
     logging.info("Supported values are verified.")
-    serial.send_keys(Key.ESC)  
+    serial.send_keys(Key.ESC)
     return True
+
 
 # Boot to boot manager with hotkey
 def boot_to_bootmanager(serial, ssh):
     key = Key.F11
     msg = "Boot Manager Menu"
     return boot_with_hotkey(serial, ssh, key, msg, 300)
-    
+
 
 def msg_Strings(self, msg_list=None, timeout=10):
     """
