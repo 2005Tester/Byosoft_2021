@@ -20,6 +20,7 @@ class LogHeaderResult:
     # write test case info to serial log and test log
     def __init__(self, tc, serial=None):
         self.tc = tc
+        self.serial = serial
         self.msg_start = '<TC{0}><Tittle>{1}:Start'.format(tc[0], tc[1])
         self.msg_description = '<TC{0}><Description>{1}'.format(tc[0], tc[2])
         self.msg_fail = '<TC{0}><Result>{1}:Fail'.format(tc[0], tc[1])
