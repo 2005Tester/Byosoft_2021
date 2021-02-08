@@ -10,6 +10,7 @@
 import serial
 import time
 import re
+import sys
 import logging
 
 ENTER = [chr(0x0D)]
@@ -29,6 +30,7 @@ class SutControl:
         except Exception as e:
             logging.error(e)
             logging.info("SutControl: init failed.")
+            sys.exit()
 
     def open_session(self):
         self.session.open()
@@ -149,7 +151,7 @@ class SutControl:
                 break
 
     def is_msg_present(self, msg):
-        logging.info("Waiting for string:\"{0}\"".format(msg))
+        logging.info("Waiting for:\"{0}\"".format(msg))
         start_time = time.time()
         logging.debug("is_msg_present: receiving data from serial port...")
         while True:

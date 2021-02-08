@@ -34,14 +34,23 @@ class LogHeaderResult:
     def log_pass(self):
         logging.info(self.msg_pass)
         logging.info("-"*80)
+        if self.serial:
+            self.msg_serial = '\n##### TC{0} {1}: Pass #####\n'.format(self.tc[0], self.tc[1])
+            self.serial.write_data2log(self.msg_serial)
 
     def log_fail(self):
         logging.info(self.msg_fail)
         logging.info("-"*80)
+        if self.serial:
+            self.msg_serial = '\n##### TC{0} {1}: Fail #####\n'.format(self.tc[0], self.tc[1])
+            self.serial.write_data2log(self.msg_serial)
 
     def log_skip(self):
         logging.info(self.msg_skip)
         logging.info("-"*80)
+        if self.serial:
+            self.msg_serial = '\n##### TC{0} {1}: Skip #####\n'.format(self.tc[0], self.tc[1])
+            self.serial.write_data2log(self.msg_serial)
 
 
 class ReportGenerator:
@@ -140,7 +149,6 @@ class ReportGenerator:
             logging.debug("get_tc_log: failed to get index, <{0}><Tittle>.+:Start or <{0}><Result>.+:.+ not found".format(tcid))
         return log
 
-
     # get testcase description
     def get_des(self, tcid):
         des = "NA"
@@ -149,7 +157,6 @@ class ReportGenerator:
                 des = re.findall("<{0}><Description>(.+)".format(tcid), line)[0]
         return des
 
-
     # get number of pass, fail, skip test cases
     def get_result_count(self):
         pass_num = 0
@@ -157,12 +164,12 @@ class ReportGenerator:
         skip_num = 0
 
         for line in self.load_test_log():
-            if re.search("<TC\d+><Result>.+:Pass", line):
-                pass_num +=1
-            if re.search("<TC\d+><Result>.+:Fail", line):
-                fail_num +=1
-            if re.search("<TC\d+><Result>.+:Skip", line):
-                skip_num +=1
+            if re.search(r"<TC\d+><Result>.+:Pass", line):
+                pass_num += 1
+            if re.search(r"<TC\d+><Result>.+:Fail", line):
+                fail_num += 1
+            if re.search(r"<TC\d+><Result>.+:Skip", line):
+                skip_num += 1
         return pass_num, fail_num, skip_num
 
     # get code verion of test image
@@ -173,7 +180,7 @@ class ReportGenerator:
                 version = re.findall("Latest Code Version is: (\d+)", line)
                 if not version:
                     version = re.findall("Commit: ([0-9a-z]{8})", line)
-                    version =version[0]
+                    version = version[0]
         return version
 
     # get sut configuration info
@@ -274,7 +281,6 @@ class ReportGenerator:
             data = content.replace(old, new)
         return data
 
-
     # get list of files to be uploaded
     def get_upload_files(self):
         dir, fi = os.path.split(self.log)
@@ -286,22 +292,15 @@ class ReportGenerator:
             files_for_upload.append("('upload', ('serial.log', " + "open(" + file+ ", 'rb')))")
         return files_for_upload
 
-
     # post test result to web
     def post_result(self):
         result = self.collect_test_result()
-        #print(result)
 
-        #report_files = self.get_upload_files()
-    
         dir, fi = os.path.split(self.log)
- 
         report_files = [
-        ('upload', ('serial.log', open(os.path.join(dir, 'serial.log'), 'rb'))),
-        ('upload', ('test.log', open(os.path.join(dir, 'test.log'), 'rb')))
+            ('upload', ('serial.log', open(os.path.join(dir, 'serial.log'), 'rb'))),
+            ('upload', ('test.log', open(os.path.join(dir, 'test.log'), 'rb')))
         ]
-
-    
 
         report_params = {'pro_name': result['testProject'], 'conf_name': result['testConfig'], 'ver_name': result['testVersion']}
         report_case = result['testResult']
@@ -337,4 +336,3 @@ class ReportGenerator:
                              files=report_files)
         print(resp)
         return resp
-
