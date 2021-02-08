@@ -50,11 +50,13 @@ class RunTest:
         log_format = LogConfig.gen_config(log_dir)
         logging.config.dictConfig(log_format)
         logging.getLogger("paramiko").setLevel(logging.WARNING)
+        logging.info("Initializing test...")
         logging.info("Test Project: {0}".format(self.config.PROJECT_NAME))
         logging.info("SUT Configuration: {0}".format(self.config.SUT_CONFIG))
         return log_dir
 
     def gen_report(self, log_dir):
+        logging.info("Generating report...")
         template = self.config.REPORT_TEMPLATE
         report = ReportGenerator(template, os.path.join(log_dir, "test.log"), os.path.join(log_dir, "report.html"))
         report.write_to_html()
@@ -68,12 +70,9 @@ class RunTest:
             return
         logdir = self.init_log()
         if self.execution_type == "daily":
-            print(self.config.PROJECT_NAME)
             self.script.DailyTest()
         elif self.execution_type == "release":
-            print(self.config.PROJECT_NAME)
             self.script.ReleaseTest()
         elif self.execution_type == "debug":
-            print(self.config.PROJECT_NAME)
             self.script.Debug()
         self.gen_report(logdir)
