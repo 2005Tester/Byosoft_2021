@@ -75,6 +75,8 @@ def run_test():
     Os.boot_to_suse(ser, ssh_bmc)
 #    biosTest.logTime(ser, ssh_bmc)
     Pwd.simplePWDTest(ser, ssh_bmc)
+    Pwd.Simple_password_validity(ser, ssh_bmc)
+    Pwd.Simple_password_disenable(ser, ssh_bmc)
     gen_report(log_dir)
 
 

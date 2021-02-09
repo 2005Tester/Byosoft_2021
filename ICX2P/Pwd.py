@@ -52,12 +52,13 @@ def checkPWD(serial, pwd1, pwd2):
         return
     SetUpLib.send_keys(serial, pwd2)
     SetUpLib.send_key(serial, Key.ENTER)
-    if not SetUpLib.msg_Strings(invalid_info, timeout=10):
+    if not SerialLib.is_msg_present(serial,invalid_info):
+
         return
     SetUpLib.send_key(serial, Key.ENTER)
     SetUpLib.send_keys(serial, SutConfig.default_pwd)
     SetUpLib.send_key(serial, Key.ENTER)
-    if not SetUpLib.msg_Strings(invalid_info, timeout=30):
+    if not SerialLib.is_msg_present(serial,invalid_info):
         return
     SetUpLib.send_key(serial, Key.ENTER)
     time.sleep(1)
@@ -65,7 +66,7 @@ def checkPWD(serial, pwd1, pwd2):
     time.sleep(1)
     SetUpLib.send_key(serial, Key.ENTER)
     SetUpLib.send_keys(serial, [Key.RIGHT, Key.LEFT])
-    if not SetUpLib.msg_Strings('Continue', timeout=30):
+    if not SerialLib.is_msg_present(serial,'Continue'):
         return
     return True
 
@@ -105,7 +106,7 @@ def simplePWDTest(serial, ssh):
         result.log_fail()
         return
     SetUpLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial,pwd_info_1, delay=10):
+    if not SerialLib.is_msg_present(serial,pwd_info_1):
         result.log_fail()
         return
     SetUpLib.send_keys(serial, default_pwd)
@@ -218,6 +219,108 @@ def Simple_password_validity(serial, ssh):
     SetUpLib.send_key(serial, Key.ENTER)
     serial.send_keys(Key.F10 + Key.Y)
     if not checkPWD(serial,simple_pwd,new_pwd_7):
+        result.log_fail()
+        return
+    if not restore_env(serial, log_dir):
+        return
+    result.log_pass()
+    return True
+
+def Simple_password_disenable(serial, ssh):
+    tc = ('033', 'PasswordSecurity_03', '设置简易密码并保存后，再次关闭简易密码开关测试')
+    result = ReportGen.LogHeaderResult(tc, serial)
+    if not icx2pAPI.toBIOS(serial, ssh):
+        result.log_fail()
+        return
+    if not icx2pAPI.toBIOSConf(serial):
+        result.log_fail()
+        return
+    SetUpLib.send_keys(serial, SutConfig.key2pwd)
+    # #checkin "Simple Password"  Default value "Disabled"
+    if not SetUpLib.locate_option(serial, Key.DOWN, ["Simple Password", "<Disabled>"], 20):
+        result.log_fail()
+        return
+    logging.info("Simple Password   <Enabled> ")
+    serial.send_keys(Key.F5)
+    SetUpLib.send_key(serial, Key.ENTER)
+    if not SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20):
+        result.log_fail()
+        return
+    SetUpLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial,pwd_info_1):
+        result.log_fail()
+        return
+    SetUpLib.send_keys(serial, default_pwd)
+    SetUpLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial,pwd_info_2):
+        result.log_fail()
+        return
+    SetUpLib.send_keys(serial, simple_pwd)
+    SetUpLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial, pwd_info_3):
+        result.log_fail()
+        return
+    SetUpLib.send_keys(serial, simple_pwd)
+    SetUpLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial, pwd_info_4):
+        result.log_fail()
+        return
+    SetUpLib.send_key(serial, Key.ENTER)
+    serial.send_keys(Key.F10 + Key.Y)
+    if not checkPWD(serial, simple_pwd, new_pwd_7):
+        result.log_fail()
+    ###以上，是此用例的前置条件##############
+    SetUpLib.send_keys(serial, SutConfig.key2Setup)
+    SetUpLib.send_keys(serial, SutConfig.key2pwd)
+    if not SetUpLib.locate_option(serial, Key.DOWN, ["Simple Password", "<Enabled>"], 20):
+        result.log_fail()
+        return
+    serial.send_keys(Key.F6)
+
+    logging.info("Simple Password   <Disabled> ")
+    if not SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20):
+        result.log_fail()
+        return
+    SetUpLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial,pwd_info_1):
+        result.log_fail()
+        return
+    SetUpLib.send_keys(serial, simple_pwd)
+    SetUpLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial,pwd_info_2):
+        result.log_fail()
+        return
+    SetUpLib.send_keys(serial, new_pwd_7)
+    SetUpLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial, pwd_info_3):
+        result.log_fail()
+    SetUpLib.send_keys(serial, new_pwd_7)
+    SetUpLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial, invalid_info):
+        result.log_fail()
+        return
+    SetUpLib.send_key(serial, Key.ENTER)
+    time.sleep(1)
+    SetUpLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial, pwd_info_1):
+        result.log_fail()
+        return
+    SetUpLib.send_keys(serial, simple_pwd)
+    SetUpLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial, pwd_info_2):
+        result.log_fail()
+        return
+    SetUpLib.send_keys(serial, new_pwd_9)
+    SetUpLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial, pwd_info_3):
+        result.log_fail()
+    SetUpLib.send_keys(serial, new_pwd_9)
+    SetUpLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial, pwd_info_4):
+        result.log_fail()
+    SetUpLib.send_key(serial, Key.ENTER)
+    serial.send_keys(Key.F10 + Key.Y)
+    if not checkPWD(serial, new_pwd_9, new_pwd_7):
         result.log_fail()
         return
     if not restore_env(serial, log_dir):
