@@ -25,7 +25,7 @@ class Gitlab:
         self.header = {'PRIVATE-TOKEN': self.access_token}
         self.jobs_url = ''
 
-    def get_latest_job_master(self):
+    def get_latest_job(self, branch):
         self.jobs_url = self.base_url + str(self.projectid) + '/jobs'
         res = requests.get(self.jobs_url, headers=self.header)
         job_list = json.loads(res.content)
@@ -34,7 +34,7 @@ class Gitlab:
             return
         latest_job = []
         for i in range(len(job_list)):
-            if job_list[i]['ref'] == 'master' and job_list[i]['status'] == 'success':
+            if job_list[i]['ref'] == branch and job_list[i]['status'] == 'success':
                 latest_job = job_list[i]
                 break
         return latest_job
@@ -47,7 +47,6 @@ class Gitlab:
         logging.info("Author:{0}".format(job['commit']['author_name']))
         logging.info("Commit: {0}".format(job['commit']['short_id']))
         logging.info("BuildFinishedTime:{0}".format(job['finished_at']))
-
 
     def download_image(self, job, dir, img_name):
         logging.info("Downloading image to {0}".format(dir))
@@ -70,21 +69,26 @@ class Gitlab:
             return image_path
         else:
             logging.info("Download image fail")
-    
+
     # Download latest image from gitlab, img_name is a regular expression whcih matches targer image for test
     def download_latest_image_master(self, dir, img_name):
-        latest_job = self.get_latest_job_master()
+        latest_job = self.get_latest_job("master")
+        return self.download_image(latest_job, dir, img_name)
+
+    # Download latest image for a specifid branch
+    def download_latest_image(self, branch, dir, img_name):
+        latest_job = self.get_latest_job(branch)
         return self.download_image(latest_job, dir, img_name)
 
     @staticmethod
-    #Unzip artifacts, search for img and return path of test image        
+    # Unzip artifacts, search for img and return path of test image
     def unzip(artifacts, dst, img_name):
         logging.info("Unzip artifacts...")
         uz = zipfile.ZipFile(artifacts, 'r')
         for file in uz.namelist():
             print(file)
             if re.search(img_name, file):
-                file_path =  os.path.join(dst, file.replace("/", "\\"))
+                file_path = os.path.join(dst, file.replace("/", "\\"))
                 print(file_path)
                 if os.path.exists(file_path):
                     logging.info("Delete old file")

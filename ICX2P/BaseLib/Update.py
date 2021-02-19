@@ -12,16 +12,16 @@ import logging
 import os
 import re
 from Common import ssh, GitLab
-from Report import ReportGen
 from ICX2P import SutConfig
 
 
 # Obtain the path of latest bios image from Gitlab artifacts
-def get_test_image(dst):
+def get_test_image(dst, branch):
     gitlab_icx = GitLab.Gitlab(31, 'PbLqm_njsnGxCQBtHoMG')
-    test_image = gitlab_icx.download_latest_image_master(dst, ".bin")
+    test_image = gitlab_icx.download_latest_image(branch, dst, ".bin")
     logging.info("Image for test: {0}".format(test_image))
     return(test_image)   
+
 
 # Upload BIOS image to SUT BMC
 def upload_bios(src):
@@ -158,23 +158,3 @@ def update_specific_img(bios, serial):
         return
     time.sleep(15)
     return True
-
-
-# Update BIOS to latest CI build
-def update_bios_ci(serial):
-    tc = ('000', 'Update BIOS by BMC', 'Outband BIOS update')
-    result = ReportGen.LogHeaderResult(tc, serial)
-    image = get_test_image(SutConfig.BINARY_DIR)
-    if not image:
-        result.log_skip()
-        return
-    if not update_specific_img(image, serial):
-        result.log_fail()
-        return
-    result.log_pass()
-    return True
-
-
-if __name__ == '__main__':
-    upload_bios()
-    program_flash()

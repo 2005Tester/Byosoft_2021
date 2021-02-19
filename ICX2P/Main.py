@@ -13,7 +13,7 @@ ssh_bmc = ssh.SshConnection(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_
 
 # Define test scope for daily test
 def DailyTest():
-    UpdateBIOS.update_bios(ser, SutConfig.LOG_DIR)
+    UpdateBIOS.update_bios(ser, SutConfig.LOG_DIR, 'master')
     biosTest.POST_Test(ser, ssh_bmc)
     biosTest.PM(ser, ssh_bmc)
     biosTest.usbTest(ser, ssh_bmc)
@@ -32,6 +32,7 @@ def DailyTest():
 
 def ReleaseTest():
     print("Run release test for ICX 2P.")
+    UpdateBIOS.update_bios(ser, SutConfig.LOG_DIR, '2288V6_006')
     Release.me_version_status(ser, ssh_bmc)
 
 

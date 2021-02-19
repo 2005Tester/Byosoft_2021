@@ -78,7 +78,7 @@ def restore_env(serial, log_dir):
     # bin_file = os.listdir(path)
     if not os.path.exists(bin_dir):
         logging.info("output no exist")
-        Update.get_test_image(log_dir)
+        Update.get_test_image(log_dir, 'master')
     else :
         logging.info("output_file exist")
     if not Update.update_specific_img(log_dir, serial):

@@ -14,7 +14,6 @@ from Common import SutSerial
 from Common import ssh
 from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest, Cpu, Os
 from Report.ReportGen import ReportGenerator
-from ICX2P.BaseLib import SetUpLib
 
 # init seril
 ser = SutSerial.SutControl(SutConfig.BIOS_SERIAL, 115200, 0.5, SutConfig.SERIAL_LOG)
@@ -39,14 +38,14 @@ def gen_report(log_dir):
     template = SutConfig.REPORT_TEMPLATE
     report = ReportGenerator(template, os.path.join(log_dir, "test.log"), os.path.join(log_dir, "report.html"))
     report.write_to_html()
-    if len(argv)==2 and argv[1] == "daily":
+    if len(argv) == 2 and argv[1] == "daily":
         report.post_result()
 
 
 # for debug purpose
 def debug_run():
     log_dir = init_log()
-    UpdateBIOS.update_bios(ser, log_dir)
+    UpdateBIOS.update_bios(ser, log_dir, 'master')
 #    DefaultValueTest.test(ssh_bmc)
     biosTest.pressF2(ser, ssh_bmc)
     gen_report(log_dir)
@@ -55,7 +54,7 @@ def debug_run():
 # Define test scope here
 def run_test():
     log_dir = init_log()
-    UpdateBIOS.update_bios(ser, log_dir)
+    UpdateBIOS.update_bios(ser, log_dir, 'master')
     biosTest.POST_Test(ser, ssh_bmc)
     biosTest.PM(ser, ssh_bmc)
 #    biosTest.pxeTest(ser, ssh_bmc)
