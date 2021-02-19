@@ -8,13 +8,13 @@ from Report import ReportGen
 # Test case ID: 9xx
 
 ##########################################
-####        Release Test Cases       #####    
+#            Release Test Cases          #
 ##########################################
 
 def me_version_status(serial, ssh):
     tc = ('901', 'ME_Check ME Version and status', 'ME version should be match within BIOS bin file, ME Status shoule be normal.')
     result = ReportGen.LogHeaderResult(tc, serial)
-    if not SetUpLib.boot_to_page(serial, Msg.PAGE_ADVANCED, ssh):
+    if not SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_ADVANCED):
         result.log_fail()
         return
     if not SetUpLib.enter_menu(serial, Key.DOWN, ["Server ME Configuration"], 20, "General ME Configuration"):
@@ -31,4 +31,6 @@ def me_version_status(serial, ssh):
     return True
 
 
-
+def legacy_boot(serial, ssh):
+    SetUpLib.enable_legacy_boot(serial, ssh)
+    SetUpLib.disable_legacy_boot(serial, ssh)

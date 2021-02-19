@@ -9,6 +9,11 @@ def is_msg_present(serial, msg, delay=150):
     return serial.is_msg_present_general(msg, delay, pw_prompt, pw, cleanup)
 
 
+# Monitor serial output and check whether specified message not exist
+def is_msg_not_present(serial, msg1, msg2):
+    return serial.is_msg_not_present(msg1, msg2)
+
+
 # Monitor serial output and check whether specified messages in a list exist
 def is_msg_list_present(serial, msg_list, delay=10):
     return serial.waitStrings(msg_list, delay)

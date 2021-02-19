@@ -576,7 +576,7 @@ def tpm(serial, ssh):
 def vtd(serial, ssh):
     tc = ('025', 'Testcase_VTD_002', '关闭VT-d功能启动测试')
     result = ReportGen.LogHeaderResult(tc, serial)
-    if not SetUpLib.boot_to_page(serial, Msg.PAGE_ADVANCED, ssh):
+    if not SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_ADVANCED):
         result.log_fail()
         return
     vt_d_menu = ["Virtualization Configuration", "Intel\(R\) VT for Directed I/O \(VT-d\)"]

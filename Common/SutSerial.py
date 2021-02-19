@@ -334,7 +334,7 @@ class SutControl:
 
     # Find a setup option and stop there, will not send "Enter" after option found
     # setupoption = ['name','value'] e.g. ['KTI Prefetch', 'Auto']
-    # Patten1: Only setup option is highlighted, name should be specified, value not required
+    # Patten1: Only option name is highlighted, name should be specified, value not required
     # Patten2: Only value is highlighted, both name and value need to be specified
     # Patten3: Both setup optin and value is highlighted, same process as patten1, but use [name + space + value]
     def locate_setup_option(self, key, setupoption, try_counts, delay=1):

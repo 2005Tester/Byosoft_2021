@@ -38,3 +38,4 @@ def ReleaseTest():
 
 def Debug():
     print("Run debug test for ICX 2P.")
+    Release.legacy_boot(ser, ssh_bmc)

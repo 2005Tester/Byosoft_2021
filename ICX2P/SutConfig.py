@@ -33,9 +33,9 @@ SHAR_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\AT Report\\2288V6\\{0}'.format(ti
 BIOS_SERIAL = "com3"
 
 # BMC Configuration
-BMC_IP = '192.168.2.100'
+BMC_IP = '192.168.2.102'
 BMC_USER = 'Administrator'
-BMC_PASSWORD = 'Admin@9000'
+BMC_PASSWORD = 'Admin@9001'
 PORT = 22
 
 # BIOS Configuration
@@ -87,7 +87,7 @@ class Msg:
     PAGE_ADVANCED = 'CPU Configuration'
     PAGE_BMC = 'Additional System Information'
     PAGE_SECURITY = 'TPM Device'
-    PAGE_BOOT = '<UEFI Boot Type>'
+    PAGE_BOOT = '<[UEFILegacy]{4,6} Boot Type>'
     PAGE_SAVE = 'Save Changes and Exit'
 
     # menus of CPU configuration

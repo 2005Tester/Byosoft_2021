@@ -1,8 +1,7 @@
 import logging
-import time
 from ICX2P import SutConfig
 from ICX2P.SutConfig import Key, Msg
-from ICX2P.BaseLib import PowerLib
+from ICX2P.BaseLib import PowerLib, SerialLib
 
 
 # Send a single key, e.g. ENTER, DOWN, UP
@@ -43,6 +42,9 @@ def enter_menu(serial, key, option_path, try_counts, confirm_msg):
 
 
 # locate a setup option by given option name and default value
+# setupoption = ['name','value'] e.g. ["Boot Type", "<UEFI Boot Type>"]
+# Patten1: Only option name is highlighted, name should be specified, value not required
+# Patten2: Only value is highlighted, both name and value need to be specified, e.g.["Boot Type", "<UEFI Boot Type>"]
 def locate_option(serial, key, setupoption, try_counts):
     return serial.locate_setup_option(key, setupoption, try_counts)
 
@@ -99,7 +101,7 @@ def boot_to_bios_config(serial, ssh):
 
 
 # boot to specific page in bios configuration
-def boot_to_page(serial, page_name, ssh):
+def boot_to_page(serial, ssh, page_name):
     if not boot_to_bios_config(serial, ssh):
         return
     logging.info("SetUpLib: Move to specified setup page")
@@ -130,43 +132,43 @@ def boot_to_bootmanager(serial, ssh):
     return boot_with_hotkey(serial, ssh, key, msg, 300)
 
 
-def msg_Strings(self, msg_list=None, timeout=10):
-    """
-    Read data from Console Redirection port, and wait more than 1 string
-    :param msg_list: Multiple strings wait to be captured
-    :param timeout: Timeout of wait duration
-    :return: True, if all strings get from COM port
-             False, script has not captured all strings after timeout
-    """
-    if msg_list is None:
-        msg_list = []
-    t_start = time.time()
-    tmp = []
-    var = ''
-    # self.buffer = ""
-    while True:
-        try:
-            count = self.session.inWaiting()  # Serial port buffer data
-            if count != 0:
-                rev = self.session.read(count).decode()
-                self.buffer += rev
-                rev = self.cleanup_data(self.buffer)
-                for i in range(len(msg_list)):
-                    if msg_list[i] not in rev:
-                        var = msg_list[i]
-                    else:
-                        tmp.append(msg_list[i])
+# Switch to legacy mode
+def enable_legacy_boot(serial, ssh):
+    logging.info("Switch to legacy boot mode")
+    if not boot_to_page(serial, ssh, Msg.PAGE_BOOT):
+        return
+    if not locate_option(serial, Key.DOWN, ["Boot Type", "<UEFI Boot Type>"], 25):
+        return
+    logging.info("Change boot type to legacy mode")
+    SerialLib.send_key(serial, Key.F5)
+    if not locate_option(serial, Key.DOWN, ["Boot Type", "<Legacy Boot Type>"], 25):
+        logging.info("Failed to change boot type.")
+        return
+    logging.info("Save and reboot")
+    SerialLib.send_keys_with_delay(serial, [Key.F10, Key.Y], 5)
+    if not SerialLib.is_msg_present(serial, 'Start of legacy boot'):
+        logging.info("Not in legacy mode")
+        return
+    logging.info("Boot in legacy mode")
+    return True
 
-            time.sleep(0.1)
-        except Exception as e:
-            logging.error("Error:{0}".format(e))
 
-        if tmp == msg_list:
-            logging.info('Find strings:{0}'.format(tmp))
-            return True
-
-        now = time.time()
-        spent_time = (now - t_start)
-        if spent_time > timeout:
-            logging.info("Can not find strings(timeout):{0}".format(var))
-            return False
+# Switch to uefi boot mode
+def disable_legacy_boot(serial, ssh):
+    logging.info("Switch to uefi boot mode")
+    if not boot_to_page(serial, ssh, Msg.PAGE_BOOT):
+        return
+    if not locate_option(serial, Key.DOWN, ["Boot Type", "<Legacy Boot Type>"], 25):
+        return
+    logging.info("Change boot type to UEFI mode")
+    SerialLib.send_key(serial, Key.F6)
+    if not locate_option(serial, Key.DOWN, ["Boot Type", "<UEFI Boot Type>"], 25):
+        logging.info("Failed to change boot type.")
+        return
+    logging.info("Save and reboot")
+    SerialLib.send_keys_with_delay(serial, [Key.F10, Key.Y], 5)
+    if not SerialLib.is_msg_not_present(serial, 'Start of legacy boot', 'BIOS boot completed.'):
+        logging.info("Not in UEFI mode")
+        return
+    logging.info("Boot in UEFI mode")
+    return True

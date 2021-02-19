@@ -15,7 +15,7 @@ from Report import ReportGen
 def rrqirq(serial, ssh):
     tc = ('101', 'Testcase_RRQIRQ_001', 'Setup菜单RRQ和IRQ选项默认值测试')
     result = ReportGen.LogHeaderResult(tc, serial)
-    if not SetUpLib.boot_to_page(serial, Msg.PAGE_ADVANCED, ssh):
+    if not SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_ADVANCED):
         result.log_fail()
         return
     msg = 'Uncore Status'
