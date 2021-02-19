@@ -15,13 +15,13 @@ def send_keys(serial, keys, delay=1):
     serial.send_keys_with_delay(keys, delay=1)
 
 
-# verify information like CPU, memory in one setup page
-def verify_info():
-    # todo
-    pass
+# verify information like CPU, memory in one setup page, option name is highlighted
+# infos: list
+def verify_info(serial, key, infos, trycounts):
+    return serial.navigate_and_verify(key, infos, trycounts)
 
 
-# Verify a few setup options and desired values in one setup page
+# Verify a few setup options and desired values, option value is highlighted
 # options: list of setupoption and value e.g.[["IRQ Threshold", "\[7\]"],[RRQ Threshold", "\[7\]]
 def verify_options(serial, key, options, trycounts):
     verified_items = []

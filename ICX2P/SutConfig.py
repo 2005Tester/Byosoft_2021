@@ -33,9 +33,9 @@ SHAR_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\AT Report\\2288V6\\{0}'.format(ti
 BIOS_SERIAL = "com3"
 
 # BMC Configuration
-BMC_IP = '192.168.2.102'
+BMC_IP = '192.168.2.100'
 BMC_USER = 'Administrator'
-BMC_PASSWORD = 'Admin@9001'
+BMC_PASSWORD = 'Admin@9000'
 PORT = 22
 
 # BIOS Configuration
@@ -102,15 +102,16 @@ class Msg:
     PCH_CONFIG = 'PCH CONFIGURATION'
     NETWORK_CONFIG = 'Network Configuration'
 
-    # patch of setup menus
+    # path of setup menus
     PATH_UNCORE_GENERAL = [CPU_CONFIG, UNCORE_CONFIG, UNCORE_GENERAL]
+
+    # Firmware version info
+    ME_VERSION = '0F:4.4.4.28'
 
     
 
 
 
-# pat
-pat = '[(\d+);\d+H[\w\s\d<>\[\]&-]'
 
 # unitool, chipsec path
 unitool_path = r'/root/flashtool/Linux_17.10/'

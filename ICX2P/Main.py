@@ -1,7 +1,7 @@
 
 from Common import SutSerial
 from Common import ssh
-from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest, Os
+from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest, Os, Release
 
 
 # init seril
@@ -32,6 +32,7 @@ def DailyTest():
 
 def ReleaseTest():
     print("Run release test for ICX 2P.")
+    Release.me_version_status(ser, ssh_bmc)
 
 
 def Debug():
