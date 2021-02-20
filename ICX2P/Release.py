@@ -32,5 +32,5 @@ def me_version_status(serial, ssh):
 
 
 def legacy_boot(serial, ssh):
-    SetUpLib.enable_legacy_boot(serial, ssh)
+#    SetUpLib.enable_legacy_boot(serial, ssh)
     SetUpLib.disable_legacy_boot(serial, ssh)

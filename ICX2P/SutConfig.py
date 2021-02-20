@@ -106,7 +106,7 @@ class Msg:
     PATH_UNCORE_GENERAL = [CPU_CONFIG, UNCORE_CONFIG, UNCORE_GENERAL]
 
     # Firmware version info
-    ME_VERSION = '0F:4.4.4.28'
+    ME_VERSION = '0F:4.4.3.278'
 
     
 

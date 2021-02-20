@@ -12,7 +12,7 @@ from sys import argv
 from Common import LogConfig
 from Common import SutSerial
 from Common import ssh
-from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest, Cpu, Os
+from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest, Cpu, Os, Release
 from Report.ReportGen import ReportGenerator
 
 # init seril
@@ -45,9 +45,9 @@ def gen_report(log_dir):
 # for debug purpose
 def debug_run():
     log_dir = init_log()
-    UpdateBIOS.update_bios(ser, log_dir, 'master')
-#    DefaultValueTest.test(ssh_bmc)
-    biosTest.pressF2(ser, ssh_bmc)
+#    UpdateBIOS.update_bios(ser, log_dir, 'master')
+    Release.legacy_boot(ser, ssh_bmc)
+
     gen_report(log_dir)
 
 
@@ -76,6 +76,7 @@ def run_test():
     Pwd.simplePWDTest(ser, ssh_bmc)
     Pwd.Simple_password_validity(ser, ssh_bmc)
     Pwd.Simple_password_disenable(ser, ssh_bmc)
+    Release.me_version_status(ser, ssh_bmc)
     gen_report(log_dir)
 
 
