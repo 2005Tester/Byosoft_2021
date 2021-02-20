@@ -3,10 +3,10 @@ from Core import TcExecutor
 
 cli = TcExecutor.CliParse()
 
-if cli.get_project() == "ICX2P":
+if cli.get_project() == "icx2p":
     from ICX2P import SutConfig as cfg
     from ICX2P import Main as script
-elif cli.get_project() == "Pangea":
+elif cli.get_project() == "pangea":
     from Pangea import SutConfig as cfg
     from Pangea import Main as script
 else:

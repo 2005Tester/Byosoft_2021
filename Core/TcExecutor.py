@@ -29,10 +29,10 @@ class CliParse:
             self.post = None
 
     def get_project(self):
-        return self.project
+        return self.project.lower()
 
     def get_execution_type(self):
-        return self.execution_type
+        return self.execution_type.lower()
 
     def get_post(self):
         return self.post

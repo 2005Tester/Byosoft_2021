@@ -59,7 +59,7 @@ class SshConnection:
         except TimeoutError:
             logging.info("Timeout..., retry aftre 15 seconds...")
             time.sleep(15)
-            self.login(self.host_ip, self.username, self.password)
+            self.login()
         except:
             logging.error("Error in ssh connection:", sys.exc_info()[0])
             return
