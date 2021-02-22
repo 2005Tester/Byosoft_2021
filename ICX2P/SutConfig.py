@@ -110,7 +110,8 @@ class Msg:
 
     
 
-
+# pat
+pat = '[(\d+);\d+H[\w\s\d<>\[\]&-]'
 
 
 # unitool, chipsec path
