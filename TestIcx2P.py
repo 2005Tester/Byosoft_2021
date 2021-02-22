@@ -7,7 +7,7 @@
 #  means without the express written consent of Byosoft Corporation.
 import logging.config
 import os
-from ICX2P import Pwd
+from ICX2P import Pwd,SMBIOS
 from sys import argv
 from Common import LogConfig
 from Common import SutSerial
@@ -21,6 +21,8 @@ ser = SutSerial.SutControl(SutConfig.BIOS_SERIAL, 115200, 0.5, SutConfig.SERIAL_
 # init BMC SSH interface
 ssh_bmc = ssh.SshConnection(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)
 
+# init OS SSH interface
+ssh_os = ssh.SshConnection(SutConfig.OS_IP,SutConfig.OS_USER,SutConfig.OS_PASSWORD)
 
 # Init log setting
 def init_log():
@@ -76,6 +78,10 @@ def run_test():
     Pwd.simplePWDTest(ser, ssh_bmc)
     Pwd.Simple_password_validity(ser, ssh_bmc)
     Pwd.Simple_password_disenable(ser, ssh_bmc)
+    Pwd.Simple_password_save_enable(ser, ssh_bmc)
+    Pwd.Simple_password_save_disable(ser, ssh_bmc)
+    SMBIOS.smbiosGen(ssh_os)
+    SMBIOS.smbiosTest(ser, ssh_os)
     Release.me_version_status(ser, ssh_bmc)
     gen_report(log_dir)
 

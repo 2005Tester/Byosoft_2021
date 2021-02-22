@@ -386,3 +386,78 @@ def Simple_password_save_enable(serial, ssh):
         return
     result.log_pass()
     return True
+
+def Simple_password_save_disable(serial, ssh):
+    tc = ('035', 'PasswordSecurity_05', '简易密码开关打开，设置简易密码后不保存退出')
+    result = ReportGen.LogHeaderResult(tc, serial)
+    if not icx2pAPI.toBIOS(serial, ssh):
+        result.log_fail()
+        return
+    if not icx2pAPI.toBIOSConf(serial):
+        result.log_fail()
+        return
+    SetUpLib.send_keys(serial, SutConfig.key2pwd)
+    # #checkin "Simple Password"  Default value "Disabled"
+    if not SetUpLib.locate_option(serial, Key.DOWN, ["Simple Password", "<Disabled>"], 20):
+        result.log_fail()
+        return
+    logging.info("Simple Password   <Enabled> ")
+    serial.send_keys(Key.F5)
+    SetUpLib.send_key(serial, Key.ENTER)
+    #以上，为前置条件-简易密码开关打开#
+    if not SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20):
+        result.log_fail()
+        return
+    SetUpLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial, pwd_info_1):
+        result.log_fail()
+        return
+    SetUpLib.send_keys(serial, default_pwd)
+    SetUpLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial, pwd_info_2):
+        result.log_fail()
+        return
+    SetUpLib.send_keys(serial, simple_pwd)
+    SetUpLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial, pwd_info_3):
+        result.log_fail()
+        return
+    SetUpLib.send_keys(serial, simple_pwd)
+    SetUpLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial, pwd_info_4):
+        result.log_fail()
+        return
+    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_key(serial, Key.CTRL_ALT_DELETE)
+    if not icx2pAPI.pressDelnp(serial):
+        return
+    SetUpLib.send_keys(serial,"")
+    SetUpLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial, invalid_info):
+        return
+    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_keys(serial,new_pwd_16)
+    SetUpLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial, invalid_info):
+        return
+    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_keys(serial, new_pwd_7)
+    SetUpLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial, invalid_info):
+        return
+    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_key(serial, Key.CTRL_ALT_DELETE)
+    if not icx2pAPI.pressDelnp(serial):
+        return
+    SetUpLib.send_keys(serial,simple_pwd)
+    SetUpLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial, invalid_info):
+        return
+    SetUpLib.send_key(serial, Key.ENTER)
+    if not icx2pAPI.toBIOS(serial, ssh):
+        result.log_fail()
+        return
+    if not restore_env(serial, log_dir):
+        return
+    result.log_pass()
+    return True
