@@ -104,9 +104,14 @@ class LogAnalyzer:
             elif 'dmidecode' in os.path.splitext(file1)[0]:
                 template_file = os.path.join(template_path, file1)
 
-        target_list = self.getData(target_file)
-        origin_list = self.getData(template_file)
-        diff_file = open(os.path.join(target_path, result_file), 'w')
+        try:
+            target_list = self.getData(target_file)
+            origin_list = self.getData(template_file)
+            diff_file = open(os.path.join(target_path, result_file), 'w')
+        except Exception:
+            logging.info("No file found in log.")
+            result.log_fail()
+            return
 
         # break if the type date is none,
         if len(target_list) == 1:

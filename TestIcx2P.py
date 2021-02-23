@@ -48,8 +48,10 @@ def gen_report(log_dir):
 def debug_run():
     log_dir = init_log()
 #    UpdateBIOS.update_bios(ser, log_dir, 'master')
-    Release.legacy_boot(ser, ssh_bmc)
-
+#     Release.legacy_boot(ser, ssh_bmc)
+    if Os.boot_to_suse(ser, ssh_bmc):
+        time.sleep(50)
+        SMBIOS.smbiosTest(ser, ssh_os)
     gen_report(log_dir)
 
 
@@ -74,14 +76,13 @@ def run_test():
     biosTest.vtd(ser, ssh_bmc)
     biosTest.cpuCOMPA(ser, ssh_bmc)
     Os.boot_to_suse(ser, ssh_bmc)
+    SMBIOS.smbiosTest(ser, ssh_os)
 #    biosTest.logTime(ser, ssh_bmc)
     Pwd.simplePWDTest(ser, ssh_bmc)
     Pwd.Simple_password_validity(ser, ssh_bmc)
     Pwd.Simple_password_disenable(ser, ssh_bmc)
     Pwd.Simple_password_save_enable(ser, ssh_bmc)
     Pwd.Simple_password_save_disable(ser, ssh_bmc)
-    SMBIOS.smbiosGen(ssh_os)
-    SMBIOS.smbiosTest(ser, ssh_os)
     Release.me_version_status(ser, ssh_bmc)
     gen_report(log_dir)
 

@@ -1,7 +1,7 @@
 import re
 import logging
 import os
-from Pangea import SutConfig
+from ICX2P import SutConfig
 from Common.LogAnalyzer import LogAnalyzer
 
 
