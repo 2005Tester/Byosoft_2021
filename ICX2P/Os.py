@@ -1,7 +1,7 @@
 import logging
 from ICX2P import SutConfig
 from ICX2P.SutConfig import Key, Msg
-from ICX2P.BaseLib import SetUpLib
+from ICX2P.BaseLib import SetUpLib, SerialLib
 from Report import ReportGen
 
 
@@ -13,10 +13,12 @@ def boot_to_suse(serial, ssh):
         result.log_fail()
         return
     suse_linux = ["SUSE Linux Enterprise\(LUN0\)"]
-    msg = Msg.BIOS_BOOT_COMPLETE
+    msg = "Welcome to GRUB"
     if not SetUpLib.enter_menu(serial, Key.DOWN, suse_linux, 8, msg):
         result.log_fail()
         return
+    if not SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE):
+        result.log_fail()
     logging.info("OS Boot Successful")
     result.log_pass()
     return True

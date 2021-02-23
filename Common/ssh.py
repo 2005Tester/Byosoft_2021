@@ -60,6 +60,10 @@ class SshConnection:
             logging.info("Timeout..., retry aftre 15 seconds...")
             time.sleep(15)
             self.login()
+        except ConnectionAbortedError:
+            logging.info('Connection aborted, retry after 60 seconds...')
+            time.sleep(60)
+            self.login()
         except:
             logging.error("Error in ssh connection:", sys.exc_info()[0])
             return
