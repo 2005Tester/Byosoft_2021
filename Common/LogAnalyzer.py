@@ -110,7 +110,6 @@ class LogAnalyzer:
             diff_file = open(os.path.join(target_path, result_file), 'w')
         except Exception:
             logging.info("No file found in log.")
-            result.log_fail()
             return
 
         # break if the type date is none,

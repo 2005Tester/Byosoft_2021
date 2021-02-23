@@ -31,7 +31,7 @@ def smbiosTest(serial, ssh):
     #     logging.info('Done, modify it before test on different platform')
     #     icx2pAPI.dump_smbios(ssh)
     for i in cmd:  # cmd is a list for test the related smbios cases,
-        SshLib.dump_info(ssh, i,i)
+        SshLib.dump_info(ssh, i)
         smbios = os.path.join(os.path.dirname(__file__),'Tools')
         if P.check_smbios(SutConfig.LOG_DIR, smbios):
             logging.info('Pass:{0}'.format(i))

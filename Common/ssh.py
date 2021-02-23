@@ -79,14 +79,17 @@ class SshConnection:
     # dumm information to a log file
     def dump_info(self, command, log_dir, log_name=None):
         if log_name:
-            log = os.path.join(log_dir, ''.join(log_name))
+            file_name = log_name.replace(' ','_').replace('-','').replace('\\','_') +'.txt'
+            log = os.path.join(log_dir, file_name)
         else:
-            log = os.path.join(log_dir, ''.join((command.split('/')[-1], '.log')))
+            file_name = command.replace(' ','_').replace('-','').replace('\\','_') + '.txt'
+            log = os.path.join(log_dir, file_name)
         stdin, stdout, stderr = self.ssh_client.exec_command(command)
         res = stdout.read().decode()
         with open(log, 'w') as f:
             f.write(res)
         return log
+
 
     def execute_command_interaction(self, cmd):
         op = self.ssh_client.invoke_shell()
