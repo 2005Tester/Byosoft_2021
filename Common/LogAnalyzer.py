@@ -67,7 +67,7 @@ class LogAnalyzer:
             logging.info("No assert found in serial log.")
         if exception == 0:
             logging.info("No exception found in serial log.")
-    
+
         if (ast + exception + error) == 0:    
             return True
 
@@ -89,27 +89,35 @@ class LogAnalyzer:
     def check_smbios(self, target_path, template_path):
         target_file = ''
         template_file = ''
-        num = []
+        file_n = []
+        result_file = ''
+        file_list = []
         for file in os.listdir(target_path):
             if 'dmidecode' in os.path.splitext(file)[0]:
+                file_list.append(file)
                 target_file = os.path.join(target_path, file)
-                num = re.findall(r"\d+", os.path.splitext(file)[0])
+        for h in range(len(file_list)):
+            a = file_list[h].split('-t ')[1].split('.')[0]  # 获取全部文件名的最后数字
+            file_n.append(a)  # 组成dmidecode需要的参数 n
+        n = [int(x) for x in file_n]  # 列表中，字符转成数字
+        # print("n = ",n)
 
         # write the diff data to files
-        result_file = 'diff-{0}.log'.format(''.join(num))
+        for i in n:
+            result_file = 'diff-{0}.log'.format(i)  # 按照列表参数顺序，赋值给diff-{0}文件
+            diff_file = open(os.path.join(target_path, result_file), 'w')
 
         for file1 in os.listdir(template_path):
             if 'config' in os.path.splitext(file1)[0]:
                 template_file = os.path.join(template_path, file1)
             elif 'dmidecode' in os.path.splitext(file1)[0]:
                 template_file = os.path.join(template_path, file1)
-
         try:
             target_list = self.getData(target_file)
             origin_list = self.getData(template_file)
-            diff_file = open(os.path.join(target_path, result_file), 'w')
         except Exception:
             logging.info("No file found in log.")
+            result.log_fail()
             return
 
         # break if the type date is none,
