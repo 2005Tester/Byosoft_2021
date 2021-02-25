@@ -54,14 +54,16 @@ class SshConnection:
             logging.error('Error in ssh connection: Incorrect Username or Password.')
             return
         except NoValidConnectionsError:
-            logging.error('Error in ssh connection: timeout...')
+            logging.error('Error in ssh connection: NoValidConnectionsError...')
+            time.sleep(60)
+            self.login()
             return
         except TimeoutError:
             logging.info("Timeout..., retry aftre 15 seconds...")
-            time.sleep(15)
+            time.sleep(60)
             self.login()
         except ConnectionAbortedError:
-            logging.info('Connection aborted, retry after 60 seconds...')
+            logging.info('ConnectionAbortedError, retry after 60 seconds...')
             time.sleep(60)
             self.login()
         except:
