@@ -62,14 +62,6 @@ def coreDisable(serial, ssh):
     if not icx2pAPI.ping_sut():
         result.log_fail()
         return
-#    if not icx2pAPI.chipsecMerge(ssh):
-#        result.log_fail()
-#        return
-#    cmd = 'dmidecode -t 4'
-#    path = SutConfig.LOG_DIR
-#    icx2pAPI.dump_smbios(ssh, cmd)
-#    if not P.smbiosCheck(cmd, path, SutConfig.SMBIOS_TEMPLATE):
-#        result.log_fail()
-#        return
+
     result.log_pass()
     return True

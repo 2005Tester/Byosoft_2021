@@ -81,10 +81,9 @@ class SshConnection:
     def dump_info(self, command, log_dir, log_name=None):
         if log_name:
             file_name = log_name.replace(' ','_').replace('-','').replace('\\','_') +'.txt'
-            log = os.path.join(log_dir, file_name)
         else:
             file_name = command.replace(' ','_').replace('-','').replace('\\','_') + '.txt'
-            log = os.path.join(log_dir, file_name)
+        log = os.path.join(log_dir, file_name)
         stdin, stdout, stderr = self.ssh_client.exec_command(command)
         res = stdout.read().decode()
         with open(log, 'w') as f:

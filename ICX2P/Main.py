@@ -1,7 +1,7 @@
 
 from Common import SutSerial
 from Common import ssh
-from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest, Os, Release
+from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest, Os, Release, Smbios
 
 
 # init seril
@@ -34,6 +34,8 @@ def ReleaseTest():
     print("Run release test for ICX 2P.")
     UpdateBIOS.update_bios(ser, SutConfig.LOG_DIR, '2288V6_006')
     Release.me_version_status(ser, ssh_bmc)
+    if Os.boot_to_suse(ser, ssh_bmc):
+        Smbios.smbios_test_all(ssh_bmc)
 
 
 def Debug():

@@ -7,12 +7,11 @@
 #  means without the express written consent of Byosoft Corporation.
 import logging.config
 import os
-from ICX2P import Pwd,SMBIOS
 from sys import argv
 from Common import LogConfig
 from Common import SutSerial
 from Common import ssh
-from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest, Cpu, Os, Release
+from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest, Pwd, Os, Release, Smbios
 from Report.ReportGen import ReportGenerator
 
 # init seril
@@ -49,8 +48,8 @@ def debug_run():
     log_dir = init_log()
 #    UpdateBIOS.update_bios(ser, log_dir, 'master')
 #     Release.legacy_boot(ser, ssh_bmc)
-    if Os.boot_to_suse(ser, ssh_bmc):
-        SMBIOS.smbiosTest(ser, ssh_os)
+#    if Os.boot_to_suse(ser, ssh_bmc):
+    Smbios.smbios_test_all(ssh_os)
     gen_report(log_dir)
 
 
@@ -75,7 +74,7 @@ def run_test():
     biosTest.vtd(ser, ssh_bmc)
     biosTest.cpuCOMPA(ser, ssh_bmc)
     if Os.boot_to_suse(ser, ssh_bmc):
-        SMBIOS.smbiosTest(ser, ssh_os)
+        Smbios.smbios_test_all(ssh_os)
 #    biosTest.logTime(ser, ssh_bmc)
     Pwd.simplePWDTest(ser, ssh_bmc)
     Pwd.Simple_password_validity(ser, ssh_bmc)

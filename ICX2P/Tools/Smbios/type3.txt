@@ -1,0 +1,24 @@
+# dmidecode 3.2
+Getting SMBIOS data from sysfs.
+SMBIOS 3.3.0 present.
+# SMBIOS implementations newer than version 3.2.0 are not
+# fully supported by this version of dmidecode.
+
+Handle 0x0003, DMI type 3, 22 bytes
+Chassis Information
+	Manufacturer: Huawei
+	Type: Main Server Chassis
+	Lock: Not Present
+	Version: Huawei
+	Serial Number: Huawei
+	Asset Tag: Huawei
+	Boot-up State: Safe
+	Power Supply State: Safe
+	Thermal State: Safe
+	Security Status: None
+	OEM Information: 0x00000000
+	Height: 2 U
+	Number Of Power Cords: Unspecified
+	Contained Elements: 0
+	SKU Number: SKU Number
+
