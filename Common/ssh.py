@@ -57,7 +57,6 @@ class SshConnection:
             logging.error('Error in ssh connection: NoValidConnectionsError...')
             time.sleep(60)
             self.login()
-            return
         except TimeoutError:
             logging.info("Timeout..., retry aftre 15 seconds...")
             time.sleep(60)
