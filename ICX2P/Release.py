@@ -1,7 +1,6 @@
 import logging
-from ICX2P.SutConfig import Key, Msg
-from ICX2P import SutConfig
-from ICX2P.BaseLib import icx2pAPI, SetUpLib
+from ICX2P.SutConfig import Key, Msg, BiosCfg
+from ICX2P.BaseLib import SetUpLib
 from Report import ReportGen
 
 
@@ -31,6 +30,20 @@ def me_version_status(serial, ssh):
     return True
 
 
+# 非装备模式BIOS设置装备模式flag, 预期设置不成功.
+def equip_mode_flag_check(unitool):
+    tc = ('902', 'Equipment mode flag check', '非装备模式BIOS设置装备模式flag, 预期设置不成功.')
+    result = ReportGen.LogHeaderResult(tc)
+    res = unitool.set_config(BiosCfg.EQUIP_FLAG)
+    if res:
+        result.log_fail()
+        return
+    logging.info("Unbale to set equipment mode flag.")
+    result.log_pass()
+    return True
+
+
 def legacy_boot(serial, ssh):
-#    SetUpLib.enable_legacy_boot(serial, ssh)
+    # SetUpLib.enable_legacy_boot(serial, ssh)
     SetUpLib.disable_legacy_boot(serial, ssh)
+

@@ -1,6 +1,5 @@
 
-from Common import SutSerial
-from Common import ssh
+from Common import SutSerial, Unitool, ssh
 from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest, Os, Release, Smbios
 
 
@@ -9,6 +8,8 @@ ser = SutSerial.SutControl(SutConfig.BIOS_SERIAL, 115200, 0.5, SutConfig.SERIAL_
 
 # init BMC SSH interface
 ssh_bmc = ssh.SshConnection(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)
+
+unitool = Unitool.SshUnitool(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASSWORD, SutConfig.UNI_PATH)
 
 
 # Define test scope for daily test
@@ -40,4 +41,4 @@ def ReleaseTest():
 
 def Debug():
     print("Run debug test for ICX 2P.")
-    Release.legacy_boot(ser, ssh_bmc)
+    Release.equip_mode_flag_check(unitool)

@@ -48,6 +48,9 @@ OS_USER = 'root'
 OS_PASSWORD = '1'
 
 
+# Tool definition
+UNI_PATH = "/root/flashtool/unitool"
+
 # Key mapping
 class Key:
     ENTER = [chr(0x0D)]
@@ -108,7 +111,20 @@ class Msg:
     # Firmware version info
     ME_VERSION = '0F:4.4.3.278'
 
-    
+
+# BIOS configuration to be set by unitool
+class BiosCfg:
+    MFG_RMT = {
+        "EquipmentModeFlag": 1,
+        "EnableBiosSsaRMT": 1,
+        "EnableBiosSsaRMTonFCB": 1,
+        "serialDebugMsgLvl": 1
+    }
+
+    EQUIP_FLAG = {
+        "EquipmentModeFlag": 1
+    }
+
 
 # pat
 pat = '[(\d+);\d+H[\w\s\d<>\[\]&-]'

@@ -8,7 +8,7 @@
 import logging.config
 import os
 from sys import argv
-from Common import LogConfig
+from Common import LogConfig, Unitool
 from Common import SutSerial
 from Common import ssh
 from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest, Pwd, Os, Release, Smbios
@@ -22,6 +22,7 @@ ssh_bmc = ssh.SshConnection(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_
 
 # init OS SSH interface
 ssh_os = ssh.SshConnection(SutConfig.OS_IP,SutConfig.OS_USER,SutConfig.OS_PASSWORD)
+unitool = Unitool.SshUnitool(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASSWORD, SutConfig.UNI_PATH)
 
 # Init log setting
 def init_log():
@@ -75,6 +76,7 @@ def run_test():
     biosTest.cpuCOMPA(ser, ssh_bmc)
     if Os.boot_to_suse(ser, ssh_bmc):
         Smbios.smbios_test_all(ssh_os)
+        Release.equip_mode_flag_check(unitool)
 #    biosTest.logTime(ser, ssh_bmc)
     Pwd.simplePWDTest(ser, ssh_bmc)
     Pwd.Simple_password_validity(ser, ssh_bmc)
