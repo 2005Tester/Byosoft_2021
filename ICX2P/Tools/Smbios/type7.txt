@@ -26,8 +26,8 @@ Cache Information
 	Configuration: Enabled, Not Socketed, Level 2
 	Operational Mode: Varies With Memory Address
 	Location: Internal
-	Installed Size: 33328 kB
-	Maximum Size: 33328 kB
+	Installed Size: 35840 kB
+	Maximum Size: 35840 kB
 	Supported SRAM Types:
 		Synchronous
 	Installed SRAM Type: Synchronous
@@ -74,8 +74,8 @@ Cache Information
 	Configuration: Enabled, Not Socketed, Level 2
 	Operational Mode: Varies With Memory Address
 	Location: Internal
-	Installed Size: 33328 kB
-	Maximum Size: 33328 kB
+	Installed Size: 35840 kB
+	Maximum Size: 35840 kB
 	Supported SRAM Types:
 		Synchronous
 	Installed SRAM Type: Synchronous
