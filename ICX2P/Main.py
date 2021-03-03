@@ -1,6 +1,6 @@
 
 from Common import SutSerial, Unitool, ssh
-from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest, Os, Release, Smbios
+from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest, Os, Release, Smbios, Pwd
 
 
 # init seril
@@ -9,6 +9,8 @@ ser = SutSerial.SutControl(SutConfig.BIOS_SERIAL, 115200, 0.5, SutConfig.SERIAL_
 # init BMC SSH interface
 ssh_bmc = ssh.SshConnection(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)
 
+# init ssh os interface
+ssh_os = ssh.SshConnection(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASSWORD)
 unitool = Unitool.SshUnitool(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASSWORD, SutConfig.UNI_PATH)
 
 
@@ -28,15 +30,41 @@ def DailyTest():
     biosTest.securityBoot(ser, ssh_bmc)
     biosTest.vtd(ser, ssh_bmc)
     biosTest.cpuCOMPA(ser, ssh_bmc)
-    Os.boot_to_suse(ser, ssh_bmc)
+    if Os.boot_to_suse(ser, ssh_bmc):
+        Smbios.smbios_test_all(ssh_os)
+        Release.equip_mode_flag_check(unitool)
+    Pwd.simplePWDTest(ser, ssh_bmc)
+    Pwd.Simple_password_validity(ser, ssh_bmc)
+    Pwd.Simple_password_disenable(ser, ssh_bmc)
+    Pwd.Simple_password_save_enable(ser, ssh_bmc)
+    Pwd.Simple_password_save_disable(ser, ssh_bmc)
+    Release.me_version_status(ser, ssh_bmc)
 
 
 def ReleaseTest():
-    print("Run release test for ICX 2P.")
-    UpdateBIOS.update_bios(ser, SutConfig.LOG_DIR, '2288V6_006')
-    Release.me_version_status(ser, ssh_bmc)
+    UpdateBIOS.update_bios(ser, SutConfig.LOG_DIR, '2288V6_007')
+    biosTest.POST_Test(ser, ssh_bmc)
+    biosTest.PM(ser, ssh_bmc)
+    biosTest.usbTest(ser, ssh_bmc)
+    biosTest.ProcessorDIMM(ser, ssh_bmc)
+    biosTest.pressF2(ser, ssh_bmc)
+    biosTest.loadDefault(ser, ssh_bmc)
+    biosTest.staticTurbo(ser, ssh_bmc)
+    biosTest.ufs(ser, ssh_bmc)
+    DefaultValueTest.rrqirq(ser, ssh_bmc)
+    biosTest.dramRAPL(ser, ssh_bmc)
+    biosTest.securityBoot(ser, ssh_bmc)
+    biosTest.vtd(ser, ssh_bmc)
+    biosTest.cpuCOMPA(ser, ssh_bmc)
     if Os.boot_to_suse(ser, ssh_bmc):
-        Smbios.smbios_test_all(ssh_bmc)
+        Smbios.smbios_test_all(ssh_os)
+        Release.equip_mode_flag_check(unitool)
+    Pwd.simplePWDTest(ser, ssh_bmc)
+    Pwd.Simple_password_validity(ser, ssh_bmc)
+    Pwd.Simple_password_disenable(ser, ssh_bmc)
+    Pwd.Simple_password_save_enable(ser, ssh_bmc)
+    Pwd.Simple_password_save_disable(ser, ssh_bmc)
+    Release.me_version_status(ser, ssh_bmc)
 
 
 def Debug():
