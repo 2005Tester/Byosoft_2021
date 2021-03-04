@@ -66,13 +66,17 @@ class LogHeaderResult:
     def capture_screen(self):
         filename = 'TC' + self.tc[0] + '_' + str(self.suffix) + ".jpg"
         file_path = os.path.join(self.imgdir, filename)
-        screen = pyautogui.screenshot()
         if os.path.exists(file_path):
             self.suffix += 1
             filename = 'TC' + self.tc[0] + '_' + str(self.suffix) + ".jpg"
             file_path = os.path.join(self.imgdir, filename)
-        screen.save(os.path.join(self.imgdir, file_path))
-        logging.info("Screen captured: {0}".format(filename))
+        try:
+            screen = pyautogui.screenshot()
+            screen.save(os.path.join(self.imgdir, file_path))
+            logging.info("Screen captured: {0}".format(filename))
+        except Exception as e:
+            logging.info("Failed to capture screen.")
+            logging.error(e)
 
 
 class ReportGenerator:
