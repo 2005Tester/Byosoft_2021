@@ -9,7 +9,6 @@
 import datetime
 import logging
 import time
-
 from ICX2P.SutConfig import Key, Msg
 from ICX2P import SutConfig
 from ICX2P.BaseLib import PowerLib, icx2pAPI, SetUpLib
@@ -295,51 +294,52 @@ def checkPWD(serial, pwd1, pwd2):
 # Setup: Load default and setting saving - AT test cases below,
 def loadDefault(serial, ssh):
     tc = ('011', 'Load default and setting saving Test', 'BIOS Load default Test')
-    result = ReportGen.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
     option_bfo = ['<UEFI Boot Type>', '<Boot Retry>']
     option_aft = ['<Legacy Boot Type>', '<Cold Boot>']
     if not icx2pAPI.toBIOS(serial, ssh):
         return
+    result.capture_screen()
     if not icx2pAPI.toBIOSConf(serial):
-        result.log_fail()
+        result.log_fail(capture=True)
         return
     serial.send_keys_with_delay(SutConfig.key2type)
     if not icx2pAPI.verify_setup_options_down(serial, option_bfo, 14):
-        result.log_fail()
+        result.log_fail(capture=True)
         return
     serial.send_keys_with_delay([Key.LEFT, Key.RIGHT, Key.UP])
     if not serial.to_highlight_option(Key.DOWN, SutConfig.pat, 'Boot Type'):
-        result.log_fail()
+        result.log_fail(capture=True)
         return
     serial.send_keys(Key.F5)
     if not serial.to_highlight_option(Key.DOWN, SutConfig.pat, 'Boot Fail Policy'):
-        result.log_fail()
+        result.log_fail(capture=True)
         return
     serial.send_keys(Key.F5)
     serial.send_keys(Key.F10 + Key.Y)
     if not icx2pAPI.toBIOSnp(serial):
-        result.log_fail()
+        result.log_fail(capture=True)
         return
     if not icx2pAPI.toBIOSConf(serial):
-        result.log_fail()
+        result.log_fail(capture=True)
         return
     serial.send_keys_with_delay(SutConfig.key2type)
     if not icx2pAPI.verify_setup_options_down(serial, option_aft, 14):
-        result.log_fail()
+        result.log_fail(capture=True)
         if not icx2pAPI.reset_default(serial, ssh):
             return
     serial.send_keys_with_delay(SutConfig.key2default)
     if not icx2pAPI.toBIOSnp(serial):
-        result.log_fail()
+        result.log_fail(capture=True)
         if not icx2pAPI.reset_default(serial, ssh):
             return
     if not icx2pAPI.toBIOSConf(serial):
-        result.log_fail()
+        result.log_fail(capture=True)
         return
     serial.send_keys_with_delay(SutConfig.key2type)
     time.sleep(1)
     if not icx2pAPI.verify_setup_options_down(serial, option_bfo, 14):
-        result.log_fail()
+        result.log_fail(capture=True)
         if not icx2pAPI.reset_default(serial, ssh):
             return
     result.log_pass()
@@ -349,33 +349,33 @@ def loadDefault(serial, ssh):
 # updated by arthur, Testcase_Static_Turbo_001
 def staticTurbo(serial, ssh):
     tc = ('012', 'Testcase_Static_Turbo_001', '静态Turbo默认值测试')
-    result = ReportGen.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
     if not icx2pAPI.toBIOS(serial, ssh):
-        result.log_fail()
+        result.log_fail(capture=True)
         return
     if not icx2pAPI.toBIOSConf(serial):
-        result.log_fail()
+        result.log_fail(capture=True)
         return
     serial.send_keys_with_delay(SutConfig.w2key)
     if not serial.to_highlight_option(Key.DOWN, SutConfig.option2, timeout=60):
-        result.log_fail()
+        result.log_fail(capture=True)
         return
     serial.send_keys(Key.ENTER)
     if not serial.to_highlight_option(Key.UP, SutConfig.option6):
-        result.log_fail()
+        result.log_fail(capture=True)
         return
     serial.send_keys(Key.ENTER)
     if not icx2pAPI.verify_setup_options_down(serial, SutConfig.static_turbo, 5):
-        result.log_fail()
+        result.log_fail(capture=True)
         return
     serial.send_keys(SutConfig.Key.ESC)
     serial.send_keys(Key.ENTER)
     if not serial.to_highlight_option(Key.DOWN, SutConfig.pat, 'Static Turbo', timeout=30):
-        result.log_fail()
+        result.log_fail(capture=True)
         return
     serial.send_keys(Key.ENTER)
     if not serial.verify_option_value(Key.DOWN, r'AutoManualDisabled'):
-        result.log_fail()
+        result.log_fail(capture=True)
         return
     result.log_pass()
     return True

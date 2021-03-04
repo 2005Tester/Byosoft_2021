@@ -12,20 +12,28 @@ import time
 import logging
 import requests
 import glob
+import pyautogui
+import logging.config
 from json2html import *
 
 
 # tc: tuple of test case basic information, 0:id, 1:tittle, 2:description
 class LogHeaderResult:
     # write test case info to serial log and test log
-    def __init__(self, tc, serial=None):
+    def __init__(self, tc, serial=None, imgdir=None):
         self.tc = tc
         self.serial = serial
+        self.imgdir = imgdir
+        self.suffix = 1
         self.msg_start = '<TC{0}><Tittle>{1}:Start'.format(tc[0], tc[1])
         self.msg_description = '<TC{0}><Description>{1}'.format(tc[0], tc[2])
         self.msg_fail = '<TC{0}><Result>{1}:Fail'.format(tc[0], tc[1])
         self.msg_pass = '<TC{0}><Result>{1}:Pass'.format(tc[0], tc[1])
         self.msg_skip = '<TC{0}><Result>{1}:Skip'.format(tc[0], tc[1])
+        if imgdir:
+            if not os.path.isdir(imgdir):
+                os.makedirs(imgdir)
+
         if serial:
             self.msg_serial = '\n##### TC{0} {1} #####\n'.format(tc[0], tc[1])
             serial.write_data2log(self.msg_serial)
@@ -39,7 +47,9 @@ class LogHeaderResult:
             self.msg_serial = '\n##### TC{0} {1}: Pass #####\n'.format(self.tc[0], self.tc[1])
             self.serial.write_data2log(self.msg_serial)
 
-    def log_fail(self):
+    def log_fail(self, capture=None):
+        if capture:
+            self.capture_screen()
         logging.info(self.msg_fail)
         logging.info("-"*80)
         if self.serial:
@@ -52,6 +62,17 @@ class LogHeaderResult:
         if self.serial:
             self.msg_serial = '\n##### TC{0} {1}: Skip #####\n'.format(self.tc[0], self.tc[1])
             self.serial.write_data2log(self.msg_serial)
+
+    def capture_screen(self):
+        filename = 'TC' + self.tc[0] + '_' + str(self.suffix) + ".jpg"
+        file_path = os.path.join(self.imgdir, filename)
+        screen = pyautogui.screenshot()
+        if os.path.exists(file_path):
+            self.suffix += 1
+            filename = 'TC' + self.tc[0] + '_' + str(self.suffix) + ".jpg"
+            file_path = os.path.join(self.imgdir, filename)
+        screen.save(os.path.join(self.imgdir, file_path))
+        logging.info("Screen captured: {0}".format(filename))
 
 
 class ReportGenerator:

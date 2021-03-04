@@ -1,2 +1,2 @@
 python TestIcx2P.py daily
-python RunTest.py icx2p release
+python RunTest.py -p icx2p release
