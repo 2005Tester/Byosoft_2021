@@ -22,3 +22,22 @@ def boot_to_suse(serial, ssh):
     logging.info("OS Boot Successful")
     result.log_pass()
     return True
+
+
+# Boot to SUSE Linux from boot manager
+def boot_to_suse_mfg(serial, ssh):
+    tc = ('301', 'Boot to UEFI SUSE Linux in MFG mode', 'Boot to UEFI SUSE Linux in Manufacture mode')
+    result = ReportGen.LogHeaderResult(tc, serial)
+    if not SetUpLib.boot_to_bootmanager(serial, ssh):
+        result.log_fail()
+        return
+    suse_linux = ["SUSE Linux Enterprise\(LUN0\)"]
+    msg = "Welcome to GRUB"
+    if not SetUpLib.enter_menu(serial, Key.DOWN, suse_linux, 8, msg):
+        result.log_fail()
+        return
+    if not SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE):
+        result.log_fail()
+    logging.info("OS Boot Successful")
+    result.log_pass()
+    return True

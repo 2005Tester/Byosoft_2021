@@ -39,6 +39,8 @@ def DailyTest():
     Pwd.Simple_password_save_enable(ser, ssh_bmc)
     Pwd.Simple_password_save_disable(ser, ssh_bmc)
     Release.me_version_status(ser, ssh_bmc)
+    if UpdateBIOS.update_bios_mfg(ser, SutConfig.LOG_DIR, 'master'):
+        Os.boot_to_suse_mfg(ser, ssh_bmc)
 
 
 def ReleaseTest():
@@ -65,6 +67,8 @@ def ReleaseTest():
     Pwd.Simple_password_save_enable(ser, ssh_bmc)
     Pwd.Simple_password_save_disable(ser, ssh_bmc)
     Release.me_version_status(ser, ssh_bmc)
+    if UpdateBIOS.update_bios_mfg(ser, SutConfig.LOG_DIR, '2288V6_007'):
+        Os.boot_to_suse_mfg(ser, ssh_bmc)
 
 
 def Debug():

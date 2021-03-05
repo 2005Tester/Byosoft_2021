@@ -25,7 +25,9 @@ class Gitlab:
         self.header = {'PRIVATE-TOKEN': self.access_token}
         self.jobs_url = ''
 
-    def get_latest_job(self, branch):
+    # get latest job by specified branme and job name
+    # jobname can be none if pipline only have one job
+    def get_latest_job(self, branch, jobname=None):
         self.jobs_url = self.base_url + str(self.projectid) + '/jobs'
         res = requests.get(self.jobs_url, headers=self.header)
         job_list = json.loads(res.content)
@@ -34,9 +36,14 @@ class Gitlab:
             return
         latest_job = []
         for i in range(len(job_list)):
-            if job_list[i]['ref'] == branch and job_list[i]['status'] == 'success':
-                latest_job = job_list[i]
-                break
+            if jobname:
+                if job_list[i]['ref'] == branch and job_list[i]['status'] == 'success' and job_list[i]['name'] == jobname:
+                    latest_job = job_list[i]
+                    break
+            else:
+                if job_list[i]['ref'] == branch and job_list[i]['status'] == 'success':
+                    latest_job = job_list[i]
+                    break
         return latest_job
 
     @staticmethod
@@ -76,8 +83,8 @@ class Gitlab:
         return self.download_image(latest_job, dir, img_name)
 
     # Download latest image for a specifid branch
-    def download_latest_image(self, branch, dir, img_name):
-        latest_job = self.get_latest_job(branch)
+    def download_latest_image(self, branch, dir, img_name, jobname=None):
+        latest_job = self.get_latest_job(branch, jobname)
         return self.download_image(latest_job, dir, img_name)
 
     @staticmethod
@@ -86,7 +93,7 @@ class Gitlab:
         logging.info("Unzip artifacts...")
         uz = zipfile.ZipFile(artifacts, 'r')
         for file in uz.namelist():
-            print(file)
+            logging.info("Found: {0}".format(file))
             if re.search(img_name, file):
                 file_path = os.path.join(dst, file.replace("/", "\\"))
                 print(file_path)

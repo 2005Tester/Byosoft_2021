@@ -84,6 +84,8 @@ def run_test():
     Pwd.Simple_password_save_enable(ser, ssh_bmc)
     Pwd.Simple_password_save_disable(ser, ssh_bmc)
     Release.me_version_status(ser, ssh_bmc)
+    if UpdateBIOS.update_bios_mfg(ser, log_dir, 'master'):
+        Os.boot_to_suse_mfg(ser, ssh_bmc)
     gen_report(log_dir)
 
 
