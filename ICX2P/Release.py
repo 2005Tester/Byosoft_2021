@@ -41,9 +41,3 @@ def equip_mode_flag_check(unitool):
     logging.info("Unbale to set equipment mode flag.")
     result.log_pass()
     return True
-
-
-def legacy_boot(serial, ssh):
-    # SetUpLib.enable_legacy_boot(serial, ssh)
-    SetUpLib.disable_legacy_boot(serial, ssh)
-

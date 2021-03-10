@@ -495,8 +495,6 @@ def cnd(serial, ssh):
     return True
 
 
-
-
 # Testcase_SecurityBoot_001, 004
 def securityBoot(serial, ssh):
     tc = ('023', 'Secure Boot默认值', 'Secure Boot默认值')

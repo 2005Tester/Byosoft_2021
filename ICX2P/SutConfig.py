@@ -127,9 +127,6 @@ class BiosCfg:
 pat = '[(\d+);\d+H[\w\s\d<>\[\]&-]'
 
 
-# unitool, chipsec path
-unitool_path = r'/root/flashtool/Linux_17.10/'
-chipsc_path = r'/home/byo/chipsec_merge/'
 
 # defined the msg info
 press_f2 = 'Press F2'
@@ -171,9 +168,7 @@ option14 = 'Uncore Status'
 # BIOS items info,
 static_turbo = ['<Disabled>\s+Static Turbo']
 ufs = ['<Enabled>\s+UFS']
-local_remote = ['Local/Remote Threshold\s+<Auto>']
 dram = ['<Enabled>\s+DRAM RAPL']
-simplePWD_info = ['<Disabled>\s+Simple Password']
 secure_status = ['Current Secure Boot State\s+Disabled']
 cnd_status = ['<Enabled>\s+Network CDN']
 

@@ -92,7 +92,14 @@ def boot_to_bios_config(serial, ssh):
     if not boot_to_setup(serial, ssh):
         return
     logging.info("Move to \"BIOS Configuration\"")
-    serial.send_keys_with_delay(SutConfig.key2Setup)
+    SerialLib.send_key(serial, Key.DOWN)
+    if SerialLib.is_msg_present(serial, "Boot From File", delay=10):
+        logging.info("UEFI boot mode detected.")
+        SerialLib.send_keys_with_delay(serial, [Key.RIGHT, Key.RIGHT])
+    else:
+        logging.info("Legacy boot mode detected")
+        SerialLib.send_key(serial, Key.RIGHT)
+    SerialLib.send_key(serial, Key.ENTER)
     if not serial.is_msg_present('System Time'):
         logging.info("SetUpLib: Boot to BIOS Configuration Failed")
         return

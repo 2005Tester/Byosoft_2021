@@ -11,7 +11,7 @@ from sys import argv
 from Common import LogConfig, Unitool
 from Common import SutSerial
 from Common import ssh
-from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest, Pwd, Os, Release, Smbios
+from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest, Pwd, Os, Release, Smbios, Legacy
 from Report.ReportGen import ReportGenerator
 
 # init seril
@@ -51,7 +51,9 @@ def debug_run():
 #     Release.legacy_boot(ser, ssh_bmc)
 #    if Os.boot_to_suse(ser, ssh_bmc):
     biosTest.loadDefault(ser, ssh_bmc)
-#    gen_report(log_dir)
+    if Legacy.enable_legacy_boot(ser, ssh_bmc):
+        Legacy.disable_legacy_boot(ser, ssh_bmc)
+    gen_report(log_dir)
 
 
 # Define test scope here
@@ -86,6 +88,8 @@ def run_test():
     biosTest.loadDefault(ser, ssh_bmc)
     if UpdateBIOS.update_bios_mfg(ser, log_dir, 'master'):
         Os.boot_to_suse_mfg(ser, ssh_bmc)
+    if Legacy.enable_legacy_boot(ser, ssh_bmc):
+        Legacy.disable_legacy_boot(ser, ssh_bmc)
     gen_report(log_dir)
 
 
