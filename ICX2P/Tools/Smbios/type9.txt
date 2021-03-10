@@ -52,7 +52,7 @@ System Slot Information
 		Hot-plug devices are supported
 	Bus Address: 0000:16:02.0
 
-Handle 0x0042, DMI type 9, 24 bytes
+Handle 0x0046, DMI type 9, 24 bytes
 System Slot Information
 	Designation: SLOT3
 	Type: x16 PCI Express 3 x16

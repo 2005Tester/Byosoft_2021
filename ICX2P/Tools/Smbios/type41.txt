@@ -12,7 +12,7 @@ Onboard Device
 	Type Instance: 1
 	Bus Address: 0000:ff:1e.7
 
-Handle 0x0043, DMI type 41, 11 bytes
+Handle 0x0042, DMI type 41, 11 bytes
 Onboard Device
 	Reference Designation: Embeded SAS Controller
 	Type: SAS Controller
@@ -20,7 +20,7 @@ Onboard Device
 	Type Instance: 1
 	Bus Address: 0000:33:00.0
 
-Handle 0x0044, DMI type 41, 11 bytes
+Handle 0x0043, DMI type 41, 11 bytes
 Onboard Device
 	Reference Designation: Embeded SATA Controller
 	Type: SATA Controller
@@ -28,7 +28,7 @@ Onboard Device
 	Type Instance: 1
 	Bus Address: 0000:00:17.0
 
-Handle 0x0045, DMI type 41, 11 bytes
+Handle 0x0044, DMI type 41, 11 bytes
 Onboard Device
 	Reference Designation: Embeded SSATA Controller
 	Type: SATA Controller
@@ -36,7 +36,7 @@ Onboard Device
 	Type Instance: 2
 	Bus Address: 0000:00:11.5
 
-Handle 0x0046, DMI type 41, 11 bytes
+Handle 0x0045, DMI type 41, 11 bytes
 Onboard Device
 	Reference Designation: Embeded USB Controller
 	Type: Other
