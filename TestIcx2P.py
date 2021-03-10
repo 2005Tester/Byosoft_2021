@@ -50,8 +50,8 @@ def debug_run():
 #    UpdateBIOS.update_bios(ser, log_dir, 'master')
 #     Release.legacy_boot(ser, ssh_bmc)
 #    if Os.boot_to_suse(ser, ssh_bmc):
-    Smbios.smbios_test_all(ssh_os)
-    gen_report(log_dir)
+    biosTest.loadDefault(ser, ssh_bmc)
+#    gen_report(log_dir)
 
 
 # Define test scope here
@@ -66,12 +66,11 @@ def run_test():
     biosTest.ProcessorDIMM(ser, ssh_bmc)
 #    biosTest.chipsecTest(ser, ssh_bmc)
     biosTest.pressF2(ser, ssh_bmc)
-    biosTest.loadDefault(ser, ssh_bmc)
     biosTest.staticTurbo(ser, ssh_bmc)
     biosTest.ufs(ser, ssh_bmc)
     DefaultValueTest.rrqirq(ser, ssh_bmc)
     biosTest.dramRAPL(ser, ssh_bmc)
-    biosTest.securityBoot(ser, ssh_bmc)
+#    biosTest.securityBoot(ser, ssh_bmc)
     biosTest.vtd(ser, ssh_bmc)
     biosTest.cpuCOMPA(ser, ssh_bmc)
     if Os.boot_to_suse(ser, ssh_bmc):
@@ -84,6 +83,7 @@ def run_test():
     Pwd.Simple_password_save_enable(ser, ssh_bmc)
     Pwd.Simple_password_save_disable(ser, ssh_bmc)
     Release.me_version_status(ser, ssh_bmc)
+    biosTest.loadDefault(ser, ssh_bmc)
     if UpdateBIOS.update_bios_mfg(ser, log_dir, 'master'):
         Os.boot_to_suse_mfg(ser, ssh_bmc)
     gen_report(log_dir)

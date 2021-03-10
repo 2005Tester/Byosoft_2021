@@ -73,4 +73,4 @@ def ReleaseTest():
 
 def Debug():
     print("Run debug test for ICX 2P.")
-    Release.equip_mode_flag_check(unitool)
+    biosTest.loadDefault(ser, ssh_bmc)

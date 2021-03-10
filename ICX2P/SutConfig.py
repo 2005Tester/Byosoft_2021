@@ -51,6 +51,7 @@ OS_PASSWORD = '1'
 # Tool definition
 UNI_PATH = "/root/flashtool/unitool"
 
+
 # Key mapping
 class Key:
     ENTER = [chr(0x0D)]
@@ -71,9 +72,7 @@ class Key:
     Y = [chr(0x59)]
 
 
-
 # Messages to identify a spcific boot option, page, menu or system status 
-
 class Msg:
     HOTKEY_PROMPT_DEL = 'Press Del go to Setup Utility'
     HOTKEY_PROMPT_F11 = 'Press F11 go to BootManager'
@@ -98,8 +97,6 @@ class Msg:
     PROCESSOR_CONFIG = 'Processor Configuration'
     UNCORE_CONFIG = 'Uncore Configuration'
     UNCORE_GENERAL = 'Uncore General Configuration'
-
-
 
     # menus of PCH configuration
     PCH_CONFIG = 'PCH CONFIGURATION'
@@ -197,7 +194,6 @@ key2default = [Key.F9, Key.Y, Key.F10, Key.Y]
 key2Setup = [Key.RIGHT, Key.RIGHT, Key.DOWN, Key.ENTER]
 key2OS = [Key.RIGHT, Key.ENTER]
 key2pwd = [Key.RIGHT, Key.RIGHT, Key.RIGHT]
-key2type = [Key.RIGHT, Key.RIGHT, Key.RIGHT, Key.RIGHT]
 
 # WA
 w2key = [Key.RIGHT, Key.UP]

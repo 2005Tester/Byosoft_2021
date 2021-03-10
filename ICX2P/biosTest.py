@@ -11,7 +11,7 @@ import logging
 import time
 from ICX2P.SutConfig import Key, Msg
 from ICX2P import SutConfig
-from ICX2P.BaseLib import PowerLib, icx2pAPI, SetUpLib
+from ICX2P.BaseLib import PowerLib, icx2pAPI, SetUpLib, SerialLib
 from Report import ReportGen
 from Common.LogAnalyzer import LogAnalyzer
 
@@ -295,53 +295,61 @@ def checkPWD(serial, pwd1, pwd2):
 def loadDefault(serial, ssh):
     tc = ('011', 'Load default and setting saving Test', 'BIOS Load default Test')
     result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
-    option_bfo = ['<UEFI Boot Type>', '<Boot Retry>']
-    option_aft = ['<Legacy Boot Type>', '<Cold Boot>']
-    if not icx2pAPI.toBIOS(serial, ssh):
+    pxe_boot = ["PXE Boot Capability", "<UEFI:IPv4>"]
+    boot_fail_policy = ["Boot Fail Policy", "<Boot Retry>"]
+    pxe_boot_2 = ["PXE Boot Capability", "<UEFI:IPv6>"]
+    boot_fail_policy_2 = ["Boot Fail Policy", "<Cold Boot>"]
+    default_options = [boot_fail_policy, pxe_boot]
+    changed_options = [boot_fail_policy_2, pxe_boot_2]
+    if not SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_BOOT):
+        result.log_fail(capture=True)
+        return
+
+    # change option boot fail policy from "Boot Retry" to "Cold Boot"
+    logging.info("change option boot fail policy from Boot Retry to Cold Boot")
+    if not SetUpLib.locate_option(serial, Key.DOWN, boot_fail_policy, 15):
+        result.log_fail(capture=True)
+        return
+    SerialLib.send_key(serial, Key.F5)
+    result.capture_screen()
+
+    # change pxe option from IPV4 to IPV6
+    logging.info("change pxe option from IPV4 to IPV6")
+    if not SetUpLib.locate_option(serial, Key.DOWN, pxe_boot, 15):
+        result.log_fail(capture=True)
+        return
+    SerialLib.send_key(serial, Key.F5)
+    result.capture_screen()
+
+    logging.info("Save and reset.")
+    SerialLib.send_keys_with_delay(serial, [Key.F10, Key.Y])
+    time.sleep(15)
+
+    # Verify modified options
+    if not SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_BOOT):
+        result.log_fail(capture=True)
         return
     result.capture_screen()
-    if not icx2pAPI.toBIOSConf(serial):
+    if not SetUpLib.verify_options(serial, Key.DOWN, changed_options, 15):
         result.log_fail(capture=True)
         return
-    serial.send_keys_with_delay(SutConfig.key2type)
-    if not icx2pAPI.verify_setup_options_down(serial, option_bfo, 14):
+    logging.info("Modified options are verified.")
+
+    logging.info("Reset defaul by hotkey")
+    SerialLib.send_keys_with_delay(serial, [Key.F9, Key.Y, Key.F10, Key.Y], delay=5)
+    result.capture_screen()
+    time.sleep(15)
+
+    # Verify whether options are reset to default
+    if not SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_BOOT):
         result.log_fail(capture=True)
         return
-    serial.send_keys_with_delay([Key.LEFT, Key.RIGHT, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.pat, 'Boot Type'):
+    result.capture_screen()
+    if not SetUpLib.verify_options(serial, Key.DOWN, default_options, 15):
         result.log_fail(capture=True)
         return
-    serial.send_keys(Key.F5)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.pat, 'Boot Fail Policy'):
-        result.log_fail(capture=True)
-        return
-    serial.send_keys(Key.F5)
-    serial.send_keys(Key.F10 + Key.Y)
-    if not icx2pAPI.toBIOSnp(serial):
-        result.log_fail(capture=True)
-        return
-    if not icx2pAPI.toBIOSConf(serial):
-        result.log_fail(capture=True)
-        return
-    serial.send_keys_with_delay(SutConfig.key2type)
-    if not icx2pAPI.verify_setup_options_down(serial, option_aft, 14):
-        result.log_fail(capture=True)
-        if not icx2pAPI.reset_default(serial, ssh):
-            return
-    serial.send_keys_with_delay(SutConfig.key2default)
-    if not icx2pAPI.toBIOSnp(serial):
-        result.log_fail(capture=True)
-        if not icx2pAPI.reset_default(serial, ssh):
-            return
-    if not icx2pAPI.toBIOSConf(serial):
-        result.log_fail(capture=True)
-        return
-    serial.send_keys_with_delay(SutConfig.key2type)
-    time.sleep(1)
-    if not icx2pAPI.verify_setup_options_down(serial, option_bfo, 14):
-        result.log_fail(capture=True)
-        if not icx2pAPI.reset_default(serial, ssh):
-            return
+    result.capture_screen()
+
     result.log_pass()
     return True
 
