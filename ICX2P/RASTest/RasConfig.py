@@ -29,8 +29,9 @@ COM = "COM4"
 # Boot到系统的标志字符串
 OS_FLAG = "Ubuntu 20.04 LTS"
 
-# 系统重启超时时间
-BOOT_TIMEOUT = 300
+# 打开DebugMessage后重启系统 超时时间
+BOOT_TIMEOUT = 900
+
 # 测试Case关键字
 TC_ID = "Testcase"
 
@@ -41,12 +42,13 @@ class Delay:
     bank_vls = 40
     rank_vls = 180
     rank_sparing = 320
-    caterr = 660
+    caterr = 720
+    mem_uce = 180
 
 
 # SMI风暴抑制
-smi_dis = 610
-smi_thld = 3
+smi_dis = 610  # SMI抑制时间
+smi_thld = 3  # SMI抑制次数
 
 
 # 【首次测试请确认配置】
@@ -103,21 +105,26 @@ class Loc:
     """
     默认注错位置
     """
-    # Memory
+    # 内存位置
     msocket = 0
     imc = 0
     channel = 0
     dimm = 0
-    rank = 0
-    bg = 0  # bank_group
-    ba = 0  # bank
+
+    rank = 1
+    bg = 3  # bank_group 位置不用改
+    ba = 3  # bank 位置不用改
+
     # 系统channel转换
-    ch = (imc * len(Sys.MCs)) + channel
+    ch = (imc * len(Sys.CHs)) + channel
+
+    # 内存UCE 4G以上地址
+    mem_uce_addr = 0x100000000
 
     # mirror 地址
-    full_mirr_addr = hex(0x100000000)
-    arm_mirr_addr = hex(0x100000000)
-    arm_non_mirr_addr = hex(0xA00000000)
+    full_mirr_addr = 0x100000040
+    arm_mirr_addr = 0x100000040
+    arm_non_mirr_addr = 0xA00000000
 
     # UPI
     usocket = 0
@@ -140,6 +147,7 @@ class Loc:
 
 # Cscripts 命令
 class Cmd:
+    # 注错命令
     inj_mem = 'ei.injectMemError({})'
     inj_pcie = "ei.injectPcieError(socket={}, port={}, errType={})"
     inj_cap = "ei.injectCMDParity(socket={}, channel={})"
@@ -147,12 +155,13 @@ class Cmd:
     inj_upi = "ei.injectUpiError(socket={}, port={}, num_crcs={}, laneNum={})"
     inj_upi_failover = "ei.injUpiDynamicLinkWidthReduction(socket={}, port={}, direction={}, dataLanes={}, portreset=1)"
     inj_3s = "ei.injectThreeStrike({})"
-    inj_ierr = "ei.injectIERR()"
+    inj_ierr = "ei.injectIERR({})"
     inj_mcer = "ei.injectMCERR()"
     ei_dev = "ei.memDevs(dev0={}, dev0msk=0x{}, dev1={}, dev1msk=0x{})"
     ei_reset = "ei.resetInjectorLockCheck(0)"
     sa2da = "ei.sa2da_table({},{})"
 
+    # 查询命令
     read_msr = "itp.msr({}, {})"
     dimminfo = "mc.dimminfo()"
     pcie_top = "pcie.topology()"
@@ -161,54 +170,54 @@ class Cmd:
     dump_mem_err = "error.check_mem_errors()"
     dump_upi_err = "error.check_upi_errors()"
 
+    # ras 模块
     adddc_check = "ras.adddc_status_check(socket={}, mc={})"
     viral_check = "ras.viral_config_check()"
     viral_err = "ras.viral_error_check()"
     retry_rd = "ras.retry_rd_log_decode(socket={},channel={})"
 
+    # sv 命令
     dimm_pop = "sv.socket{}.uncore.memss.mc{}.ch{}.dimmmtr_{}.dimm_pop"
     upi_rxeinj = "sv.sockets.uncore.upi.upi{}.ktirxeinjctl0=0xcacb2143".format(Loc.upi_port)
     kti_mc_st = "sv.socket{}.uncore.upi.upi{}.bios_kti_err_st.show()".format(Loc.usocket, Loc.upi_port)
     s_clm = "sv.sockets.uncore.showsearch('s_clm','f')"
     iio_viral_show = 'sv.socket{}.uncore.showsearch("iio_viral","f")'
-    viral_state = "sv.socket{}.uncore.m2iosfs.viral_1_5_2_cfg.show()"
+    viral_state_pcie = "sv.socket{}.uncore.m2iosfs.viral_1_5_2_cfg.show()"
+    viral_state_upi = "sv.sockets.uncore.upi.upis.ktiviral.show()"
     mem_mode = "sv.socket{}.uncore.memss.m2mem{}.mode.show()"
-    alertsignal="sv.socket{}.uncore.memss.m{}.ch{}.alertsignal.show()".format(Loc.msocket, Loc.imc, Loc.channel)
+    alertsignal="sv.socket{}.uncore.memss.mc{}.ch{}.alertsignal.show()".format(Loc.msocket, Loc.imc, Loc.channel)
     correrrorstatus = "sv.socket{}.uncore.memss.mc{}.ch{}.correrrorstatus.show()".format(Loc.msocket, Loc.imc, Loc.channel)
-    sparing_patrol_status = "sv.socket{}.uncore.memss.mc{}.ch{}.sparing_patrol_status.show"
+    sparing_patrol_status = "sv.socket{}.uncore.memss.mc{}.ch{}.sparing_patrol_status.show()"
     adddc_sparing = "sv.socket{}.uncore.memss.mc{}.ch{}.sparing_control.adddc_sparing".format(Loc.msocket, Loc.imc, Loc.channel)
+    set_temp_lo = "sv.socket{}.uncore.memss.mc{}.ch{}.dimm_temp_th_{}.temp_lo=0x0".format(Loc.msocket, Loc.imc, Loc.channel, Loc.dimm)
+    set_temp_mid = "sv.socket{}.uncore.memss.mc{}.ch{}.dimm_temp_th_{}.temp_mid=0x0".format(Loc.msocket, Loc.imc,Loc.channel, Loc.dimm)
+    show_field_reg = "sv.sockets.uncore.showsearch({!r},'f')"
+    show_reg = "sv.sockets.uncore.showsearch({!r})"
+    core_count = "sv.socket0.uncore.core_msr.core_msr.core_thread_count.corecount"
+    pcls_cfg = "sv.socket{}.uncore.memss.mc{}.ch{}.pcls_{}_cfg_data_info.show()"
+    show_pcls = "ras.showPcls(socket={}, mc={}, ch={})"
+
     buddy_rank = "sv.socket{}.uncore.memss.mc{}.ch{}.adddc_region{}_control.nonfailed_cs"
     buddy_bg = "sv.socket{}.uncore.memss.mc{}.ch{}.adddc_region{}_control.nonfailed_bg"
     buddy_bank = "sv.socket{}.uncore.memss.mc{}.ch{}.adddc_region{}_control.nonfailed_ba"
     region_size = "sv.socket{}.uncore.memss.mc{}.ch{}.adddc_region{}_control.region_size"
-    pcie_present = "sv.socket{}.uncore.pcie.{}.cfg.linksts.dllla".format(Loc.psocket, Sys.PORT_MAP[Loc.pcie_port][1])
+
+    pcie_present = "sv.socket{}.uncore.pcie.{}.cfg.linksts.dllla"
     comp_timeout_severity = "sv.socket{}.uncore.pcie.{}.cfg.erruncsev.ctes=1".format(Loc.psocket, Sys.PORT_MAP[Loc.pcie_port][1])
 
 
 # 不同RAS功能的BIOS设置
 class Bios:
-    # Default = {
-    #     "PoisonEn": 1,
-    #     "MirrorMode": 0,
-    #     "PartialMirrorUefi": 0,
-    #     "spareErrTh": 6000,
-    #     "RankSparing": 0,
-    #     "ADDDCEn": 0,
-    #     "PlusOneEn": 0,
-    # }
-
     DFX = {
         "DFXEnable": 1,
         "DfxDisableBiosDone": 1,
         "LockChipset": 0,
         "DirectoryModeEn": 0,
-        "McaBankErrInjEn": 1,
-        "WheaErrorInjSupportEn": 1,
+        "RasLogLevel": 3,
     }
 
     ADDDC = {
         "ADDDCEn": 1,
-        "PlusOneEn": 1,
         "spareErrTh": 1,
         "PclsEn": 0,
     }
@@ -218,7 +227,6 @@ class Bios:
         "PartialMirrorUefi": 0,
         "PclsEn": 0,
         "ADDDCEn": 0,
-        "PlusOneEn": 0,
         "spareErrTh": 6000,
     }
 
@@ -228,18 +236,7 @@ class Bios:
         "PartialMirrorUefiPercent": 3000,
         "PclsEn": 0,
         "ADDDCEn": 0,
-        "PlusOneEn": 0,
         "spareErrTh": 6000,
-    }
-
-    General = {
-        "PoisonEn": 1,
-        "MirrorMode": 0,
-        "PartialMirrorUefi": 0,
-        "spareErrTh": 6000,
-        "PclsEn": 0,
-        "ADDDCEn": 0,
-        "PlusOneEn": 0,
     }
 
     Legacy = {
@@ -254,7 +251,6 @@ class Bios:
     WrCRC = {
         "WrCRC": 1,
         "ADDDCEn": 0,
-        "PlusOneEn": 0,
     }
 
     Viral = {
@@ -264,7 +260,6 @@ class Bios:
     Pcls = {
         "PclsEn": 1,
         "ADDDCEn": 1,
-        "PlusOneEn": 1,
         "spareErrTh": 1,
     }
 
@@ -273,9 +268,27 @@ class Bios:
         "ShutdownSuppression": 1,
     }
 
+    PPR = {
+        "pprType": 1,
+        "pprErrInjTest": 1,
+        "spareErrTh": 1,
+    }
+
+    IERR_Debug = {
+        "EmcaMsmiEn": 0,
+        "ShutdownSuppression": 1,
+        "serialDebugMsgLvl": 2,
+    }
+
+    DebugMsg = {
+        "serialDebugMsgLvl": 2,
+        "RasLogLevel": 3,
+    }
+
 
 # 测试Case集合，可单独自定义，用 "-f" 参数测试自定义Testcase集合
 class TestList:
+    # 按测试Case分类
     FDM = [
         "Testcase_FDM_SMI_001",
         "Testcase_FDM_SMI_002",
@@ -293,6 +306,9 @@ class TestList:
 
         "Testcase_FDM_SMI_CollectInfo_001",
 
+        "Testcase_FDM_PostErrReport_001",
+        "Testcase_FDM_PostErrReport_002",
+
         "Testcase_FDM_IIOUR_001",
         "Testcase_FDM_IIOUR_002",
         "Testcase_FDM_IIOUR_003",
@@ -300,6 +316,7 @@ class TestList:
         "Testcase_FDM_IIOUR_005",
         
         "Testcase_FDM_CE_001",
+        # "Testcase_FDM_CE_002",  # 需要内存满配才能测试
         "Testcase_FDM_CE_003",
         "Testcase_FDM_CE_006",
         "Testcase_FDM_CE_007",
@@ -320,11 +337,12 @@ class TestList:
         "Testcase_FDM_MEM_RAS_002",
         "Testcase_FDM_MEM_RAS_003",
         "Testcase_FDM_MEM_RAS_004",
-        "Testcase_FDM_MEM_RAS_007",
+        # "Testcase_FDM_MEM_RAS_007",  # ICX没有SDDC功能
         "Testcase_FDM_MEM_RAS_008",
         "Testcase_FDM_MEM_RAS_009",
         "Testcase_FDM_MEM_RAS_010",
         "Testcase_FDM_MEM_RAS_011",
+        "Testcase_FDM_MEM_RAS_013",
         
         "Testcase_FDM_Other_001",
         "Testcase_FDM_Other_002",
@@ -333,6 +351,68 @@ class TestList:
         "Testcase_FDM_Other_008",
     ]
 
+    MEM = [
+        "Testcase_MemRAS_001",
+        "Testcase_MemRAS_002",
+        "Testcase_MemRAS_003",
+        "Testcase_MemRAS_004",
+        "Testcase_MemRAS_005",
+        "Testcase_MemRAS_006",
+        "Testcase_MemRAS_007",
+        "Testcase_MemRAS_008",
+        "Testcase_MemRAS_009",
+
+        "Testcase_MemRAS_010",
+        "Testcase_MemRAS_011",
+        "Testcase_MemRAS_012",
+        "Testcase_MemRAS_013",
+        "Testcase_MemRAS_014",
+        "Testcase_MemRAS_015",
+        "Testcase_MemRAS_016",
+        "Testcase_MemRAS_017",
+        "Testcase_MemRAS_018",
+        "Testcase_MemRAS_019",
+        "Testcase_MemRAS_020",
+        "Testcase_MemRAS_021",
+        "Testcase_MemRAS_022",
+        "Testcase_MemRAS_023",
+        "Testcase_MemRAS_024",
+        "Testcase_MemRAS_025",
+
+        "Testcase_MemRAS_028",
+        "Testcase_MemRAS_029",
+        "Testcase_MemRAS_032",
+        "Testcase_MemRAS_033",
+        "Testcase_MemRAS_034",
+        "Testcase_MemRAS_035",
+        "Testcase_MemRAS_037",
+        "Testcase_MemRAS_038",
+        "Testcase_MemRAS_039",
+        "Testcase_MemRAS_040",
+    ]
+
+    CPU = [
+        "Testcase_CPURAS_001",
+        "Testcase_CPURAS_002",
+        "Testcase_CPURAS_003",
+        "Testcase_CPURAS_008",
+        "Testcase_CPURAS_009",
+        "Testcase_CPURAS_010",
+        "Testcase_CPURAS_011",
+        "Testcase_CPURAS_012",
+        "Testcase_CPURAS_013",
+        "Testcase_CPURAS_014",
+        "Testcase_CPURAS_015",
+        "Testcase_CPURAS_016",
+        "Testcase_CPURAS_017",
+        "Testcase_CPURAS_018",
+        "Testcase_CPURAS_019",
+        "Testcase_CPURAS_020",
+        "Testcase_CPURAS_021",
+        "Testcase_CPURAS_022",
+    ]
+
+    # RAS功能集合
     ADDDC = [
         "Testcase_MemRAS_010",
         "Testcase_MemRAS_011",
@@ -352,6 +432,12 @@ class TestList:
         "Testcase_MemRAS_025",
     ]
 
+    PCLS = [
+        "Testcase_MemRAS_038",
+        "Testcase_MemRAS_039",
+        "Testcase_MemRAS_040",
+    ]
+
     Mirror = [
         "Testcase_MemRAS_001",
         "Testcase_MemRAS_002",
@@ -362,26 +448,6 @@ class TestList:
         "Testcase_MemRAS_007",
         "Testcase_MemRAS_008",
         "Testcase_MemRAS_009",
-    ]
-
-    CPU = [
-        "Testcase_CPURAS_001",
-        "Testcase_CPURAS_002",
-        "Testcase_CPURAS_003",
-        "Testcase_CPURAS_008",
-        "Testcase_CPURAS_010",
-        "Testcase_CPURAS_011",
-        "Testcase_CPURAS_012",
-        "Testcase_CPURAS_013",
-        "Testcase_CPURAS_014",
-        "Testcase_CPURAS_015",
-        "Testcase_CPURAS_016",
-        "Testcase_CPURAS_017",
-        "Testcase_CPURAS_018",
-        "Testcase_CPURAS_019",
-        "Testcase_CPURAS_020",
-        "Testcase_CPURAS_021",
-        "Testcase_CPURAS_022",
     ]
 
     # 【可在此处添加需要自定义的测试集合】

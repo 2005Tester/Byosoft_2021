@@ -148,7 +148,7 @@ class SshUnitool(SshConnection):
             time.sleep(0.5)
         while self.shell.recv_ready():
             all_data.append(self.shell.recv(buffer).decode("utf-8"))
-            time.sleep(0.01)
+            time.sleep(0.5)
             if time.time() - start_time > timeout:
                 print("ssh receive data timeout")
                 break
@@ -159,7 +159,7 @@ class SshUnitool(SshConnection):
         retn = []
         for index, cmd in enumerate(cmd_list):
             self.shell.sendall(cmd)
-            time.sleep(0.2)
+            time.sleep(0.5)
             data = self.recv_data(buffer=10240, timeout=timeout)
             try:
                 if feedback and (feedback[index] in data):
