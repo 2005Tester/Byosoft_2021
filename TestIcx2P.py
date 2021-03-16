@@ -72,7 +72,7 @@ def run_test():
     biosTest.ufs(ser, ssh_bmc)
     DefaultValueTest.rrqirq(ser, ssh_bmc)
     biosTest.dramRAPL(ser, ssh_bmc)
-#    biosTest.securityBoot(ser, ssh_bmc)
+    biosTest.securityBoot(ser, ssh_bmc)
     biosTest.vtd(ser, ssh_bmc)
     biosTest.cpuCOMPA(ser, ssh_bmc)
     if Os.boot_to_suse(ser, ssh_bmc):

@@ -70,6 +70,7 @@ class Key:
     LEFT = [chr(0x1b), chr(0x5b), chr(0x44)]
     RIGHT = [chr(0x1b), chr(0x5b), chr(0x43)]
     Y = [chr(0x59)]
+    RESET_DEFAULT = [F9, Y, F10, Y]
 
 
 # Messages to identify a spcific boot option, page, menu or system status 
@@ -169,7 +170,6 @@ option14 = 'Uncore Status'
 static_turbo = ['<Disabled>\s+Static Turbo']
 ufs = ['<Enabled>\s+UFS']
 dram = ['<Enabled>\s+DRAM RAPL']
-secure_status = ['Current Secure Boot State\s+Disabled']
 cnd_status = ['<Enabled>\s+Network CDN']
 
 # TPM info
@@ -185,7 +185,6 @@ DIMM_info = ['DIMM020\(C\)\s+S0.CC.D0:2933MT/s Hynix DRx4 32GB RDIMM',
              'DIMM160\(G\)\s+S1.CG.D0:2933MT/s Hynix DRx4 32GB RDIMM']
 
 # Common key order
-key2default = [Key.F9, Key.Y, Key.F10, Key.Y]
 key2Setup = [Key.RIGHT, Key.RIGHT, Key.DOWN, Key.ENTER]
 key2OS = [Key.RIGHT, Key.ENTER]
 key2pwd = [Key.RIGHT, Key.RIGHT, Key.RIGHT]

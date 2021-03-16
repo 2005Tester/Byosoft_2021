@@ -30,6 +30,7 @@ def DailyTest():
     biosTest.securityBoot(ser, ssh_bmc)
     biosTest.vtd(ser, ssh_bmc)
     biosTest.cpuCOMPA(ser, ssh_bmc)
+    biosTest.securityBoot(ser, ssh_bmc)
     if Os.boot_to_suse(ser, ssh_bmc):
         Smbios.smbios_test_all(ssh_os)
         Release.equip_mode_flag_check(unitool)
@@ -56,6 +57,7 @@ def ReleaseTest():
     biosTest.dramRAPL(ser, ssh_bmc)
     biosTest.vtd(ser, ssh_bmc)
     biosTest.cpuCOMPA(ser, ssh_bmc)
+    biosTest.securityBoot(ser, ssh_bmc)
     if Os.boot_to_suse(ser, ssh_bmc):
         Smbios.smbios_test_all(ssh_os)
         Release.equip_mode_flag_check(unitool)

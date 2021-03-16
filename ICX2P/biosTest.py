@@ -399,7 +399,7 @@ def ufs(serial, ssh):
     if not icx2pAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    serial.send_keys_with_delay(SutConfig.key2default)
+    serial.send_keys_with_delay(Key.RESET_DEFAULT)
     if not icx2pAPI.toBIOSnp(serial):
         result.log_fail()
         return
@@ -495,36 +495,21 @@ def cnd(serial, ssh):
     return True
 
 
-# Testcase_SecurityBoot_001, 004
+# Testcase_SecurityBoot_001
 def securityBoot(serial, ssh):
     tc = ('023', 'Secure Boot默认值', 'Secure Boot默认值')
     result = ReportGen.LogHeaderResult(tc, serial)
-    if not icx2pAPI.toBIOS(serial, ssh):
-        result.log_fail()
+    keys_secure_boot = [Key.RIGHT, Key.DOWN, Key.ENTER]
+    secureboot_disable = ['Current Secure Boot State\s+Disabled']
+    if not SetUpLib.boot_to_setup(serial, ssh):
+        result.log_fail(capture=True)
         return
-    key1 = [Key.RIGHT, Key.DOWN, Key.ENTER]
-    serial.send_keys_with_delay(key1)
-    if not icx2pAPI.verify_setup_options_down(serial, SutConfig.secure_status, 6):
-        result.log_fail()
+    logging.info("Enter secure boot configuration.")
+    SerialLib.send_keys_with_delay(serial, keys_secure_boot)
+    logging.info("Checking secure boot status")
+    if not SetUpLib.verify_info(serial, Key.DOWN, secureboot_disable, 5):
+        result.log_fail(capture=True)
         return
-    serial.send_keys(Key.ESC)
-    serial.send_keys_with_delay([Key.RIGHT, Key.ENTER])
-    serial.send_keys_with_delay([Key.RIGHT, Key.RIGHT, Key.RIGHT, Key.RIGHT, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.pat, 'Boot Type'):
-        result.log_fail()
-        return
-    serial.send_keys(Key.F5)
-    time.sleep(0.1)
-    serial.send_keys(Key.F10 + Key.Y)
-    if not icx2pAPI.toBIOSnp(serial):
-        result.log_fail()
-        icx2pAPI.reset_default(serial, ssh)
-        return
-    serial.send_keys_with_delay(key1)
-    if serial.waitString('Current Secure Boot State'):
-        result.log_fail()
-        return
-    icx2pAPI.reset_default(serial, ssh)
     result.log_pass()
     return True
 
@@ -566,7 +551,7 @@ def tpm(serial, ssh):
         result.log_fail()
         if not icx2pAPI.reset_default(serial, ssh):
             return
-    serial.send_keys(SutConfig.key2default)
+    serial.send_keys(Key.RESET_DEFAULT)
     if not icx2pAPI.toSysTime(serial):
         result.log_fail()
         return
