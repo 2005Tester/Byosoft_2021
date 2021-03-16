@@ -11,7 +11,7 @@ from Report import ReportGen
 
 
 def enable_legacy_boot(serial, ssh):
-    tc = ('400', 'Enable Legacy Boot', 'Enable Legacy Boot.')
+    tc = ('500', 'Enable Legacy Boot', 'Enable Legacy Boot.')
     result = ReportGen.LogHeaderResult(tc)
     if not SetUpLib.enable_legacy_boot(serial, ssh):
         result.log_fail(capture=True)
@@ -21,7 +21,7 @@ def enable_legacy_boot(serial, ssh):
 
 
 def disable_legacy_boot(serial, ssh):
-    tc = ('401', 'Disable Legacy Boot', 'Disable Legacy Boot.')
+    tc = ('501', 'Disable Legacy Boot', 'Disable Legacy Boot.')
     result = ReportGen.LogHeaderResult(tc)
     if not SetUpLib.disable_legacy_boot(serial, ssh):
         result.log_fail(capture=True)
