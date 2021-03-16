@@ -596,10 +596,7 @@ def vtd(serial, ssh):
         return
     logging.info("Diasble VT-d")
     serial.send_keys(Key.F5)
-    time.sleep(1)
-    logging.info("Verify VT-d is disabled")
-    serial.send_keys_with_delay([Key.UP, Key.DOWN])   # Refresh page
-    if not serial.is_msg_present("<Disabled>\s+Intel"):
+    if not serial.is_msg_present("Disabled"):
         logging.info("VT-d option is not disaled.")
         result.log_fail()
         return
