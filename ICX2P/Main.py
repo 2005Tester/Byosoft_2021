@@ -22,12 +22,10 @@ def DailyTest():
     biosTest.usbTest(ser, ssh_bmc)
     biosTest.ProcessorDIMM(ser, ssh_bmc)
     biosTest.pressF2(ser, ssh_bmc)
-    biosTest.loadDefault(ser, ssh_bmc)
     biosTest.staticTurbo(ser, ssh_bmc)
     biosTest.ufs(ser, ssh_bmc)
     DefaultValueTest.rrqirq(ser, ssh_bmc)
     biosTest.dramRAPL(ser, ssh_bmc)
-    biosTest.securityBoot(ser, ssh_bmc)
     biosTest.vtd(ser, ssh_bmc)
     biosTest.cpuCOMPA(ser, ssh_bmc)
     biosTest.securityBoot(ser, ssh_bmc)
@@ -40,7 +38,11 @@ def DailyTest():
     Pwd.Simple_password_save_enable(ser, ssh_bmc)
     Pwd.Simple_password_save_disable(ser, ssh_bmc)
     Release.me_version_status(ser, ssh_bmc)
+    biosTest.loadDefault(ser, ssh_bmc)
+    if Legacy.enable_legacy_boot(ser, ssh_bmc):
+        Legacy.disable_legacy_boot(ser, ssh_bmc)
     if UpdateBIOS.update_bios_mfg(ser, SutConfig.LOG_DIR, 'master'):
+        Release.equip_mode_version_check(ser, ssh_bmc)
         Os.boot_to_suse_mfg(ser, ssh_bmc)
 
 
@@ -68,10 +70,11 @@ def ReleaseTest():
     Pwd.Simple_password_save_disable(ser, ssh_bmc)
     Release.me_version_status(ser, ssh_bmc)
     biosTest.loadDefault(ser, ssh_bmc)
-    if UpdateBIOS.update_bios_mfg(ser, SutConfig.LOG_DIR, '2288V6_008'):
-        Os.boot_to_suse_mfg(ser, ssh_bmc)
     if Legacy.enable_legacy_boot(ser, ssh_bmc):
         Legacy.disable_legacy_boot(ser, ssh_bmc)
+    if UpdateBIOS.update_bios_mfg(ser, SutConfig.LOG_DIR, '2288V6_008'):
+        Release.equip_mode_version_check(ser, ssh_bmc)
+        Os.boot_to_suse_mfg(ser, ssh_bmc)
 
 
 def Debug():

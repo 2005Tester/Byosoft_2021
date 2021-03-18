@@ -15,7 +15,7 @@ def send_keys(serial, keys, delay=1):
 
 
 # verify information like CPU, memory in one setup page, option name is highlighted
-# infos: list
+# infos: list e.g. ['BIOS Revision\s+5.[0-9]{2}']
 def verify_info(serial, key, infos, trycounts):
     return serial.navigate_and_verify(key, infos, trycounts)
 

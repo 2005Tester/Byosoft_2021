@@ -26,7 +26,7 @@ def boot_to_suse(serial, ssh):
 
 # Boot to SUSE Linux from boot manager
 def boot_to_suse_mfg(serial, ssh):
-    tc = ('301', 'Boot to UEFI SUSE Linux in MFG mode', 'Boot to UEFI SUSE Linux in Manufacture mode')
+    tc = ('301', '装备模式: Boot to UEFI SUSE Linux', 'Boot to UEFI SUSE Linux in Manufacture mode')
     result = ReportGen.LogHeaderResult(tc, serial)
     if not SetUpLib.boot_to_bootmanager(serial, ssh):
         result.log_fail()

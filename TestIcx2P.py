@@ -47,13 +47,8 @@ def gen_report(log_dir):
 # for debug purpose
 def debug_run():
     log_dir = init_log()
-#    UpdateBIOS.update_bios(ser, log_dir, 'master')
-#     Release.legacy_boot(ser, ssh_bmc)
-#    if Os.boot_to_suse(ser, ssh_bmc):
-#    biosTest.loadDefault(ser, ssh_bmc)
-    if Legacy.enable_legacy_boot(ser, ssh_bmc):
-        Legacy.disable_legacy_boot(ser, ssh_bmc)
-    gen_report(log_dir)
+    Release.equip_mode_version_check(ser, ssh_bmc)
+#    gen_report(log_dir)
 
 
 # Define test scope here
@@ -86,10 +81,11 @@ def run_test():
     Pwd.Simple_password_save_disable(ser, ssh_bmc)
     Release.me_version_status(ser, ssh_bmc)
     biosTest.loadDefault(ser, ssh_bmc)
-    if UpdateBIOS.update_bios_mfg(ser, log_dir, 'master'):
-        Os.boot_to_suse_mfg(ser, ssh_bmc)
     if Legacy.enable_legacy_boot(ser, ssh_bmc):
         Legacy.disable_legacy_boot(ser, ssh_bmc)
+    if UpdateBIOS.update_bios_mfg(ser, log_dir, 'master'):
+        Release.equip_mode_version_check(ser, ssh_bmc)
+        Os.boot_to_suse_mfg(ser, ssh_bmc)
     gen_report(log_dir)
 
 

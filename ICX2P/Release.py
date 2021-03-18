@@ -1,6 +1,7 @@
 import logging
+from ICX2P import SutConfig
 from ICX2P.SutConfig import Key, Msg, BiosCfg
-from ICX2P.BaseLib import SetUpLib
+from ICX2P.BaseLib import PowerLib, SetUpLib
 from Report import ReportGen
 
 
@@ -39,5 +40,21 @@ def equip_mode_flag_check(unitool):
         result.log_fail()
         return
     logging.info("Unbale to set equipment mode flag.")
+    result.log_pass()
+    return True
+
+
+# 装备模式BIOS version = 5.xx.
+def equip_mode_version_check(serial, ssh):
+    tc = ('903', '装备模式: Equipment mode version check', '装备模式版本号为5.xx.')
+    result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
+    mfg_version = ['BIOS Revision\s+5.[0-9]{2}']
+    if not SetUpLib.boot_to_bios_config(serial, ssh):
+        result.log_fail(capture=True)
+        return
+    logging.info("Verify bios version.")
+    if not SetUpLib.verify_info(serial, Key.DOWN, mfg_version, 30):
+        result.log_fail(capture=True)
+        return
     result.log_pass()
     return True

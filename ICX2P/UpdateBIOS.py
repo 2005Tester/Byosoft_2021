@@ -16,7 +16,7 @@ def update_bios(serial, dst, branch):
 
 
 def update_bios_mfg(serial, dst, branch):
-    tc = ('019', 'Update BIOS 装备模式', 'Update BIOS 装备模式')
+    tc = ('019', '装备模式: Update BIOS', 'Update BIOS 装备模式')
     result = ReportGen.LogHeaderResult(tc, serial)
     if not Update.get_test_image(dst, branch, 'EQU-build'):
         result.log_fail()
