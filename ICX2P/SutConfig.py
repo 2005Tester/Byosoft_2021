@@ -90,7 +90,7 @@ class Msg:
     PAGE_ADVANCED = 'CPU Configuration'
     PAGE_BMC = 'Additional System Information'
     PAGE_SECURITY = 'TPM Device'
-    PAGE_BOOT = '<[UEFILegacy]{4,6} Boot Type>'
+    PAGE_BOOT = '<[UEFILegacy]{4,6}Boot>'
     PAGE_SAVE = 'Save Changes and Exit'
 
     # menus of CPU configuration
@@ -107,7 +107,7 @@ class Msg:
     PATH_UNCORE_GENERAL = [CPU_CONFIG, UNCORE_CONFIG, UNCORE_GENERAL]
 
     # Firmware version info
-    ME_VERSION = '0F:4.4.4.51'
+    ME_VERSION = '0F:4.4.4.53'
 
 
 # BIOS configuration to be set by unitool

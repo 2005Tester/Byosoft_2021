@@ -50,7 +50,7 @@ def debug_run():
 #    UpdateBIOS.update_bios(ser, log_dir, 'master')
 #     Release.legacy_boot(ser, ssh_bmc)
 #    if Os.boot_to_suse(ser, ssh_bmc):
-    biosTest.loadDefault(ser, ssh_bmc)
+#    biosTest.loadDefault(ser, ssh_bmc)
     if Legacy.enable_legacy_boot(ser, ssh_bmc):
         Legacy.disable_legacy_boot(ser, ssh_bmc)
     gen_report(log_dir)

@@ -498,7 +498,7 @@ def cnd(serial, ssh):
 # Testcase_SecurityBoot_001
 def securityBoot(serial, ssh):
     tc = ('023', 'Secure Boot默认值', 'Secure Boot默认值')
-    result = ReportGen.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
     keys_secure_boot = [Key.RIGHT, Key.DOWN, Key.ENTER]
     secureboot_disable = ['Current Secure Boot State\s+Disabled']
     if not SetUpLib.boot_to_setup(serial, ssh):

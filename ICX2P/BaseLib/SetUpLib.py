@@ -144,11 +144,11 @@ def enable_legacy_boot(serial, ssh):
     logging.info("Switch to legacy boot mode")
     if not boot_to_page(serial, ssh, Msg.PAGE_BOOT):
         return
-    if not locate_option(serial, Key.DOWN, ["Boot Type", "<UEFI Boot Type>"], 25):
+    if not locate_option(serial, Key.DOWN, ["Boot Type", "<UEFIBoot>"], 25):
         return
     logging.info("Change boot type to legacy mode")
     SerialLib.send_key(serial, Key.F5)
-    if not locate_option(serial, Key.DOWN, ["Boot Type", "<Legacy Boot Type>"], 25):
+    if not locate_option(serial, Key.DOWN, ["Boot Type", "<LegacyBoot>"], 25):
         logging.info("Failed to change boot type.")
         return
     logging.info("Save and reboot")
@@ -165,11 +165,11 @@ def disable_legacy_boot(serial, ssh):
     logging.info("Switch to uefi boot mode")
     if not boot_to_page(serial, ssh, Msg.PAGE_BOOT):
         return
-    if not locate_option(serial, Key.DOWN, ["Boot Type", "<Legacy Boot Type>"], 25):
+    if not locate_option(serial, Key.DOWN, ["Boot Type", "<LegacyBoot>"], 25):
         return
     logging.info("Change boot type to UEFI mode")
     SerialLib.send_key(serial, Key.F6)
-    if not locate_option(serial, Key.DOWN, ["Boot Type", "<UEFI Boot Type>"], 25):
+    if not locate_option(serial, Key.DOWN, ["Boot Type", "<UEFIBoot>"], 25):
         logging.info("Failed to change boot type.")
         return
     logging.info("Save and reboot")
