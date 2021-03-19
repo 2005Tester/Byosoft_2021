@@ -64,3 +64,23 @@ def verify_info(ssh, command, infos):
     else:
         logging.info("{0} items not verified.".format(failures))
         return
+
+
+# remove a file from sftp, file name matches file_re
+# if dir is not specified, use root directory
+def remove_file_sftp(sftp, file_re, dir=None):
+    if sftp.login():
+        sftp.remove_file(file_re, dir)
+        sftp.close_sesion()
+        return True
+    else:
+        logging.info("SFTP login fail.")
+
+
+# upload a file to sftp,ret_msg is used to verify result, can use file size 
+def upload_files_sftp(sftp, src_file, dst_file, ret_msg=None):
+    if sftp.login():
+        return sftp.upload_file(src_file, dst_file, ret_msg)
+    else:
+        logging.info("SFTP login fail.")
+

@@ -34,8 +34,38 @@ class sftp:
         except:
             logging.error("sftp_login: {0}".format(e))
 
-    def ls_dir(self):
-        return self.sftp.listdir()
+    def ls_dir(self, dir=None):
+        return self.sftp.listdir(dir)
+
+    # remove file which matches file_re
+    def remove_file(self, file_re, dir):
+        files = self.ls_dir(dir)
+        for file in files:
+            if re.search(file_re, file):
+                logging.info("Removing: {0}".format(file))
+                self.sftp.remove(file)
+
+    # upload a file to sftp,ret_msg is used to verify result, can use file size 
+    def upload_file(self, src_file, dst_file, ret_msg=None):
+        status = 0
+        try:
+            logging.info("Uploading file to sftp")
+            res = self.sftp.put(src_file, dst_file)
+        except OSError:
+            logging.error("Skip due to SSH connection error.")
+            return
+        if re.search(ret_msg, str(res)):
+            logging.info("File uploaded to SFTP successfully.")
+            status = 1
+        else:
+            logging.info("Failed to upload file to SFTP.")
+            logging.info(res)
+        self.close_session()
+        return status
+
+    def close_session(self):
+        self.sftp.close()
+        self.transport.close()
 
 
 class SshConnection:
@@ -89,7 +119,6 @@ class SshConnection:
         with open(log, 'w') as f:
             f.write(res)
         return log
-
 
     def execute_command_interaction(self, cmd):
         op = self.ssh_client.invoke_shell()
