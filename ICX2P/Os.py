@@ -19,6 +19,7 @@ def boot_to_suse(serial, ssh):
         return
     if not SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE):
         result.log_fail()
+        return
     logging.info("OS Boot Successful")
     result.log_pass()
     return True
@@ -38,6 +39,17 @@ def boot_to_suse_mfg(serial, ssh):
         return
     if not SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE):
         result.log_fail()
+        return
     logging.info("OS Boot Successful")
+    result.log_pass()
+    return True
+
+
+def move_suse_to_first(serial, ssh):
+    tc = ('302', 'Move UEFI SUSE Linux to first boot option', 'Move UEFI SUSE Linux to first boot option')
+    result = ReportGen.LogHeaderResult(tc, serial)
+    if not SetUpLib.boot_option_up(serial, ssh, Msg.BOOT_OPTION_SUSE, 5):
+        result.log_fail()
+        return
     result.log_pass()
     return True

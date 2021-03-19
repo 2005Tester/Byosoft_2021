@@ -47,8 +47,14 @@ def gen_report(log_dir):
 # for debug purpose
 def debug_run():
     log_dir = init_log()
-    Release.equip_mode_version_check(ser, ssh_bmc)
-#    gen_report(log_dir)
+#    Os.move_suse_to_first(ser, ssh_bmc)
+    if UpdateBIOS.update_bios_mfg(ser, log_dir, 'master'):
+        Os.move_suse_to_first(ser, ssh_bmc)
+        Release.equip_mode_version_check(ser, ssh_bmc)
+        Os.boot_to_suse_mfg(ser, ssh_bmc)
+        Smbios.smbios_type128(ser, ssh_os, ssh_bmc, unitool)
+
+    gen_report(log_dir)
 
 
 # Define test scope here
@@ -85,7 +91,9 @@ def run_test():
         Legacy.disable_legacy_boot(ser, ssh_bmc)
     if UpdateBIOS.update_bios_mfg(ser, log_dir, 'master'):
         Release.equip_mode_version_check(ser, ssh_bmc)
-        Os.boot_to_suse_mfg(ser, ssh_bmc)
+        Os.move_suse_to_first(ser, ssh_bmc)    
+        if Os.boot_to_suse_mfg(ser, ssh_bmc):
+            Smbios.smbios_type128(ser, ssh_os, ssh_bmc, unitool)
     gen_report(log_dir)
 
 

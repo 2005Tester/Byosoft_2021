@@ -106,6 +106,11 @@ class Msg:
     # path of setup menus
     PATH_UNCORE_GENERAL = [CPU_CONFIG, UNCORE_CONFIG, UNCORE_GENERAL]
 
+    # Menu in Boot page
+    MENU_BOOT_ORDER = 'UEFI Boot'
+    MENU_HDD_BOOT = 'HDD Device'
+    BOOT_OPTION_SUSE = ["SUSE Linux Enterprise\(LUN0\)"]
+
     # Firmware version info
     ME_VERSION = '0F:4.4.4.53'
 
@@ -113,10 +118,10 @@ class Msg:
 # BIOS configuration to be set by unitool
 class BiosCfg:
     MFG_RMT = {
-        "EquipmentModeFlag": 1,
+        "EquipMentModeFlag": 1,
         "EnableBiosSsaRMT": 1,
         "EnableBiosSsaRMTonFCB": 1,
-        "serialDebugMsgLvl": 1
+        "serialDebugMsgLvl": 2
     }
 
     EQUIP_FLAG = {

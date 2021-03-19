@@ -346,7 +346,7 @@ class SutControl:
             patten = ES + "{0}".format(setupoption[1]) + ES + "\s+" + ES + "\s+" + ES + "{0}".format(setupoption[0])
 
         else:
-            logging.info("Incorrect format of parameter: setupoption")
+            logging.info("Incorrect format of parameter: setupoption, should be list")
             return
         logging.info("Locating option: {0}".format(setupoption))
         self.receive_data(512)
