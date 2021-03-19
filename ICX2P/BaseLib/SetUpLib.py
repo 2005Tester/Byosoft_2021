@@ -179,3 +179,37 @@ def disable_legacy_boot(serial, ssh):
         return
     logging.info("Boot in UEFI mode")
     return True
+
+
+# Boot Suse from boot manager
+def boot_suse_from_bm(serial, ssh):
+    suse_linux = ["SUSE Linux Enterprise\(LUN0\)"]
+    msg = "Welcome to GRUB"
+    if not boot_to_bootmanager(serial, ssh):
+        return
+    if not enter_menu(serial, Key.DOWN, suse_linux, 8, msg):
+        return
+    if not SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE):
+        return
+    logging.info("OS Boot Successful")
+    return True
+
+
+# Move a specific boot option up
+def boot_option_up(serial, ssh, boot_option, count):
+    hdd_group = [Msg.MENU_BOOT_ORDER, Msg.MENU_HDD_BOOT]
+    logging.info("Move: {0} {1} times".format(boot_option, count))
+    if not boot_to_page(serial, ssh, Msg.PAGE_BOOT):
+        return
+    if not enter_menu(serial, Key.DOWN, hdd_group, 25, boot_option[0]):
+        return
+    if not locate_option(serial, Key.DOWN, boot_option, 10):
+        return
+    logging.info("Move option up")
+    for n in range(count):
+        SerialLib.send_key(serial, Key.F6)
+    logging.info("Save and reboot.")
+    SerialLib.send_keys_with_delay(serial, [Key.F10, Key.Y])
+    if not SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE, delay=600):
+        return
+    return True
