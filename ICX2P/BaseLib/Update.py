@@ -13,6 +13,8 @@ import os
 import re
 from Common import ssh, GitLab
 from ICX2P import SutConfig
+from ICX2P.SutConfig import Msg
+from ICX2P.BaseLib import SshLib, PowerLib, SerialLib
 
 
 # Obtain the path of latest bios image from Gitlab artifacts
@@ -144,6 +146,23 @@ def poweron_sut():
         return sshconn.interaction(cmds, rets)   
 
 
+def program_flash2(ssh):
+    # Program flash procedure: power off->maint mode->attach upgrade ->load bin
+    cmd_shutdown = 'ipmcset -d powerstate -v 2\n'
+    ret_shutdown = 'Do you want to continue'
+    cmd_maint_mode = 'maint_debug_cli\n'
+    ret_maint_mode = 'Debug Shell'
+    cmd_confirm = 'Y\n'
+    ret_confirm = 'Control fru0 forced power off successfully'
+    cmd_upgrade_mode = 'attach upgrade\n'
+    ret_upgrade_mode = 'Success'
+    cmd_load = 'load_bios_bin /tmp/rp001.bin\n'
+    ret_load = 'load bios succefully'
+    cmds = [cmd_shutdown, cmd_confirm, cmd_maint_mode, cmd_upgrade_mode, cmd_load]
+    rets = [ret_shutdown, ret_confirm, ret_maint_mode, ret_upgrade_mode, ret_load]
+    return SshLib.interaction(ssh, cmds, rets)
+
+
 def update_specific_img(bios, serial):
     if not upload_bios(bios):
         logging.info("Upload BIOS image failed")
@@ -157,4 +176,21 @@ def update_specific_img(bios, serial):
     if not serial.is_boot_success():
         return
     time.sleep(15)
+    return True
+
+
+def update_bios(serial, ssh_bmc, sftp_bmc, bios_img):
+    target_bin = "rp001.bin"
+    logging.info("Remove existing BIOS image from BMC")
+    SshLib.remove_file(sftp_bmc, target_bin)
+    if not SshLib.upload_file(sftp_bmc, bios_img, target_bin, '67108864'):
+        return
+    if not program_flash2(ssh_bmc):
+        return
+    if not PowerLib.power_on(ssh_bmc):
+        return
+    if not SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE):
+        return
+    logging.info("BIOS update successfully.")
+    logging.info("BIOS Imgae: {0}".format(bios_img))
     return True

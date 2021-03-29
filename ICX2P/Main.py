@@ -8,6 +8,7 @@ ser = SutSerial.SutControl(SutConfig.BIOS_SERIAL, 115200, 0.5, SutConfig.SERIAL_
 
 # init BMC SSH interface
 ssh_bmc = ssh.SshConnection(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)
+sftp_bmc = ssh.sftp(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)
 
 # init ssh os interface
 ssh_os = ssh.SshConnection(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASSWORD)
@@ -47,7 +48,7 @@ def DailyTest():
 
 
 def ReleaseTest():
-    UpdateBIOS.update_bios(ser, SutConfig.LOG_DIR, '2288V6_008')
+    UpdateBIOS.update_bios(ser, SutConfig.LOG_DIR, '2288V6_009')
     biosTest.POST_Test(ser, ssh_bmc)
     biosTest.PM(ser, ssh_bmc)
     biosTest.usbTest(ser, ssh_bmc)
@@ -72,10 +73,10 @@ def ReleaseTest():
     biosTest.loadDefault(ser, ssh_bmc)
     if Legacy.enable_legacy_boot(ser, ssh_bmc):
         Legacy.disable_legacy_boot(ser, ssh_bmc)
-    if UpdateBIOS.update_bios_mfg(ser, SutConfig.LOG_DIR, '2288V6_008'):
+    if UpdateBIOS.update_bios_mfg(ser, ssh_bmc, sftp_bmc, '2288V6_009'):
+        Os.move_suse_to_first(ser, ssh_bmc)
         Release.equip_mode_version_check(ser, ssh_bmc)
         Os.boot_to_suse_mfg(ser, ssh_bmc)
-
 
 def Debug():
     print("Run debug test for ICX 2P.")

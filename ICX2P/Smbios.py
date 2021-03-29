@@ -177,4 +177,9 @@ def smbios_type128(serial, ssh, sshbmc, unitool):
     type128data = SshLib.execute_command(ssh, "dmidecode -t 128")
     logging.info(type128data)
     test = Type128Test(type128data, ssh)
-    test.compare_data()
+    fail_count = test.compare_data()
+    if fail_count:
+        result.log_fail()
+        return
+    result.log_pass()
+    return

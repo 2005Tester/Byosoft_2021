@@ -34,7 +34,7 @@ def boot_to_suse_mfg(serial, ssh):
         return
     suse_linux = ["SUSE Linux Enterprise\(LUN0\)"]
     msg = "Welcome to GRUB"
-    if not SetUpLib.enter_menu(serial, Key.DOWN, suse_linux, 8, msg):
+    if not SetUpLib.enter_menu(serial, Key.DOWN, suse_linux, 20, msg):
         result.log_fail()
         return
     if not SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE):
