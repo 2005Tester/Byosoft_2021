@@ -14,7 +14,7 @@ def execute_command(ssh, command):
         return
 
 
-# Run several commands through ssh in a row, and check return of all the commnads
+# Run several commands through ssh in a row, and check return of all the commands
 # commands: list of commands, need to add \n for each command
 # rets: return value of each command defined in above parameter
 def interaction(ssh, commands, rets):
@@ -68,17 +68,17 @@ def verify_info(ssh, command, infos):
 
 # remove a file from sftp, file name matches file_re
 # if dir is not specified, use root directory
-def remove_file_sftp(sftp, file_re, dir=None):
+def remove_file(sftp, file_re, dir='.'):
     if sftp.login():
         sftp.remove_file(file_re, dir)
-        sftp.close_sesion()
+        sftp.close_session()
         return True
     else:
         logging.info("SFTP login fail.")
 
 
 # upload a file to sftp,ret_msg is used to verify result, can use file size 
-def upload_files_sftp(sftp, src_file, dst_file, ret_msg=None):
+def upload_file(sftp, src_file, dst_file, ret_msg=None):
     if sftp.login():
         return sftp.upload_file(src_file, dst_file, ret_msg)
     else:

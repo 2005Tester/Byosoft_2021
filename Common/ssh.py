@@ -26,6 +26,7 @@ class sftp:
         self.password = password
 
     def login(self):
+        logging.info("Try sftp login.")
         try:
             self.transport = paramiko.Transport(self.host_ip, 22)
             self.transport.banner_timeout = 120
@@ -33,12 +34,15 @@ class sftp:
             self.sftp = paramiko.SFTPClient.from_transport(self.transport)
         except:
             logging.error("sftp_login: {0}".format(e))
+            return
+        logging.info("Login successfully")
+        return True
 
-    def ls_dir(self, dir=None):
+    def ls_dir(self, dir='.'):
         return self.sftp.listdir(dir)
 
     # remove file which matches file_re
-    def remove_file(self, file_re, dir):
+    def remove_file(self, file_re, dir='.'):
         files = self.ls_dir(dir)
         for file in files:
             if re.search(file_re, file):
