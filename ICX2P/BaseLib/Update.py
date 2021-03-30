@@ -87,26 +87,14 @@ def upload_bios(src):
             return
 
 
-def hpm_update():
-    cmd_hpmupdate = 'ipmcset -d upgrade -v /tmp/bios.hpm\n'
-    s = paramiko.SSHClient()
-    s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    s.connect(SutConfig.BMC_IP, 22, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)
-    op = s.invoke_shell()
-    op.send(cmd_hpmupdate)
-    time.sleep(5)
-    res = op.recv(1024)
-    if re.search('successfully',res.decode('utf-8')):
-        print("HPM Uploaded successfully, upgrade on next reboot")
-        op.close()
-        s.close()
+def hpm_update(ssh_bmc, hpm_name="bios.hpm"):
+    cmd_hpmupdate = 'ipmcset -d upgrade -v /tmp/{}\n'.format(hpm_name)
+    rtn_flash_done = 'successfully'
+    PowerLib.power_off(ssh_bmc)
+    logging.info('Start to flash hpm image')
+    if SshLib.interaction_time_limit(ssh=ssh_bmc, cmd_list=cmd_hpmupdate, rtn_list=rtn_flash_done, timeout=600):
+        logging.info("HPM BIOS flash successfully")
         return True
-    else:
-        print("Failed to perform HPM upgrade")
-        print(res)
-        op.close()
-        s.close()
-        return
 
 
 def program_flash():
@@ -193,4 +181,33 @@ def update_bios(serial, ssh_bmc, sftp_bmc, bios_img):
         return
     logging.info("BIOS update successfully.")
     logging.info("BIOS Imgae: {0}".format(bios_img))
+    return True
+
+
+def flash_local_hpm(serial, ssh_bmc, sftp_bmc, img_file):
+    """
+    Flash Local HPM BIOS Image
+    :param serial:      Serial instance
+    :param ssh_bmc:     BMC ssh instance
+    :param sftp_bmc:    BMC Sftp instance
+    :param img_file:    bios hpm image directory
+    :return: True / None
+    """
+    SshLib.remove_file(sftp_bmc, ".bin", "/tmp")
+    SshLib.remove_file(sftp_bmc, ".hpm", "/tmp")
+    SshLib.remove_file(sftp_bmc, ".tar.gz", "/tmp")
+    if not os.path.isfile(img_file):
+        logging.info("Invalid hpm file, please double check")
+        return
+    hpm_path, hpm_name = os.path.split(img_file)
+    if not SshLib.upload_file(sftp=sftp_bmc, src_file=img_file, dst_file=r"/tmp/"+hpm_name, ret_msg="rw"):
+        return
+    if not hpm_update(ssh_bmc=ssh_bmc, hpm_name=hpm_name):
+        return
+    if not PowerLib.power_on(ssh_bmc):
+        return
+    if not SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL, delay=600):
+        return
+    logging.info("HPM BIOS update successfully.")
+    logging.info("HPM image: {0}".format(img_file))
     return True

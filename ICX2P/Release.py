@@ -1,7 +1,9 @@
+import os
+import glob
 import logging
 from ICX2P import SutConfig
 from ICX2P.SutConfig import Key, Msg, BiosCfg
-from ICX2P.BaseLib import PowerLib, SetUpLib
+from ICX2P.BaseLib import PowerLib, SetUpLib, Update, icx2pAPI
 from Report import ReportGen
 
 
@@ -58,3 +60,49 @@ def equip_mode_version_check(serial, ssh):
         return
     result.log_pass()
     return True
+
+
+def hpm_upgrade_test(serial, ssh_bmc, sftp_bmc, unitool):
+    tc = ('904', 'HPM升级保持配置不变', "HPM升级BIOS后，原来设置的非默认BIOS设置不变")
+    result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
+
+    bios_list = sorted(os.listdir(SutConfig.BIOS_PATH), reverse=True)
+    new_path = os.path.join(SutConfig.BIOS_PATH, bios_list[0])
+    old_path = os.path.join(SutConfig.BIOS_PATH, bios_list[1])
+    old_bin = glob.glob(os.path.join(old_path, "*.bin"))
+    new_hpm = glob.glob(os.path.join(new_path, "*.hpm"))
+
+    try:
+        assert Update.update_bios(serial, ssh_bmc, sftp_bmc, old_bin[0])
+        assert icx2pAPI.ping_sut()
+        assert unitool.write(**SutConfig.BiosCfg.HPM_KEEP)
+        assert Update.flash_local_hpm(serial, ssh_bmc, sftp_bmc, new_hpm[0])
+        assert icx2pAPI.ping_sut()
+        assert unitool.check(**SutConfig.BiosCfg.HPM_KEEP)
+        result.log_pass()
+        return True
+    except AssertionError:
+        result.log_fail()
+
+
+def hpm_downgrade_test(serial, ssh_bmc, sftp_bmc, unitool):
+    tc = ('905', 'HPM降级保持配置不变', "HPM降级BIOS后，原来设置的非默认BIOS设置不变")
+    result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
+
+    bios_list = sorted(os.listdir(SutConfig.BIOS_PATH), reverse=True)
+    new_path = os.path.join(SutConfig.BIOS_PATH, bios_list[0])
+    old_path = os.path.join(SutConfig.BIOS_PATH, bios_list[1])
+    new_bin = glob.glob(os.path.join(new_path, "*.bin"))
+    old_hpm = glob.glob(os.path.join(old_path, "*.hpm"))
+
+    try:
+        assert Update.update_bios(serial, ssh_bmc, sftp_bmc, new_bin[0])
+        assert icx2pAPI.ping_sut()
+        assert unitool.write(**SutConfig.BiosCfg.HPM_KEEP)
+        assert Update.flash_local_hpm(serial, ssh_bmc, sftp_bmc, old_hpm[0])
+        assert icx2pAPI.ping_sut()
+        assert unitool.check(**SutConfig.BiosCfg.HPM_KEEP)
+        result.log_pass()
+        return True
+    except AssertionError:
+        result.log_fail()

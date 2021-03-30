@@ -80,4 +80,6 @@ def ReleaseTest():
 
 def Debug():
     print("Run debug test for ICX 2P.")
-    biosTest.loadDefault(ser, ssh_bmc)
+    # biosTest.loadDefault(ser, ssh_bmc)
+    Release.hpm_upgrade_test(ser, ssh_bmc, sftp_bmc, unitool)
+    Release.hpm_downgrade_test(ser, ssh_bmc, sftp_bmc, unitool)

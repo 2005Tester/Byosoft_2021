@@ -52,6 +52,9 @@ OS_PASSWORD = '1'
 UNI_PATH = "/root/flashtool/unitool"
 
 
+# BIOS Firmware Directory, Must manual copy image files to the directory before test
+BIOS_PATH = r"\\ByoDiskStation1\PublicRW\QA\Firmware\2288V6\BIOS"
+
 # Key mapping
 class Key:
     ENTER = [chr(0x0D)]
@@ -128,6 +131,27 @@ class BiosCfg:
         "EquipmentModeFlag": 1
     }
 
+    # HPM Upgrade/Downgrade keep BIOS Setting unchanged setting
+    HPM_KEEP = {
+        "UsbBoot": 0,
+        "WakeOnLanSupport": 1,
+        "AcpiApicPolicy": 0,
+        "FDMSupport": 0,
+        "SataPort": 0,
+        "sSataPort": 0,
+        "PerformanceTuningMode": 0,
+        "VTdSupport": 0,
+        "DFXEnable": 1,
+        "ActiveCpuCores": 4,
+        "ProcessorHyperThreadingDisable": 1,
+        "UFSDisable": 1,
+        "ProcessorEistEnable": 0,
+        "C6Enable": 1,
+        "IrqThreshold": 0,
+        "EnableBiosSsaRMT": 1,
+        "pprType": 0,
+        "SvrMngmntFrb2Enable": 1,
+    }
 
 # pat
 pat = '[(\d+);\d+H[\w\s\d<>\[\]&-]'

@@ -1,6 +1,7 @@
 import re
 import logging
 import os
+import time
 from ICX2P import SutConfig
 from Common.LogAnalyzer import LogAnalyzer
 
@@ -84,3 +85,51 @@ def upload_file(sftp, src_file, dst_file, ret_msg=None):
     else:
         logging.info("SFTP login fail.")
 
+
+def interaction_time_limit(ssh, cmd_list, rtn_list="", timeout=180, buffer=1024, echo=False):
+    """
+    SSH interaction run cmd list and check feedback
+    :param ssh:         ssh instance
+    :param cmd_list:    one or more cmd list
+    :param rtn_list:    one or more expected string
+    :param timeout:     cmd timeout
+    :param echo:        show each cmd run result if True
+    :param buffer:      receive buffer
+    :return: True:      rtn_list match cmd_list
+             False:     rtn_list mis-match cmd_list
+             None:      rtn_list is not provided
+    """
+    cmd_list = list(cmd_list)
+    rtn_list = list(rtn_list)
+    if ssh.login():
+        status = True
+        shell = ssh.ssh_client.invoke_shell()
+        for index, cmd in enumerate(cmd_list):
+            retry = False
+            logging.info('Sending: {0}'.format(cmd.strip("\n")))
+            shell.send(cmd)
+            time.sleep(4)
+            res = shell.recv(1024)
+            if not rtn_list:
+                status = None
+                continue
+            start_time = time.time()
+            while not (rtn_list[index] in res.decode('utf-8')):
+                if shell.recv_ready():
+                    res = shell.recv(buffer)
+                if echo:
+                    print(res.decode('utf-8'))
+                if (time.time() - start_time) > timeout and (not retry):   # retry once if feedback timeout
+                    shell.send(cmd)
+                    time.sleep(4)
+                    res = shell.recv(buffer)
+                    retry = True
+                    continue
+                if (time.time() - start_time) > timeout*2 and retry:
+                    status = False
+                    logging.error("Run command {0} [timeout]".format(cmd.strip("\n")))
+                    return status
+            logging.info("Run command [successful]")
+        shell.close()
+        ssh.close_session()
+        return status
