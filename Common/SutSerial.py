@@ -44,7 +44,6 @@ class SutControl:
     def send_keys(self, keys):
         for char in keys:
             self.send_data(char)
-        logging.info("key sent")
 
     # send multiple keys in a row with delay, keys = list
     def send_keys_with_delay(self, keys, delay=1):

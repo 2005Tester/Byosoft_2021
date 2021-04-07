@@ -1,4 +1,5 @@
 import time
+import logging
 
 
 # Monitor serial output and check whether specified message exists
@@ -21,6 +22,7 @@ def is_msg_list_present(serial, msg_list, delay=10):
 
 # send keys with delay
 def send_keys_with_delay(serial, keys, delay=1):
+    logging.info("Sending keys:{0}".format(keys))
     for key in keys:
         serial.send_keys(key)
         time.sleep(delay)
@@ -28,6 +30,7 @@ def send_keys_with_delay(serial, keys, delay=1):
 
 # send a key from serial port
 def send_key(serial, key):
+    logging.info("Sending key:{0}".format(key))
     serial.send_keys(key)
 
 
