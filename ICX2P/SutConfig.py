@@ -76,7 +76,7 @@ class Key:
     RESET_DEFAULT = [F9, Y, F10, Y]
 
 
-# Messages to identify a spcific boot option, page, menu or system status 
+# Messages to identify a specific boot option, page, menu or system status
 class Msg:
     HOTKEY_PROMPT_DEL = 'Press Del go to Setup Utility'
     HOTKEY_PROMPT_F11 = 'Press F11 go to BootManager'
@@ -101,10 +101,29 @@ class Msg:
     PROCESSOR_CONFIG = 'Processor Configuration'
     UNCORE_CONFIG = 'Uncore Configuration'
     UNCORE_GENERAL = 'Uncore General Configuration'
+    MEMORY_CONFIG = 'Memory Configuration'
+    MEMORY_TOP = 'Memory Topolopy'
+    ADV_POWER_MGF_CONFIG = 'Advanced Power Mgmt. Configuration'
+    MEM_FRE = 'Memory Frequency'
+    MEM2X_REFRESH = '2x Refresh Enable'
+    PFM_PRO = 'Performance Profile'
+    CPU_P_STATE = 'CPU P State Control'
+    PER_CPU = 'Per-CPU Information'
+    MEM_POWER_THER_CONFIG = 'Memory Power & Thermal Configuration'
+    DRAM_RAPL_CONFIG = 'DRAM RAPL Configuration'
+    MEM_POWER_ADV = 'Memory Power Savings Advanced Options'
+    CKE = 'CKE Power Down'
+    LPASR_MODE = 'LPASR Mode'
+    CKE_FEATURE = 'CKE Feature'
+    CKE_IDLE_TIMER = 'CKE Idle Timer'
 
     # menus of PCH configuration
     PCH_CONFIG = 'PCH CONFIGURATION'
     NETWORK_CONFIG = 'Network Configuration'
+
+    # menus of Password configuration
+    MGT_SPV_PWD = 'Manage Supervisor Password'
+    SP_PWD = 'Simple Password'
 
     # path of setup menus
     PATH_UNCORE_GENERAL = [CPU_CONFIG, UNCORE_CONFIG, UNCORE_GENERAL]
@@ -113,6 +132,10 @@ class Msg:
     MENU_BOOT_ORDER = 'UEFI Boot'
     MENU_HDD_BOOT = 'HDD Device'
     BOOT_OPTION_SUSE = ["SUSE Linux Enterprise\(LUN0\)"]
+    PXE_OPT = 'UEFI HTTPSv4: Network - Port00 SLOT1'
+    UBUNTU = 'P0-ubuntu - HDD 0'
+    # SUSE = 'P0-SUSE Linux Enterprise - HDD 0'
+    SUSE = 'SUSE Linux Enterprise\(LUN0\)'
 
     # Firmware version info
     ME_VERSION = '0F:4.4.4.53'
@@ -153,9 +176,9 @@ class BiosCfg:
         "SvrMngmntFrb2Enable": 1,
     }
 
+
 # pat
 pat = '[(\d+);\d+H[\w\s\d<>\[\]&-]'
-
 
 
 # defined the msg info
@@ -220,4 +243,5 @@ key2pwd = [Key.RIGHT, Key.RIGHT, Key.RIGHT]
 
 # WA
 w2key = [Key.RIGHT, Key.UP]
+
 
