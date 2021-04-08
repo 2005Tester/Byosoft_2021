@@ -6,9 +6,15 @@ cli = TcExecutor.CliParse()
 if cli.get_project() == "icx2p":
     from ICX2P import SutConfig as cfg
     from ICX2P import Main as script
+    
 elif cli.get_project() == "pangea":
     from Pangea import SutConfig as cfg
     from Pangea import Main as script
+
+elif cli.get_project() == "moc25":
+    from Moc25 import SutConfig as cfg
+    from Moc25 import Main as script
+
 else:
     print("Invalid project name.")
     sys.exit()
