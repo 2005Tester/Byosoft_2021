@@ -369,7 +369,7 @@ def staticTurbo(serial, ssh):
         result.log_fail(capture=True)
         return
     serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.UP, SutConfig.option6):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.option6, timeout=60):
         result.log_fail(capture=True)
         return
     serial.send_keys(Key.ENTER)
@@ -452,11 +452,11 @@ def dramRAPL(serial, ssh):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.UP, SutConfig.option6):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.option6, timeout=60):
         result.log_fail()
         return
     serial.send_data(chr(0x0D))
-    if not serial.to_highlight_option(Key.UP, SutConfig.option11):
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.option11, timeout=60):
         result.log_fail()
         return
     serial.send_data(chr(0x0D))

@@ -90,7 +90,7 @@ Memory Device
 	Speed: 2933 MT/s
 	Manufacturer: Hynix
 	Serial Number: 2002E732
-	Asset Tag: 1941         
+	Asset Tag: 1941 
 	Part Number: HMA84GR7JJR4N-WM    
 	Rank: 2
 	Configured Memory Speed: 2933 MT/s
@@ -510,7 +510,7 @@ Memory Device
 	Speed: 2933 MT/s
 	Manufacturer: Hynix
 	Serial Number: 2002E735
-	Asset Tag: 1941         
+	Asset Tag: 1941 
 	Part Number: HMA84GR7JJR4N-WM    
 	Rank: 2
 	Configured Memory Speed: 2933 MT/s

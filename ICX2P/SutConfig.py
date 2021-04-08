@@ -138,7 +138,7 @@ class Msg:
     SUSE = 'SUSE Linux Enterprise\(LUN0\)'
 
     # Firmware version info
-    ME_VERSION = '0F:4.4.4.53'
+    ME_VERSION = '0F:4.4.3.278'
 
 
 # BIOS configuration to be set by unitool

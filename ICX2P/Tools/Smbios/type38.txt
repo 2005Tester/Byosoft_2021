@@ -12,4 +12,5 @@ IPMI Device Information
 	NV Storage Device: Not Present
 	Base Address: 0x00000000000000E4 (I/O)
 	Register Spacing: Successive Byte Boundaries
+	Interrupt Number: 9
 
