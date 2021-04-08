@@ -1,4 +1,5 @@
 import importlib
+import logging
 from Common import SutSerial
 from Common import ssh
 
@@ -8,21 +9,30 @@ class SutInit:
         config = importlib.import_module('.SutConfig', package=project)
         self.sut = config.Sut
         self.serial_log = config.SERIAL_LOG
+        logging.info("Initilizing SUT Connection...")
         self.bios_serial = self.init_bios_serial()
         if not self.bios_serial:
-            print("Failed to initilize BIOS serial port")
+            logging.info("Failed to initilize BIOS serial port")
 
         self.bmc_serial = self.init_bmc_serial()
         if not self.bmc_serial:
-            print("Failed to initilize BMC serial port")
+            logging.info("Failed to initilize BMC serial port")
 
         self.bmc_ssh = self.init_bmc_ssh()
         if not self.bmc_ssh:
-            print("Failed to initilize BMC ssh connection")
+            logging.info("Failed to initilize BMC ssh connection")
 
         self.os_ssh = self.init_os_ssh()
         if not self.os_ssh:
-            print("Failed to initilize OS ssh connection")
+            logging.info("Failed to initilize OS ssh connection")
+
+        self.bmc_sftp = self.init_bmc_sftp()
+        if not self.bmc_sftp:
+            logging.info("Failed to initilize BMC SFTP connection")
+
+        self.os_sftp = self.init_os_sftp()
+        if not self.os_sftp:
+            logging.info("Failed to initilize OS SFTP connection")
 
     def init_bios_serial(self):
         try:
@@ -60,8 +70,22 @@ class SutInit:
         except AttributeError:
             print("OS IP not configured, skip initilize OS Ssh interface")
 
-    def init_unitool(self):
-        pass
+    def init_bmc_sftp(self):
+        try:
+            ip = self.sut.BMC_IP
+            user = self.sut.BMC_USER
+            password = self.sut.BMC_PASSWORD
+            bmc_sftp = ssh.sftp(ip, user, password)
+            return bmc_sftp
+        except AttributeError:
+            print("BMC IP not configured, skip initlize BMC SFTP interface")
 
-    def ping_sut(self):
-        pass
+    def init_os_sftp(self):
+        try:
+            ip = self.sut.OS_IP
+            user = self.sut.OS_USER
+            password = self.sut.OS_PASSWORD
+            os_sftp = ssh.sftp(ip, user, password)
+            return os_sftp
+        except AttributeError:
+            print("OS IP not configured, skip initilize OS SFTP interface")  
