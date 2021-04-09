@@ -969,6 +969,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             self.assertTrue(SerialLib.is_msg_present(serial, 'Passwords are not the same'))
             SetUpLib.send_key(serial, Key.CTRL_ALT_DELETE)
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
+            self.assertTrue(restore_env(serial, log_dir))
         except AssertionError as err:
             result.log_fail()
             return False
