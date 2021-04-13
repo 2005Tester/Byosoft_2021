@@ -975,5 +975,152 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             return False
         result.log_pass()
 
+# 02 认证管理
+class PWD_AUTH_MANAGERMENT(unittest.TestCase):
+    def pwd_auth_mgt_01(self, serial, ssh):
+        tc = ('600', 'Testcase_AuthenticationManagement_001', '热键页面遍历热键，检查进入Setup菜单是否需要输入密码')
+        result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+        hot_key = [Key.DEL,Key.F11,Key.F12,Key.F6]
+        try:
+            for hk in hot_key:
+                self.assertTrue(PowerLib.force_reset(ssh))
+                self.assertTrue(serial.waitString(SutConfig.Msg.HOTKEY_PROMPT_DEL, timeout=600))
+                logging.info("Rebooting SUT")
+                try:
+                    SetUpLib.send_key(serial,hk)
+                    self.assertTrue(serial.waitString('Enter Current Password'))
+                except:
+                    logging.info("error key :",format(hk))
+        except AssertionError as err:
+            result.log_fail(capture=True)
+            return False
+        result.log_pass()
 
+    def pwd_auth_mgt_07(self, serial, ssh):
+        tc = ('601', 'Testcase_AuthenticationManagement_007', '禁止提供自动登录等特殊功能')
+        result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+        try:
+            self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
+        except AssertionError as err:
+            result.log_fail(capture=True)
+            return False
+        result.log_pass()
+
+    def pwd_auth_mgt_08(self, serial, ssh):
+        tc = ('602', 'Testcase_AuthenticationManagement_008_010', '管理员登录密码大于16位字符无法输入,普通用户登录密码大于16位无法输入;修改管理员密码界面需要先输入旧密码，再输入两次新密码')
+        result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+        pwd_error = [new_pwd_4, new_pwd_5, new_pwd_7]
+        try:
+            self.assertTrue(PowerLib.force_reset(ssh))
+            logging.info("Booting to setup")
+            self.assertTrue(serial.waitString(SutConfig.Msg.HOTKEY_PROMPT_DEL, timeout=600))
+            serial.send_keys(Key.DEL)
+            logging.info("Hot Key sent")
+            self.assertTrue(serial.waitString(SutConfig.press_f2, timeout=60))
+            logging.info("input 3 times error pwd,System Locked")
+            for list_error in pwd_error:
+                try:
+                    serial.send_data(list_error)
+                    SetUpLib.send_key(serial, Key.ENTER)
+                    logging.info("Send  password...")
+                    if list_error != pwd_error[-1]:
+                        self.assertTrue(serial.waitString(invalid_info))
+                        time.sleep(2)
+                        SetUpLib.send_key(serial, Key.ENTER)
+                        self.assertTrue(serial.waitString('Enter Current Password'))
+                        logging.info("input password again")
+                    else:
+                        SetUpLib.send_key(serial, Key.ENTER)
+                        self.assertTrue(serial.waitString(error_info))
+                        logging.info("Enter incorrect password 3 times,System Locked")
+                except:
+                    logging.info("error password :", format(list_error))
+            # set 2
+            logging.info("Enter the correct password,to setup")
+            SetUpLib.send_key(serial, Key.CTRL_ALT_DELETE)
+            self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
+            self.assertTrue(icx2pAPI.toBIOSConf(serial))
+            SetUpLib.send_keys(serial, SutConfig.key2pwd)
+            # set 3
+            logging.info("change administrator login password more than 16 digits")
+            self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
+            SetUpLib.send_key(serial, Key.ENTER)
+            self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_1))
+            serial.send_data(default_pwd)
+            SetUpLib.send_key(serial, Key.ENTER)
+            self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_2))
+            serial.send_data(new_pwd_17)
+            SetUpLib.send_key(serial, Key.ENTER)
+            self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_3))
+            serial.send_data(new_pwd_17)
+            SetUpLib.send_key(serial, Key.ENTER)
+            self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_4))
+            logging.info('password change new_pwd_17 - 1')
+            SetUpLib.send_key(serial, Key.ENTER)
+            SetUpLib.send_keys(serial, [Key.F10, Key.Y])
+            self.assertTrue(checkPWD(serial, 'Admin@9001Admin@', new_pwd_5))
+            # set 4 前置条件
+            logging.info("Set step 4 preconditions")
+            self.assertTrue(icx2pAPI.toBIOSConf(serial))
+            SetUpLib.send_keys(serial, SutConfig.key2pwd)
+            self.assertTrue(SetUpLib.locate_option(serial, Key.DOWN, ["Manage User Password"], 5))
+            SetUpLib.send_key(serial, Key.ENTER)
+            self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_2))
+            serial.send_data(new_pwd_4)
+            SetUpLib.send_key(serial, Key.ENTER)
+            self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_3))
+            serial.send_data(new_pwd_4)
+            SetUpLib.send_key(serial, Key.ENTER)
+            self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_4))
+            SetUpLib.send_key(serial, Key.ENTER)
+            SetUpLib.send_keys(serial, [Key.F10, Key.Y])
+            # set 4
+            logging.info("Enter the correct login password for ordinary users and log in to the setup menu")
+            SetUpLib.send_key(serial, Key.CTRL_ALT_DELETE)
+            self.assertTrue(serial.waitString(SutConfig.Msg.HOTKEY_PROMPT_DEL, timeout=600))
+            serial.send_keys(Key.DEL)
+            logging.info("Hot Key sent")
+            self.assertTrue(serial.waitString(SutConfig.press_f2, timeout=10))
+            serial.send_data(new_pwd_4)
+            SetUpLib.send_key(serial, Key.ENTER)
+            self.assertTrue(serial.waitString(SutConfig.pwd_info))
+            SetUpLib.send_key(serial, Key.ENTER)
+            # set 5
+            logging.info("Modify the login password of ordinary users with more than 16 digits")
+            SetUpLib.send_keys(serial, [Key.RIGHT, Key.ENTER])
+            SetUpLib.send_keys(serial, SutConfig.key2pwd)
+            SetUpLib.send_key(serial, Key.ENTER)
+            self.assertTrue(SerialLib.is_msg_present(serial, "Please type in your password"))
+            serial.send_data(new_pwd_17)
+            logging.info('input User_Password ')
+            SetUpLib.send_key(serial, Key.ENTER)
+            self.assertTrue(SerialLib.is_msg_present(serial, invalid_info))
+            SetUpLib.send_key(serial, Key.ENTER)
+            self.assertTrue(restore_env(serial, log_dir))
+        except AssertionError as err:
+            result.log_fail()
+            return False
+        result.log_pass()
+
+    def pwd_auth_mgt_09(self, serial, ssh):
+        tc = ('603', 'Testcase_AuthenticationManagement_009', '禁止提示有助攻击者猜解系统口令的信息,输入错误的登录密码,仅提示密码错误')
+        result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+        try:
+            self.assertTrue(PowerLib.force_reset(ssh))
+            logging.info("Booting to setup")
+            self.assertTrue(serial.waitString(SutConfig.Msg.HOTKEY_PROMPT_DEL, timeout=600))
+            serial.send_keys(Key.DEL)
+            logging.info("Hot Key sent")
+            self.assertTrue(serial.waitString(SutConfig.press_f2, timeout=60))
+            serial.send_data(new_pwd_8)
+            SetUpLib.send_key(serial, Key.ENTER)
+            logging.info("Send  password...")
+            self.assertTrue(serial.waitString(invalid_info))
+        except AssertionError as err:
+            result.log_fail()
+            return False
+        result.log_pass()
+        
+        
+PWDAUTHMGT = PWD_AUTH_MANAGERMENT()
 PBPWS = PWD_BiosPasswordSecurity()
