@@ -86,7 +86,7 @@ class dimm_memPower(unittest.TestCase):
             dimm_memPower.navigate_to_cke(self, serial)
             self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
             serial.send_keys_with_delay([Key.F5, Key.F10, Key.Y])
-            self.assertTrue(icx2pAPI.toBIOSnp(serial, ssh))
+            self.assertTrue(icx2pAPI.toBIOSnp(serial))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             dimm_memPower.navigate_to_cke(self, serial)
             self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))

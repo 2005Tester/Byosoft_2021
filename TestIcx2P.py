@@ -11,7 +11,7 @@ from sys import argv
 from Common import LogConfig, Unitool
 from Common import SutSerial
 from Common import ssh
-from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest, Pwd, Os, Release, Smbios, Legacy
+from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest, Pwd, Os, Release, Smbios, Legacy, DIMM
 from Report.ReportGen import ReportGenerator
 
 # init seril
@@ -101,6 +101,11 @@ def run_test():
     Pwd.PBPWS.Testcase_BiosPasswordSecurity_016(ser, ssh_bmc)
     Pwd.PBPWS.Testcase_BiosPasswordSecurity_020(ser, ssh_bmc)
     Pwd.PBPWS.Testcase_BiosPasswordSecurity_022(ser, ssh_bmc)
+    DIMM.DPM.dimm_power_mgt_01(ser, ssh_bmc)
+    DIMM.DPM.dimm_power_mgt_02(ser, ssh_bmc)
+    DIMM.DPM.dimm_power_mgt_04(ser, ssh_bmc)
+    DIMM.DPM.dimm_power_mgt_05(ser, ssh_bmc)
+    DIMM.DPM.dimm_power_mgt_07(ser, ssh_bmc)
     Release.me_version_status(ser, ssh_bmc)
     biosTest.loadDefault(ser, ssh_bmc)
     if Legacy.enable_legacy_boot(ser, ssh_bmc):
