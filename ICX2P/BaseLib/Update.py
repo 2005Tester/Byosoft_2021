@@ -155,7 +155,7 @@ def update_bios(serial, ssh_bmc, sftp_bmc, bios_img):
     SshLib.remove_file(sftp_bmc, target_bin)
     if not SshLib.upload_file(sftp_bmc, bios_img, target_bin, '67108864'):
         return
-    if not program_flash2(ssh_bmc):
+    if not program_flash(ssh_bmc):
         return
     if not PowerLib.power_on(ssh_bmc):
         return
