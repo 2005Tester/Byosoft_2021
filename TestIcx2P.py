@@ -48,27 +48,18 @@ def gen_report(log_dir):
 # for debug purpose
 def debug_run():
     log_dir = init_log()
-#    Os.move_suse_to_first(ser, ssh_bmc)
-    if UpdateBIOS.update_bios_mfg(ser, log_dir, 'master'):
-        Os.move_suse_to_first(ser, ssh_bmc)
-        Release.equip_mode_version_check(ser, ssh_bmc)
-        Os.boot_to_suse_mfg(ser, ssh_bmc)
-        Smbios.smbios_type128(ser, ssh_os, ssh_bmc, unitool)
-
+    UpdateBIOS.update_bios(ser, ssh_bmc, sftp_bmc, 'master')
     gen_report(log_dir)
 
 
 # Define test scope here
 def run_test():
     log_dir = init_log()
-    UpdateBIOS.update_bios(ser, log_dir, 'master')
+    UpdateBIOS.update_bios(ser, ssh_bmc, sftp_bmc, 'master')
     biosTest.POST_Test(ser, ssh_bmc)
     biosTest.PM(ser, ssh_bmc)
-#    biosTest.pxeTest(ser, ssh_bmc)
-#    biosTest.httpsTest(ser, ssh_bmc)
     biosTest.usbTest(ser, ssh_bmc)
     biosTest.ProcessorDIMM(ser, ssh_bmc)
-#    biosTest.chipsecTest(ser, ssh_bmc)
     biosTest.pressF2(ser, ssh_bmc)
     biosTest.staticTurbo(ser, ssh_bmc)
     biosTest.ufs(ser, ssh_bmc)
@@ -80,7 +71,6 @@ def run_test():
     if Os.boot_to_suse(ser, ssh_bmc):
         Smbios.smbios_test_all(ssh_os)
         Release.equip_mode_flag_check(unitool)
-#    biosTest.logTime(ser, ssh_bmc)
     Pwd.simplePWDTest(ser, ssh_bmc)
     Pwd.Simple_password_validity(ser, ssh_bmc)
     Pwd.Simple_password_disenable(ser, ssh_bmc)

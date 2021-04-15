@@ -12,7 +12,7 @@ import logging
 import os
 import re
 from Common import ssh, GitLab
-from ICX2P import SutConfig
+from ICX2P import SutConfig, Pwd
 from ICX2P.SutConfig import Msg
 from ICX2P.BaseLib import SshLib, PowerLib, SerialLib
 
@@ -22,7 +22,7 @@ def get_test_image(dst, branch, job):
     gitlab_icx = GitLab.Gitlab(31, 'PbLqm_njsnGxCQBtHoMG')
     test_image = gitlab_icx.download_latest_image(branch, dst, ".bin", job)
     logging.info("Image for test: {0}".format(test_image))
-    return(test_image)   
+    return(test_image)
 
 
 # Upload BIOS image to SUT BMC
@@ -97,26 +97,6 @@ def hpm_update(ssh_bmc, hpm_name="bios.hpm"):
         return True
 
 
-def program_flash():
-    sshconn = ssh.SshConnection(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)
-    # Program flash procedure: power off->maint mode->attach upgrade ->load bin
-    cmd_shutdown = 'ipmcset -d powerstate -v 2\n'
-    ret_shutdown = 'Do you want to continue'
-    cmd_maint_mode = 'maint_debug_cli\n'
-    ret_maint_mode = 'Debug Shell'
-    cmd_confirm = 'Y\n'
-    ret_confirm = 'Control fru0 forced power off successfully'
-    cmd_upgrade_mode = 'attach upgrade\n'
-    ret_upgrade_mode = 'Success'
-    cmd_load = 'load_bios_bin /tmp/rp001.bin\n'
-    ret_load = 'load bios succefully'
-    cmds = [cmd_shutdown, cmd_confirm, cmd_maint_mode, cmd_upgrade_mode, cmd_load]
-    rets = [ret_shutdown, ret_confirm, ret_maint_mode, ret_upgrade_mode, ret_load]
-
-    if sshconn.login():
-        return sshconn.interaction(cmds, rets)
-
-
 def poweron_sut():
     sshconn = ssh.SshConnection(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)
     cmd_power_on = 'ipmcset -d powerstate -v 1\n'
@@ -134,7 +114,7 @@ def poweron_sut():
         return sshconn.interaction(cmds, rets)   
 
 
-def program_flash2(ssh):
+def program_flash(ssh):
     # Program flash procedure: power off->maint mode->attach upgrade ->load bin
     cmd_shutdown = 'ipmcset -d powerstate -v 2\n'
     ret_shutdown = 'Do you want to continue'
@@ -151,17 +131,19 @@ def program_flash2(ssh):
     return SshLib.interaction(ssh, cmds, rets)
 
 
-def update_specific_img(bios, serial):
+def update_specific_img(bios, serial, ssh_bmc):
     if not upload_bios(bios):
         logging.info("Upload BIOS image failed")
         return
-    if not program_flash():
+    if not program_flash(ssh_bmc):
         logging.info("Program flash failed")
         return
     if not poweron_sut():
         logging.error("power on sut fail")
         return
     if not serial.is_boot_success():
+        return
+    if not Pwd.update_default_password(serial, ssh_bmc):
         return
     time.sleep(15)
     return True

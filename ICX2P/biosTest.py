@@ -87,29 +87,6 @@ def pxeTest(serial, ssh, n=1):
     return True
 
 
-# Https Test
-def httpsTest(serial, ssh):
-    tc = ('005', 'Https Test', 'Https Test')
-    result = ReportGen.LogHeaderResult(tc, serial)
-    if not icx2pAPI.toBIOS(serial, ssh):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay(Key.RIGHT + Key.ENTER)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.PXE_option, timeout=60):
-        result.log_fail()
-        return
-    serial.send_data(SutConfig.default_pwd)
-    serial.send_data(chr(0x0D))
-    if not serial.waitString('Start HTTPS Boot over IPv4', timeout=30):
-        result.log_fail()
-        return
-    if not serial.waitString('Shell', timeout=60):
-        result.log_fail()
-        return
-    result.log_pass()
-    return True
-
-
 # USB Test
 def usbTest(serial, ssh):
     tc = ('006', 'USB Test', 'USB Test')
@@ -221,8 +198,7 @@ def pressF2(serial, ssh):
     if not serial.waitString('en-US'):
         result.log_fail()
         return
-    serial.send_data("Admin@9000")
-    serial.send_data(chr(0x0D))  # Send Enter
+    serial.send_data(SutConfig.BIOS_PASSWORD)
     serial.send_data(chr(0x0D))  # Send Enter
     logging.info("Send password...")
     if not serial.waitString('Continue', timeout=30):

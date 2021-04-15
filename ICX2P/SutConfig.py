@@ -39,8 +39,8 @@ BMC_PASSWORD = 'Admin@9001'
 PORT = 22
 
 # BIOS Configuration
-BIOS_USER = 'Admin@9001'
-BIOS_PASSWORD = 'Admin@9000'
+BIOS_PW_DEFAULT = "Admin@9000"
+BIOS_PASSWORD = 'Admin@9009'
 
 # OS Configuration
 OS_IP = '192.168.3.200'
@@ -187,7 +187,6 @@ msg5 = 'USB Mouse\s+1'
 msg6 = 'USB Keyboard\s+1'
 msg7 = 'USB Mass Storage\s+0'
 pwd_info = 'The current password is the default password.Please update password!'
-default_pwd = 'Admin@9000'
 
 # BIOS Setup options,
 # level 1

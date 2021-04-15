@@ -1,6 +1,5 @@
-
 from Common import SutSerial, Unitool, ssh
-from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest, Os, Release, Smbios, Pwd, Legacy
+from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest, Os, Release, Smbios, Pwd, Legacy, DIMM
 
 
 # init seril
@@ -15,9 +14,7 @@ ssh_os = ssh.SshConnection(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASS
 unitool = Unitool.SshUnitool(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASSWORD, SutConfig.UNI_PATH)
 
 
-# Define test scope for daily test
-def DailyTest():
-    UpdateBIOS.update_bios(ser, SutConfig.LOG_DIR, 'master')
+def TestScope():
     biosTest.POST_Test(ser, ssh_bmc)
     biosTest.PM(ser, ssh_bmc)
     biosTest.usbTest(ser, ssh_bmc)
@@ -27,9 +24,9 @@ def DailyTest():
     biosTest.ufs(ser, ssh_bmc)
     DefaultValueTest.rrqirq(ser, ssh_bmc)
     biosTest.dramRAPL(ser, ssh_bmc)
+    biosTest.securityBoot(ser, ssh_bmc)
     biosTest.vtd(ser, ssh_bmc)
     biosTest.cpuCOMPA(ser, ssh_bmc)
-    biosTest.securityBoot(ser, ssh_bmc)
     if Os.boot_to_suse(ser, ssh_bmc):
         Smbios.smbios_test_all(ssh_os)
         Release.equip_mode_flag_check(unitool)
@@ -38,45 +35,50 @@ def DailyTest():
     Pwd.Simple_password_disenable(ser, ssh_bmc)
     Pwd.Simple_password_save_enable(ser, ssh_bmc)
     Pwd.Simple_password_save_disable(ser, ssh_bmc)
+    Pwd.PBPWS.Testcase_BiosPasswordSecurity_002(ser, ssh_bmc)
+    Pwd.PBPWS.Testcase_BiosPasswordSecurity_003(ser, ssh_bmc)
+    Pwd.PBPWS.Testcase_BiosPasswordSecurity_004(ser, ssh_bmc)
+    Pwd.PBPWS.Testcase_BiosPasswordSecurity_005_019_021(ser, ssh_bmc)
+    Pwd.PBPWS.Testcase_BiosPasswordSecurity_006(ser, ssh_bmc)
+    Pwd.PBPWS.Testcase_BiosPasswordSecurity_007(ser, ssh_bmc)
+    Pwd.PBPWS.Testcase_BiosPasswordSecurity_008(ser, ssh_bmc)
+    Pwd.PBPWS.Testcase_BiosPasswordSecurity_009(ser, ssh_bmc)
+    Pwd.PBPWS.Testcase_BiosPasswordSecurity_010(ser, ssh_bmc)
+    Pwd.PBPWS.Testcase_BiosPasswordSecurity_011_012_014(ser, ssh_bmc)
+    Pwd.PBPWS.Testcase_BiosPasswordSecurity_013(ser, ssh_bmc)
+    Pwd.PBPWS.Testcase_BiosPasswordSecurity_015(ser, ssh_bmc)
+    Pwd.PBPWS.Testcase_BiosPasswordSecurity_016(ser, ssh_bmc)
+    Pwd.PBPWS.Testcase_BiosPasswordSecurity_020(ser, ssh_bmc)
+    Pwd.PBPWS.Testcase_BiosPasswordSecurity_022(ser, ssh_bmc)
+    Pwd.PWDAUTHMGT.pwd_auth_mgt_01(ser, ssh_bmc)
+    Pwd.PWDAUTHMGT.pwd_auth_mgt_07(ser, ssh_bmc)
+    Pwd.PWDAUTHMGT.pwd_auth_mgt_08(ser, ssh_bmc)
+    Pwd.PWDAUTHMGT.pwd_auth_mgt_09(ser, ssh_bmc)
+    DIMM.DPM.dimm_power_mgt_01(ser, ssh_bmc)
+    DIMM.DPM.dimm_power_mgt_02(ser, ssh_bmc)
+    DIMM.DPM.dimm_power_mgt_04(ser, ssh_bmc)
+    DIMM.DPM.dimm_power_mgt_05(ser, ssh_bmc)
+    DIMM.DPM.dimm_power_mgt_07(ser, ssh_bmc)
     Release.me_version_status(ser, ssh_bmc)
     biosTest.loadDefault(ser, ssh_bmc)
     if Legacy.enable_legacy_boot(ser, ssh_bmc):
         Legacy.disable_legacy_boot(ser, ssh_bmc)
-    if UpdateBIOS.update_bios_mfg(ser, SutConfig.LOG_DIR, 'master'):
-        Release.equip_mode_version_check(ser, ssh_bmc)
-        Os.boot_to_suse_mfg(ser, ssh_bmc)
-
-
-def ReleaseTest():
-    UpdateBIOS.update_bios(ser, SutConfig.LOG_DIR, '2288V6_009')
-    biosTest.POST_Test(ser, ssh_bmc)
-    biosTest.PM(ser, ssh_bmc)
-    biosTest.usbTest(ser, ssh_bmc)
-    biosTest.ProcessorDIMM(ser, ssh_bmc)
-    biosTest.pressF2(ser, ssh_bmc)
-    biosTest.staticTurbo(ser, ssh_bmc)
-    biosTest.ufs(ser, ssh_bmc)
-    DefaultValueTest.rrqirq(ser, ssh_bmc)
-    biosTest.dramRAPL(ser, ssh_bmc)
-    biosTest.vtd(ser, ssh_bmc)
-    biosTest.cpuCOMPA(ser, ssh_bmc)
-    biosTest.securityBoot(ser, ssh_bmc)
-    if Os.boot_to_suse(ser, ssh_bmc):
-        Smbios.smbios_test_all(ssh_os)
-        Release.equip_mode_flag_check(unitool)
-    Pwd.simplePWDTest(ser, ssh_bmc)
-    Pwd.Simple_password_validity(ser, ssh_bmc)
-    Pwd.Simple_password_disenable(ser, ssh_bmc)
-    Pwd.Simple_password_save_enable(ser, ssh_bmc)
-    Pwd.Simple_password_save_disable(ser, ssh_bmc)
-    Release.me_version_status(ser, ssh_bmc)
-    biosTest.loadDefault(ser, ssh_bmc)
-    if Legacy.enable_legacy_boot(ser, ssh_bmc):
-        Legacy.disable_legacy_boot(ser, ssh_bmc)
-    if UpdateBIOS.update_bios_mfg(ser, ssh_bmc, sftp_bmc, '2288V6_009'):
+    if UpdateBIOS.update_bios_mfg(ser, ssh_bmc, sftp_bmc, 'master'):
         Os.move_suse_to_first(ser, ssh_bmc)
         Release.equip_mode_version_check(ser, ssh_bmc)
         Os.boot_to_suse_mfg(ser, ssh_bmc)
+
+
+# Define test scope for daily test
+def DailyTest():
+    UpdateBIOS.update_bios(ser, ssh_bmc, sftp_bmc, 'master')
+    TestScope()
+
+
+def ReleaseTest():
+    UpdateBIOS.update_bios(ser, ssh_bmc, sftp_bmc, '2288V6_010')
+    TestScope()
+
 
 def Debug():
     print("Run debug test for ICX 2P.")

@@ -107,8 +107,7 @@ class SutControl:
                     data = self.session.read(256).decode("utf-8")
                     data = self.cleanup_data(data)
                     if self.find_msg("Press F2", data):
-                        self.send_data("Admin@9000")
-                        self.send_data(chr(0x0D))  # Send Enter
+                        self.send_data("Admin@9009")
                         self.send_data(chr(0x0D))  # Send Enter
                         logging.info("Send password...")
                     if self.find_msg("BIOS boot completed.", data):
@@ -139,7 +138,6 @@ class SutControl:
                 if pw_prompt and self.find_msg(pw_prompt, data):
                     self.send_data(pw)
                     self.send_data(chr(0x0D))  # Send Enter
-                    self.send_data(chr(0x0D))  # Send Enter
                     logging.info("Send password...")               
                 if self.find_msg(msg, data):
                     return True
@@ -161,8 +159,7 @@ class SutControl:
                     with open(self.log, 'a') as f:
                         f.write(data)
                     if self.find_msg("Press F2", data):
-                        self.send_data("Admin@9000")
-                        self.send_data(chr(0x0D))  # Send Enter
+                        self.send_data("Admin@9009")
                         self.send_data(chr(0x0D))  # Send Enter
                         logging.info("Send password...")
                     if self.find_msg(msg, data):
@@ -190,8 +187,7 @@ class SutControl:
                     with open(self.log, 'a') as f:
                         f.write(data)
                     if self.find_msg("Press F2", data):
-                        self.send_data("Admin@9000")
-                        self.send_data(chr(0x0D))  # Send Enter
+                        self.send_data("Admin@9009")
                         self.send_data(chr(0x0D))  # Send Enter
                         logging.info("Send password...")
                     if self.find_msg(msg1, data):
@@ -286,7 +282,7 @@ class SutControl:
                 return False
 
     # boot with hotkey pressed, and check whether boot is successful
-    def boot_with_hotkey(self, key, msg, timeout, hotkey_prompt="Press Del go to Setup Utility", pw_prompt="Press F2", password="Admin@9000"):
+    def boot_with_hotkey(self, key, msg, timeout, hotkey_prompt="Press Del go to Setup Utility", pw_prompt="Press F2", password="Admin@9009"):
         start_time = time.time()
         logging.debug("boot_with_hotkey: Receiving data from SUT...")
         while True:
@@ -301,7 +297,6 @@ class SutControl:
                         logging.info("Hot Key sent")
                     if self.find_msg(pw_prompt, data):
                         self.send_data(password)
-                        self.send_data(chr(0x0D))  # Send Enter
                         self.send_data(chr(0x0D))  # Send Enter
                         logging.info("Send password...")
                     if self.find_msg(msg, data):

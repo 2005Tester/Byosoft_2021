@@ -195,7 +195,7 @@ def toBIOSConf(serial):
 
 
 # to BIOS with power action, for restore test Env,
-def toBIOS(serial, ssh, pwd='Admin@9000'):
+def toBIOS(serial, ssh, pwd=SutConfig.BIOS_PASSWORD):
     if not PowerLib.force_reset(ssh):
         logging.info("Rebooting SUT Failed.")
         return
@@ -224,7 +224,7 @@ def toBIOS(serial, ssh, pwd='Admin@9000'):
 
 
 # to BIOS without power action
-def toBIOSnp(serial, pwd='Admin@9000'):
+def toBIOSnp(serial, pwd=SutConfig.BIOS_PASSWORD):
     logging.info("HaiYan5 Common Test Lib: boot to setup")
     if not serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=600):  # set to 600 开启全打印，启动时间较长
         return
@@ -304,7 +304,7 @@ def pressF12(serial, ssh):
     serial.send_keys(Key.F12)
     if not serial.waitString(SutConfig.press_f2, timeout=60):
         return
-    serial.send_data(SutConfig.default_pwd)
+    serial.send_data(SutConfig.BIOS_PASSWORD)
     serial.send_data(chr(0x0D))
     if not serial.waitString(SutConfig.pwd_info):
         return
@@ -406,14 +406,6 @@ def setPWDwithoutF10(serial, pwd1, pwd2):
     time.sleep(1)
     serial.send_keys(Key.CTRL_ALT_DELETE)
     return True
-
-
-# def restore_env(serial, dst):
-#     if not Update.get_test_image(dst):
-#         return
-#     if not Update.update_specific_img(serial,dst):
-#         return
-#     return True
 
 
 def reset_default(serial, ssh):

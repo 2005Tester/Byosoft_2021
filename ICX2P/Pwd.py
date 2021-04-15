@@ -13,7 +13,7 @@ import time
 import os
 
 from Report import ReportGen
-from ICX2P.SutConfig import Key
+from ICX2P.SutConfig import Key, Msg
 from ICX2P import SutConfig
 from ICX2P.BaseLib import icx2pAPI, SetUpLib, Update, PowerLib, SerialLib
 
@@ -46,6 +46,30 @@ simple_pwd_warning = 'The password fails the dictionary check - it is too simpli
 log_dir = SutConfig.LOG_DIR
 
 
+# Update default password, should be called after update bios
+def update_default_password(serial, ssh_bmc):
+    logging.info("Change BIOS password to non-default.")
+    if not PowerLib.force_reset(ssh_bmc):
+        return
+    if not SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL):
+        return
+    SerialLib.send_key(serial, Key.DEL)
+    if not SerialLib.is_msg_present(serial, Msg.PW_PROMPT):
+        return
+    SerialLib.send_data(serial, SutConfig.BIOS_PW_DEFAULT)
+    SerialLib.send_key(serial, Key.ENTER*2)
+    if not SerialLib.is_msg_present(serial, "Enter New Password"):
+        return
+    SerialLib.send_data(serial, SutConfig.BIOS_PASSWORD)
+    SerialLib.send_key(serial, Key.ENTER)
+    SerialLib.send_data(serial, SutConfig.BIOS_PASSWORD)
+    SerialLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial, "Continue"):
+        return
+    logging.info("Password changed to non-default successfully")
+    return True
+
+
 # after set password, checkin password
 def checkPWD(serial, pwd1, pwd2):
     if not icx2pAPI.pressDelnp(serial):
@@ -56,7 +80,7 @@ def checkPWD(serial, pwd1, pwd2):
     if not SerialLib.is_msg_present(serial, invalid_info):
         return
     SetUpLib.send_key(serial, Key.ENTER)
-    SetUpLib.send_keys(serial, SutConfig.default_pwd)
+    SetUpLib.send_keys(serial, default_pwd)
     logging.info("check_password_default_pwd")
     SetUpLib.send_key(serial, Key.ENTER)
     if not SerialLib.is_msg_present(serial, invalid_info):
@@ -73,7 +97,7 @@ def checkPWD(serial, pwd1, pwd2):
     return True
 
 
-def restore_env(serial, log_dir):
+def restore_env(serial, ssh_bmc, log_dir):
     path = log_dir
     bin_dir = path + "\\output\\"
     # bin_file = os.listdir(path)
@@ -83,7 +107,7 @@ def restore_env(serial, log_dir):
 
     else:
         logging.info("output_file exist")
-    if not Update.update_specific_img(log_dir, serial):
+    if not Update.update_specific_img(log_dir, serial, ssh_bmc):
         logging.info("restore_env  Failed.")
         return
     return True
@@ -132,7 +156,7 @@ def simplePWDTest(serial, ssh):
     if not SerialLib.is_msg_present(serial, pwd_info_1):
         result.log_fail()
         return
-    SetUpLib.send_keys(serial, SutConfig.default_pwd)
+    SetUpLib.send_keys(serial, default_pwd)
     SetUpLib.send_key(serial, Key.ENTER)
     if not SerialLib.is_msg_present(serial, pwd_info_2):
         result.log_fail()
@@ -152,7 +176,7 @@ def simplePWDTest(serial, ssh):
     if not checkPWD(serial, new_pwd_16, simple_pwd):
         result.log_fail()
         return
-    if not restore_env(serial, log_dir):
+    if not restore_env(serial, ssh, log_dir):
         return
     result.log_pass()
     return True
@@ -223,7 +247,7 @@ def Simple_password_validity(serial, ssh):
     if not checkPWD(serial, simple_pwd, new_pwd_7):
         result.log_fail()
         return
-    if not restore_env(serial, log_dir):
+    if not restore_env(serial, ssh, log_dir):
         return
     result.log_pass()
     return True
@@ -326,7 +350,7 @@ def Simple_password_disenable(serial, ssh):
     if not checkPWD(serial, new_pwd_9, new_pwd_7):
         result.log_fail()
         return
-    if not restore_env(serial, log_dir):
+    if not restore_env(serial, ssh, log_dir):
         return
     result.log_pass()
     return True
@@ -385,7 +409,7 @@ def Simple_password_save_enable(serial, ssh):
     if not checkPWD(serial, simple_pwd, new_pwd_9):
         result.log_fail()
         return
-    if not restore_env(serial, log_dir):
+    if not restore_env(serial, ssh, log_dir):
         return
     result.log_pass()
     return True
@@ -461,7 +485,7 @@ def Simple_password_save_disable(serial, ssh):
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
         return
-    if not restore_env(serial, log_dir):
+    if not restore_env(serial, ssh, log_dir):
         return
     result.log_pass()
     return True
@@ -496,7 +520,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             SetUpLib.send_key(serial, Key.ENTER)
             logging.info("show invalid_password")
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
-            self.assertTrue(restore_env(serial, log_dir))
+            self.assertTrue(restore_env(serial, ssh, log_dir))
         except AssertionError as err:
             result.log_fail()
             return False
@@ -528,7 +552,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             logging.info("Changes have been saved after press")
             SetUpLib.send_keys(serial,[Key.F10, Key.Y])
             self.assertTrue(checkPWD(serial, new_pwd_8, simple_pwd))
-            self.assertTrue(restore_env(serial, log_dir))
+            self.assertTrue(restore_env(serial, ssh, log_dir))
         except AssertionError as err:
             result.log_fail()
             return False
@@ -560,7 +584,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             logging.info("Changes have been saved after press")
             SetUpLib.send_keys(serial,[Key.F10, Key.Y])
             self.assertTrue(checkPWD(serial, new_pwd_9, simple_pwd))
-            self.assertTrue(restore_env(serial, log_dir))
+            self.assertTrue(restore_env(serial, ssh, log_dir))
         except AssertionError as err:
             result.log_fail()
             return False
@@ -594,7 +618,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             logging.info("Changes have been saved after press")
             SetUpLib.send_keys(serial,[Key.F10, Key.Y])
             self.assertTrue(checkPWD(serial, new_pwd_16, simple_pwd))
-            self.assertTrue(restore_env(serial, log_dir))
+            self.assertTrue(restore_env(serial, ssh, log_dir))
         except AssertionError as err:
             result.log_fail()
             return False
@@ -647,7 +671,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             self.assertTrue(SerialLib.is_msg_present(serial, invalid_info))
             logging.info("show invalid_password")
             SetUpLib.send_key(serial, Key.ENTER)
-            self.assertTrue(restore_env(serial, log_dir))
+            self.assertTrue(restore_env(serial, ssh, log_dir))
         except AssertionError as err:
             result.log_fail()
             return False
@@ -763,7 +787,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
                     SetUpLib.send_key(serial, Key.CTRL_ALT_DELETE)
                     self.assertTrue(checkPWD(serial, pwd_list2[k], pwd_list2[m]))
                 k = k + 1
-            self.assertTrue(restore_env(serial, log_dir))
+            self.assertTrue(restore_env(serial, ssh, log_dir))
         except AssertionError as err:
             result.log_fail()
             return False
@@ -795,7 +819,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             logging.info("Changes have been saved after press")
             SetUpLib.send_keys(serial,[Key.F10 , Key.Y])
             self.assertTrue(checkPWD(serial, new_pwd_4, pwd_list2[4]))
-            self.assertTrue(restore_env(serial, log_dir))
+            self.assertTrue(restore_env(serial, ssh, log_dir))
         except AssertionError as err:
             result.log_fail()
             return False
@@ -969,7 +993,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             self.assertTrue(SerialLib.is_msg_present(serial, 'Passwords are not the same'))
             SetUpLib.send_key(serial, Key.CTRL_ALT_DELETE)
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
-            self.assertTrue(restore_env(serial, log_dir))
+            self.assertTrue(restore_env(serial, ssh, log_dir))
         except AssertionError as err:
             result.log_fail()
             return False
@@ -1096,7 +1120,7 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
             SetUpLib.send_key(serial, Key.ENTER)
             self.assertTrue(SerialLib.is_msg_present(serial, invalid_info))
             SetUpLib.send_key(serial, Key.ENTER)
-            self.assertTrue(restore_env(serial, log_dir))
+            self.assertTrue(restore_env(serial, ssh, log_dir))
         except AssertionError as err:
             result.log_fail()
             return False

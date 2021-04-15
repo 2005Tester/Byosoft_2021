@@ -37,3 +37,9 @@ def send_key(serial, key):
 # send a command from serial port, "\n" need to be added
 def run_command(serial, command, msg):
     serial.run_command(command, msg)
+
+
+# Send data from serial port
+def send_data(serial, data):
+    logging.info("Sending data:{0}".format(data))
+    serial.send_data(data)
