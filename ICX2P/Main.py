@@ -14,6 +14,7 @@ ssh_os = ssh.SshConnection(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASS
 unitool = Unitool.SshUnitool(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASSWORD, SutConfig.UNI_PATH)
 
 
+# Test scope for non-equipment build
 def TestScope():
     biosTest.POST_Test(ser, ssh_bmc)
     biosTest.PM(ser, ssh_bmc)
@@ -63,21 +64,28 @@ def TestScope():
     biosTest.loadDefault(ser, ssh_bmc)
     if Legacy.enable_legacy_boot(ser, ssh_bmc):
         Legacy.disable_legacy_boot(ser, ssh_bmc)
-    if UpdateBIOS.update_bios_mfg(ser, ssh_bmc, sftp_bmc, 'master'):
-        Os.move_suse_to_first(ser, ssh_bmc)
-        Release.equip_mode_version_check(ser, ssh_bmc)
-        Os.boot_to_suse_mfg(ser, ssh_bmc)
+
+
+# Test scope for euipment mode image
+def EquipScope():
+    Os.move_suse_to_first(ser, ssh_bmc)
+    Release.equip_mode_version_check(ser, ssh_bmc)
+    Os.boot_to_suse_mfg(ser, ssh_bmc)
 
 
 # Define test scope for daily test
 def DailyTest():
     UpdateBIOS.update_bios(ser, ssh_bmc, sftp_bmc, 'master')
     TestScope()
+    if UpdateBIOS.update_bios_mfg(ser, ssh_bmc, sftp_bmc, 'master'):
+        EquipScope()
 
 
 def ReleaseTest():
     UpdateBIOS.update_bios(ser, ssh_bmc, sftp_bmc, '2288V6_010')
     TestScope()
+    if UpdateBIOS.update_bios_mfg(ser, ssh_bmc, sftp_bmc, '2288V6_010'):
+        EquipScope()
 
 
 def Debug():
