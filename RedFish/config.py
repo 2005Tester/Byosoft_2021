@@ -6,31 +6,43 @@
 #  stored in a retrieval system, or transmitted in any form or by any
 #  means without the express written consent of Byosoft Corporation.
 # -*- encoding=utf8 -*-
+import os
 import datetime
 
 # SSH Configuration
-sut = '192.168.2.100'
+bmc_ip = '192.168.2.100'
 port = '22'
-username = 'Administrator'
-password = 'Admin@9000'
-PING_CMD = 'ping 192.168.100.107'
+bmc_user = 'Administrator'
+bmc_pw = 'Admin@9000'
+
+COM = "COM7"
+
+os_ip = '192.168.2.150'
+os_user = "root"
+os_pw = "root"
+os_timeout = 1200
+unitool_path = "/root/flashtool/unitool"
+
+AppExcel = r".\baseline\能效菜单模板.xls"
+
+REPORT_DIR = r".\report"
 
 EXELUDE_TEST = ['serialDebugMsgLvl', 'PowerOnPassword', 'MemChannelEnable[1]', 'MemChannelEnable[6]', 'PchUsbHsPort[8]']
 #EXELUDE_TEST = ['MemChannelEnable[1]']
-BIOS = "C:\\UpdateTool\\HY5V020_candidate1.bin"
+BIOS = r"C:\Binary\2288V6\5148.bin"
 BIOS_CODE = "D:\\Code\\HY5\\Intel\\WhitleyRpPkg001"
-REGISTRY_FILE = ".\\RedFish\\baseline\\registry.json"
-HIDDEN_LIST = ".\\RedFish\\baseline\\hidden.txt"
-CURR_SET_JSON = ".\\RedFish\\baseline\\currentvalue.json"
+REGISTRY_FILE = ".\\baseline\\registry.json"
+HIDDEN_LIST = ".\\baseline\\hidden.txt"
+CURR_SET_JSON = ".\\baseline\\currentvalue.json"
 
 # request settings to communicate with BMC
-GET_URL = "https://192.168.2.100/redfish/v1/Systems/1/Bios/"
-PATCH_URL = "https://192.168.2.100/redfish/v1/Systems/1/Bios/Settings/"
-POST_RUL = "https://192.168.2.100/redfish/v1/Systems/1/Bios/Actions/Bios.ResetBios"
+GET_URL = "https://{}/redfish/v1/Systems/1/Bios/".format(bmc_ip)
+PATCH_URL = "https://{}/redfish/v1/Systems/1/Bios/Settings/".format(bmc_ip)
+POST_RUL = "https://{}/redfish/v1/Systems/1/Bios/Actions/Bios.ResetBios".format(bmc_ip)
 
 headers = {
     'If-Match': 'W/"584db857"',
-    'Authorization': 'Basic QWRtaW5pc3RyYXRvcjpBZG1pbkA5MDAw',
+    'Authorization': 'Basic QWRtaW5pc3RyYXRvcjphZG1pbkA5MDAw',
     'Content-Type': 'application/json'
     }
 
@@ -38,6 +50,8 @@ headers = {
 # log setting
 timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 TEST_RESULT_DIR = "C:\\redfishtest\\log"
+if not os.path.exists(TEST_RESULT_DIR):
+    os.makedirs(TEST_RESULT_DIR)
 LOG_FILE = "C:\\redfishtest\\redfishtest_%s.log" % (timestamp)
 SERIAL_LOG = "C:\\redfishtest\\log\\serial.log"
 INIT_STATUS = {"Completed": [], "Passed": [], "Error": [], "Failed": []}
@@ -65,3 +79,12 @@ INCLUDE_LIST = {
     "NetworkProtocol":"UEFI:IPv4/IPv6",
     "PwrPerfTuning":"BIOS Controls EPB"
 }
+
+DEP_EXCLUDE_LIST = [
+
+]
+
+class RfishPrompt:
+    wrong_value = "The value Enable for the property Attributes/{} is not in the list of acceptable values"
+    hidden_error = "The property Attributes/{} cannot be modified because the value for the property Attributes/{} is {Disabled}"
+

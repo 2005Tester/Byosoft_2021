@@ -8,9 +8,10 @@
 import sys
 import requests
 import json
-import time
 import os
 from sys import argv
+
+sys.path.append(os.path.abspath(r"../"))
 from Common import SutSerial
 from Common import RedFish
 sys.path.append('RedFish')
@@ -20,9 +21,16 @@ from RedFish import testcase
 from HY5 import updatebios
 from Common import LogConfig
 import logging.config
+from Common import ssh
+from Common.SutSerial import SutControl
+from RedFish.commlibs.commtools import reboot_to_setup
+from RedFish.testitems.depen_test import DepenTest
+from RedFish.testitems.power_efficiency import app_test
 
 
 requests.packages.urllib3.disable_warnings()
+bmc = ssh.SshConnection(config.bmc_ip, config.bmc_user, config.bmc_pw)
+ser = SutControl(config.COM, 115200, 0.5, config.SERIAL_LOG)
 
 
 def load_test_status(testcase_file):
@@ -187,7 +195,7 @@ def run_test(test_case_file):
     else:
         print("Patch Successfully")
 
-        Hy5TcLib.rebootsut()
+        reboot_to_setup(bmc, ser)
         result = RedFish.get(config.GET_URL)
         result = json.loads(result)
         compare(test_case_file, result)
@@ -223,7 +231,7 @@ def run_test_one_by_one(payload):
     else:
         logging.info("Patch Successfully")
         logging.info("Rebooting sut...")
-        Hy5TcLib.rebootsut()
+        reboot_to_setup(bmc, ser)
         try:
             result = json.loads(RedFish.get(config.GET_URL))
             tc_result = compare_one(payload, result)
@@ -362,6 +370,7 @@ if __name__ == "__main__":
     log_format = LogConfig.gen_config(config.TEST_RESULT_DIR)
     logging.config.dictConfig(log_format)
     logging.getLogger("paramiko").setLevel(logging.WARNING)
+    logging.getLogger("redfish").setLevel(logging.WARNING)
 
     if len(argv) == 2:
         if argv[1] == "debug":
@@ -385,6 +394,15 @@ if __name__ == "__main__":
         elif argv[1] == "checkregistry":
             logging.info("Testing registry file...")
             test_registry_file(".\\RedFish\\baseline\\baseline_830.txt")
+
+        elif argv[1] == "depmain":
+            logging.info("Testing dependency main option")
+            test = DepenTest(bmc, ser)
+            test.run_test()
+
+        elif argv[1] == "power":
+            logging.info("Testing ApplicationProfile")
+            app_test(bmc, ser)
 
         elif os.path.isfile(argv[1]):
             logging.info("Run test for %s" % argv[1])
