@@ -31,10 +31,10 @@ class dimm_memPower(unittest.TestCase):
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
-            if SetUpLib.verify_info(serial, Key.DOWN, ['CPU Number\s+2'], 7):
+            if SetUpLib.verify_info(serial, ['CPU Number\s+2'], 7):
                 dimm_memPower.navigate_to_mem_fre(self, serial)
                 self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [[Msg.MEM2X_REFRESH, '<Disabled>']], 7))
-            elif SetUpLib.verify_info(serial, Key.UP, ['CPU Number\s+4'], 7):
+            elif SetUpLib.verify_info(serial, ['CPU Number\s+4'], 7):
                 dimm_memPower.navigate_to_mem_fre(self, serial)
                 self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [[Msg.MEM2X_REFRESH, '<Extended>']], 7))
             else:

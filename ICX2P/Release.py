@@ -25,7 +25,7 @@ def me_version_status(serial, ssh):
     me_info = ['Oper. Firmware Version\s+{0}'.format(Msg.ME_VERSION), 
                'Recovery Firmware Version\s+{0}'.format(Msg.ME_VERSION),
                'Current State\s+Operational']
-    if not SetUpLib.verify_info(serial, Key.DOWN, me_info, 13):
+    if not SetUpLib.verify_info(serial, me_info, 13):
         result.log_fail()
         return
     logging.info("ME Version and status verified.")
@@ -55,7 +55,7 @@ def equip_mode_version_check(serial, ssh):
         result.log_fail(capture=True)
         return
     logging.info("Verify bios version.")
-    if not SetUpLib.verify_info(serial, Key.DOWN, mfg_version, 30):
+    if not SetUpLib.verify_info(serial, mfg_version, 30):
         result.log_fail(capture=True)
         return
     result.log_pass()

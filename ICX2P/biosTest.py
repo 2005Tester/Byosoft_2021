@@ -483,7 +483,7 @@ def securityBoot(serial, ssh):
     logging.info("Enter secure boot configuration.")
     SerialLib.send_keys_with_delay(serial, keys_secure_boot)
     logging.info("Checking secure boot status")
-    if not SetUpLib.verify_info(serial, Key.DOWN, secureboot_disable, 5):
+    if not SetUpLib.verify_info(serial, secureboot_disable, 5):
         result.log_fail(capture=True)
         return
     result.log_pass()
