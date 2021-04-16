@@ -37,7 +37,7 @@ def POST_Test(serial, ssh):  # POST: POST Log(TBD) and Information Check
 def PM(serial, ssh, n=5):
     tc = ('003', 'Power Control Test', 'Power Control Test')
     result = ReportGen.LogHeaderResult(tc, serial)
-    status = 0
+    res_lst = []
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
         return
@@ -49,7 +49,8 @@ def PM(serial, ssh, n=5):
             logging.debug("Ctrl + Alt + Del key sent")
             if not icx2pAPI.toBIOSnp(serial):
                 logging.info("Warm reset Test:Fail")
-                status = 1
+                flag_reset = 1
+                res_lst.append(flag_reset)
                 continue
         except Exception as e:
             logging.error(e)
@@ -60,14 +61,15 @@ def PM(serial, ssh, n=5):
             logging.info("DC reset cycle: {0}".format(j + 1))
             if not icx2pAPI.dcCycle(serial, ssh):
                 logging.info("DC cycle Test:Fail")
-                status = 2
+                flag_dc = 2
+                res_lst.append(flag_dc)
                 return
         except Exception as e:
             logging.error(e)
-    if status == 1 and 2:
+    logging.debug(res_lst)
+    if len(res_lst) != 0:
         result.log_fail()
         return
-
     result.log_pass()
     return True
 

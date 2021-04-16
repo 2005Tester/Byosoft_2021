@@ -140,13 +140,13 @@ def toBIOS(serial, ssh, pwd=SutConfig.BIOS_PASSWORD):
     time.sleep(0.2)
     serial.send_data(chr(0x0D))  # Send Enter
     logging.info("Send password...")
-    if serial.waitString(SutConfig.pwd_info):
-        serial.send_data(chr(0x0D))  # Send Enter
-    else:
-        # 新密码输入没有提示信息，无需按两次回车键
-        logging.info('The default pwd may be modified before, ignore it and try the new pwd next step')
-        serial.send_keys_with_delay([Key.RIGHT, Key.LEFT])
-        pass
+    # if serial.waitString(SutConfig.pwd_info):
+    #     serial.send_data(chr(0x0D))  # Send Enter
+    # else:
+    #     # 新密码输入没有提示信息，无需按两次回车键
+    #     logging.info('The default pwd may be modified before, ignore it and try the new pwd next step')
+    #     serial.send_keys_with_delay([Key.RIGHT, Key.LEFT])
+    #     pass
     if not serial.waitString('Continue', timeout=60):
         return
     logging.info("Booting to setup successfully")
@@ -165,15 +165,15 @@ def toBIOSnp(serial, pwd=SutConfig.BIOS_PASSWORD):
     serial.send_data(pwd)
     serial.send_data(chr(0x0D))  # Send Enter
     logging.info("Send password...")
-    if serial.waitString(SutConfig.pwd_info):
-        serial.send_data(chr(0x0D))  # Send Enter
-    else:
-        # 新密码输入没有提示信息，无需按两次回车键
-        logging.info('The default pwd may be modified before, ignore it and try the new pwd next step')
-        serial.send_keys_with_delay([Key.RIGHT, Key.LEFT])
-        pass
-    if not serial.waitString('Continue', timeout=60):  # 考虑全打印，延长至1分钟
-        return
+    # if serial.waitString(SutConfig.pwd_info):
+    #     serial.send_data(chr(0x0D))  # Send Enter
+    # else:
+    #     # 新密码输入没有提示信息，无需按两次回车键
+    #     logging.info('The default pwd may be modified before, ignore it and try the new pwd next step')
+    #     serial.send_keys_with_delay([Key.RIGHT, Key.LEFT])
+    #     pass
+    # if not serial.waitString('Continue', timeout=60):  # 考虑全打印，延长至1分钟
+    #     return
     logging.info("Booting to setup successfully")
     return True
 
@@ -235,10 +235,6 @@ def pressF12(serial, ssh):
     if not serial.waitString(SutConfig.press_f2, timeout=60):
         return
     serial.send_data(SutConfig.BIOS_PASSWORD)
-    serial.send_data(chr(0x0D))
-    if not serial.waitString(SutConfig.pwd_info):
-        return
-
     serial.send_data(chr(0x0D))  # Send Enter
     return True
 

@@ -136,7 +136,8 @@ class Msg:
     PXE_OPT = 'UEFI HTTPSv4: Network - Port00 SLOT1'
     UBUNTU = 'P0-ubuntu - HDD 0'
     # SUSE = 'P0-SUSE Linux Enterprise - HDD 0'
-    SUSE = 'SUSE Linux Enterprise\(LUN0\)'
+    suse_linux = ["SUSE Linux Enterprise\(LUN0\)"]
+    suse_linux_msg = 'Welcome to GRUB'
 
     # Firmware version info
     ME_VERSION = '0F:4.4.4.53'

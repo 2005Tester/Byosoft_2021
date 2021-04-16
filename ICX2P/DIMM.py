@@ -70,8 +70,8 @@ class dimm_memPower(unittest.TestCase):
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             dimm_memPower.navigate_to_cke(self, serial)
             self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [[Msg.LPASR_MODE, '<Auto SR>']], 7))
-            serial.send_keys(Key.CTRL_ALT_DELETE)
-            self.assertTrue(icx2pAPI.ping_sut())
+            self.assertTrue(SetUpLib.boot_to_bootmanager(serial, ssh_bmc))
+            self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
         except AssertionError as err:
             result.log_fail(capture=True)
             return False
@@ -90,7 +90,8 @@ class dimm_memPower(unittest.TestCase):
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             dimm_memPower.navigate_to_cke(self, serial)
             self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
-            serial.send_keys(Key.CTRL_ALT_DELETE)
+            self.assertTrue(SetUpLib.boot_to_bootmanager(serial, ssh_bmc))
+            self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
             self.assertTrue(icx2pAPI.ping_sut())
         except AssertionError as err:
             result.log_fail(capture=True)
@@ -132,7 +133,8 @@ class dimm_memPower(unittest.TestCase):
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             dimm_memPower.navigate_to_cke(self, serial)
             self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
-            serial.send_keys(Key.CTRL_ALT_DELETE)
+            self.assertTrue(SetUpLib.boot_to_bootmanager(serial, ssh_bmc))
+            self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
             self.assertTrue(icx2pAPI.ping_sut())
             self.assertTrue(icx2pAPI.rw_everything(ssh_os, SutConfig.CKE_POWER_DOWN, ['c61218a0', 'fb9a18a4']))
         except AssertionError as err:
@@ -164,7 +166,8 @@ class dimm_memPower(unittest.TestCase):
             self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
             self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
             self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [['APD', '<Enabled>']], 3))
-            serial.send_keys(Key.CTRL_ALT_DELETE)
+            self.assertTrue(SetUpLib.boot_to_bootmanager(serial, ssh_bmc))
+            self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
             self.assertTrue(icx2pAPI.ping_sut())
             self.assertTrue(icx2pAPI.rw_everything(ssh_os, ['c61218a0: 010f 1100 010f 1100 010f 1100 010f 1100 '], ['c61218a0']))
         except AssertionError as err:
@@ -195,7 +198,97 @@ class dimm_memPower(unittest.TestCase):
             self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
             self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
             self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [['CKE Idle Timer', '\[255\]']], 7))
-            serial.send_keys(Key.CTRL_ALT_DELETE)
+            self.assertTrue(SetUpLib.boot_to_bootmanager(serial, ssh_bmc))
+            self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
+            self.assertTrue(icx2pAPI.ping_sut())
+            self.assertTrue(icx2pAPI.rw_everything(ssh_os, ['c61218a0: 02bf 1100 02bf 1100 02bf 1100 02bf 1100 '], ['c61218a0']))
+        except AssertionError as err:
+            result.log_fail(capture=True)
+            icx2pAPI.reset_default(serial, ssh_bmc)
+            return False
+        icx2pAPI.reset_default(serial, ssh)
+        result.log_pass()
+
+    def dimm_power_mgt_010(self, serial, ssh_os, ssh_bmc):
+        tc = ('705', 'Testcase_MemPower_010', '内存省电模式使能PPD时寄存器状态测试')
+        result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+        try:
+            self.assertTrue(icx2pAPI.toBIOS(serial, ssh_bmc))
+            self.assertTrue(icx2pAPI.toBIOSConf(serial))
+            dimm_memPower.navigate_to_cke(self, serial)
+            self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
+            serial.send_keys_with_delay([Key.F5, Key.F10, Key.Y])
+            self.assertTrue(icx2pAPI.toBIOSnp(serial))
+            self.assertTrue(icx2pAPI.toBIOSConf(serial))
+            dimm_memPower.navigate_to_cke(self, serial)
+            self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
+            self.assertTrue(SetUpLib.boot_to_bootmanager(serial, ssh_bmc))
+            self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
+            self.assertTrue(icx2pAPI.ping_sut())
+            self.assertTrue(icx2pAPI.rw_everything(ssh_os, SutConfig.CKE_POWER_DOWN, ['c61218a0', 'fb9a18a4']))
+        except AssertionError as err:
+            result.log_fail(capture=True)
+            icx2pAPI.reset_default(serial, ssh_bmc)
+            return False
+        icx2pAPI.reset_default(serial, ssh_bmc)
+        result.log_pass()
+
+    def dimm_power_mgt_011(self, serial, ssh_os, ssh_bmc):
+        tc = ('706', 'Testcase_MemPower_011', '内存省电模式使能APD时寄存器状态测试')
+        result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+        try:
+            self.assertTrue(icx2pAPI.toBIOS(serial, ssh_bmc))
+            self.assertTrue(icx2pAPI.toBIOSConf(serial))
+            dimm_memPower.navigate_to_cke(self, serial)
+            self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
+            serial.send_keys(Key.F5)
+            self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
+            self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [['APD', '<Disabled>'], ['PPD', '<Enabled>']], 7))
+            self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [['APD', '<Disabled>']], 7))
+            serial.send_keys(Key.F5)
+            self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [['APD', '<Enabled>']], 3))
+            self.assertFalse(SetUpLib.verify_options(serial, Key.DOWN, [['PPD', '<Enabled>']], 3))
+            serial.send_keys_with_delay([Key.F10, Key.Y])
+            self.assertTrue(icx2pAPI.toBIOSnp(serial))
+            self.assertTrue(icx2pAPI.toBIOSConf(serial))
+            dimm_memPower.navigate_to_cke(self, serial)
+            self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
+            self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
+            self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [['APD', '<Enabled>']], 3))
+            self.assertTrue(SetUpLib.boot_to_bootmanager(serial, ssh_bmc))
+            self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
+            self.assertTrue(icx2pAPI.ping_sut())
+            self.assertTrue(icx2pAPI.rw_everything(ssh_os, ['c61218a0: 010f 1100 010f 1100 010f 1100 010f 1100 '], ['c61218a0']))
+        except AssertionError as err:
+            result.log_fail(capture=True)
+            icx2pAPI.reset_default(serial, ssh_bmc)
+            return False
+        icx2pAPI.reset_default(serial, ssh_bmc)
+        result.log_pass()
+
+    def dimm_power_mgt_012(self, serial, ssh_os, ssh_bmc):
+        tc = ('707', 'Testcase_MemPower_012', '内存省电模式使能时更改定时器选项测试')
+        result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+        try:
+            self.assertTrue(icx2pAPI.toBIOS(serial, ssh_bmc))
+            self.assertTrue(icx2pAPI.toBIOSConf(serial))
+            dimm_memPower.navigate_to_cke(self, serial)
+            self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
+            serial.send_keys(Key.F5)
+            self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
+            self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [['CKE Idle Timer', '\[20\]']], 7))
+            serial.send_data(chr(0x0D))  # Send Enter
+            serial.send_data('255')  # set 255
+            serial.send_data(chr(0x0D))  # Send Enter
+            serial.send_keys_with_delay([Key.F10, Key.Y])
+            self.assertTrue(icx2pAPI.toBIOSnp(serial))
+            self.assertTrue(icx2pAPI.toBIOSConf(serial))
+            dimm_memPower.navigate_to_cke(self, serial)
+            self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
+            self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
+            self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [['CKE Idle Timer', '\[255\]']], 7))
+            self.assertTrue(SetUpLib.boot_to_bootmanager(serial, ssh_bmc))
+            self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
             self.assertTrue(icx2pAPI.ping_sut())
             self.assertTrue(icx2pAPI.rw_everything(ssh_os, ['c61218a0: 02bf 1100 02bf 1100 02bf 1100 02bf 1100 '], ['c61218a0']))
         except AssertionError as err:
