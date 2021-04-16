@@ -48,6 +48,13 @@ def gen_report(log_dir):
 # for debug purpose
 def debug_run():
     log_dir = init_log()
+#    Os.move_suse_to_first(ser, ssh_bmc)
+#     DIMM.DPM.dimm_power_mgt_010(ser, ssh_os, ssh_bmc)
+    if UpdateBIOS.update_bios_mfg(ser, log_dir, 'master'):
+        Os.move_suse_to_first(ser, ssh_bmc)
+        Release.equip_mode_version_check(ser, ssh_bmc)
+        Os.boot_to_suse_mfg(ser, ssh_bmc)
+        Smbios.smbios_type128(ser, ssh_os, ssh_bmc, unitool)
     UpdateBIOS.update_bios(ser, ssh_bmc, sftp_bmc, 'master')
     gen_report(log_dir)
 

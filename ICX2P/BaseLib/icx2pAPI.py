@@ -11,14 +11,9 @@ import logging
 import subprocess
 import time
 
-import Common.ssh as SSH
-from Common.ssh import sftp
 from ICX2P import SutConfig
 from ICX2P.SutConfig import Key, Msg
-from ICX2P.BaseLib import Update, PowerLib
-
-# sftp, ssh(instantiation)
-s = sftp(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASSWORD)
+from ICX2P.BaseLib import PowerLib
 
 
 def dump_smbios(ssh, cmd='dmidecode'):
@@ -50,8 +45,6 @@ def ping_sut():
             #     print(e)
 
 
-
-
 # clear CMOS on BMC side
 def clearCMOS(ssh):
     logging.info("Clear CMOS")
@@ -75,59 +68,6 @@ def clearCMOS(ssh):
         return
 
 
-# scp the ini file to OS...
-def sftpFile(ssh):
-    s.login()
-    # a = s.sftp.listdir(SutConfig.unitool_path)
-    # print(a)
-    b = '{0}\\AT\\unitool.ini'.format(SutConfig.HPM_DIR)  # the level 2 folder name must be app, {0} - unitool path
-    s.sftp.put(b, r'{0}/app/1.ini'.format(SutConfig.unitool_path), confirm=True)
-    s.sftp.close()
-    if ssh.login():
-        logging.info("unitool...")
-        ssh.execute_command(r'cd {0}/kernel;insmod ufudev.ko'.format(SutConfig.unitool_path))
-        res = ssh.execute_command(r'cd {0}/app;./unitool -rf 1.ini | grep error'.format(SutConfig.unitool_path))
-        if 'error' in res:
-            logging.debug(res)
-            return
-        else:
-            # ssh.execute_command(r'cd {0}/app;cp unicfg.ini 1_bef.ini'.format(SutConfig.unitool_path))
-            res1 = ssh.execute_command(r'cd {0}/app;./unitool -wf 1.ini | grep error'.format(SutConfig.unitool_path))
-            if 'error' in res1:
-                logging.debug(res1)
-                return
-    s.close_session()
-    return True
-
-
-# cmp the diff files,
-def cmpFile(ssh):
-    if ssh.login():
-        logging.info("cmp the config ini file...")
-        res = ssh.execute_command(r'cd {0}/app;./unitool -rf 1.ini | grep error'.format(SutConfig.unitool_path))
-        if 'error' in res:
-            logging.debug(res)
-            return
-        else:
-            res1 = ssh.execute_command(r'cd {0}/app;diff -b 1.ini unicfg.ini'.format(SutConfig.unitool_path))
-            if len(res1) != 0:
-                logging.debug(res1)
-                return
-    return True
-
-
-# chipsec_test,
-def chipsecMerge(ssh):
-    if ssh.login():
-        logging.info("chipsec Test...")
-        res = ssh.execute_command(r'cd {0};python chipsec_main.py | grep -i failed'.format(SutConfig.chipsc_path))
-        # print(res.decode())
-        if 'FAILED:' in res:
-            logging.debug(res)
-            return
-    return True
-
-
 # OS - capture time,
 def osTime(ssh):
     t1 = ''
@@ -142,38 +82,28 @@ def osTime(ssh):
     return t1
 
 
-# used for equipment test
-def equipment(ssh):
-    s.login()
-    b = '{0}\\AT\\equipment.ini'.format(SutConfig.HPM_DIR)  # the level 2 folder name must be app, {0} - unitool path
-    s.sftp.put(b, r'{0}/app/2.ini'.format(SutConfig.unitool_path), confirm=True)
-    s.sftp.close()
-    if ssh.login():
-        logging.info("unitool...")
-        ssh.execute_command(r'cd {0}/kernel;insmod ufudev.ko'.format(SutConfig.unitool_path))
-        res = ssh.execute_command(r'cd {0}/app;./unitool -wf 2.ini | grep error'.format(SutConfig.unitool_path))
-        if 'error' in res:
-            logging.debug(res)
-            return
-    ssh.execute_command('reboot')
-    s.close_session()
-    return True
-
-
-# used for unitool test
-def unitool(ssh, data):
+# used for rw test
+def rw_everything(ssh, exp_res, mem_bar, str=' .', num=1, index=0):
+    """
+    :str is split flag, default is ' . '
+    :num is times to split, default is 1
+    :index is the list index
+    :param exp_res is a excepted num list
+    :param mem_bar should be printed in full debug message, e.g mem0_bar and mem1_bar address - list
+    """
     time.sleep(5)
+    org_list = []
     if ssh.login():
-        ssh.execute_command(r'cd {0}/kernel;insmod ufudev.ko'.format(SutConfig.unitool_path))
-        logging.info('Start to set the value...')
-        print(data)
-        res = ssh.execute_command(r'cd {0}/app;./unitool -w {1} | grep error'.format(SutConfig.unitool_path, data))
-        print(res)
-        time.sleep(5)
-        if 'error' in res:
-            logging.debug(res)
-            pass
-    ssh.execute_command('reboot')
+        logging.info('Start to rw the address...')
+        for i in mem_bar:
+            res = ssh.execute_command(r'cd {0};./rw mmr {1} | grep {2}'.format(SutConfig.RW_PATH, i, i))
+            org_list.append(res.split(str, num)[index])
+        time.sleep(1)
+    logging.debug(org_list)
+    if exp_res != org_list:
+        logging.info('Register verified - fail')
+        return False
+    logging.info('Register verified - pass')
     return True
 
 
@@ -313,112 +243,16 @@ def pressF12(serial, ssh):
     return True
 
 
-# enhanced pwdVerification4 def,
-def enterPWD(serial, pwd):
-    serial.send_keys(Key.CTRL_ALT_DELETE)
-    if not toBIOSnp(serial, pwd):
-        return
-    if not toBIOSConf(serial):
-        return
-    serial.send_keys_with_delay(SutConfig.key2pwd)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.pwd_item):
-        return
-    serial.send_keys(Key.ENTER)
-    if not serial.waitString(SutConfig.pwd_info_1, timeout=15):
-        return
-    return True
-
-
-# set pwd common def function, only for set PWD, do not call it for other cases
-# pwd1 - previous password, pwd2 - new password
-def setPWD(serial, ssh, pwd1, pwd2):
-    if not toBIOS(serial, ssh, SutConfig.new_pwd_9):
-        return
-    if not toBIOSConf(serial):
-        return
-    serial.send_keys_with_delay(SutConfig.key2pwd)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.pwd_item):
-        return
-    serial.send_keys(Key.ENTER)
-    if not serial.waitString(SutConfig.pwd_info_1, timeout=30):
-        return
-    serial.send_data(pwd1)
-    serial.send_data(chr(0x0D))
-    if not serial.waitString(SutConfig.pwd_info_2, timeout=30):
-        return
-    serial.send_data(pwd2)
-    serial.send_data(chr(0x0D))
-    time.sleep(1)
-    if not serial.waitString(SutConfig.pwd_info_3, timeout=30):
-        return
-    serial.send_data(pwd2)
-    serial.send_data(chr(0x0D))
-    if not serial.waitString(SutConfig.pwd_info_4, timeout=30):
-        return
-    time.sleep(1)
-    serial.send_keys(Key.ENTER)
-    time.sleep(1)
-    serial.send_keys(Key.F10 + Key.Y)
-    return True
-
-
-# set password with no power action first
-def setPWDnp(serial, pwd1, pwd2):
-    serial.send_data(chr(0x0D))
-    if not serial.waitString(SutConfig.pwd_info_1, timeout=30):
-        return
-    serial.send_data(pwd1)
-    serial.send_data(chr(0x0D))
-    if not serial.waitString(SutConfig.pwd_info_2, timeout=30):
-        return
-    serial.send_data(pwd2)
-    serial.send_data(chr(0x0D))
-    if not serial.waitString(SutConfig.pwd_info_3, timeout=30):
-        return
-    serial.send_data(pwd2)
-    serial.send_data(chr(0x0D))
-    if not serial.waitString(SutConfig.pwd_info_4, timeout=30):
-        return
-    serial.send_keys(Key.ENTER)
-    time.sleep(1)
-    serial.send_keys(Key.F10 + Key.Y)
-    return True
-
-
-# set password with no power action first
-def setPWDwithoutF10(serial, pwd1, pwd2):
-    serial.send_data(chr(0x0D))
-    if not serial.waitString(SutConfig.pwd_info_1, timeout=30):
-        return
-    serial.send_data(pwd1)
-    serial.send_data(chr(0x0D))
-    if not serial.waitString(SutConfig.pwd_info_2, timeout=30):
-        return
-    serial.send_data(pwd2)
-    serial.send_data(chr(0x0D))
-    if not serial.waitString(SutConfig.pwd_info_3, timeout=30):
-        return
-    serial.send_data(pwd2)
-    serial.send_data(chr(0x0D))
-    if not serial.waitString(SutConfig.pwd_info_4, timeout=30):
-        return
-    serial.send_keys(Key.ENTER)
-    time.sleep(1)
-    serial.send_keys(Key.CTRL_ALT_DELETE)
-    return True
-
-
 def reset_default(serial, ssh):
     logging.info("Reset BIOS to dafault by F9")
-    keys = Key.F9 + Key.Y + Key.F10 + Key.Y
     if not toBIOS(serial, ssh):
         return
     if not toBIOSConf(serial):
         return
     # time.sleep(1)
-    serial.send_keys(keys)
-    if not serial.is_msg_present('BIOS boot completed.'):
+    serial.send_keys_with_delay(Key.RESET_DEFAULT)
+    if not serial.is_msg_present(Msg.BIOS_BOOT_COMPLETE):
         logging.info("Reset dafault by F9:Fail")
-        return
+        return False
     logging.info("Reset dafault by F9:Pass")
     return True

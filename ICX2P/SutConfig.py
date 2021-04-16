@@ -50,6 +50,7 @@ OS_PASSWORD = '1'
 
 # Tool definition
 UNI_PATH = "/root/flashtool/unitool"
+RW_PATH = '/root/rw'
 
 
 # BIOS Firmware Directory, Must manual copy image files to the directory before test
@@ -242,5 +243,8 @@ key2pwd = [Key.RIGHT, Key.RIGHT, Key.RIGHT]
 
 # WA
 w2key = [Key.RIGHT, Key.UP]
+
+# rw os data
+CKE_POWER_DOWN = ['c61218a0: 020f 1100 020f 1100 020f 1100 020f 1100 ', 'fb9a18a4: 0080 1000 0080 1000 0080 1000 ffff ffff ']
 
 
