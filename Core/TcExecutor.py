@@ -70,9 +70,18 @@ class RunTest:
             return
         logdir = self.init_log()
         if self.execution_type == "daily":
-            self.script.DailyTest()
+            try:
+                self.script.DailyTest()
+            except Exception as e:
+                logging.error("Exception: {0}".format(e))
         elif self.execution_type == "release":
-            self.script.ReleaseTest()
+            try:
+                self.script.ReleaseTest()
+            except Exception as e:
+                logging.error("Exception: {0}".format(e))
         elif self.execution_type == "debug":
-            self.script.Debug()
+            try:
+                self.script.Debug()
+            except Exception as e:
+                logging.error("Exception: {0}".format(e))
         self.gen_report(logdir)
