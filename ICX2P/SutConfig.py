@@ -87,7 +87,7 @@ class Msg:
     PW_PROMPT = 'Enter Current Password'
 
     # Home screen with 6 icons
-    HOME_PAGE = 'Continue'
+    HOME_PAGE = '/Continue/'
     BIOS_BOOT_COMPLETE = 'BIOS boot completed'
 
     # pages in bios configuration

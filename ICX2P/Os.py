@@ -47,9 +47,9 @@ def boot_to_suse_mfg(serial, ssh):
 
 def move_suse_to_first(serial, ssh):
     tc = ('302', 'Move UEFI SUSE Linux to first boot option', 'Move UEFI SUSE Linux to first boot option')
-    result = ReportGen.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
     if not SetUpLib.boot_option_up(serial, ssh, Msg.BOOT_OPTION_SUSE, 5):
-        result.log_fail()
+        result.log_fail(capture=True)
         return
     result.log_pass()
     return True
