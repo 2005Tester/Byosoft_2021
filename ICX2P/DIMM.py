@@ -70,7 +70,7 @@ class dimm_memPower(unittest.TestCase):
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             dimm_memPower.navigate_to_cke(self, serial)
             self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [[Msg.LPASR_MODE, '<Auto SR>']], 7))
-            self.assertTrue(SetUpLib.boot_to_bootmanager(serial, ssh_bmc))
+            self.assertTrue(SetUpLib.boot_to_bootmanager(serial, ssh))
             self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
         except AssertionError as err:
             result.log_fail(capture=True)
@@ -90,7 +90,7 @@ class dimm_memPower(unittest.TestCase):
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             dimm_memPower.navigate_to_cke(self, serial)
             self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
-            self.assertTrue(SetUpLib.boot_to_bootmanager(serial, ssh_bmc))
+            self.assertTrue(SetUpLib.boot_to_bootmanager(serial, ssh))
             self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
             self.assertTrue(icx2pAPI.ping_sut())
         except AssertionError as err:
