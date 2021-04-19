@@ -413,11 +413,12 @@ def ufs(serial, ssh):
     return True
 
 
-
-
 # Testcase_DRAM_RAPL_001
-def dramRAPL(serial, ssh):
-    tc = ('015', 'Testcase_DRAM_RAPL_001, 菜单项DRAM RAPL选单检查', '支持DRAM RAPL设置')
+# Precondition: NA
+# OnStart: NA
+# OnComplete: Setup DRAM RAPL page
+def dram_rapl_option_check(serial, ssh):
+    tc = ('015', '[TC015]Testcase_DRAM_RAPL_001, 菜单项DRAM RAPL选单检查', '支持DRAM RAPL设置')
     result = ReportGen.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
@@ -426,21 +427,11 @@ def dramRAPL(serial, ssh):
         result.log_fail()
         return
     serial.send_keys_with_delay(SutConfig.w2key)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.option2, timeout=60):
+
+    if not SetUpLib.enter_menu(serial, Key.DOWN, Msg.PATH_DRAM_RAPL, 20, Msg.DRAM_RAPL_CONFIG):
         result.log_fail()
         return
-    serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.option6, timeout=60):
-        result.log_fail()
-        return
-    serial.send_data(chr(0x0D))
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.option11, timeout=60):
-        result.log_fail()
-        return
-    serial.send_data(chr(0x0D))
-    if not serial.find_setup_option(Key.DOWN, 'DRAM RAPL Configuration', 7):
-        result.log_fail()
-        return
+
     if not icx2pAPI.verify_setup_options_up(serial, SutConfig.dram, 4):
         result.log_fail()
         return

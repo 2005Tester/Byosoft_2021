@@ -25,7 +25,6 @@ def upi_link_status(serial, ssh):
         result.log_fail()
         return
 
-    serial.send_data(chr(0x0D))
     if not icx2pAPI.verify_setup_options_down(serial, SutConfig.upi_state, 4):
         result.log_fail()
         return

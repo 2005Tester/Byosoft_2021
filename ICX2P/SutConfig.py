@@ -133,6 +133,7 @@ class Msg:
     # path of setup menus
     PATH_UNCORE_GENERAL = [CPU_CONFIG, UNCORE_CONFIG, UNCORE_GENERAL]
     PATH_UNCORE_STATUS = [CPU_CONFIG, UNCORE_CONFIG, UNCORE_GENERAL, UNCORE_STATUS]
+    PATH_DRAM_RAPL = [CPU_CONFIG, ADV_POWER_MGF_CONFIG, MEM_POWER_THER_CONFIG, DRAM_RAPL_CONFIG]
 
     # Menu in Boot page
     MENU_BOOT_ORDER = 'UEFI Boot'
@@ -217,7 +218,6 @@ VIRTUALIZATION_CONFIG = 'Virtualization Configuration'
 
 # level 3
 option4 = 'Per-CPU Information'
-option11 = 'Memory Power & Thermal Configuration'
 
 # BIOS items info,
 static_turbo = ['<Disabled>\s+Static Turbo']

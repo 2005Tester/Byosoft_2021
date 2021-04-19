@@ -71,7 +71,7 @@ def run_test():
     biosTest.staticTurbo(ser, ssh_bmc)
     biosTest.ufs(ser, ssh_bmc)
     DefaultValueTest.rrqirq(ser, ssh_bmc)
-    biosTest.dramRAPL(ser, ssh_bmc)
+    biosTest.dram_rapl_option_check(ser, ssh_bmc)
     biosTest.securityBoot(ser, ssh_bmc)
     biosTest.vtd(ser, ssh_bmc)
     biosTest.cnd_default_enable(ser, ssh_bmc)
