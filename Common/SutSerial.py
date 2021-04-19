@@ -368,6 +368,7 @@ class SutControl:
 
     # Enter specifc setup menu by given path(list)
     def enter_menu(self, key, option_path, try_counts, confirm_msg, timeout=15):
+        logging.info("Go to setup menu:{0}".format(option_path))
         for option in option_path:
             logging.info("Locating menu: {0}".format(option))
             if not self.locate_menu(key, option, try_counts):

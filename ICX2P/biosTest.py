@@ -575,84 +575,6 @@ def vtd(serial, ssh):
     return True
 
 
-# Testcase_CPU_COMPA_015, 016 - TBD
-def cpuCOMPA(serial, ssh):
-    tc = ('026', 'UPI link链路检测测试', 'CPU兼容性测试')
-    result = ReportGen.LogHeaderResult(tc, serial)
-    if not icx2pAPI.toBIOS(serial, ssh):
-        result.log_fail()
-        return
-    if not icx2pAPI.toBIOSConf(serial):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay(SutConfig.w2key)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.option2, timeout=60):
-        result.log_fail()
-        return
-    serial.send_data(chr(0x0D))
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.option9):
-        result.log_fail()
-        return
-    serial.send_data(chr(0x0D))
-    if not serial.find_setup_option(Key.DOWN, SutConfig.option12, 4):
-        result.log_fail()
-        return
-    serial.send_keys(Key.UP)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.option14):
-        result.log_fail()
-        return
-    serial.send_data(chr(0x0D))
-    if not icx2pAPI.verify_setup_options_down(serial, SutConfig.upi_state, 4):
-        result.log_fail()
-        return
-    result.log_pass()
-    return True
-
-
-# Testcase_LogTime_001, 002 and 003 串口日志打印
-def logTime(serial, ssh):
-    tc = ('027', 'Testcase_LogTime_001, 002 and 003, 串口日志打印测试', '支持BIOS启动开始和结束信息打印及上报')
-    result = ReportGen.LogHeaderResult(tc, serial)
-    if not icx2pAPI.toBIOS(serial, ssh):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay(SutConfig.key2OS)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.OS, timeout=30):
-        result.log_fail()
-        return
-    serial.send_keys(Key.ENTER)
-    if not icx2pAPI.ping_sut():
-        result.log_fail()
-        return
-    t1 = icx2pAPI.osTime(ssh)
-    if not serial.is_msg_present_general('BIOS Log', delay=60):
-        result.log_fail()
-        return
-    with open(SutConfig.SERIAL_LOG, 'r') as f:
-        while True:
-            try:
-                line = f.readline()
-                if 'BIOS Log' in line:
-                    t2 = line.split('@')[-1].rstrip().split('<')[0].lstrip().replace('.', '-').strip()
-                    t3 = datetime.datetime.strptime(t2, '%Y-%m-%d %H:%M:%S')
-                    t_time = (t3 - t1)
-                    hour = int(t_time.seconds / 60 / 60)
-                    dela_time = int((t_time.seconds - hour * 60 * 60) / 60)
-                    # print(t3, t1, hour, dela_time)
-                    if dela_time < 5:  # if interval time is less than 5 mins,
-                        pass
-                    else:
-                        print('The BIOS time is not matched with RTC time')
-                        result.log_fail()
-                        return False
-                    break
-            except Exception as e:
-                print(str(e))
-    f.close()
-    result.log_pass()
-    return True
-
-
 # unitool
 def auto_unitool_loop(serial, ssh):
     tc = ('061', 'auto unitool loop', '支持unitool loop')
@@ -716,7 +638,6 @@ def icxbiosTest(serial, ssh, dst):
     POST_Test(serial, ssh)
     PM(serial, ssh)
     pxeTest(serial, ssh)
-    httpsTest(serial, ssh)
     usbTest(serial, ssh)
     ProcessorDIMM(serial, ssh)
     chipsecTest(serial, ssh)
@@ -724,10 +645,6 @@ def icxbiosTest(serial, ssh, dst):
     loadDefault(serial, ssh)
     staticTurbo(serial, ssh)
     ufs(serial, ssh)
-    rrQIRQ(serial, ssh)
     dramRAPL(serial, ssh)
-    pwdSecurityTest(serial, ssh, dst)
     securityBoot(serial, ssh)
     vtd(serial, ssh)
-    cpuCOMPA(serial, ssh)
-    logTime(serial, ssh)

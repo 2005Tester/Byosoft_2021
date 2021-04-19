@@ -1,5 +1,5 @@
 from Common import SutSerial, Unitool, ssh
-from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest, Os, Release, Smbios, Pwd, Legacy, DIMM
+from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest, Os, Release, Smbios, Pwd, Legacy, DIMM, Cpu
 
 
 # init seril
@@ -27,7 +27,7 @@ def TestScope():
     biosTest.dramRAPL(ser, ssh_bmc)
     biosTest.securityBoot(ser, ssh_bmc)
     biosTest.vtd(ser, ssh_bmc)
-    biosTest.cpuCOMPA(ser, ssh_bmc)
+    Cpu.upi_link_status(ser, ssh_bmc)
     if Os.boot_to_suse(ser, ssh_bmc):
         Smbios.smbios_test_all(ssh_os)
         Release.equip_mode_flag_check(unitool)

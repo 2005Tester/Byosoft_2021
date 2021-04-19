@@ -117,6 +117,7 @@ class Msg:
     LPASR_MODE = 'LPASR Mode'
     CKE_FEATURE = 'CKE Feature'
     CKE_IDLE_TIMER = 'CKE Idle Timer'
+    UNCORE_STATUS = 'Uncore Status'
 
     # menus of PCH configuration
     PCH_CONFIG = 'PCH CONFIGURATION'
@@ -128,6 +129,7 @@ class Msg:
 
     # path of setup menus
     PATH_UNCORE_GENERAL = [CPU_CONFIG, UNCORE_CONFIG, UNCORE_GENERAL]
+    PATH_UNCORE_STATUS = [CPU_CONFIG, UNCORE_CONFIG, UNCORE_GENERAL, UNCORE_STATUS]
 
     # Menu in Boot page
     MENU_BOOT_ORDER = 'UEFI Boot'
@@ -208,16 +210,11 @@ option1 = 'USB Configuration'
 option6 = 'Advanced Power Mgmt. Configuration'
 option7 = 'Miscellaneous Configuration'
 option8 = 'CPU P State Control'
-option9 = 'Uncore Configuration'
 VIRTUALIZATION_CONFIG = 'Virtualization Configuration'
 
 # level 3
 option4 = 'Per-CPU Information'
 option11 = 'Memory Power & Thermal Configuration'
-option12 = 'Uncore General Configuration'
-
-# level 4
-option14 = 'Uncore Status'
 
 # BIOS items info,
 static_turbo = ['<Disabled>\s+Static Turbo']
