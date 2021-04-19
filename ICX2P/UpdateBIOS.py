@@ -1,5 +1,5 @@
 from Report import ReportGen
-from ICX2P.BaseLib import Update 
+from ICX2P.BaseLib import Update, SetUpLib
 from ICX2P import SutConfig, Pwd
 
 
@@ -11,6 +11,9 @@ def update_bios(serial, ssh_bmc, sftp_bmc, branch):
         result.log_fail()
         return
     if not Pwd.update_default_password(serial, ssh_bmc):
+        result.log_fail(capture=True)
+        return
+    if not SetUpLib.move_boot_option_up(serial, ssh_bmc, SutConfig.Msg.BOOT_OPTION_SUSE, 5):
         result.log_fail(capture=True)
         return
     result.log_pass()

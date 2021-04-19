@@ -199,7 +199,7 @@ def boot_suse_from_bm(serial, ssh):
 
 
 # Move a specific boot option up
-def boot_option_up(serial, ssh, boot_option, count):
+def move_boot_option_up(serial, ssh, boot_option, count):
     hdd_group = [Msg.MENU_BOOT_ORDER, Msg.MENU_HDD_BOOT]
     logging.info("Move: {0} {1} times".format(boot_option, count))
     if not boot_to_page(serial, ssh, Msg.PAGE_BOOT):
