@@ -351,8 +351,9 @@ def Simple_password_disenable(serial, ssh):
     SetUpLib.send_keys(serial, new_pwd_7)
     SetUpLib.send_key(serial, Key.ENTER)
     if not SerialLib.is_msg_present(serial, " confirm ",5):
-        logging.info('confirm 找不到 ,显示这个提示')
+        logging.info('----------------------confirm 找不到 ,显示这个提示----------------------------------')
         result.log_fail()
+        return
     SetUpLib.send_keys(serial, new_pwd_7)
     SetUpLib.send_key(serial, Key.ENTER)
     if not SerialLib.is_msg_present(serial, invalid_info):
@@ -1159,7 +1160,7 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
             SetUpLib.send_keys(serial, [Key.RIGHT, Key.ENTER])
             SetUpLib.send_keys(serial, SutConfig.key2pwd)
             SetUpLib.send_key(serial, Key.ENTER)
-            self.assertTrue(SerialLib.is_msg_present(serial, "Please type in your password"))
+            self.assertTrue(SerialLib.is_msg_present(serial, "Enter New Password:"))
             serial.send_data(new_pwd_17)
             logging.info('input User_Password ')
             SetUpLib.send_key(serial, Key.ENTER)
