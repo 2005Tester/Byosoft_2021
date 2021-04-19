@@ -4,7 +4,7 @@ from ICX2P.SutConfig import Key, Msg, BiosCfg
 from ICX2P.BaseLib import SetUpLib
 from Report import ReportGen
 
-# Test case ID: 4xx
+# Test case ID: TC500-520
 
 ##########################################
 #            Legacy Test Cases           #

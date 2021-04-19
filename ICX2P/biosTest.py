@@ -520,64 +520,6 @@ def vtd(serial, ssh):
     return True
 
 
-# unitool
-def auto_unitool_loop(serial, ssh):
-    tc = ('061', 'auto unitool loop', '支持unitool loop')
-    result = ReportGen.LogHeaderResult(tc, serial)
-    f = os.listdir(SutConfig.INI_DIR)
-    status = 0
-    for root, dirs, files in os.walk(SutConfig.INI_DIR):
-        for file in files:
-            print(file)
-            fw = open(os.path.join('{0}/written_ini'.format(SutConfig.INI_DIR), file), 'rb')
-            data = fw.read().decode()
-            for i in data.split('\r\n'):
-                # print(i)
-                if i == '':
-                    pass
-                else:
-                    print(i)
-                    if not icx2pAPI.toBIOS(serial, ssh):
-                        result.log_fail()
-                        return
-                    serial.send_keys_with_delay(SutConfig.key2OS)
-                    if not serial.find_setup_option(Key.DOWN, SutConfig.SUSE, 10):
-                        result.log_fail()
-                        return
-                    if not icx2pAPI.ping_sut():
-                        result.log_fail()
-                        return
-                    time.sleep(1)
-                    ini_data = i
-                    if not icx2pAPI.unitool(ssh, ini_data):
-                        result.log_fail()
-                        return
-                    if icx2pAPI.toBIOSnp(serial):
-                        serial.send_keys_with_delay(SutConfig.key2OS)
-                        if not serial.find_setup_option(Key.DOWN, SutConfig.SUSE, 10):
-                            result.log_fail()
-                            return
-                        if not icx2pAPI.ping_sut():
-                            result.log_fail()
-                            status = 1
-                            icx2pAPI.clearCMOS(ssh)
-                            continue
-                    else:
-                        status = 2
-                        icx2pAPI.clearCMOS(ssh)
-                        continue
-            fw.close()
-        print(status)
-
-    logging.debug(status)
-    if status == 1 | 2:
-        result.log_fail()
-        return
-
-    result.log_pass()
-    return True
-
-
 # Main function
 def icxbiosTest(serial, ssh, dst):
     POST_Test(serial, ssh)

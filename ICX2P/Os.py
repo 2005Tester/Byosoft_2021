@@ -4,6 +4,11 @@ from ICX2P.SutConfig import Key, Msg
 from ICX2P.BaseLib import SetUpLib, SerialLib
 from Report import ReportGen
 
+# Test case ID: TC300-TC320
+
+##########################################
+#         OS and Boot Test Cases         #
+##########################################
 
 # Boot to SUSE Linux from boot manager
 def boot_to_suse(serial, ssh):

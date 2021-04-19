@@ -5,7 +5,7 @@ from ICX2P.BaseLib import icx2pAPI, SetUpLib
 from Report import ReportGen
 
 
-# Test case ID: 1xx
+# Test case ID: TC100-150
 
 ##########################################
 ####        UNCORE Test Cases        #####    

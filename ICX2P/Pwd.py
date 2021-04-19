@@ -17,6 +17,12 @@ from ICX2P.SutConfig import Key, Msg
 from ICX2P import SutConfig
 from ICX2P.BaseLib import icx2pAPI, SetUpLib, Update, PowerLib, SerialLib, SshLib
 
+# Test case ID: TC030-TC070
+
+##########################################
+#           Password Test Cases          #
+##########################################
+
 default_pwd = 'Admin@9000'
 new_pwd_4 = 'Admini@6789'
 new_pwd_5 = 'Ad@90'
