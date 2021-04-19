@@ -27,6 +27,7 @@ def TestScope():
     biosTest.dramRAPL(ser, ssh_bmc)
     biosTest.securityBoot(ser, ssh_bmc)
     biosTest.vtd(ser, ssh_bmc)
+    biosTest.cnd_default_enable(ser, ssh_bmc)
     Cpu.upi_link_status(ser, ssh_bmc)
     if Os.boot_to_suse(ser, ssh_bmc):
         Smbios.smbios_test_all(ssh_os)

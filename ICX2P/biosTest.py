@@ -453,8 +453,11 @@ def dramRAPL(serial, ssh):
 
 
 # 检查CDN开关默认值
-def cnd(serial, ssh):
-    tc = ('017', '检查CDN开关默认值', '支持网口CDN特性开关')
+# Precondition: NA
+# OnStart: NA
+# OnComplete: Setup Miscellaneous Configuration page
+def cnd_default_enable(serial, ssh):
+    tc = ('017', '[TC017]检查CDN开关默认值', '支持网口CDN特性开关')
     result = ReportGen.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
@@ -463,7 +466,7 @@ def cnd(serial, ssh):
         result.log_fail()
         return
     serial.send_keys(Key.RIGHT)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.option7, timeout=30):
+    if not SetUpLib.enter_menu(serial, Key.DOWN, [Msg.MISC_CONFIG], 20, 'Miscellaneous'):
         result.log_fail()
         return
     if not icx2pAPI.verify_setup_options_down(serial, SutConfig.cnd_status, 12):
@@ -487,55 +490,6 @@ def securityBoot(serial, ssh):
     logging.info("Checking secure boot status")
     if not SetUpLib.verify_info(serial, secureboot_disable, 5):
         result.log_fail(capture=True)
-        return
-    result.log_pass()
-    return True
-
-
-# Testcase_TPM_001, 002, 005, 006, 009 TPM芯片测试 (单板已插TPM卡)
-# TXT + TPM Test Testcase_TPM_013 单板已插TPM卡 - 待在新板上验证，旧板不支持TXT（或rework板子开启TXT）
-def tpm(serial, ssh):
-    tc = ('024', 'TPM芯片测试', '支持CBNT')
-    result = ReportGen.LogHeaderResult(tc, serial)
-    if not icx2pAPI.toBIOS(serial, ssh):
-        result.log_fail()
-        return
-    if not icx2pAPI.toBIOSConf(serial):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay(SutConfig.key2pwd)
-    if not icx2pAPI.verify_setup_options_down(serial, SutConfig.tpm_info, 12):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay([Key.LEFT, Key.LEFT, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.option2, timeout=60):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay([Key.ENTER, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.option3):
-        result.log_fail()
-        return
-    serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.UP, 'TXT'):
-        result.log_fail()
-        return
-    serial.send_keys(Key.F5)
-    serial.send_keys(Key.F10 + Key.Y)
-    if not serial.waitString('DetectTpmDevice', timeout=120):
-        result.log_fail()
-        if not icx2pAPI.reset_default(serial, ssh):
-            return
-    if not icx2pAPI.toSysTime(serial):
-        result.log_fail()
-        if not icx2pAPI.reset_default(serial, ssh):
-            return
-    serial.send_keys(Key.RESET_DEFAULT)
-    if not icx2pAPI.toSysTime(serial):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay(SutConfig.key2pwd)
-    if not icx2pAPI.verify_setup_options_down(serial, SutConfig.tpm_info, 10):
-        result.log_fail()
         return
     result.log_pass()
     return True

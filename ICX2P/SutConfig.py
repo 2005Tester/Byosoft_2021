@@ -123,6 +123,9 @@ class Msg:
     PCH_CONFIG = 'PCH CONFIGURATION'
     NETWORK_CONFIG = 'Network Configuration'
 
+    # Misc Configuration Menu
+    MISC_CONFIG = 'Miscellaneous Configuration'
+
     # menus of Password configuration
     MGT_SPV_PWD = 'Manage Supervisor Password'
     SP_PWD = 'Simple Password'
@@ -208,7 +211,7 @@ option3 = 'Processor Configuration'
 option5 = 'Memory Topology'
 option1 = 'USB Configuration'
 option6 = 'Advanced Power Mgmt. Configuration'
-option7 = 'Miscellaneous Configuration'
+
 option8 = 'CPU P State Control'
 VIRTUALIZATION_CONFIG = 'Virtualization Configuration'
 
