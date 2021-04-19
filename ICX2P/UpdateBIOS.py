@@ -13,7 +13,7 @@ def update_bios(serial, ssh_bmc, sftp_bmc, branch):
     if not Pwd.update_default_password(serial, ssh_bmc):
         result.log_fail(capture=True)
         return
-    if not SetUpLib.move_boot_option_up(serial, ssh_bmc, SutConfig.Msg.BOOT_OPTION_SUSE, 5):
+    if not SetUpLib.move_boot_option_up(serial, ssh_bmc, SutConfig.Msg.BOOT_OPTION_OS, 5):
         result.log_fail(capture=True)
         return
     result.log_pass()

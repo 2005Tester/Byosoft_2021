@@ -142,6 +142,7 @@ class Msg:
     MENU_BOOT_ORDER = 'UEFI Boot'
     MENU_HDD_BOOT = 'HDD Device'
     BOOT_OPTION_SUSE = ["SUSE Linux Enterprise\(LUN0\)"]
+    BOOT_OPTION_OS = ["SUSE Linux Enterprise\(LUN0\)"]
     PXE_OPT = 'UEFI HTTPSv4: Network - Port00 SLOT1'
     UBUNTU = 'P0-ubuntu - HDD 0'
     # SUSE = 'P0-SUSE Linux Enterprise - HDD 0'
