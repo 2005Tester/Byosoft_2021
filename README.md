@@ -25,6 +25,14 @@ Description使用Testcase_Name
    **Precondition**: Case执行的先决条件, 比如网络连接, 依赖的相关测试工具等  
    **OnStart**: 测试用例开始执行时, SUT所处的状态, 比如Boot到os， 没有依赖, 任何情况下都可以执行, 则写NA  
    **OnComplete**：测试用例执行完成时， SUT所处的状态, 比如在OS， Setup 等   
+7. 确保每个case的log 包含<Start>, <Description>, <Result>标签, 如下:
+ 
+2021-04-17 04:20:42 INFO: <TC901><Tittle>ME_Check ME Version and status:Start  
+2021-04-17 04:20:42 INFO: <TC901><Description>ME version should be match within BIOS bin file, ME Status shoule be normal.  
+...   
+2021-04-17 04:25:56 INFO: <TC901><Result>ME_Check ME Version and status:Fail  
+
+
 
 代码示例:  
 \# 非装备模式BIOS设置装备模式flag, 预期设置不成功.  
@@ -42,6 +50,11 @@ def equip_mode_flag_check(unitool):
     result.log_pass()  
     return True  
 
+## 使用截图功能  
+1. 创建LogHeaderResult()对象实例时传入截图保存路径,如:  
+result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)  
+2. 需要的时候调用 result.capture_screen()  
+3. 有fail自动截屏, result.log_fail(capture=True)  
 
 
 # Allow root login from SSH in Linux  
