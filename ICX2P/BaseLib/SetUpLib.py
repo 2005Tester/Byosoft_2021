@@ -41,7 +41,10 @@ def verify_options(serial, key, options, trycounts):
 
 # Enter setup menu
 def enter_menu(serial, key, option_path, try_counts, confirm_msg):
-    return serial.enter_menu(key, option_path, try_counts, confirm_msg)
+    try:
+        return serial.enter_menu(key, option_path, try_counts, confirm_msg)
+    except Exception as e:
+        logging.error("Exception occur: {0}".format(e))
 
 
 # locate a setup option by given option name and default value

@@ -134,6 +134,7 @@ class Msg:
     PATH_UNCORE_GENERAL = [CPU_CONFIG, UNCORE_CONFIG, UNCORE_GENERAL]
     PATH_UNCORE_STATUS = [CPU_CONFIG, UNCORE_CONFIG, UNCORE_GENERAL, UNCORE_STATUS]
     PATH_DRAM_RAPL = [CPU_CONFIG, ADV_POWER_MGF_CONFIG, MEM_POWER_THER_CONFIG, DRAM_RAPL_CONFIG]
+    PATH_PSTATE_CTL = [CPU_CONFIG, ADV_POWER_MGF_CONFIG, CPU_P_STATE]
 
     # Menu in Boot page
     MENU_BOOT_ORDER = 'UEFI Boot'
@@ -213,7 +214,6 @@ option5 = 'Memory Topology'
 option1 = 'USB Configuration'
 option6 = 'Advanced Power Mgmt. Configuration'
 
-option8 = 'CPU P State Control'
 VIRTUALIZATION_CONFIG = 'Virtualization Configuration'
 
 # level 3
@@ -247,5 +247,3 @@ w2key = [Key.RIGHT, Key.UP]
 
 # rw os data
 CKE_POWER_DOWN = ['c61218a0: 020f 1100 020f 1100 020f 1100 020f 1100 ', 'fb9a18a4: 0080 1000 0080 1000 0080 1000 ffff ffff ']
-
-

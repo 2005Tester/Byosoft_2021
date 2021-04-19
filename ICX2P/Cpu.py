@@ -34,3 +34,45 @@ def upi_link_status(serial, ssh):
         return
     result.log_pass()
     return True
+
+
+# Testcase_UFS_001
+# Precondition: NA
+# OnStart: NA
+# OnComplete: Setup P-State control page
+def ufs_default_value(serial, ssh):
+    tc = ('201', '[TC201]Testcase_UFS_001', 'UFS默认值测试')
+    result = ReportGen.LogHeaderResult(tc, serial)
+    if not icx2pAPI.toBIOS(serial, ssh):
+        result.log_fail()
+        return
+    if not icx2pAPI.toBIOSConf(serial):
+        result.log_fail()
+        return
+    serial.send_keys_with_delay(Key.RESET_DEFAULT)
+    if not icx2pAPI.toBIOSnp(serial):
+        result.log_fail()
+        return
+    if not icx2pAPI.toBIOSConf(serial):
+        result.log_fail()
+        return
+    serial.send_keys_with_delay(SutConfig.w2key)
+
+    if not SetUpLib.enter_menu(serial, Key.DOWN, Msg.PATH_PSTATE_CTL, 20, Msg.PATH_PSTATE_CTL):
+        result.log_fail()
+        return
+
+    if not icx2pAPI.verify_setup_options_up(serial, SutConfig.ufs, 4):
+        result.log_fail()
+        return
+    serial.send_keys(Key.ESC)
+    serial.send_keys_with_delay([Key.ENTER, Key.UP])
+    if not serial.to_highlight_option(Key.DOWN, SutConfig.pat, 'UFS', timeout=30):
+        result.log_fail()
+        return
+    serial.send_keys(Key.ENTER)
+    if not serial.verify_option_value(Key.DOWN, r'Disabled_MaxDisabled_Min'):
+        result.log_fail()
+        return
+    result.log_pass()
+    return True

@@ -367,50 +367,7 @@ def staticTurbo(serial, ssh):
     return True
 
 
-# Testcase_UFS_001,
-def ufs(serial, ssh):
-    tc = ('013', 'Testcase_UFS_001', 'UFS默认值测试')
-    result = ReportGen.LogHeaderResult(tc, serial)
-    if not icx2pAPI.toBIOS(serial, ssh):
-        result.log_fail()
-        return
-    if not icx2pAPI.toBIOSConf(serial):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay(Key.RESET_DEFAULT)
-    if not icx2pAPI.toBIOSnp(serial):
-        result.log_fail()
-        return
-    if not icx2pAPI.toBIOSConf(serial):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay(SutConfig.w2key)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.option2, timeout=60):
-        result.log_fail()
-        return
-    serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.option6, timeout=30):
-        result.log_fail()
-        return
-    serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.option8, timeout=30):
-        result.log_fail()
-        return
-    serial.send_keys(Key.ENTER)
-    if not icx2pAPI.verify_setup_options_up(serial, SutConfig.ufs, 4):
-        result.log_fail()
-        return
-    serial.send_keys(Key.ESC)
-    serial.send_keys_with_delay([Key.ENTER, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.pat, 'UFS', timeout=30):
-        result.log_fail()
-        return
-    serial.send_keys(Key.ENTER)
-    if not serial.verify_option_value(Key.DOWN, r'Disabled_MaxDisabled_Min'):
-        result.log_fail()
-        return
-    result.log_pass()
-    return True
+
 
 
 # Testcase_DRAM_RAPL_001
