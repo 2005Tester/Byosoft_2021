@@ -15,7 +15,7 @@ import os
 from Report import ReportGen
 from ICX2P.SutConfig import Key, Msg
 from ICX2P import SutConfig
-from ICX2P.BaseLib import icx2pAPI, SetUpLib, Update, PowerLib, SerialLib
+from ICX2P.BaseLib import icx2pAPI, SetUpLib, Update, PowerLib, SerialLib, SshLib
 
 default_pwd = 'Admin@9000'
 new_pwd_4 = 'Admini@6789'
@@ -110,6 +110,35 @@ def restore_env(serial, ssh_bmc, log_dir):
     if not Update.update_specific_img(log_dir, serial, ssh_bmc):
         logging.info("restore_env  Failed.")
         return
+    return True
+
+
+# 用于新密码机制，外部unipwd工具修改为Admin@909密码
+def reset_password_by_unipwd(serial, ssh_bmc, ssh_os):
+    logging.info("Modify PWD to SutConfig.BIOS_PW by unipwd tool")
+    if not SetUpLib.boot_to_bootmanager(serial, ssh_bmc):
+        logging.info("Boot to boot manager fail.")
+        return restore_env(serial, ssh_bmc, log_dir)
+    if not SetUpLib.enter_menu(serial, Key.DOWN, Msg.suse_linux, 20, Msg.suse_linux_msg):
+        return restore_env(serial, ssh_bmc, log_dir)
+    if not icx2pAPI.ping_sut():
+        logging.info("Ping SUT fail.")
+        return restore_env(serial, ssh_bmc, log_dir)
+    SshLib.execute_command(ssh_os, r'cd {0};insmod ufudev.ko'.format(SutConfig.UNI_PATH))
+    res = SshLib.execute_command(ssh_os, r'cd {0};./unipwd -set {1}'.format(SutConfig.UNI_PATH, SutConfig.BIOS_PASSWORD))
+    logging.info(res)
+    if len(res) == 0:
+        logging.info('blank, maybe the ko module failed')
+        return restore_env(serial, ssh_bmc, log_dir)
+    elif 'error' in res:
+        logging.info("Modify BIOS PWD:Fail")
+        return restore_env(serial, ssh_bmc, log_dir)
+    else:
+        logging.info('Rebooting the SUT...')
+        SshLib.execute_command(ssh_os, 'reboot')
+    if not SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE):
+        return
+    logging.info("Modify BIOS PWD:Pass")
     return True
 
 
