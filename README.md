@@ -16,12 +16,33 @@ or Run pip install -r requirements.txt
             **loop** - 循环执行runtest() 里面包含的所有case， 用于stress或者测试脚本本身的健壮性    
 2. Case 开发尽可能使用BaseLib里面已有API， 如果不能满足需求, 在BaseLib里面添加, 不直接调用Common下面的module.  
 3. Case按照手动测试用例列表分类, 不要全部放在同一个文件里面. 比如Cpu相关的可以全部放在Cpu.py里面.  
-4. 开发新Case尽可能跟手动测试用例一一对应，用例的tittle直接使用用例列表里面Testcase_Number, 如Testcase_DRAM_RAPL_001. description使用Testcase_Name, 如01 菜单项DRAM RAPL选单检查.   
+4. 开发新Case尽可能跟手动测试用例一一对应，用例的tittle直接使用用例列表里面Testcase_Number加上脚本里面定义的TCID,  
+如：TC101_Testcase_DRAM_RAPL_001    
+Description使用Testcase_Name  
+如：01 菜单项DRAM RAPL选单检查.     
 5.  Release自验报告里面的case, title 加上前缀 Basci_Function, 如 Basci_Function Chipsec Test.  
 6. Test case id 确保唯一, 注释注明测试执行的先决条件等信息：  
    **Precondition**: Case执行的先决条件, 比如网络连接, 依赖的相关测试工具等  
-   **On Start**: 测试用例开始执行时, SUT所处的状态, 比如Boot到os， 没有依赖则写NA  
-   **On Complete**：测试用例执行完成时， SUT所处的状态, 比如在OS， Setup 等   
+   **OnStart**: 测试用例开始执行时, SUT所处的状态, 比如Boot到os， 没有依赖, 任何情况下都可以执行, 则写NA  
+   **OnComplete**：测试用例执行完成时， SUT所处的状态, 比如在OS， Setup 等   
+
+代码示例:  
+\# 非装备模式BIOS设置装备模式flag, 预期设置不成功.  
+\# Precondition: 装备模式image， Unitool  
+\# OnStart: in SUSE  
+\# OnComplete: in SUSE  
+def equip_mode_flag_check(unitool):  
+    tc = ('902', 'TC902 Equipment mode flag check', '非装备模式BIOS设置装备模式flag, 预期设置不成功.')  
+    result = ReportGen.LogHeaderResult(tc)  
+    res = unitool.set_config(BiosCfg.EQUIP_FLAG)  
+    if res:  
+        result.log_fail()  
+        return  
+    logging.info("Unbale to set equipment mode flag.")  
+    result.log_pass()  
+    return True  
+
+
 
 # Allow root login from SSH in Linux  
 ## Ubuntu Instructions  
