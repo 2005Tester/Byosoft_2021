@@ -69,7 +69,7 @@ def run_test():
     biosTest.ProcessorDIMM(ser, ssh_bmc)
     biosTest.pressF2(ser, ssh_bmc)
     biosTest.staticTurbo(ser, ssh_bmc)
-    biosTest.ufs(ser, ssh_bmc)
+    Cpu.ufs_default_value(ser, ssh_bmc)
     DefaultValueTest.rrqirq(ser, ssh_bmc)
     biosTest.dram_rapl_option_check(ser, ssh_bmc)
     biosTest.securityBoot(ser, ssh_bmc)

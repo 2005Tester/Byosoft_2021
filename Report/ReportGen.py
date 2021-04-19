@@ -65,7 +65,11 @@ class LogHeaderResult:
 
     def capture_screen(self):
         filename = 'TC' + self.tc[0] + '_' + str(self.suffix) + ".jpg"
-        file_path = os.path.join(self.imgdir, filename)
+        if self.imgdir:
+            file_path = os.path.join(self.imgdir, filename)
+        else:
+            logging.error("Screen Capture Failed: Image path not set.")
+            return
         if os.path.exists(file_path):
             self.suffix += 1
             filename = 'TC' + self.tc[0] + '_' + str(self.suffix) + ".jpg"

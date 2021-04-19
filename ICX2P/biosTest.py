@@ -90,25 +90,25 @@ def pxeTest(serial, ssh, n=1):
 
 
 # USB Test
+# Precondition: No USB key installed
+# OnStart: NA
+# OnComplete: USB Configuration Page
 def usbTest(serial, ssh):
-    tc = ('006', 'USB Test', 'USB Test')
-    result = ReportGen.LogHeaderResult(tc, serial)
+    tc = ('006', '[TC006]USB Test', 'USB Test')
+    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    msg_list = ['USB Mouse\s+1', 'USB Keyboard\s+1', 'USB Mass Storage\s+0']
     if not icx2pAPI.toBIOS(serial, ssh):
         return
     if not icx2pAPI.toBIOSConf(serial):
         result.log_fail()
         return
     serial.send_keys_with_delay(SutConfig.w2key)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.option):
-        result.log_fail()
+
+    if not SetUpLib.enter_menu(serial, Key.DOWN, Msg.PATH_USB_CFG, 10, 'USB'):
+        result.log_fail(capture=True)
         return
-    serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.option1):
-        result.log_fail()
-        return
-    serial.send_keys(Key.ENTER)
-    msg_list = [SutConfig.msg5, SutConfig.msg6, SutConfig.msg7]
-    if not icx2pAPI.verify_setup_options_down(serial, msg_list, 7):
+
+    if not SetUpLib.verify_info(serial, msg_list, 7):
         result.log_fail()
         return
     result.log_pass()
@@ -146,28 +146,6 @@ def ProcessorDIMM(serial, ssh):
         return
     serial.send_keys(Key.ENTER)
     if not icx2pAPI.verify_setup_options_down(serial, SutConfig.DIMM_info, 20):
-        result.log_fail()
-        return
-    result.log_pass()
-    return True
-
-
-# chipsec Test
-def chipsecTest(serial, ssh):
-    # username - OS user name, pwd - OS user password
-    tc = ('008', 'chipsec Test', 'chipsec Test')
-    result = ReportGen.LogHeaderResult(tc, serial)
-    if not icx2pAPI.toBIOS(serial, ssh):
-        return
-    serial.send_keys_with_delay(SutConfig.key2OS)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.OS, timeout=30):
-        result.log_fail()
-        return
-    serial.send_keys(Key.ENTER)
-    if not icx2pAPI.ping_sut():
-        result.log_fail()
-        return
-    if not icx2pAPI.chipsecMerge(ssh):
         result.log_fail()
         return
     result.log_pass()

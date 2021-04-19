@@ -67,7 +67,7 @@ def ufs_default_value(serial, ssh):
         return
     serial.send_keys(Key.ESC)
     serial.send_keys_with_delay([Key.ENTER, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.pat, 'UFS', timeout=30):
+    if not SetUpLib.locate_option(serial, Key.DOWN, ["UFS", "<Enabled>"], 12):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)

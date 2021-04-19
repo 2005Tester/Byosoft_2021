@@ -122,6 +122,7 @@ class Msg:
     # menus of PCH configuration
     PCH_CONFIG = 'PCH CONFIGURATION'
     NETWORK_CONFIG = 'Network Configuration'
+    USB_CONFIG = 'USB Configuration'
 
     # Misc Configuration Menu
     MISC_CONFIG = 'Miscellaneous Configuration'
@@ -135,6 +136,7 @@ class Msg:
     PATH_UNCORE_STATUS = [CPU_CONFIG, UNCORE_CONFIG, UNCORE_GENERAL, UNCORE_STATUS]
     PATH_DRAM_RAPL = [CPU_CONFIG, ADV_POWER_MGF_CONFIG, MEM_POWER_THER_CONFIG, DRAM_RAPL_CONFIG]
     PATH_PSTATE_CTL = [CPU_CONFIG, ADV_POWER_MGF_CONFIG, CPU_P_STATE]
+    PATH_USB_CFG = [PCH_CONFIG, USB_CONFIG]
 
     # Menu in Boot page
     MENU_BOOT_ORDER = 'UEFI Boot'
