@@ -58,7 +58,7 @@ def ufs_default_value(serial, ssh):
         return
     serial.send_keys_with_delay(SutConfig.w2key)
 
-    if not SetUpLib.enter_menu(serial, Key.DOWN, Msg.PATH_PSTATE_CTL, 20, Msg.PATH_PSTATE_CTL):
+    if not SetUpLib.enter_menu(serial, Key.DOWN, Msg.PATH_PSTATE_CTL, 20, Msg.CPU_P_STATE):
         result.log_fail()
         return
 
