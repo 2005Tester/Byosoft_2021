@@ -12,9 +12,9 @@ import logging
 import os
 import re
 from Common import ssh, GitLab
-from ICX2P import SutConfig, Pwd
+from ICX2P import SutConfig
 from ICX2P.SutConfig import Msg
-from ICX2P.BaseLib import SshLib, PowerLib, SerialLib
+from ICX2P.BaseLib import SetUpLib, SshLib, PowerLib, SerialLib
 
 
 # Obtain the path of latest bios image from Gitlab artifacts
@@ -143,7 +143,7 @@ def update_specific_img(bios, serial, ssh_bmc):
         return
     if not serial.is_boot_success():
         return
-    if not Pwd.update_default_password(serial, ssh_bmc):
+    if not SetUpLib.update_default_password(serial, ssh_bmc):
         return
     time.sleep(15)
     return True

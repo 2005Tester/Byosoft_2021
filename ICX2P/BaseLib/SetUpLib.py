@@ -219,3 +219,28 @@ def move_boot_option_up(serial, ssh, boot_option, count):
     if not SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE, delay=600):
         return
     return True
+
+
+# Update default password, should be called after update bios
+def update_default_password(serial, ssh_bmc):
+    logging.info("Change BIOS password to non-default.")
+    if not PowerLib.force_reset(ssh_bmc):
+        return
+    if not SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL):
+        return
+    SerialLib.send_key(serial, Key.DEL)
+    if not SerialLib.is_msg_present(serial, Msg.PW_PROMPT):
+        return
+    SerialLib.send_data(serial, SutConfig.BIOS_PW_DEFAULT)
+    SerialLib.send_key(serial, Key.ENTER*2)
+    if not SerialLib.is_msg_present(serial, "Enter New Password"):
+        return
+    SerialLib.send_data(serial, SutConfig.BIOS_PASSWORD)
+    SerialLib.send_key(serial, Key.ENTER)
+    SerialLib.send_data(serial, SutConfig.BIOS_PASSWORD)
+    SerialLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial, Msg.HOME_PAGE):
+        return
+    logging.info("Password changed to non-default successfully")
+    return True
+

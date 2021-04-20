@@ -52,27 +52,51 @@ simple_pwd_warning = 'The password fails the dictionary check - it is too simpli
 log_dir = SutConfig.LOG_DIR
 
 
-# Update default password, should be called after update bios
-def update_default_password(serial, ssh_bmc):
-    logging.info("Change BIOS password to non-default.")
-    if not PowerLib.force_reset(ssh_bmc):
+# change password
+# OnStart:光标停留在"Manage Supervisor Password"
+# OnComplete: 修改密码成功, 光标停留在"Manage Supervisor Password"
+def change_password(serial, old_password, new_password):
+    SetUpLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial, pwd_info_1):
         return
-    if not SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL):
-        return
-    SerialLib.send_key(serial, Key.DEL)
-    if not SerialLib.is_msg_present(serial, Msg.PW_PROMPT):
-        return
-    SerialLib.send_data(serial, SutConfig.BIOS_PW_DEFAULT)
-    SerialLib.send_key(serial, Key.ENTER*2)
-    if not SerialLib.is_msg_present(serial, "Enter New Password"):
-        return
-    SerialLib.send_data(serial, SutConfig.BIOS_PASSWORD)
+    SerialLib.send_data(serial, old_password)
     SerialLib.send_key(serial, Key.ENTER)
-    SerialLib.send_data(serial, SutConfig.BIOS_PASSWORD)
-    SerialLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, "Continue"):
+    if not SerialLib.is_msg_present(serial, pwd_info_2):
         return
-    logging.info("Password changed to non-default successfully")
+    SerialLib.send_data(serial, new_password)
+    SerialLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial, pwd_info_3):
+        return
+    SerialLib.send_data(serial, new_password)
+    SerialLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial, pwd_info_4):
+        return
+    SerialLib.send_key(serial, Key.ENTER)
+    logging.info("Password is changed from {0} to {1}".format(old_password, new_password))
+    return True
+
+
+# change password
+# OnStart:光标停留在"Manage Supervisor Password"
+# OnComplete: 修改密码失败, 光标停留在"Manage Supervisor Password"
+def change_password_negtive(serial, old_password, new_password):
+    SerialLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial, pwd_info_1):
+        return
+    SerialLib.send_data(serial, old_password)
+    SerialLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial, pwd_info_2):
+        return
+    SerialLib.send_data(serial, new_password)
+    SerialLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial, pwd_info_3):
+        return
+    SerialLib.send_data(serial, new_password)
+    SerialLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial, invalid_info):
+        return
+    SerialLib.send_key(serial, Key.ENTER)
+    logging.info("Password change to: {0} is rejected".format(new_password))
     return True
 
 
@@ -166,6 +190,12 @@ def simplePWDTest(serial, ssh):
     if not SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20):
         result.log_fail()
         return
+
+    if not change_password_negtive(serial, SutConfig.BIOS_PASSWORD, simple_pwd):
+        result.log_fail()
+        return
+
+    """    
     SetUpLib.send_key(serial, Key.ENTER)
     if not SerialLib.is_msg_present(serial, pwd_info_1):
         result.log_fail()
@@ -186,7 +216,14 @@ def simplePWDTest(serial, ssh):
         result.log_fail()
         return
     SetUpLib.send_key(serial, Key.ENTER)
+    """
     time.sleep(1)
+
+    if not change_password(serial, SutConfig.BIOS_PASSWORD, new_pwd_16):
+        result.log_fail()
+        return
+
+    """
     SetUpLib.send_key(serial, Key.ENTER)
     if not SerialLib.is_msg_present(serial, pwd_info_1):
         result.log_fail()
@@ -207,6 +244,7 @@ def simplePWDTest(serial, ssh):
         result.log_fail()
         return
     SetUpLib.send_key(serial, Key.ENTER)
+    """
     serial.send_keys(Key.F10 + Key.Y)
     if not checkPWD(serial, new_pwd_16, simple_pwd):
         result.log_fail()
