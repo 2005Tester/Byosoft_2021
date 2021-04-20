@@ -49,6 +49,7 @@ def gen_report(log_dir):
 def debug_run():
     log_dir = init_log()
     Cpu.cpu_mem_info(ser, ssh_bmc)
+    DIMM.Testcase_MemMargin_001(ser, ssh_bmc)
     gen_report(log_dir)
 
 

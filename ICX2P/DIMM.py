@@ -6,7 +6,7 @@ import unittest
 from ICX2P import SutConfig
 from Report import ReportGen
 from ICX2P.SutConfig import Key, Msg
-from ICX2P.BaseLib import SetUpLib, icx2pAPI
+from ICX2P.BaseLib import SetUpLib, icx2pAPI, PowerLib
 
 # Test case ID: TC700-750
 
@@ -211,7 +211,7 @@ class dimm_memPower(unittest.TestCase):
             result.log_fail(capture=True)
             icx2pAPI.reset_default(serial, ssh_bmc)
             return False
-        icx2pAPI.reset_default(serial, ssh)
+        icx2pAPI.reset_default(serial, ssh_bmc)
         result.log_pass()
 
     def dimm_power_mgt_010(self, serial, ssh_os, ssh_bmc):
@@ -306,3 +306,52 @@ class dimm_memPower(unittest.TestCase):
 
 # inst...
 DPM = dimm_memPower()
+
+
+# 检查并打开RMT菜单,重启查看串口是否正常打印RMT数据
+# Precondition: BIOS默认密码
+# OnStart: NA
+# OnComplete: NA
+def Testcase_MemMargin_001(serial, ssh_bmc):
+    tc = ('708', '[TC708] Testcase_MemMargin_001', '01 内存margin测试菜单选项测试')
+    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+
+    BSSA_MENU = "BSSA Configuration Menu"
+    BSSA_RMT = "BSSA Rank Margin Tool"
+    BSSA_RMT_FAST = "BSSA RMT on Fast Cold Boot"
+    SERIAL_RMT_FLAG = ["START_BSSA_RMT", "Ctl+"]
+    try:
+        assert SetUpLib.boot_to_page(serial, ssh_bmc, Msg.PAGE_ADVANCED), "boot_to_page -> fail"
+        logging.info("Press Enter")
+        serial.send_keys(Key.ENTER)
+        assert SetUpLib.enter_menu(serial, Key.DOWN, [Msg.MEMORY_CONFIG, BSSA_MENU], 15, BSSA_RMT), "enter_menu >> fail"
+        # BSSA Rank Margin Tool: Enable
+        assert SetUpLib.locate_option(serial, Key.DOWN, [BSSA_RMT, "<Disabled>"], 15), "locate_option >> fail"
+        logging.info("Press F6")
+        serial.send_keys(Key.F6)
+        assert SetUpLib.verify_options(serial, Key.DOWN, [[BSSA_RMT, "<Enabled>"]], 15), "verify_options >> fail"
+        logging.info(f"{BSSA_RMT} -> Enabled")
+        # BSSA RMT on Fast Cold Boot: Enable
+        assert SetUpLib.locate_option(serial, Key.DOWN, [BSSA_RMT_FAST, "<Disabled>"], 15), "locate_option >> fail"
+        logging.info("Press F6")
+        serial.send_keys(Key.F6)
+        assert SetUpLib.verify_options(serial, Key.DOWN, [[BSSA_RMT_FAST, "<Enabled>"]], 15), "verify_options >> fail"
+        logging.info(f"{BSSA_RMT_FAST} -> Enabled")
+        # Serial Debug Message: Enable
+        assert icx2pAPI.debug_message(ssh_bmc, enable=True), "bmc_debug_message >> fail"
+        serial.send_keys(Key.F10 + Key.Y)
+        assert serial.waitStrings(SERIAL_RMT_FLAG, timeout=600), "waitStrings >> fail"
+        # BIOS load default
+        icx2pAPI.debug_message(ssh_bmc, enable=False)
+        icx2pAPI.clearCMOS(ssh_bmc)
+        PowerLib.force_power_cycle(ssh_bmc)
+        serial.is_msg_present(Msg.HOTKEY_PROMPT_DEL)
+        result.log_pass()
+    except AssertionError as e:
+        logging.error(e)
+        icx2pAPI.debug_message(ssh_bmc, enable=False)
+        icx2pAPI.clearCMOS(ssh_bmc)
+        PowerLib.force_power_cycle(ssh_bmc)
+        serial.is_msg_present(Msg.HOTKEY_PROMPT_DEL)
+        result.log_fail()
+

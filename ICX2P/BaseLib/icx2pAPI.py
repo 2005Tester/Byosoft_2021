@@ -252,3 +252,19 @@ def reset_default(serial, ssh):
         return False
     logging.info("Reset dafault by F9:Pass")
     return True
+
+
+# open/close debug message with bmc cmd
+def debug_message(ssh_bmc, enable=True):
+    value = 1 if enable else 2
+    cmd1 = f"ipmcset -t maintenance -d biosprint -v {value}\n"
+    rtn1 = 'Do you want to continue'
+    cmd2 = 'Y\n'
+    rtn2 = 'successfully'
+    if not ssh_bmc.login():
+        return
+    if not enable:
+        logging.info("[Serial Debug Message] -> Disabled")
+        return ssh_bmc.interaction([cmd1], [rtn2])
+    logging.info("[Serial Debug Message] -> Enabled")
+    return ssh_bmc.interaction([cmd1, cmd2], [rtn1, rtn2])
