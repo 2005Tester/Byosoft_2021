@@ -398,52 +398,6 @@ class SutControl:
                 return True
             self.send_keys(key)
 
-    # issue: can not to the first item(WA: ENTER + UP, then can find the first option or item), to be enhanced, TBD
-    # could be used to navigate to a option in boot manager page or a option in Setup,
-    def to_highlight_option(self, key, msg, pat=None, timeout=15):
-        """
-        :param msg: the option to be highlighted,
-                    (ps: if the option name is 'Intel(R) TXT', just input TXT' -- known issue, to be enhanced, TBD)
-        :param pat: the re rule, need to be modified for different platform, eg. pat value from Hy5Config.py,
-        :timeout: set the value based on the counts of option in the current page,
-        :return: Data read from serial port,
-        """
-        if pat is None:
-            pat1 = re.compile('{0}\x1B\W'.format(msg), re.M)
-        else:
-            pat1 = re.compile('{0}{1}\s*\x1B\W'.format(pat, msg), re.M)
-
-        # flush serial buffer
-        self.session.flush()
-        time.sleep(1)
-
-        s_time = time.time()  # set timeout flag
-        while True:
-            serial_data = ''
-            if time.time() - s_time > timeout:
-                print("to highlight option timeout")
-                return False
-
-            self.send_keys(key)
-
-            # read serial log in 2 sec
-            for i in range(0, 2):
-                data = self.readLines()
-                if data:
-                    serial_data += data
-                time.sleep(1)
-
-            pat1_res = pat1.findall(serial_data)
-            if not pat1_res:
-                continue
-            else:
-                logging.debug('find the highlight option:{0}'.format(pat1_res))
-                logging.info('Find the highlight option, wait for the next step,')
-                # self.send_keys(ENTER)
-                break
-
-        return True
-
     # debug, to support to_highlight_option def,
     def readLines(self, limit=None):
         """

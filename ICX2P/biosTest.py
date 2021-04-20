@@ -115,43 +115,6 @@ def usbTest(serial, ssh):
     return True
 
 
-# Processor/DIMM Test
-def ProcessorDIMM(serial, ssh):
-    tc = ('007', 'Processor/DIMM Test', 'CPU/DIMM Test')
-    result = ReportGen.LogHeaderResult(tc, serial)
-    if not icx2pAPI.toBIOS(serial, ssh):
-        return
-    if not icx2pAPI.toBIOSConf(serial):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay(SutConfig.w2key)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.option2, timeout=60):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay([Key.ENTER, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.option3):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay([Key.ENTER, Key.UP])
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.option4):
-        result.log_fail()
-        return
-    serial.send_keys(Key.ENTER)
-    if not icx2pAPI.verify_setup_options_down(serial, SutConfig.CPU_info, 20):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay([Key.ESC, Key.ESC])
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.option5, timeout=30):
-        result.log_fail()
-        return
-    serial.send_keys(Key.ENTER)
-    if not icx2pAPI.verify_setup_options_down(serial, SutConfig.DIMM_info, 20):
-        result.log_fail()
-        return
-    result.log_pass()
-    return True
-
-
 # press F2
 def pressF2(serial, ssh):
     tc = ('009', 'Setup菜单用户输入界面按F2切换键盘制式', '支持热键配置')

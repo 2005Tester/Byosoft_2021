@@ -138,6 +138,7 @@ class Msg:
     PATH_PSTATE_CTL = [CPU_CONFIG, ADV_POWER_MGF_CONFIG, CPU_P_STATE]
     PATH_USB_CFG = [PCH_CONFIG, USB_CONFIG]
     PATH_ADV_PM_CFG = [CPU_CONFIG, ADV_POWER_MGF_CONFIG]
+    PATH_PER_CPU_INFO = [CPU_CONFIG, PROCESSOR_CONFIG, PER_CPU]
 
     # Menu in Boot page
     MENU_BOOT_ORDER = 'UEFI Boot'
@@ -212,14 +213,6 @@ SUSE = 'SUSE Linux Enterprise\(LUN0\)'
 pwd_item = 'Manage Supervisor Password'
 pwd_item1 = 'Simple Password'
 
-# level 2
-option3 = 'Processor Configuration'
-option5 = 'Memory Topology'
-
-VIRTUALIZATION_CONFIG = 'Virtualization Configuration'
-
-# level 3
-option4 = 'Per-CPU Information'
 
 # BIOS items info,
 ufs = ['<Enabled>\s+UFS']

@@ -1,3 +1,4 @@
+import logging
 from ICX2P import SutConfig
 from ICX2P.SutConfig import Key, Msg
 from ICX2P.BaseLib import PowerLib, icx2pAPI, SetUpLib, SerialLib
@@ -78,6 +79,28 @@ def static_turbo_default(serial, ssh):
         assert SetUpLib.locate_option(serial, Key.DOWN, static_turbo_default, 10)
         SerialLib.send_key(serial, Key.ENTER)
         assert SerialLib.is_msg_present(serial, r'AutoManualDisabled')
+        result.log_pass()
+        return True
+    except AssertionError:
+        result.log_fail(capture=True)
+
+
+# Verify CPU and DIMM information
+# Precondition: NA
+# OnStart: NA
+# OnComplete: Setup Memory Topology Page
+def cpu_mem_info(serial, ssh):
+    tc = ('203', '[203]CPU Memory Information', 'Verify CPU and Memory Information')
+    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    try:
+        assert SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(serial, Key.DOWN, Msg.PATH_PER_CPU_INFO, 20, 'BSP Revision')
+        logging.info("**Verify CPU Information**")
+        assert SetUpLib.verify_info(serial, SutConfig.CPU_info, 20)
+        SerialLib.send_keys_with_delay(serial, [Key.ESC, Key.ESC])
+        assert SetUpLib.enter_menu(serial, Key.DOWN, [Msg.MEMORY_TOP], 20, 'DIMM000')
+        logging.info("**Verify Memory Information**")
+        assert SetUpLib.verify_info(serial, SutConfig.DIMM_info, 20)
         result.log_pass()
         return True
     except AssertionError:

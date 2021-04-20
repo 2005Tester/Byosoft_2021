@@ -19,7 +19,7 @@ def TestScope():
     biosTest.POST_Test(ser, ssh_bmc)
     biosTest.PM(ser, ssh_bmc)
     biosTest.usbTest(ser, ssh_bmc)
-    biosTest.ProcessorDIMM(ser, ssh_bmc)
+    Cpu.cpu_mem_info(ser, ssh_bmc)
     biosTest.pressF2(ser, ssh_bmc)
     Cpu.static_turbo_default(ser, ssh_bmc)
     Cpu.ufs_default_value(ser, ssh_bmc)
@@ -91,6 +91,5 @@ def ReleaseTest():
 
 def Debug():
     print("Run debug test for ICX 2P.")
-    # biosTest.loadDefault(ser, ssh_bmc)
-    Release.hpm_upgrade_test(ser, ssh_bmc, sftp_bmc, unitool)
-    Release.hpm_downgrade_test(ser, ssh_bmc, sftp_bmc, unitool)
+    Cpu.static_turbo_default(ser, ssh_bmc)
+    Cpu.cpu_mem_info(ser, ssh_bmc)
