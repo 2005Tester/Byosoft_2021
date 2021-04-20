@@ -43,3 +43,8 @@ def run_command(serial, command, msg):
 def send_data(serial, data):
     logging.info("Sending data:{0}".format(data))
     serial.send_data(data)
+
+
+# Read serial output buffer
+def read_buffer(serial):
+    return serial.data

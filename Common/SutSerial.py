@@ -23,6 +23,7 @@ class SutControl:
         self.baudrate = baudrate
         self.timeout = timeout
         self.log = log
+        self.data = ''
         try:
             self.session = serial.Serial(self.port, self.baudrate, timeout=self.timeout)
             if self.session.is_open:
@@ -52,8 +53,8 @@ class SutControl:
             time.sleep(delay)
 
     def receive_data(self, size):
-        data = self.session.read(size).decode('utf-8')
-        return data
+        self.data = self.session.read(size).decode('utf-8')
+        return self.data
 
     @ staticmethod
     def is_timeout(t_start, timeout):
@@ -126,20 +127,21 @@ class SutControl:
         while True:
             if self.session.in_waiting:
                 try:
-                    data = self.session.read(512).decode("utf-8")
+                    self.data = self.session.read(512).decode("utf-8")
                     if cleanup:
-                        data = self.cleanup_data(data)
+                        self.data = self.cleanup_data(self.data)
                     else:
-                        self.write_data2log(data)
+                        self.write_data2log(self.data)
                 except Exception as e:
                     logging.debug(e)
                     logging.debug("is_msg_present_general: error in reading serial data")
-                    data = ''              
-                if pw_prompt and self.find_msg(pw_prompt, data):
+                    self.data = ''              
+                if pw_prompt and self.find_msg(pw_prompt, self.data):
                     self.send_data(pw)
                     self.send_data(chr(0x0D))  # Send Enter
                     logging.info("Send password...")               
-                if self.find_msg(msg, data):
+                if self.find_msg(msg, self.data):
+                    logging.debug("Message found.")
                     return True
 
             if self.is_timeout(start_time, delay):
@@ -358,13 +360,13 @@ class SutControl:
         patten = menuname + ES
         self.receive_data(512)
         while try_counts:
-            try_counts -= 1
             time.sleep(2)
             if self.is_msg_present_general(patten, 1, cleanup=False):
                 logging.info("Menu found: {0}".format(menuname))
                 try_counts = 0
                 return True
             self.send_keys(key)
+            try_counts -= 1
 
     # Enter specifc setup menu by given path(list)
     def enter_menu(self, key, option_path, try_counts, confirm_msg, timeout=15):
@@ -375,6 +377,7 @@ class SutControl:
                 logging.info("Not Found: {0}".format(option))
                 return
             self.send_keys(ENTER)
+            time.sleep(2)
         if not self.is_msg_present_general(confirm_msg, timeout):
             logging.info("{0} not captured, may not enter corect menu")
             return
