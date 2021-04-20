@@ -55,7 +55,7 @@ def app_test(bmc, serial):
         pd[ap + "_Check"] = ""
 
         # PATCH AppProfile选项
-        if rfish.write(**{app_name: ap}) != 200:
+        if not rfish.write(**{app_name: ap})["result"]:
             logging.info('Error: {} = {} PATCH Fail!'.format(app_name, repr(ap)))
             continue
         logging.info('{} = {} PATCH Pass!'.format(app_name, repr(ap)))

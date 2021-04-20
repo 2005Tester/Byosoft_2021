@@ -85,7 +85,7 @@ class RedFish(object):
         patch = self.session.patch(path=self.PATCH_PATH, body=body, headers=self.get_etag())
         time.sleep(0.5)
         result = True if (patch.status == 200) else False
-        msg = re.findall(r'("Attributes":\s*\{.+?\}),', patch.text) if result else re.findall(r'"Message":\s*"(.+?"),',
+        msg = re.findall(r'("Attributes":\s*\{.+?\}),', patch.text) if result else re.findall(r'"Message":\s*"(.+?)",',
                                                                                               patch.text)
         return {"status": patch.status, "body": "".join(msg), "result": result}
 

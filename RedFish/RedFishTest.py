@@ -16,9 +16,9 @@ from Common import SutSerial
 from Common import RedFish
 sys.path.append('RedFish')
 from RedFish import config
-from HY5 import Hy5TcLib
+# from HY5 import Hy5TcLib
 from RedFish import testcase
-from HY5 import updatebios
+# from HY5 import updatebios
 from Common import LogConfig
 import logging.config
 from Common import ssh
@@ -395,11 +395,13 @@ if __name__ == "__main__":
             logging.info("Testing registry file...")
             test_registry_file(".\\RedFish\\baseline\\baseline_830.txt")
 
+        # 联动菜单测试
         elif argv[1] == "depmain":
             logging.info("Testing dependency main option")
             test = DepenTest(bmc, ser)
             test.run_test()
 
+        # 能效菜单测试
         elif argv[1] == "power":
             logging.info("Testing ApplicationProfile")
             app_test(bmc, ser)
