@@ -244,7 +244,7 @@ def Simple_password_validity(serial, ssh,ssh_os):
     return True
 
 
-def Simple_password_disenable(serial, ssh):
+def Simple_password_disenable(serial, ssh): #异常待处理
     tc = ('033', 'PasswordSecurity_03', '设置简易密码并保存后，再次关闭简易密码开关测试')
     result = ReportGen.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
@@ -264,6 +264,7 @@ def Simple_password_disenable(serial, ssh):
     if not SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20):
         result.log_fail()
         return
+    """
     SetUpLib.send_key(serial, Key.ENTER)
     if not SerialLib.is_msg_present(serial, pwd_info_1):
         result.log_fail()
@@ -284,8 +285,9 @@ def Simple_password_disenable(serial, ssh):
         result.log_fail()
         return
     SetUpLib.send_key(serial, Key.ENTER)
+    """
     serial.send_keys(Key.F10 + Key.Y)
-    if not checkPWD(serial, simple_pwd, new_pwd_7):
+    if not checkPWD(serial, '44444444', '333333'):
         result.log_fail()
     ###以上，是此用例的前置条件##############
     SetUpLib.send_keys(serial, SutConfig.key2Setup)
@@ -299,6 +301,7 @@ def Simple_password_disenable(serial, ssh):
     if not SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20):
         result.log_fail()
         return
+    """
     SetUpLib.send_key(serial, Key.ENTER)
     if not SerialLib.is_msg_present(serial, pwd_info_1):
         result.log_fail()
@@ -311,7 +314,7 @@ def Simple_password_disenable(serial, ssh):
     SetUpLib.send_keys(serial, new_pwd_7)
     SetUpLib.send_key(serial, Key.ENTER)
     if not SerialLib.is_msg_present(serial, " confirm ",5):
-        logging.info('----------------------confirm 找不到 ,显示这个提示----------------------------------')
+        logging.info('**confirm 找不到 ,显示这个提示**')
         result.log_fail()
         return
     SetUpLib.send_keys(serial, new_pwd_7)
@@ -320,7 +323,12 @@ def Simple_password_disenable(serial, ssh):
         result.log_fail()
         return
     SetUpLib.send_key(serial, Key.ENTER)
+    """
+    if not change_password_negtive(serial, '44444444', '555555'):
+        result.log_fail()
+        return
     time.sleep(1)
+    """
     SetUpLib.send_key(serial, Key.ENTER)
     if not SerialLib.is_msg_present(serial, pwd_info_1):
         result.log_fail()
@@ -339,11 +347,15 @@ def Simple_password_disenable(serial, ssh):
     if not SerialLib.is_msg_present(serial, pwd_info_4):
         result.log_fail()
     SetUpLib.send_key(serial, Key.ENTER)
-    serial.send_keys(Key.F10 + Key.Y)
-    if not checkPWD(serial, new_pwd_9, new_pwd_7):
+    """
+    if not change_password(serial, '44444444', 'Admin@9002'):
         result.log_fail()
         return
-    if not restore_env(serial, ssh, log_dir):
+    serial.send_keys(Key.F10 + Key.Y)
+    if not checkPWD(serial, 'Admin@9002', '555555'):
+        result.log_fail()
+        return
+    if not reset_password_by_unipwd(serial, ssh, ssh_os):
         restore_env(serial, ssh, log_dir)
         return
     result.log_pass()
@@ -371,39 +383,22 @@ def Simple_password_save_enable(serial, ssh):
     if not SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20):
         result.log_fail()
         return
-    SetUpLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, pwd_info_1):
+    if not change_password(serial, SutConfig.BIOS_PASSWORD, '55555555'):
         result.log_fail()
         return
-    SetUpLib.send_keys(serial, SutConfig.BIOS_PASSWORD)
-    SetUpLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, pwd_info_2):
-        result.log_fail()
-        return
-    SetUpLib.send_keys(serial, simple_pwd)
-    SetUpLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, pwd_info_3):
-        result.log_fail()
-        return
-    SetUpLib.send_keys(serial, simple_pwd)
-    SetUpLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, pwd_info_4):
-        result.log_fail()
-        return
-    SetUpLib.send_key(serial, Key.ENTER)
     serial.send_keys(Key.F10 + Key.Y)
-    if not checkPWD(serial, simple_pwd, ""):
+    if not checkPWD(serial, '55555555', ""):
         result.log_fail()
         return
     SetUpLib.send_key(serial, Key.CTRL_ALT_DELETE)
-    if not checkPWD(serial, simple_pwd, new_pwd_16):
+    if not checkPWD(serial, '55555555', 'Admin@9001Admin@'):
         result.log_fail()
         return
     SetUpLib.send_key(serial, Key.CTRL_ALT_DELETE)
-    if not checkPWD(serial, simple_pwd, new_pwd_9):
+    if not checkPWD(serial, '55555555', 'Admin@9002'):
         result.log_fail()
         return
-    if not restore_env(serial, ssh, log_dir):
+    if not reset_password_by_unipwd(serial, ssh, ssh_os):
         restore_env(serial, ssh, log_dir)
         return
     result.log_pass()
@@ -431,26 +426,9 @@ def Simple_password_save_disable(serial, ssh):
     if not SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20):
         result.log_fail()
         return
-    SetUpLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, pwd_info_1):
+    if not change_password(serial, SutConfig.BIOS_PASSWORD, '66666666'):
         result.log_fail()
         return
-    SetUpLib.send_keys(serial, SutConfig.BIOS_PASSWORD)
-    SetUpLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, pwd_info_2):
-        result.log_fail()
-        return
-    SetUpLib.send_keys(serial, simple_pwd)
-    SetUpLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, pwd_info_3):
-        result.log_fail()
-        return
-    SetUpLib.send_keys(serial, simple_pwd)
-    SetUpLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, pwd_info_4):
-        result.log_fail()
-        return
-    SetUpLib.send_key(serial, Key.ENTER)
     SetUpLib.send_key(serial, Key.CTRL_ALT_DELETE)
     if not icx2pAPI.pressDelnp(serial):
         return
@@ -459,12 +437,12 @@ def Simple_password_save_disable(serial, ssh):
     if not SerialLib.is_msg_present(serial, invalid_info):
         return
     SetUpLib.send_key(serial, Key.ENTER)
-    SetUpLib.send_keys(serial, new_pwd_16)
+    SetUpLib.send_keys(serial, 'Admin@9001Admin@')
     SetUpLib.send_key(serial, Key.ENTER)
     if not SerialLib.is_msg_present(serial, invalid_info):
         return
     SetUpLib.send_key(serial, Key.ENTER)
-    SetUpLib.send_keys(serial, new_pwd_7)
+    SetUpLib.send_keys(serial, '333333')
     SetUpLib.send_key(serial, Key.ENTER)
     if not SerialLib.is_msg_present(serial, invalid_info):
         return
@@ -472,7 +450,7 @@ def Simple_password_save_disable(serial, ssh):
     SetUpLib.send_key(serial, Key.CTRL_ALT_DELETE)
     if not icx2pAPI.pressDelnp(serial):
         return
-    SetUpLib.send_keys(serial, simple_pwd)
+    SetUpLib.send_keys(serial, '11111111')
     SetUpLib.send_key(serial, Key.ENTER)
     if not SerialLib.is_msg_present(serial, invalid_info):
         return
@@ -480,7 +458,7 @@ def Simple_password_save_disable(serial, ssh):
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
         return
-    if not restore_env(serial, ssh, log_dir):
+    if not reset_password_by_unipwd(serial, ssh, ssh_os):
         restore_env(serial, ssh, log_dir)
         return
     result.log_pass()
