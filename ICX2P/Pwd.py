@@ -244,7 +244,7 @@ def Simple_password_validity(serial, ssh,ssh_os):
     return True
 
 
-def Simple_password_disenable(serial, ssh): #异常待处理
+def Simple_password_disenable(serial, ssh,ssh_os): #异常待处理
     tc = ('033', 'PasswordSecurity_03', '设置简易密码并保存后，再次关闭简易密码开关测试')
     result = ReportGen.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
@@ -362,7 +362,7 @@ def Simple_password_disenable(serial, ssh): #异常待处理
     return True
 
 
-def Simple_password_save_enable(serial, ssh):
+def Simple_password_save_enable(serial, ssh,ssh_os):
     tc = ('034', 'PasswordSecurity_04', '简易密码开关打开，设置简易密码后保存生效测试')
     result = ReportGen.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
@@ -405,7 +405,7 @@ def Simple_password_save_enable(serial, ssh):
     return True
 
 
-def Simple_password_save_disable(serial, ssh):
+def Simple_password_save_disable(serial, ssh,ssh_os):
     tc = ('035', 'PasswordSecurity_05', '简易密码开关打开，设置简易密码后不保存退出')
     result = ReportGen.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
@@ -469,7 +469,8 @@ import unittest
 
 
 class PWD_BiosPasswordSecurity(unittest.TestCase):
-    def Testcase_BiosPasswordSecurity_002(self, serial, ssh):
+
+    def Testcase_BiosPasswordSecurity_002(self, serial, ssh,ssh_os):
         tc = ('036', 'Testcase_BiosPasswordSecurity_002', '设置密码长度测试_密码长度小于最少字符数，修改失败测试')
         result = ReportGen.LogHeaderResult(tc, serial)
         try:
@@ -477,31 +478,17 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             SetUpLib.send_keys(serial, SutConfig.key2pwd)
             self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
-            SetUpLib.send_key(serial, Key.ENTER)
-            self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_1))
-            serial.send_data(SutConfig.BIOS_PASSWORD)
-            logging.info("input default_pwd")
-            SetUpLib.send_key(serial, Key.ENTER)
-            self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_2))
-            serial.send_data(new_pwd_5)
-            logging.info("input new_pwd")
-            SetUpLib.send_key(serial, Key.ENTER)
-            self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_3))
-            serial.send_data(new_pwd_5)
-            logging.info("confirm new_pwd")
-            SetUpLib.send_key(serial, Key.ENTER)
-            self.assertTrue(SerialLib.is_msg_present(serial, invalid_info))
-            SetUpLib.send_key(serial, Key.ENTER)
+            self.assertTrue(change_password_negtive(serial, SutConfig.BIOS_PASSWORD, 'Ad@90'))
             logging.info("show invalid_password")
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
-            self.assertTrue(restore_env(serial, ssh, log_dir))
+            self.assertTrue(reset_password_by_unipwd(serial, ssh, ssh_os))
         except AssertionError as err:
-            restore_env(serial, ssh, log_dir)
+            reset_password_by_unipwd(serial, ssh, ssh_os)
             result.log_fail(capture=True)
             return False
         result.log_pass()
 
-    def Testcase_BiosPasswordSecurity_003(self, serial, ssh):
+    def Testcase_BiosPasswordSecurity_003(self, serial, ssh,ssh_os):
         tc = ('037', 'Testcase_BiosPasswordSecurity_003', '设置密码长度度测试_密码长度等于最少字符数，修改成功测试')
         result = ReportGen.LogHeaderResult(tc, serial)
         try:
@@ -509,27 +496,13 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             SetUpLib.send_keys(serial, SutConfig.key2pwd)
             self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
-            SetUpLib.send_key(serial, Key.ENTER)
-            self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_1))
-            serial.send_data(SutConfig.BIOS_PASSWORD)
-            logging.info("input default_pwd")
-            SetUpLib.send_key(serial, Key.ENTER)
-            self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_2))
-            serial.send_data(new_pwd_8)
-            logging.info("input new_pwd")
-            SetUpLib.send_key(serial, Key.ENTER)
-            self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_3))
-            serial.send_data(new_pwd_8)
-            logging.info("confirm new_pwd")
-            SetUpLib.send_key(serial, Key.ENTER)
-            self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_4))
-            SetUpLib.send_key(serial, Key.ENTER)
+            self.assertTrue(change_password(serial, SutConfig.BIOS_PASSWORD, 'Admin@9!'))
+            SetUpLib.send_keys(serial,[Key.F10, Key.Y])            
             logging.info("Changes have been saved after press")
-            SetUpLib.send_keys(serial,[Key.F10, Key.Y])
-            self.assertTrue(checkPWD(serial, new_pwd_8, simple_pwd))
-            self.assertTrue(restore_env(serial, ssh, log_dir))
+            self.assertTrue(checkPWD(serial, 'Admin@9!', '11111111'))
+            self.assertTrue(reset_password_by_unipwd(serial, ssh, ssh_os))
         except AssertionError as err:
-            restore_env(serial, ssh, log_dir)
+            reset_password_by_unipwd(serial, ssh, ssh_os)
             result.log_fail(capture=True)
             return False
         result.log_pass()
