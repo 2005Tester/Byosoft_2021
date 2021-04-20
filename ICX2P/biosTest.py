@@ -355,6 +355,7 @@ def staticTurbo(serial, ssh):
 def dram_rapl_option_check(serial, ssh):
     tc = ('015', '[TC015]Testcase_DRAM_RAPL_001, 菜单项DRAM RAPL选单检查', '支持DRAM RAPL设置')
     result = ReportGen.LogHeaderResult(tc, serial)
+    """
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
         return
@@ -362,6 +363,13 @@ def dram_rapl_option_check(serial, ssh):
         result.log_fail()
         return
     serial.send_keys_with_delay(SutConfig.w2key)
+    import os
+    os.system('pause')
+    """
+
+    if not SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_ADVANCED):
+        result.log_fail()
+        return
 
     if not SetUpLib.enter_menu(serial, Key.DOWN, Msg.PATH_DRAM_RAPL, 20, Msg.DRAM_RAPL_CONFIG):
         result.log_fail()

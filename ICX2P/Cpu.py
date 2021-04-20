@@ -17,15 +17,12 @@ from Report import ReportGen
 def upi_link_status(serial, ssh):
     tc = ('200', '[TC200]UPI link链路检测测试', 'CPU兼容性测试')
     result = ReportGen.LogHeaderResult(tc, serial)
-    if not icx2pAPI.toBIOS(serial, ssh):
-        result.log_fail()
-        return
-    if not icx2pAPI.toBIOSConf(serial):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay(SutConfig.w2key)
 
-    if not SetUpLib.enter_menu(serial, Key.DOWN, Msg.PATH_UNCORE_STATUS, 10, 'Uncore Status'):
+    if not SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_ADVANCED):
+        result.log_fail()
+        return
+
+    if not SetUpLib.enter_menu(serial, Key.DOWN, Msg.PATH_UNCORE_STATUS, 22, 'Uncore Status'):
         result.log_fail()
         return
 
@@ -43,20 +40,10 @@ def upi_link_status(serial, ssh):
 def ufs_default_value(serial, ssh):
     tc = ('201', '[TC201]Testcase_UFS_001', 'UFS默认值测试')
     result = ReportGen.LogHeaderResult(tc, serial)
-    if not icx2pAPI.toBIOS(serial, ssh):
+
+    if not SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_ADVANCED):
         result.log_fail()
         return
-    if not icx2pAPI.toBIOSConf(serial):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay(Key.RESET_DEFAULT)
-    if not icx2pAPI.toBIOSnp(serial):
-        result.log_fail()
-        return
-    if not icx2pAPI.toBIOSConf(serial):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay(SutConfig.w2key)
 
     if not SetUpLib.enter_menu(serial, Key.DOWN, Msg.PATH_PSTATE_CTL, 20, Msg.CPU_P_STATE):
         result.log_fail()
@@ -65,8 +52,7 @@ def ufs_default_value(serial, ssh):
     if not icx2pAPI.verify_setup_options_up(serial, SutConfig.ufs, 4):
         result.log_fail()
         return
-    serial.send_keys(Key.ESC)
-    serial.send_keys_with_delay([Key.ENTER, Key.UP])
+    serial.send_keys_with_delay([Key.ESC, Key.ENTER])
     if not SetUpLib.locate_option(serial, Key.DOWN, ["UFS", "<Enabled>"], 12):
         result.log_fail()
         return
