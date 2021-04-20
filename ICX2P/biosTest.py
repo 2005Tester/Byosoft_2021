@@ -187,66 +187,6 @@ def pressF2(serial, ssh):
     return True
 
 
-def equipmentMode(serial, ssh):
-    tc = ('010', 'Equipment Mode Test', '支持Equipment Mode')
-    result = ReportGen.LogHeaderResult(tc, serial)
-    if not icx2pAPI.toBIOS(serial, ssh):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay(SutConfig.key2OS)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.SUSE):
-        result.log_fail()
-        return
-    serial.send_keys(Key.ENTER)
-    if not icx2pAPI.ping_sut():
-        result.log_fail()
-        return
-    if not icx2pAPI.equipment(ssh):
-        result.log_fail()
-        return
-    if not icx2pAPI.toBIOSnp(serial):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay(SutConfig.key2OS)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.SUSE):
-        result.log_fail()
-        return
-    serial.send_keys(Key.ENTER)
-    if not icx2pAPI.ping_sut():
-        result.log_fail()
-        return
-    cmd = 'dmidecode -t 128'
-    path = SutConfig.LOG_DIR
-    icx2pAPI.dump_smbios(ssh, cmd)
-    if not P.smbiosCheck(cmd, path, SutConfig.SMBIOS_TEMPLATE):
-        result.log_fail()
-        return
-    result.log_pass()
-    return True
-
-
-# check password, for password case only
-def checkPWD(serial, pwd1, pwd2):
-    if not icx2pAPI.pressDelnp(serial):
-        return
-    serial.send_data(pwd1)
-    serial.send_data(chr(0x0D))
-    if not serial.waitString(SutConfig.invalid_info, timeout=30):
-        return
-    serial.send_data(chr(0x0D))
-    serial.send_data('22222222')
-    serial.send_data(chr(0x0D))
-    if not serial.waitString(SutConfig.invalid_info, timeout=30):
-        return
-    serial.send_data(chr(0x0D))
-    serial.send_data(pwd2)
-    serial.send_data(chr(0x0D))
-    serial.send_keys_with_delay([Key.RIGHT, Key.LEFT])
-    if not serial.waitString('Continue', timeout=30):
-        return
-    return True
-
-
 # Setup: Load default and setting saving - AT test cases below,
 def loadDefault(serial, ssh):
     tc = ('011', 'Load default and setting saving Test', 'BIOS Load default Test')
@@ -308,44 +248,6 @@ def loadDefault(serial, ssh):
 
     result.log_pass()
     return True
-
-
-# updated by arthur, Testcase_Static_Turbo_001
-def staticTurbo(serial, ssh):
-    tc = ('012', 'Testcase_Static_Turbo_001', '静态Turbo默认值测试')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
-    if not icx2pAPI.toBIOS(serial, ssh):
-        result.log_fail(capture=True)
-        return
-    if not icx2pAPI.toBIOSConf(serial):
-        result.log_fail(capture=True)
-        return
-    serial.send_keys_with_delay(SutConfig.w2key)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.option2, timeout=60):
-        result.log_fail(capture=True)
-        return
-    serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.option6, timeout=60):
-        result.log_fail(capture=True)
-        return
-    serial.send_keys(Key.ENTER)
-    if not icx2pAPI.verify_setup_options_down(serial, SutConfig.static_turbo, 5):
-        result.log_fail(capture=True)
-        return
-    serial.send_keys(SutConfig.Key.ESC)
-    serial.send_keys(Key.ENTER)
-    if not serial.to_highlight_option(Key.DOWN, SutConfig.pat, 'Static Turbo', timeout=30):
-        result.log_fail(capture=True)
-        return
-    serial.send_keys(Key.ENTER)
-    if not serial.verify_option_value(Key.DOWN, r'AutoManualDisabled'):
-        result.log_fail(capture=True)
-        return
-    result.log_pass()
-    return True
-
-
-
 
 
 # Testcase_DRAM_RAPL_001

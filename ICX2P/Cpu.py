@@ -1,6 +1,6 @@
 from ICX2P import SutConfig
 from ICX2P.SutConfig import Key, Msg
-from ICX2P.BaseLib import PowerLib, icx2pAPI, SetUpLib
+from ICX2P.BaseLib import PowerLib, icx2pAPI, SetUpLib, SerialLib
 from Report import ReportGen
 
 
@@ -62,3 +62,23 @@ def ufs_default_value(serial, ssh):
         return
     result.log_pass()
     return True
+
+
+# Testcase_Static_Turbo_001
+# Precondition: NA
+# OnStart: NA
+# OnComplete: Setup Advanced power management page
+def static_turbo_default(serial, ssh):
+    tc = ('202', '[202]Testcase_Static_Turbo_001', '静态Turbo默认值测试')
+    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    static_turbo_default = ['Static Turbo', '<Disabled>']
+    try:
+        assert SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(serial, Key.DOWN, Msg.PATH_ADV_PM_CFG, 20, Msg.ADV_POWER_MGF_CONFIG)
+        assert SetUpLib.locate_option(serial, Key.DOWN, static_turbo_default, 10)
+        SerialLib.send_key(serial, Key.ENTER)
+        assert SerialLib.is_msg_present(serial, r'AutoManualDisabled')
+        result.log_pass()
+        return True
+    except AssertionError:
+        result.log_fail(capture=True)

@@ -137,6 +137,7 @@ class Msg:
     PATH_DRAM_RAPL = [CPU_CONFIG, ADV_POWER_MGF_CONFIG, MEM_POWER_THER_CONFIG, DRAM_RAPL_CONFIG]
     PATH_PSTATE_CTL = [CPU_CONFIG, ADV_POWER_MGF_CONFIG, CPU_P_STATE]
     PATH_USB_CFG = [PCH_CONFIG, USB_CONFIG]
+    PATH_ADV_PM_CFG = [CPU_CONFIG, ADV_POWER_MGF_CONFIG]
 
     # Menu in Boot page
     MENU_BOOT_ORDER = 'UEFI Boot'
@@ -214,8 +215,6 @@ pwd_item1 = 'Simple Password'
 # level 2
 option3 = 'Processor Configuration'
 option5 = 'Memory Topology'
-option1 = 'USB Configuration'
-option6 = 'Advanced Power Mgmt. Configuration'
 
 VIRTUALIZATION_CONFIG = 'Virtualization Configuration'
 
@@ -223,7 +222,6 @@ VIRTUALIZATION_CONFIG = 'Virtualization Configuration'
 option4 = 'Per-CPU Information'
 
 # BIOS items info,
-static_turbo = ['<Disabled>\s+Static Turbo']
 ufs = ['<Enabled>\s+UFS']
 dram = ['<Enabled>\s+DRAM RAPL']
 cnd_status = ['<Enabled>\s+Network CDN']
