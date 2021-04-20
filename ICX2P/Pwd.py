@@ -26,12 +26,10 @@ from ICX2P.BaseLib import icx2pAPI, SetUpLib, Update, PowerLib, SerialLib, SshLi
 default_pwd = 'Admin@9000'
 new_pwd_4 = 'Admini@6789'
 new_pwd_5 = 'Ad@90'
-new_pwd_7 = '333333'
 new_pwd_8 = 'Admin@9!'
 new_pwd_9 = 'Admin@9002'
 new_pwd_16 = 'Admin@9001Admin@'
 new_pwd_17 = 'Admin@9001Admin@9'
-simple_pwd = '11111111'
 weak_pwd = 'Huawei@CLOUD8!'
 # 新密码为1种字符类型，尝试各种组合（共4种组合）
 pwd_list = ['55555555', 'EEEEEEEE', 'bbbbbbbb', '!@#$%^&*']
@@ -145,11 +143,10 @@ def restore_env(serial, ssh_bmc, log_dir):
 
 # 用于新密码机制，外部unipwd工具修改为Admin@909密码
 def reset_password_by_unipwd(serial, ssh_bmc, ssh_os):
+    icx2pAPI.clearCMOS(ssh_bmc)
     logging.info("Modify PWD to SutConfig.BIOS_PW by unipwd tool")
-    if not SetUpLib.boot_to_bootmanager(serial, ssh_bmc):
+    if not PowerLib.force_reset(ssh_bmc):
         logging.info("Boot to boot manager fail.")
-        return restore_env(serial, ssh_bmc, log_dir)
-    if not SetUpLib.enter_menu(serial, Key.DOWN, Msg.suse_linux, 20, Msg.suse_linux_msg):
         return restore_env(serial, ssh_bmc, log_dir)
     if not icx2pAPI.ping_sut():
         logging.info("Ping SUT fail.")
@@ -172,7 +169,7 @@ def reset_password_by_unipwd(serial, ssh_bmc, ssh_os):
     return True
 
 
-def simplePWDTest(serial, ssh):
+def simplePWDTest(serial, ssh, ssh_os):
     tc = ('031', 'PasswordSecurity_01', ' 简易密码开关默认值测试，密码开关为初始状态')
     result = ReportGen.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
@@ -191,72 +188,25 @@ def simplePWDTest(serial, ssh):
         result.log_fail()
         return
 
-    if not change_password_negtive(serial, SutConfig.BIOS_PASSWORD, simple_pwd):
+    if not change_password_negtive(serial, SutConfig.BIOS_PASSWORD, '11111111'):
         result.log_fail()
         return
-
-    """    
-    SetUpLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, pwd_info_1):
-        result.log_fail()
-        return
-    SetUpLib.send_keys(serial, SutConfig.BIOS_PASSWORD)
-    SetUpLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, pwd_info_2):
-        result.log_fail()
-        return
-    SetUpLib.send_keys(serial, simple_pwd)
-    SetUpLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, pwd_info_3):
-        result.log_fail()
-        return
-    SetUpLib.send_keys(serial, simple_pwd)
-    SetUpLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, invalid_info):
-        result.log_fail()
-        return
-    SetUpLib.send_key(serial, Key.ENTER)
-    """
     time.sleep(1)
-
-    if not change_password(serial, SutConfig.BIOS_PASSWORD, new_pwd_16):
+    if not change_password(serial, SutConfig.BIOS_PASSWORD, 'Admin@9001Admin@'):
         result.log_fail()
         return
-
-    """
-    SetUpLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, pwd_info_1):
-        result.log_fail()
-        return
-    SetUpLib.send_keys(serial, SutConfig.BIOS_PASSWORD)
-    SetUpLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, pwd_info_2):
-        result.log_fail()
-        return
-    SetUpLib.send_keys(serial, new_pwd_16)
-    SetUpLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, pwd_info_3):
-        result.log_fail()
-        return
-    SetUpLib.send_keys(serial, new_pwd_16)
-    SetUpLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, pwd_info_4):
-        result.log_fail()
-        return
-    SetUpLib.send_key(serial, Key.ENTER)
-    """
     serial.send_keys(Key.F10 + Key.Y)
-    if not checkPWD(serial, new_pwd_16, simple_pwd):
+    if not checkPWD(serial, 'Admin@9001Admin@', '11111111'):
         result.log_fail()
         return
-    if not restore_env(serial, ssh, log_dir):
+    if not reset_password_by_unipwd(serial, ssh, ssh_os):
         restore_env(serial, ssh, log_dir)
         return
     result.log_pass()
     return True
 
 
-def Simple_password_validity(serial, ssh):
+def Simple_password_validity(serial, ssh,ssh_os):
     tc = ('032', 'PasswordSecurity_02', '简易密码开关打开,修改密码为简易密码,简易密码有效性测试')
     result = ReportGen.LogHeaderResult(tc, serial)
     if not icx2pAPI.toBIOS(serial, ssh):
@@ -276,52 +226,18 @@ def Simple_password_validity(serial, ssh):
     if not SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20):
         result.log_fail()
         return
-    SetUpLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, pwd_info_1):
+    if not change_password_negtive(serial, SutConfig.BIOS_PASSWORD, '333333'):
         result.log_fail()
         return
-    SetUpLib.send_keys(serial, SutConfig.BIOS_PASSWORD)
-    SetUpLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, pwd_info_2):
-        result.log_fail()
-        return
-    SetUpLib.send_keys(serial, new_pwd_7)
-    SetUpLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, pwd_info_3):
-        result.log_fail()
-        return
-    SetUpLib.send_keys(serial, new_pwd_7)
-    SetUpLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, invalid_info):
-        result.log_fail()
-        return
-    SetUpLib.send_key(serial, Key.ENTER)
     time.sleep(1)
-    SetUpLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, pwd_info_1):
+    if not change_password(serial, SutConfig.BIOS_PASSWORD, '22222222'):
         result.log_fail()
         return
-    SetUpLib.send_keys(serial, SutConfig.BIOS_PASSWORD)
-    SetUpLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, pwd_info_2):
-        result.log_fail()
-        return
-    SetUpLib.send_keys(serial, simple_pwd)
-    SetUpLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, pwd_info_3):
-        result.log_fail()
-        return
-    SetUpLib.send_keys(serial, simple_pwd)
-    SetUpLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, pwd_info_4):
-        result.log_fail()
-        return
-    SetUpLib.send_key(serial, Key.ENTER)
     serial.send_keys(Key.F10 + Key.Y)
-    if not checkPWD(serial, simple_pwd, new_pwd_7):
+    if not checkPWD(serial, '22222222', '333333'):
         result.log_fail()
         return
-    if not restore_env(serial, ssh, log_dir):
+    if not reset_password_by_unipwd(serial, ssh, ssh_os):
         restore_env(serial, ssh, log_dir)
         return
     result.log_pass()

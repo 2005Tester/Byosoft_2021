@@ -79,8 +79,8 @@ def run_test():
     if Os.boot_to_suse(ser, ssh_bmc):
         Smbios.smbios_test_all(ssh_os)
         Release.equip_mode_flag_check(unitool)
-    Pwd.simplePWDTest(ser, ssh_bmc)
-    Pwd.Simple_password_validity(ser, ssh_bmc)
+    Pwd.simplePWDTest(ser, ssh_bmc, ssh_os)
+    Pwd.Simple_password_validity(ser, ssh_bmc, ssh_os)
     Pwd.Simple_password_disenable(ser, ssh_bmc)
     Pwd.Simple_password_save_enable(ser, ssh_bmc)
     Pwd.Simple_password_save_disable(ser, ssh_bmc)
