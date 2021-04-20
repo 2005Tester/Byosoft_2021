@@ -507,7 +507,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             return False
         result.log_pass()
 
-    def Testcase_BiosPasswordSecurity_004(self, serial, ssh):
+    def Testcase_BiosPasswordSecurity_004(self, serial, ssh, ssh_os):
         tc = ('038', 'Testcase_BiosPasswordSecurity_004', '设置密码长度测试_密码长度大于最少字符数，小于最大字符数，修改成功测试')
         result = ReportGen.LogHeaderResult(tc, serial)
         try:
@@ -515,32 +515,18 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             SetUpLib.send_keys(serial, SutConfig.key2pwd)
             self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
-            SetUpLib.send_key(serial, Key.ENTER)
-            self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_1))
-            serial.send_data(SutConfig.BIOS_PASSWORD)
-            logging.info("input default_pwd")
-            SetUpLib.send_key(serial, Key.ENTER)
-            self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_2))
-            serial.send_data(new_pwd_9)
-            logging.info("input new_pwd")
-            SetUpLib.send_key(serial, Key.ENTER)
-            self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_3))
-            serial.send_data(new_pwd_9)
-            logging.info("confirm new_pwd")
-            SetUpLib.send_key(serial, Key.ENTER)
-            self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_4))
-            SetUpLib.send_key(serial, Key.ENTER)
-            logging.info("Changes have been saved after press")
+            self.assertTrue(change_password(serial, SutConfig.BIOS_PASSWORD, 'Admin@9003'))
             SetUpLib.send_keys(serial,[Key.F10, Key.Y])
-            self.assertTrue(checkPWD(serial, new_pwd_9, simple_pwd))
-            self.assertTrue(restore_env(serial, ssh, log_dir))
+            logging.info("Changes have been saved after press")
+            self.assertTrue(checkPWD(serial, 'Admin@9003', '11111111'))
+            self.assertTrue(reset_password_by_unipwd(serial, ssh, ssh_os))
         except AssertionError as err:
-            restore_env(serial, ssh, log_dir)
+            reset_password_by_unipwd(serial, ssh, ssh_os
             result.log_fail(capture=True)
             return False
         result.log_pass()
 
-    def Testcase_BiosPasswordSecurity_005_019_021(self, serial, ssh):
+    def Testcase_BiosPasswordSecurity_005_019_021(self, serial, ssh, ssh_os):
         tc = (
             '039', 'Testcase_BiosPasswordSecurity_005_019_021',
             '设置密码长度度测试_密码长度最大字符数，修改成功测试；密码修改时要验证旧密码测试；新密码需要再次输入确认测试')
@@ -550,27 +536,13 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             SetUpLib.send_keys(serial, SutConfig.key2pwd)
             self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
-            SetUpLib.send_key(serial, Key.ENTER)
-            self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_1))
-            serial.send_data(SutConfig.BIOS_PASSWORD)
-            logging.info("input default_pwd")
-            SetUpLib.send_key(serial, Key.ENTER)
-            self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_2))
-            serial.send_data(new_pwd_16)
-            logging.info("input new_pwd")
-            SetUpLib.send_key(serial, Key.ENTER)
-            self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_3))
-            serial.send_data(new_pwd_16)
-            logging.info("confirm new_pwd")
-            SetUpLib.send_key(serial, Key.ENTER)
-            self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_4))
-            SetUpLib.send_key(serial, Key.ENTER)
-            logging.info("Changes have been saved after press")
+            self.assertTrue(change_password(serial, SutConfig.BIOS_PASSWORD, 'Admin@9001Admin@'))
             SetUpLib.send_keys(serial,[Key.F10, Key.Y])
-            self.assertTrue(checkPWD(serial, new_pwd_16, simple_pwd))
-            self.assertTrue(restore_env(serial, ssh, log_dir))
+            logging.info("Changes have been saved after press")
+            self.assertTrue(checkPWD(serial, 'Admin@9001Admin@', '11111111'))
+            self.assertTrue(reset_password_by_unipwd(serial, ssh, ssh_os))
         except AssertionError as err:
-            restore_env(serial, ssh, log_dir)
+            reset_password_by_unipwd(serial, ssh, ssh_os)
             result.log_fail(capture=True)
             return False
         result.log_pass()
