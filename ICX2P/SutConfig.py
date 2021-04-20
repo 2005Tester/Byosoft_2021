@@ -120,7 +120,7 @@ class Msg:
     UNCORE_STATUS = 'Uncore Status'
 
     # menus of PCH configuration
-    PCH_CONFIG = 'PCH CONFIGURATION'
+    PCH_CONFIG = 'PCH Configuration'
     NETWORK_CONFIG = 'Network Configuration'
     USB_CONFIG = 'USB Configuration'
 
