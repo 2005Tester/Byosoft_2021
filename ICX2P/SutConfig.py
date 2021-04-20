@@ -103,7 +103,7 @@ class Msg:
     UNCORE_CONFIG = 'Uncore Configuration'
     UNCORE_GENERAL = 'Uncore General Configuration'
     MEMORY_CONFIG = 'Memory Configuration'
-    MEMORY_TOP = 'Memory Topolopy'
+    MEMORY_TOP = 'Memory Topology'
     ADV_POWER_MGF_CONFIG = 'Advanced Power Mgmt. Configuration'
     MEM_FRE = 'Memory Frequency'
     MEM2X_REFRESH = '2x Refresh Enable'
