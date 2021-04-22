@@ -7,7 +7,7 @@ from Report import ReportGen
 from Common.LogAnalyzer import LogAnalyzer
 from ICX2P import SutConfig
 from ICX2P.SutConfig import BiosCfg, Msg
-from ICX2P.BaseLib import PowerLib, SerialLib, SetUpLib, SshLib
+from ICX2P.BaseLib import PowerLib, SerialLib, SetUpLib, SshLib, icx2pAPI
 
 
 # Test case ID: 400-440, 527 reserved
@@ -22,33 +22,20 @@ TYPES = [0, 1, 2, 3, 4, 7, 9, 13, 16, 17, 19, 38, 39, 41, 127]
 P = LogAnalyzer(SutConfig.LOG_DIR)
 
 # signals in rmt result
-SIGNALS = ['RxDqsN', 'RxDqsP', 'RxVrefN', 'RxVrefP', 'TxDqN', 'TxDqP', 'TxVrefN', 'TxVrefP',
-           'CmdN', 'CmdP', 'CmdVrefN', 'CmdVrefP', 'CtlN', 'CtlP']
+SIGNALS = "RxDqs- RxDqs+  RxV-  RxV+  TxDq-  TxDq+  TxV-  TxV+  Cmd-  Cmd+  CmdV-  CmdV+  Ctl-  Ctl+"
 
 
 class Type128Test:
-    def __init__(self, data, ssh):
-        self.address = '0x'
-        self.rmt_hob = {}
-        self.rmt_dbglog = {}
-        self.ranks_dbg_log = []
-        self.ranks_mem_data = []
+    def __init__(self, data, ssh_os):
         self.type128data = data
+        self.ssh_os = ssh_os
+        self.base_addr = None
+        self.rmt_mem_dic = {}
+        self.rmt_serial_dic = {}
+        self.serial_log = os.path.join(SutConfig.LOG_DIR, 'serial.log')
 
-        self.mem_addr = self.get_mem_address()
-
-        self.rmt_from_dbglog(os.path.join(SutConfig.LOG_DIR, 'serial.log'))
-        self.convert_memdata(self.get_rmtdata(ssh))
-        self.get_ranks()
-
-    def get_rmtdata(self, ssh):
-        cmd = 'cd rw &&./rw mmr {0}'.format(self.mem_addr)
-        rmt_data = SshLib.execute_command(ssh, cmd)
-        return rmt_data
-
-    # get address of RMT result hob from smbios type128 table
-    def get_mem_address(self):
-        # to match type 128 header and data
+    # get base address from smbios t128 data
+    def get_base_addr(self):
         patten = r"80(?:\s[0-9A-F]{2}){15}"
         x = re.compile(patten)
         res = x.findall(self.type128data)
@@ -60,82 +47,97 @@ class Type128Test:
         if not len(address_lst) == 8:
             logging.info("Address should be 64it")
             return
-        for n in range(8):
-            self.address = self.address + str(address_lst[n])
-        self.address = hex(int(self.address, 16))
-        logging.info("Memory address:{0}".format(self.address))
-        return self.address
+        base_addr_str = "".join(address_lst)
+        self.base_addr = int(base_addr_str, 16) + 0x10
+        logging.info(f"Smbios Type-128 base address:{hex(self.base_addr)}")
+        return self.base_addr
 
-    def get_ranks(self):
-        if self.rmt_dbglog:
-            self.ranks_dbg_log = list(self.rmt_dbglog.keys())
-        else:
-            logging.info("No rmt data found in serial debug log")
-        if self.rmt_hob:
-            self.ranks_mem_data = list(self.rmt_hob.keys())[1:len(self.ranks_dbg_log)+1]
-        else:
-            logging.info("Memory data is not correct.")
-        return self.ranks_dbg_log, self.ranks_mem_data
+    def read_rmt_mem(self, ssh_os, base, size=0x2000):
+        # return {addr: value}
+        cmd = f'cd {SutConfig.RW_PATH} &&./rw mmr {hex(base)} {hex(size)}'
+        origin_data = SshLib.execute_command(ssh_os, cmd)
+        logging.debug(f"read data from mem:\n{origin_data}")
+        pat = "([0-9a-f]{8}):((?:\s[0-9a-f]{4}){8})"
+        patten = re.compile(pat)
+        mem_data_list = patten.findall(origin_data)
+        rmt_mem = dict(mem_data_list)
+        for i, rm in rmt_mem.items():
+            rmt_mem[i] = list(map(lambda x: int(x, 16), rm.split()))
+        for k, v in rmt_mem.items():
+            next_row = hex(int(k, 16) + 0x10)[2:]
+            if (int(k, 16) >> 4) % 2 != 0 and rmt_mem.get(next_row):
+                self.rmt_mem_dic[k] = rmt_mem[k] + rmt_mem[next_row]
+        return self.rmt_mem_dic
 
-    # convert Hob data
-    def rmt_mem_per_signal(self, rankdata, signal):
-        newlist = []
-        for data in rankdata:
-            data = list(data)
-            data_persignal = [(str(data[0])+str(data[1])), (str(data[2])+str(data[3]))]
-            data_persignal.reverse()
-            newlist += data_persignal
-        res = int(newlist[signal], 16)
-        return res
-
-    # Convert RMT result data to a list
-    def convert_memdata(self, raw_memory):
-        # To match patten:66cd6000: 9748 352c 0608 0402 6010 66cd 0000 0000
-        patten = r"[0-9a-f]{8}:(?:\s[0-9a-f]{4}){8}"
-        x = re.compile(patten)
-        data = x.findall(raw_memory)
-        for line in data:
-            addr = re.findall(r"[0-9a-f]{8}", line)[0]
-            value = re.findall(r"(?:\s[0-9a-f]{4}){8}", line)[0].split()
-            self.rmt_hob[addr] = value
-        return self.rmt_hob
-
-    # Read rmt result data from debug log and convert to a dict
-    def rmt_from_dbglog(self, file):
-        with open(file, 'r') as f:
+    def read_rmt_serial(self):
+        if not os.path.isfile(self.serial_log):
+            logging.info(f"Invalid serial log: {self.serial_log}")
+            return
+        with open(self.serial_log, 'r') as f:
             data = f.read()
-        pattern_rmt = r'N\d.C\d.D\d.R\d:(?:\s+-*\d\d){14}'
-
+        pattern_rmt = r'(N\d.C\d.D\d.R\d):((?:\s+-*\d\d){14})'
         x = re.compile(pattern_rmt)
         rmt_result = x.findall(data)
+        if not rmt_result:
+            logging.info(f"RMT data not found in serial log: {self.serial_log}")
+            return
+        rmt_result = list(map(list, rmt_result))
         for res in rmt_result:
-            rank = res.split(':')[0]
-            data = res.split(':')[1].split()
-            self.rmt_dbglog[rank] = data
-        return self.rmt_dbglog
+            rank = res[0]
+            data = list(map(int, res[1].split()))
+            self.rmt_serial_dic[rank] = data
+        return self.rmt_serial_dic
 
-    def rmt_dbglog_per_signal(self, rank, signal):
-        result_rank_signal = self.rmt_dbglog[rank][signal]
-        return result_rank_signal.replace('-', '')
+    def addr_to_rank(self, addr: int):
+        step_size = 0x20  # per rank mem addr interval
+        offset = addr - self.base_addr
+        scalar = int(offset / step_size)
+        # icx platform feature, double check this field in different platform
+        rank_max = 4
+        dimm_max = 2
+        ch_max = 8
+        node_max = 2
+        # location parser
+        rank_n = scalar % rank_max
+        dimm_n = int(scalar / rank_max) % dimm_max
+        ch_n = int(scalar / dimm_max / rank_max) % ch_max
+        node_n = int(scalar / ch_max / dimm_max / rank_max)
+        if node_n >= node_max:
+            return
+        return rf"N{node_n}.C{ch_n}.D{dimm_n}.R{rank_n}"
 
     def compare_data(self):
-        failures = 0
-        x = self.rmt_hob
-        if not len(self.ranks_dbg_log) == len(self.ranks_mem_data):
-            logging.info("Data read from memory and serial debug log doesn't appear to be correct, please double check")
-            return
-        for rnk in self.ranks_dbg_log:
-            logging.info("Testing rank: {0}".format(rnk))
-            for sig in SIGNALS:
-                log_data = self.rmt_dbglog_per_signal(rnk, SIGNALS.index(sig))
-                mem_data = self.rmt_mem_per_signal(x[self.ranks_mem_data[self.ranks_dbg_log.index(rnk)]], SIGNALS.index(sig))
-                logging.info("{0}: {1} - {2}".format(sig, log_data, mem_data))
-                if str(log_data) == str(mem_data):
-                    logging.info("Pass")
-                else:
-                    logging.info("Fail")
-                    failures += 1
-            return failures
+        result = True
+        signal_list = SIGNALS.split()
+        for mem_addr, data_mem in self.rmt_mem_dic.items():
+            rank_str = self.addr_to_rank(int(mem_addr, 16))
+            data_serial = self.rmt_serial_dic.get(rank_str)
+            if not data_serial:  # filter out empty rank data
+                continue
+            for index, value_ser in enumerate(data_serial):
+                value_mem = data_mem[index]
+                if abs(value_ser) != abs(value_mem):  # verify every signal rmt data
+                    logging.info(f"[{rank_str}] {signal_list[index]:7}| serial [{value_ser:3}] | t128 [{value_mem:3}] fail")
+                    result = result & False
+                    continue
+                logging.info(f"[{rank_str}] {signal_list[index]:7}| serial [{value_ser:3}] | t128 [{value_mem:3}] pass")
+        return result
+
+    def run_test(self):
+        try:
+            # data init
+            assert self.get_base_addr(), "get_base_addr() error"
+            assert self.read_rmt_mem(self.ssh_os, self.base_addr), "read_rmt_mem() error"
+            assert self.read_rmt_serial(), "read_rmt_serial() error"
+            # debug print
+            logging.debug(f"base_addr: {hex(self.base_addr)}")
+            logging.debug(f"rmt_mem_dic: {self.rmt_mem_dic}")
+            logging.debug(f"rmt_serial_dic: {self.rmt_serial_dic}")
+            # compare data
+            assert self.compare_data(), "compare data failed"
+            return True
+        except AssertionError as e:
+            logging.info(e)
 
 
 # Function to test a single type
@@ -157,9 +159,12 @@ def smbios_test_all(ssh):
         smbios_test(ssh, typeid) 
 
 
-# Check SMBIOS type128 data for manufacture mode
+# 打开装备模式并开启RMT， 重启对比Smbios128和串口RMT数据是否匹配
+# Precondition: Linux配置好 unitool和rw工具, os ssh可访问
+# OnStart: 进入Linux系统
+# OnComplete: clearCMOS后正常启动
 def smbios_type128(serial, ssh, sshbmc, unitool):
-    tc = ('528', 'SMBIOS Type 128', '检查SMBIOS Type 128信息')
+    tc = ('528', '[TC528]Testcase_MemMargin_002', '装备模式下内存margin测试, 检查Smbios Type128信息')
     result = ReportGen.LogHeaderResult(tc)
     logging.info("Change setup option to enable RMT")
     res = unitool.set_config(BiosCfg.MFG_RMT)
@@ -177,9 +182,11 @@ def smbios_type128(serial, ssh, sshbmc, unitool):
     type128data = SshLib.execute_command(ssh, "dmidecode -t 128")
     logging.info(type128data)
     test = Type128Test(type128data, ssh)
-    fail_count = test.compare_data()
-    if fail_count:
+    if not test.run_test():
+        icx2pAPI.clearCMOS(sshbmc)
+        PowerLib.force_reset(sshbmc)
         result.log_fail()
         return
+    icx2pAPI.clearCMOS(sshbmc)
+    PowerLib.force_reset(sshbmc)
     result.log_pass()
-    return

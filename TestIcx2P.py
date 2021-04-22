@@ -50,6 +50,7 @@ def debug_run():
     log_dir = init_log()
     Cpu.cpu_mem_info(ser, ssh_bmc)
     DIMM.Testcase_MemMargin_001(ser, ssh_bmc)
+    Smbios.smbios_type128(ser,ssh_os, ssh_bmc, unitool)
     gen_report(log_dir)
 
 
