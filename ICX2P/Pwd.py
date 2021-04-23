@@ -748,8 +748,8 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             return False
         result.log_pass()
 
-    def Testcase_BiosPasswordSecurity_015(self, serial, ssh):
-        tc = ('047', 'Testcase_BiosPasswordSecurity_015', '输入错误密码次数测试_超出阈值重启后不影响下一次登录')
+    def Testcase_BiosPasswordSecurity_014_015(self, serial, ssh):
+        tc = ('047', 'Testcase_BiosPasswordSecurity_014_015', '输入错误密码次数测试_超出阈值锁定输入界面，提示报错、并提示复位；超出阈值重启后不影响下一次登录')
         result = ReportGen.LogHeaderResult(tc, serial)
         pwd_error = ['Admin@3456', 'Qa@12', '222222']
         try:
@@ -784,8 +784,8 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             return False
         result.log_pass()
 
-    def Testcase_BiosPasswordSecurity_016(self, serial, ssh):
-        tc = ('048', 'Testcase_BiosPasswordSecurity_016', '密码不能明文显示_不显示或用*代替字符测试')
+    def Testcase_BiosPasswordSecurity_016_017(self, serial, ssh):
+        tc = ('048', 'Testcase_BiosPasswordSecurity_016', '密码不能明文显示_不显示或用*代替字符测试;任意密码不显示或用*代替字符测试')
         result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
         try:
             self.assertTrue(PowerLib.force_reset(ssh))
@@ -907,6 +907,31 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         except AssertionError as err:
             reset_password_by_unipwd(serial, ssh, ssh_os)
             result.log_fail(capture=True)
+            return False
+        result.log_pass()
+
+    def Testcase_BiosPasswordSecurity_028(self, serial, ssh, ssh_os):
+        tc = ('052', 'Testcase_BiosPasswordSecurity_028', '开启OS引导时,弹出密码输入框,需要输入管理员密码测试')
+        result = ReportGen.LogHeaderResult(tc, serial)
+        try:
+            self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
+            self.assertTrue(icx2pAPI.toBIOSConf(serial))
+            SetUpLib.send_keys(serial, SutConfig.key2pwd)
+            self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Power On Password", "<Disabled>"], 20))
+            SetUpLib.send_keys(serial,[Key.F5,Key.F10, Key.Y])
+            logging.info("set Power on Password Enable")
+            self.assertTrue(SerialLib.is_msg_present(serial, 'Enter Current Password:'))
+            SerialLib.send_data(serial, SutConfig.BIOS_PASSWORD)
+            SetUpLib.send_key(serial, Key.ENTER)
+            logging.info("reboot ,input BIOS_PASSWORD ")
+            time.sleep(30)
+            self.assertTrue(icx2pAPI.ping_sut())
+            self.assertTrue(reset_password_by_unipwd(serial, ssh, ssh_os))
+            logging.info("正常恢复")
+        except AssertionError as err:
+            self.assertTrue(reset_password_by_unipwd(serial, ssh, ssh_os))
+            logging.info("异常恢复")
+            result.log_fail()
             return False
         result.log_pass()
 
@@ -1052,3 +1077,32 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
 
 PWDAUTHMGT = PWD_AUTH_MANAGERMENT()
 PBPWS = PWD_BiosPasswordSecurity()
+
+
+# Main function
+def Pwd_test(ser, ssh_bmc, ssh_os):
+    simplePWDTest(ser, ssh_bmc, ssh_os)
+    Simple_password_validity(ser, ssh_bmc, ssh_os)
+    # Simple_password_disenable(ser, ssh_bmc, ssh_os)
+    Simple_password_save_enable(ser, ssh_bmc, ssh_os)
+    Simple_password_save_disable(ser, ssh_bmc, ssh_os)
+    PBPWS.Testcase_BiosPasswordSecurity_002(ser, ssh_bmc, ssh_os)
+    PBPWS.Testcase_BiosPasswordSecurity_003(ser, ssh_bmc, ssh_os)
+    PBPWS.Testcase_BiosPasswordSecurity_004(ser, ssh_bmc, ssh_os)
+    PBPWS.Testcase_BiosPasswordSecurity_005_019_021(ser, ssh_bmc, ssh_os)
+    PBPWS.Testcase_BiosPasswordSecurity_006(ser, ssh_bmc, ssh_os)
+    PBPWS.Testcase_BiosPasswordSecurity_007(ser, ssh_bmc, ssh_os)
+    PBPWS.Testcase_BiosPasswordSecurity_008(ser, ssh_bmc, ssh_os)
+    PBPWS.Testcase_BiosPasswordSecurity_009(ser, ssh_bmc, ssh_os)
+    PBPWS.Testcase_BiosPasswordSecurity_010(ser, ssh_bmc, ssh_os)
+    PBPWS.Testcase_BiosPasswordSecurity_011_012_014(ser, ssh_bmc)
+    PBPWS.Testcase_BiosPasswordSecurity_013(ser, ssh_bmc, ssh_os)
+    PBPWS.Testcase_BiosPasswordSecurity_014_015(ser, ssh_bmc)
+    PBPWS.Testcase_BiosPasswordSecurity_016_017(ser, ssh_bmc)
+    PBPWS.Testcase_BiosPasswordSecurity_020(ser, ssh_bmc)
+    PBPWS.Testcase_BiosPasswordSecurity_022(ser, ssh_bmc, ssh_os)
+    PBPWS.Testcase_BiosPasswordSecurity_025(ser, ssh_bmc, ssh_os)
+    PWDAUTHMGT.pwd_auth_mgt_01(ser, ssh_bmc)
+    PWDAUTHMGT.pwd_auth_mgt_07(ser, ssh_bmc, ssh_os)
+    PWDAUTHMGT.pwd_auth_mgt_08_10(ser, ssh_bmc, ssh_os)
+    PWDAUTHMGT.pwd_auth_mgt_09(ser, ssh_bmc)
