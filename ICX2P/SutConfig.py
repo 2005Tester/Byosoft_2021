@@ -153,6 +153,9 @@ class Msg:
 
     # Firmware version info
     ME_VERSION = '0F:4.4.4.53'
+    
+    # POST GPIO ERROR Keywords print in serial log
+    GPIO_ERR = "GPIO ERROR"
 
 
 # BIOS configuration to be set by unitool
