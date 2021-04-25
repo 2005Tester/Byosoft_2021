@@ -940,7 +940,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
 class PWD_AUTH_MANAGERMENT(unittest.TestCase):
 
     def pwd_auth_mgt_01(self, serial, ssh):
-        tc = ('600', 'Testcase_AuthenticationManagement_001', '热键页面遍历热键，检查进入Setup菜单是否需要输入密码')
+        tc = ('053', '[TC053]Testcase_AuthenticationManagement_001', '热键页面遍历热键，检查进入Setup菜单是否需要输入密码')
         result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
         hot_key = [Key.DEL, Key.F11, Key.F12, Key.F6]
         try:
@@ -960,7 +960,7 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
         result.log_pass()
 
     def pwd_auth_mgt_07(self, serial, ssh, ssh_os):
-        tc = ('601', 'Testcase_AuthenticationManagement_007', '禁止提供自动登录等特殊功能')
+        tc = ('054', '[TC054]Testcase_AuthenticationManagement_007', '禁止提供自动登录等特殊功能')
         result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
@@ -971,7 +971,7 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
         result.log_pass()
 
     def pwd_auth_mgt_08_10(self, serial, ssh, ssh_os):
-        tc = ('602', 'Testcase_AuthenticationManagement_008_010',
+        tc = ('055', '[TC055]Testcase_AuthenticationManagement_008_010',
               '管理员登录密码大于16位字符无法输入,普通用户登录密码大于16位无法输入;修改管理员密码界面需要先输入旧密码，再输入两次新密码')
         result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
         pwd_error = ['Admin@3456', 'Pw@99', '666666']
@@ -1057,7 +1057,7 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
         result.log_pass()
 
     def pwd_auth_mgt_09(self, serial, ssh):
-        tc = ('603', 'Testcase_AuthenticationManagement_009', '禁止提示有助攻击者猜解系统口令的信息,输入错误的登录密码,仅提示密码错误')
+        tc = ('056', '[TC056]Testcase_AuthenticationManagement_009', '禁止提示有助攻击者猜解系统口令的信息,输入错误的登录密码,仅提示密码错误')
         result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
         try:
             self.assertTrue(PowerLib.force_reset(ssh))
