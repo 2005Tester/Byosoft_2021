@@ -238,7 +238,7 @@ upi_state = ['Current UPI Link Speed\s+Fast', 'Current UPI Link Frequency\s+11\.
 
 # CPU, DIMM info
 CPU_info = ['Processor ID\s+000606A6', 'Processor Frequency\s+2.000GHz']
-DIMM_info = ['DIMM020\(C\)\s+S0.CC.D0:2933MT/s Hynix DRx4 32GB RDIMM', 
+DIMM_info = ['DIMM020\(C\)\s+S0.CC.D0:2933MT/s Hynix DRx4 32GB RDIMM',
              'DIMM160\(G\)\s+S1.CG.D0:2933MT/s Hynix DRx4 32GB RDIMM']
 
 # Common key order
