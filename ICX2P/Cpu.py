@@ -58,8 +58,8 @@ def ufs_default_value(serial, ssh):
     if not SetUpLib.locate_option(serial, Key.DOWN, ["UFS", "<Enabled>"], 12):
         result.log_fail()
         return
-    serial.send_keys(Key.ENTER)
-    if not serial.verify_option_value(Key.DOWN, r'Disabled_MaxDisabled_Min'):
+    SerialLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial, r'Disabled_MaxDisabled_Min', 10):
         result.log_fail()
         return
     result.log_pass()

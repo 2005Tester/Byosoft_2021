@@ -399,45 +399,6 @@ class SutControl:
             read = self.session.readline(limit)
         return read.decode()
 
-    # used to verified the option values,
-    def verify_option_value(self, key, msg, timeout=5):
-        """
-        :param timeout: no need to set the timeout anymore, the data will be read in 5s,
-        """
-        # pat1
-        pat1 = re.compile(msg)
-
-        # flush serial buffer in 5 sec
-        for i in range(0, 5):
-            self.readLines()
-            time.sleep(1)
-
-        s_time = time.time()  # set timeout flag
-        while True:
-            serial_data = ''
-            if time.time() - s_time > timeout:
-                print("Find the option value timeout, failed to check the value")
-                return False
-
-            self.send_keys(key)
-
-            # read serial log in 2 sec
-            for i in range(0, 2):
-                data = self.readLines()
-                data = self.cleanup_data(data)
-                if data:
-                    serial_data += data
-                time.sleep(1)
-
-            pat1_res = pat1.findall(serial_data)
-            if not pat1_res:
-                continue
-            else:
-                logging.info('The option values are correct:{0}'.format(pat1_res))
-                break
-
-        return True
-
     # run command from serial port until spefified message occur
     def run_command(self, cmd, msg):
         logging.info("Sending command: {0}".format(cmd.strip("\n")))

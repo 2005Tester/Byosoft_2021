@@ -244,8 +244,8 @@ def dram_rapl_option_check(serial, ssh):
     if not icx2pAPI.verify_setup_options_up(serial, SutConfig.dram, 4):
         result.log_fail()
         return
-    serial.send_data(chr(0x0D))
-    if not serial.verify_option_value(Key.DOWN, r'DisabledEnabled', timeout=30):
+    SerialLib.send_key(serial, Key.ENTER)
+    if not SerialLib.is_msg_present(serial, r'DisabledEnabled', 10):
         result.log_fail()
         return
     result.log_pass()
