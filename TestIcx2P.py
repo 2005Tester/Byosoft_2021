@@ -11,7 +11,7 @@ from sys import argv
 from Common import LogConfig, Unitool
 from Common import SutSerial
 from Common import ssh
-from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest, Pwd, Os, Release, Smbios, Legacy, DIMM, Cpu
+from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest, Pwd, Os, Release, Smbios, Legacy, DIMM, Cpu, Pch
 from Report.ReportGen import ReportGenerator
 
 # init seril
@@ -49,9 +49,7 @@ def gen_report(log_dir):
 def debug_run():
     log_dir = init_log()
     Cpu.cpu_mem_info(ser, ssh_bmc)
-    DIMM.Testcase_MemMargin_001(ser, ssh_bmc)
     DIMM.Testcase_MemoryCompa_001(ser, ssh_bmc)
-    Smbios.smbios_type128(ser,ssh_os, ssh_bmc, unitool)
     gen_report(log_dir)
 
 
@@ -84,13 +82,16 @@ def run_test():
     Release.me_version_status(ser, ssh_bmc)
     biosTest.loadDefault(ser, ssh_bmc)
     biosTest.vtd(ser, ssh_bmc)
+    DIMM.Testcase_MemMargin_001(ser, ssh_bmc)
+    Pch.usb_default_enable_check(ser, ssh_bmc)
+    Pch.post_gpio_error_check(ser, ssh_bmc)
     if Legacy.enable_legacy_boot(ser, ssh_bmc):
         Legacy.disable_legacy_boot(ser, ssh_bmc)
     if UpdateBIOS.update_bios_mfg(ser, ssh_bmc, sftp_bmc, 'master'):
         Os.move_suse_to_first(ser, ssh_bmc)
         Release.equip_mode_version_check(ser, ssh_bmc)
         Os.boot_to_suse_mfg(ser, ssh_bmc)
-#        Smbios.smbios_type128(ser, ssh_os, ssh_bmc, unitool)
+        Smbios.smbios_type128(ser, ssh_os, ssh_bmc, unitool)
     gen_report(log_dir)
 
 

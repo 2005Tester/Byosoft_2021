@@ -168,6 +168,14 @@ def smbios_type128(serial, ssh, sshbmc, unitool):
     tc = ('528', '[TC528]Testcase_MemMargin_002', '装备模式下内存margin测试, 检查Smbios Type128信息')
     result = ReportGen.LogHeaderResult(tc)
     logging.info("Change setup option to enable RMT")
+    if not PowerLib.force_power_cycle(sshbmc):
+        logging.info("force_power_cycle failed")
+        result.log_skip()
+        return
+    if not icx2pAPI.ping_sut():
+        logging.info(f"ping_sut {SutConfig.OS_IP} failed")
+        result.log_fail()
+        return
     res = unitool.set_config(BiosCfg.MFG_RMT)
     if not res:
         logging.info("Change setup by unitool failed.")

@@ -47,18 +47,17 @@ def post_gpio_error_check(serial, ssh_bmc):
 def usb_default_enable_check(serial, ssh_bmc):
     tc = ('601', '[TC601] Testcase_USB_Port_001', '01 Setup菜单默认打开USB Port选项测试')
     result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
-    front_usb = rf"Front USB Control(?:\s+<Enabled>\s+USB Physical Port\d+){{{SysCfg.FRONT_USB_CNT}}}"
     rear_usb = rf"Rear USB Control(?:\s+<Enabled>\s+USB Physical Port\d+){{{SysCfg.REAR_USB_CNT}}}"
     buildin_usb = rf"Built-in USB Control(?:\s+<Enabled>\s+USB Physical Port\d+){{{SysCfg.BUILDIN_USB_CNT}}}"
-    key_words = f"{front_usb}.+{rear_usb}.+{buildin_usb}"
+    key_words = f"{rear_usb}.+{buildin_usb}"
     try:
         assert SetUpLib.boot_to_page(serial, ssh_bmc, Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(serial, Key.DOWN, Msg.PATH_USB_CFG, 6, "USB")
-        if SetUpLib.verify_info(serial, [front_usb, rear_usb, buildin_usb], 15):
+        if SetUpLib.verify_info(serial, [rear_usb, buildin_usb], 10):
             result.log_pass()  # return pass if verify_info match
             return True
         assert os.path.isfile(SutConfig.SERIAL_LOG), "Invalid serial log"
-        logging.info(f"Check local serial log: {SutConfig.SERIAL_LOG})")
+        logging.info(f"Check local serial log: {SutConfig.SERIAL_LOG}")
         with open(SutConfig.SERIAL_LOG) as ser_log:  # check serial log in case of no enough temporary read buffer
             ser_data = ser_log.read()
         assert re.search(key_words, ser_data), "USB strings not match, test fail"
