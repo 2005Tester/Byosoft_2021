@@ -88,15 +88,15 @@ class SshConnection:
             logging.error('Error in ssh connection: Incorrect Username or Password.')
             return
         except NoValidConnectionsError:
-            logging.error('Error in ssh connection: NoValidConnectionsError...')
+            logging.error('Error: NoValidConnectionsError, retry after 60 seconds.')
             time.sleep(60)
             self.login()
         except TimeoutError:
-            logging.info("Timeout..., retry aftre 15 seconds...")
+            logging.info("Timeout..., retry aftre 15 seconds.")
             time.sleep(60)
             self.login()
         except ConnectionAbortedError:
-            logging.info('ConnectionAbortedError, retry after 60 seconds...')
+            logging.info('ConnectionAbortedError, retry after 60 seconds.')
             time.sleep(60)
             self.login()
         except:
@@ -154,7 +154,7 @@ class SshConnection:
                 if (now - start_time) > 300:
                     logging.error("Run command: {0} timeout.".format(cmds[i].strip("\n")))
                     return
-            logging.info('Command successful.')
+        #    logging.info('Command successful.')
         op.close()
         self.ssh_client.close()
         status = True

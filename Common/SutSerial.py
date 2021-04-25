@@ -347,7 +347,7 @@ class SutControl:
         else:
             logging.info("Incorrect format of parameter: setupoption, should be list")
             return
-        logging.info("Locating option: {0}".format(setupoption))
+        logging.info("Locate option: {0}".format(setupoption))
         # self.receive_data(512)
         while try_counts:
             try_counts -= 1
@@ -375,7 +375,7 @@ class SutControl:
     def enter_menu(self, key, option_path, try_counts, confirm_msg, timeout=15):
         logging.info("Go to setup menu:{0}".format(option_path))
         for option in option_path:
-            logging.info("Locating menu: {0}".format(option))
+            logging.info("Locate menu: {0}".format(option))
             if not self.locate_menu(key, option, try_counts):
                 logging.info("Not Found: {0}".format(option))
                 return
