@@ -124,30 +124,33 @@ class SutControl:
         logging.debug("Waiting for:\"{0}\"".format(msg))
         start_time = time.time()
         logging.debug("is_msg_present_general: receiving data from serial port...")
-        while True:
-            if self.session.in_waiting:
-                try:
-                    self.data = self.session.read(512).decode("utf-8")
-                    if cleanup:
-                        self.data = self.cleanup_data(self.data)
-                    else:
-                        self.write_data2log(self.data)
-                except Exception as e:
-                    logging.debug(e)
-                    logging.debug("is_msg_present_general: error in reading serial data")
-                    self.data = ''              
-                if pw_prompt and self.find_msg(pw_prompt, self.data):
-                    self.send_data(pw)
-                    self.send_data(chr(0x0D))  # Send Enter
-                    logging.info("Send password...")               
-                if self.find_msg(msg, self.data):
-                    logging.debug("Message found.")
-                    return True
+        if self.find_msg(msg, self.data):
+            return True
+        else:
+            while True:
+                if self.session.in_waiting:
+                    try:
+                        self.data = self.session.read(512).decode("utf-8")
+                        if cleanup:
+                            self.data = self.cleanup_data(self.data)
+                        else:
+                            self.write_data2log(self.data)
+                    except Exception as e:
+                        logging.debug(e)
+                        logging.debug("is_msg_present_general: error in reading serial data")
+                        self.data = ''              
+                    if pw_prompt and self.find_msg(pw_prompt, self.data):
+                        self.send_data(pw)
+                        self.send_data(chr(0x0D))  # Send Enter
+                        logging.info("Send password...")               
+                    if self.find_msg(msg, self.data):
+                        logging.debug("Message found.")
+                        return True
 
-            if self.is_timeout(start_time, delay):
-                if delay > 5:
-                    logging.info("is_msg_present_general: {0} not found after waiting {1} seconds".format(msg, delay))
-                break
+                if self.is_timeout(start_time, delay):
+                    if delay > 5:
+                        logging.info("is_msg_present_general: {0} not found after waiting {1} seconds".format(msg, delay))
+                    break
 
     def is_msg_present(self, msg):
         logging.info("Waiting for:\"{0}\"".format(msg))
@@ -345,7 +348,7 @@ class SutControl:
             logging.info("Incorrect format of parameter: setupoption, should be list")
             return
         logging.info("Locating option: {0}".format(setupoption))
-        self.receive_data(512)
+        # self.receive_data(512)
         while try_counts:
             try_counts -= 1
             time.sleep(2)
@@ -358,7 +361,7 @@ class SutControl:
 
     def locate_menu(self, key, menuname, try_counts):
         patten = menuname + ES
-        self.receive_data(512)
+        # self.receive_data(512)
         while try_counts:
             time.sleep(2)
             if self.is_msg_present_general(patten, 1, cleanup=False):
@@ -383,20 +386,6 @@ class SutControl:
             return
         logging.info("Enter menu: {0} successfully".format(option_path[-1]))
         return True
-
-    # Will be replaced by locate_setup_option()
-    def find_setup_option(self, key, setupoption, try_counts):
-        highlight = "\x1B\["
-        self.receive_data(512)
-        while try_counts:
-            try_counts -= 1
-            time.sleep(2)
-            if self.is_msg_present_general(setupoption + highlight, 1, cleanup=False):
-                logging.info("{0} found".format(setupoption))
-                self.send_keys(ENTER)
-                try_counts = 0
-                return True
-            self.send_keys(key)
 
     # debug, to support to_highlight_option def,
     def readLines(self, limit=None):

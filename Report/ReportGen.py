@@ -17,6 +17,13 @@ import logging.config
 from json2html import *
 
 
+# Global Variable to track test progress
+class Progress:
+    PASS = 0
+    FAIL = 0
+    SKIP = 0
+
+
 # tc: tuple of test case basic information, 0:id, 1:tittle, 2:description
 class LogHeaderResult:
     # write test case info to serial log and test log
@@ -40,8 +47,13 @@ class LogHeaderResult:
         logging.info(self.msg_start)
         logging.info(self.msg_description)
 
+    def log_progress(self):
+        logging.info("<Overall Status>:{0} Passed, {1} Failed, {2} Skiped".format(Progress.PASS, Progress.FAIL, Progress.SKIP))
+
     def log_pass(self):
         logging.info(self.msg_pass)
+        Progress.PASS += 1
+        self.log_progress()
         logging.info("-"*80)
         if self.serial:
             self.msg_serial = '\n##### TC{0} {1}: Pass #####\n'.format(self.tc[0], self.tc[1])
@@ -51,6 +63,8 @@ class LogHeaderResult:
         if capture:
             self.capture_screen()
         logging.info(self.msg_fail)
+        Progress.FAIL += 1
+        self.log_progress()
         logging.info("-"*80)
         if self.serial:
             self.msg_serial = '\n##### TC{0} {1}: Fail #####\n'.format(self.tc[0], self.tc[1])
@@ -58,6 +72,8 @@ class LogHeaderResult:
 
     def log_skip(self):
         logging.info(self.msg_skip)
+        Progress.SKIP += 1
+        self.log_progress()
         logging.info("-"*80)
         if self.serial:
             self.msg_serial = '\n##### TC{0} {1}: Skip #####\n'.format(self.tc[0], self.tc[1])
