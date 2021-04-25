@@ -1,9 +1,11 @@
 import os
+import re
 import logging
 from ICX2P import SutConfig
 from Report import ReportGen
-from ICX2P.SutConfig import Key, Msg
-from ICX2P.BaseLib import SetUpLib, icx2pAPI, PowerLib, SerialLib
+from ICX2P.SutConfig import Key, Msg, SysCfg
+from ICX2P.BaseLib import SetUpLib, icx2pAPI, PowerLib
+from Core import SerialLib
 
 
 # Test case ID: TC600-TC620
@@ -33,6 +35,36 @@ def post_gpio_error_check(serial, ssh_bmc):
         assert PowerLib.force_power_cycle(ssh_bmc), "force_power_cycle fail"
         assert SerialLib.is_msg_present(serial, msg=Msg.BIOS_BOOT_COMPLETE), "boot up fail"
         result.log_pass()
+    except AssertionError as e:
+        logging.info(e)
+        result.log_fail()
+
+
+# 检查确认USB每个分组下面的Port默认为Enable
+# Precondition: BIOS默认密码
+# OnStart: NA
+# OnComplete: NA
+def usb_default_enable_check(serial, ssh_bmc):
+    tc = ('601', '[TC601] Testcase_USB_Port_001', '01 Setup菜单默认打开USB Port选项测试')
+    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    front_usb = rf"Front USB Control(?:\s+<Enabled>\s+USB Physical Port\d+){{{SysCfg.FRONT_USB_CNT}}}"
+    rear_usb = rf"Rear USB Control(?:\s+<Enabled>\s+USB Physical Port\d+){{{SysCfg.REAR_USB_CNT}}}"
+    buildin_usb = rf"Built-in USB Control(?:\s+<Enabled>\s+USB Physical Port\d+){{{SysCfg.BUILDIN_USB_CNT}}}"
+    key_words = f"{front_usb}.+{rear_usb}.+{buildin_usb}"
+    try:
+        assert SetUpLib.boot_to_page(serial, ssh_bmc, Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(serial, Key.DOWN, Msg.PATH_USB_CFG, 6, "USB")
+        if SetUpLib.verify_info(serial, [front_usb, rear_usb, buildin_usb], 15):
+            result.log_pass()  # return pass if verify_info match
+            return True
+        assert os.path.isfile(SutConfig.SERIAL_LOG), "Invalid serial log"
+        logging.info(f"Check local serial log: {SutConfig.SERIAL_LOG})")
+        with open(SutConfig.SERIAL_LOG) as ser_log:  # check serial log in case of no enough temporary read buffer
+            ser_data = ser_log.read()
+        assert re.search(key_words, ser_data), "USB strings not match, test fail"
+        logging.info("USB key words found in local serial log, test pass")
+        result.log_pass()
+        return True
     except AssertionError as e:
         logging.info(e)
         result.log_fail()

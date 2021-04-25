@@ -194,6 +194,13 @@ class BiosCfg:
     }
 
 
+# The SUT physical system configuration
+class SysCfg:
+    FRONT_USB_CNT = 2
+    REAR_USB_CNT = 2
+    BUILDIN_USB_CNT = 1
+
+
 # pat
 pat = '[(\d+);\d+H[\w\s\d<>\[\]&-]'
 
