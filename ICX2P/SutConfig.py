@@ -198,6 +198,7 @@ class BiosCfg:
 class SysCfg:
     REAR_USB_CNT = 2
     BUILDIN_USB_CNT = 1
+    DIMM_SIZE = 96  # /GB
 
 
 # pat

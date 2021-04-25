@@ -2,11 +2,14 @@
 
 import logging
 import unittest
+import numpy
 
 from ICX2P import SutConfig
 from Report import ReportGen
-from ICX2P.SutConfig import Key, Msg
+from ICX2P.SutConfig import Key, Msg, SysCfg
 from ICX2P.BaseLib import SetUpLib, icx2pAPI, PowerLib
+from Core import SerialLib, SshLib
+from ICX2P import Os
 
 # Test case ID: TC700-750
 
@@ -59,7 +62,8 @@ class dimm_memPower(unittest.TestCase):
             dimm_memPower.navigate_to_mem_fre(self, serial)
             serial.send_keys(Key.ESC)
             self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, [Msg.ADV_POWER_MGF_CONFIG], 12, Msg.PFM_PRO))
-            self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, [Msg.MEM_POWER_THER_CONFIG], 12, Msg.DRAM_RAPL_CONFIG))
+            self.assertTrue(
+                SetUpLib.enter_menu(serial, Key.DOWN, [Msg.MEM_POWER_THER_CONFIG], 12, Msg.DRAM_RAPL_CONFIG))
             self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, [Msg.MEM_POWER_ADV], 12, Msg.CKE))
             self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
         except AssertionError as err:
@@ -174,7 +178,8 @@ class dimm_memPower(unittest.TestCase):
             self.assertTrue(SetUpLib.boot_to_bootmanager(serial, ssh_bmc))
             self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
             self.assertTrue(icx2pAPI.ping_sut())
-            self.assertTrue(icx2pAPI.rw_everything(ssh_os, ['c61218a0: 010f 1100 010f 1100 010f 1100 010f 1100 '], ['c61218a0']))
+            self.assertTrue(
+                icx2pAPI.rw_everything(ssh_os, ['c61218a0: 010f 1100 010f 1100 010f 1100 010f 1100 '], ['c61218a0']))
         except AssertionError as err:
             result.log_fail(capture=True)
             icx2pAPI.reset_default(serial, ssh_bmc)
@@ -206,7 +211,8 @@ class dimm_memPower(unittest.TestCase):
             self.assertTrue(SetUpLib.boot_to_bootmanager(serial, ssh_bmc))
             self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
             self.assertTrue(icx2pAPI.ping_sut())
-            self.assertTrue(icx2pAPI.rw_everything(ssh_os, ['c61218a0: 02bf 1100 02bf 1100 02bf 1100 02bf 1100 '], ['c61218a0']))
+            self.assertTrue(
+                icx2pAPI.rw_everything(ssh_os, ['c61218a0: 02bf 1100 02bf 1100 02bf 1100 02bf 1100 '], ['c61218a0']))
         except AssertionError as err:
             result.log_fail(capture=True)
             icx2pAPI.reset_default(serial, ssh_bmc)
@@ -276,9 +282,46 @@ def Testcase_MemoryCompa_001(serial, ssh_bmc):
     result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
     try:
         assert SetUpLib.boot_to_page(serial, ssh_bmc, Msg.PAGE_ADVANCED), "boot_to_page -> fail"
-        assert SetUpLib.enter_menu(serial, Key.DOWN, [Msg.CPU_CONFIG, Msg.MEMORY_TOP], 15, 'DIMM000\(A\)'), "enter_menu >> fail"
+        assert SetUpLib.enter_menu(serial, Key.DOWN, [Msg.CPU_CONFIG, Msg.MEMORY_TOP], 15,
+                                   'DIMM000\(A\)'), "enter_menu >> fail"
         assert SetUpLib.verify_info(serial, SutConfig.DIMM_info, 20)
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
 
+
+# 06 内存容量一致性测试
+# Precondition: BIOS默认密码
+# OnStart: NA
+# OnComplete: SUSE OS
+def Testcase_MemoryCompa_006(serial, ssh_bmc, ssh_os, n=1):
+    tc = ('710', '[TC710] Testcase_MemoryCompa_006', '06 内存容量一致性测试')
+    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    res_lst = []
+    for i in range(n):
+        try:
+            assert SetUpLib.boot_to_page(serial, ssh_bmc, 'BIOS Revision'), "boot_to_page -> fail"
+            assert SetUpLib.verify_info(serial, 'Total Memory\s+65536 MB', 20), "dimm_size_verify -> fail"
+            assert Os.boot_to_suse(serial, ssh_bmc), "boot_to_os -> fail"
+            assert icx2pAPI.ping_sut(), "ping_os_ip-> fail"
+            res = SshLib.execute_command(ssh_os, 'dmesg | grep -i e820')
+            for j in res.split('\n'):
+                if 'BIOS-e820' in j and 'ACPI' not in j:
+                    for k in j.split(' '):
+                        if '-' and '0x' in k.strip(']'):
+                            for m in k.strip(']').split('-'):
+                                res_lst.append(int(m, 16))
+            base_adr = res_lst[0:100:2]  # store mem start addr
+            for j1 in range(len(res_lst)):
+                for k1 in res_lst:
+                    if k1 in base_adr:
+                        res_lst.remove(k1)
+            stop_adr = res_lst  # restore the res_lst - mem stop addr
+            base_array = numpy.array(base_adr)
+            stop_array = numpy.array(stop_adr)
+            e820 = numpy.matrix.tolist(stop_array - base_array)
+            mem_size = sum(e820)/1024/1024/1024
+            assert int(mem_size) == SysCfg.DIMM_SIZE, 'dimm_size_diff_fail'
+            result.log_pass()
+        except AssertionError:
+            result.log_fail(capture=True)
