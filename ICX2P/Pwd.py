@@ -12,10 +12,11 @@ import logging
 import time
 import os
 import unittest
+from Core import SerialLib, SshLib
 from Report import ReportGen
 from ICX2P.SutConfig import Key, Msg
 from ICX2P import SutConfig
-from ICX2P.BaseLib import icx2pAPI, SetUpLib, Update, PowerLib, SerialLib, SshLib
+from ICX2P.BaseLib import icx2pAPI, SetUpLib, Update, PowerLib
 
 # Test case ID: TC030-TC070
 

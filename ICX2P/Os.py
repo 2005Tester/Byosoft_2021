@@ -1,7 +1,8 @@
 import logging
+from Core import SerialLib
 from ICX2P import SutConfig
 from ICX2P.SutConfig import Key, Msg
-from ICX2P.BaseLib import SetUpLib, SerialLib
+from ICX2P.BaseLib import SetUpLib
 from Report import ReportGen
 
 # Test case ID: TC300-TC320

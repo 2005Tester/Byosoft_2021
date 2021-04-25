@@ -11,10 +11,11 @@ import time
 import logging
 import os
 import re
+from Core import SshLib, SerialLib
 from Common import ssh, GitLab
 from ICX2P import SutConfig
 from ICX2P.SutConfig import Msg
-from ICX2P.BaseLib import SetUpLib, SshLib, PowerLib, SerialLib
+from ICX2P.BaseLib import SetUpLib, PowerLib
 
 
 # Obtain the path of latest bios image from Gitlab artifacts

@@ -1,7 +1,8 @@
 import logging
+from Core import SerialLib
 from ICX2P import SutConfig
 from ICX2P.SutConfig import Key, Msg
-from ICX2P.BaseLib import PowerLib, SerialLib
+from ICX2P.BaseLib import PowerLib
 
 
 # Send a single key, e.g. ENTER, DOWN, UP

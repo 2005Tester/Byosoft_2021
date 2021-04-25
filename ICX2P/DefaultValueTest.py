@@ -1,7 +1,6 @@
 import logging
 from ICX2P.SutConfig import Key, Msg
-from ICX2P import SutConfig
-from ICX2P.BaseLib import icx2pAPI, SetUpLib
+from ICX2P.BaseLib import SetUpLib
 from Report import ReportGen
 
 

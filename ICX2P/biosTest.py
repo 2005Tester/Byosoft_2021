@@ -9,9 +9,10 @@
 import datetime
 import logging
 import time
+from Core import SerialLib
 from ICX2P.SutConfig import Key, Msg
 from ICX2P import SutConfig
-from ICX2P.BaseLib import PowerLib, icx2pAPI, SetUpLib, SerialLib
+from ICX2P.BaseLib import PowerLib, icx2pAPI, SetUpLib
 from Report import ReportGen
 from Common.LogAnalyzer import LogAnalyzer
 

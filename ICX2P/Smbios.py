@@ -4,10 +4,11 @@ import re
 from os.path import dirname
 import logging
 from Report import ReportGen
+from Core import SerialLib, SshLib
 from Common.LogAnalyzer import LogAnalyzer
 from ICX2P import SutConfig
 from ICX2P.SutConfig import BiosCfg, Msg
-from ICX2P.BaseLib import PowerLib, SerialLib, SetUpLib, SshLib, icx2pAPI
+from ICX2P.BaseLib import PowerLib, icx2pAPI
 
 
 # Test case ID: 400-440, 527 reserved
