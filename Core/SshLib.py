@@ -69,8 +69,9 @@ def verify_info(ssh, command, infos):
 
 # remove a file from sftp, file name matches file_re
 # if dir is not specified, use root directory
-def remove_file(sftp, file_re, dir='.'):
+def sftp_remove_file(sftp, file_re, dir='.'):
     if sftp.login():
+        logging.info("Removing: {0}".format(file_re))
         sftp.remove_file(file_re, dir)
         sftp.close_session()
         return True
@@ -79,9 +80,23 @@ def remove_file(sftp, file_re, dir='.'):
 
 
 # upload a file to sftp,ret_msg is used to verify result, can use file size 
-def upload_file(sftp, src_file, dst_file, ret_msg=None):
+def sftp_upload_file(sftp, src_file, dst_file, ret_msg=None):
     if sftp.login():
-        return sftp.upload_file(src_file, dst_file, ret_msg)
+        logging.info("Uploading: {0}".format(src_file))
+        sftp.upload_file(src_file, dst_file, ret_msg)
+        sftp.close_session()
+        return True
+    else:
+        logging.info("SFTP login fail.")
+
+
+# list files and directories from a sftp directory
+def sftp_lsdir(sftp, dir='.'):
+    if sftp.login():
+        logging.info("Fetching directory info...")
+        lsdir = sftp.ls_dir(dir)
+        sftp.close_session()
+        return lsdir
     else:
         logging.info("SFTP login fail.")
 

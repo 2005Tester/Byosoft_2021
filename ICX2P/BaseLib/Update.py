@@ -153,8 +153,8 @@ def update_specific_img(bios, serial, ssh_bmc):
 def update_bios(serial, ssh_bmc, sftp_bmc, bios_img):
     target_bin = "rp001.bin"
     logging.info("Remove existing BIOS image from BMC")
-    SshLib.remove_file(sftp_bmc, target_bin)
-    if not SshLib.upload_file(sftp_bmc, bios_img, target_bin, '67108864'):
+    SshLib.sftp_remove_file(sftp_bmc, target_bin)
+    if not SshLib.sftp_upload_file(sftp_bmc, bios_img, target_bin, '67108864'):
         return
     if not program_flash(ssh_bmc):
         return
@@ -176,14 +176,14 @@ def flash_local_hpm(serial, ssh_bmc, sftp_bmc, img_file):
     :param img_file:    bios hpm image directory
     :return: True / None
     """
-    SshLib.remove_file(sftp_bmc, ".bin", "/tmp")
-    SshLib.remove_file(sftp_bmc, ".hpm", "/tmp")
-    SshLib.remove_file(sftp_bmc, ".tar.gz", "/tmp")
+    SshLib.sftp_remove_file(sftp_bmc, ".bin", "/tmp")
+    SshLib.sftp_remove_file(sftp_bmc, ".hpm", "/tmp")
+    SshLib.sftp_remove_file(sftp_bmc, ".tar.gz", "/tmp")
     if not os.path.isfile(img_file):
         logging.info("Invalid hpm file, please double check")
         return
     hpm_path, hpm_name = os.path.split(img_file)
-    if not SshLib.upload_file(sftp=sftp_bmc, src_file=img_file, dst_file=r"/tmp/"+hpm_name, ret_msg="rw"):
+    if not SshLib.sftp_upload_file(sftp=sftp_bmc, src_file=img_file, dst_file=r"/tmp/"+hpm_name, ret_msg="rw"):
         return
     if not hpm_update(ssh_bmc=ssh_bmc, hpm_name=hpm_name):
         return
