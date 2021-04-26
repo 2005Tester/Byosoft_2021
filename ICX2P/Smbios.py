@@ -27,13 +27,13 @@ SIGNALS = "RxDqs- RxDqs+  RxV-  RxV+  TxDq-  TxDq+  TxV-  TxV+  Cmd-  Cmd+  CmdV
 
 
 class Type128Test:
-    def __init__(self, data, ssh_os):
-        self.type128data = data
+    def __init__(self, data_t128, data_ser, ssh_os):
+        self.type128data = data_t128
         self.ssh_os = ssh_os
         self.base_addr = None
         self.rmt_mem_dic = {}
         self.rmt_serial_dic = {}
-        self.serial_log = os.path.join(SutConfig.LOG_DIR, 'serial.log')
+        self.serial_log = data_ser
 
     # get base address from smbios t128 data
     def get_base_addr(self):
@@ -71,14 +71,9 @@ class Type128Test:
         return self.rmt_mem_dic
 
     def read_rmt_serial(self):
-        if not os.path.isfile(self.serial_log):
-            logging.info(f"Invalid serial log: {self.serial_log}")
-            return
-        with open(self.serial_log, 'r') as f:
-            data = f.read()
         pattern_rmt = r'(N\d.C\d.D\d.R\d):((?:\s+-*\d\d){14})'
         x = re.compile(pattern_rmt)
-        rmt_result = x.findall(data)
+        rmt_result = x.findall(self.serial_log)
         if not rmt_result:
             logging.info(f"RMT data not found in serial log: {self.serial_log}")
             return
@@ -164,38 +159,29 @@ def smbios_test_all(ssh):
 # Precondition: Linux配置好 unitool和rw工具, os ssh可访问
 # OnStart: 进入Linux系统
 # OnComplete: clearCMOS后正常启动
-def smbios_type128(serial, ssh, sshbmc, unitool):
+def smbios_type128(serial, sshos, sshbmc, unitool):
     tc = ('528', '[TC528]Testcase_MemMargin_002', '装备模式下内存margin测试, 检查Smbios Type128信息')
     result = ReportGen.LogHeaderResult(tc)
     logging.info("Change setup option to enable RMT")
-    if not PowerLib.force_power_cycle(sshbmc):
-        logging.info("force_power_cycle failed")
-        result.log_skip()
-        return
-    if not icx2pAPI.ping_sut():
-        logging.info(f"ping_sut {SutConfig.OS_IP} failed")
-        result.log_fail()
-        return
-    res = unitool.set_config(BiosCfg.MFG_RMT)
-    if not res:
-        logging.info("Change setup by unitool failed.")
-        result.log_skip()
-        return
-    logging.info("Reboot SUT to SUSE")
-    if not PowerLib.force_reset(sshbmc):
-        result.log_fail()
-        return
-    if not SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE, delay=600):
-        result.log_fail()
-        return
-    type128data = SshLib.execute_command(ssh, "dmidecode -t 128")
-    logging.info(type128data)
-    test = Type128Test(type128data, ssh)
-    if not test.run_test():
+    try:
+        assert PowerLib.force_reset(sshbmc), "#skip#"
+        assert SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE), "#skip#"
+        assert icx2pAPI.ping_sut(), "#skip#"
+        assert unitool.set_config(BiosCfg.MFG_RMT), "#skip# Change setup by unitool failed."
+        logging.info("Reboot SUT to SUSE"), "#skip#"
+        assert PowerLib.force_reset(sshbmc), "#skip#"
+        ser_rmt_data = SerialLib.cut_log(serial, "START_BSSA_RMT", "STOP_BSSA_RMT", duration=15, timeout=600)
+        assert ser_rmt_data, "Invalid RMT data"
+        logging.debug(ser_rmt_data)
+        assert icx2pAPI.ping_sut()
+        type128data = SshLib.execute_command(sshos, "dmidecode -t 128")
+        assert type128data, "Unable to read type128 data"
+        logging.debug(type128data)
+        test = Type128Test(type128data, ser_rmt_data, sshos)
+        assert test.run_test(), "SMBIOS Type128 test failed"
         icx2pAPI.clearCMOS(sshbmc)
-        PowerLib.force_reset(sshbmc)
+        result.log_pass()
+    except AssertionError as e:
+        logging.info(e)
+        icx2pAPI.clearCMOS(sshbmc)
         result.log_fail()
-        return
-    icx2pAPI.clearCMOS(sshbmc)
-    PowerLib.force_reset(sshbmc)
-    result.log_pass()

@@ -1,3 +1,4 @@
+import re
 import time
 import logging
 
@@ -48,3 +49,31 @@ def send_data(serial, data):
 # Read serial output buffer
 def read_buffer(serial):
     return serial.data
+
+
+# capture the section of serial log from start_str to end_str
+def cut_log(serial, start_str, end_str, duration=20, timeout=120):
+    logging.info(f"Capture serial output from: '{start_str}' to '{end_str}'")
+    data_saved = ""
+    cut_begain = 0
+    start_time = time.time()
+    while True:
+        if serial.session.in_waiting:
+            tmpdata = serial.receive_data(512)
+            clndata = serial.cleanup_data(tmpdata)
+            if re.search(start_str, clndata):  # start_str found
+                cut_begain = time.time()
+                logging.info(f"Start string found: {start_str}")
+            if cut_begain:
+                if time.time()-cut_begain < duration:  # cache serial output
+                    data_saved += clndata
+                    logging.debug(f"Capturing serial output:\n{clndata}")
+                if re.search(end_str, clndata):  # cache last tmpdata
+                    logging.info(f"End string found: {end_str}")
+                    data_saved += clndata
+                    return data_saved
+                if time.time()-cut_begain > duration:  # duration timeout
+                    logging.info("Start string found but missing end string: duration timeout")
+                    return data_saved
+        if time.time() - start_time > timeout:  # nothing found, timeout limit
+            return data_saved
