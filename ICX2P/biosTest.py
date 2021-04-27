@@ -8,9 +8,10 @@
 # -*- encoding=utf8 -*-
 import datetime
 import logging
+import re
 import time
 from Core import SerialLib
-from ICX2P.SutConfig import Key, Msg
+from ICX2P.SutConfig import Key, Msg, SysCfg
 from ICX2P import SutConfig
 from ICX2P.BaseLib import PowerLib, icx2pAPI, SetUpLib
 from Report import ReportGen
@@ -329,18 +330,34 @@ def vtd(serial, ssh):
     return True
 
 
-# Main function
-def icxbiosTest(serial, ssh, dst):
-    POST_Test(serial, ssh)
-    PM(serial, ssh)
-    pxeTest(serial, ssh)
-    usbTest(serial, ssh)
-    ProcessorDIMM(serial, ssh)
-    chipsecTest(serial, ssh)
-    pressF2(serial, ssh)
-    loadDefault(serial, ssh)
-    staticTurbo(serial, ssh)
-    ufs(serial, ssh)
-    dramRAPL(serial, ssh)
-    securityBoot(serial, ssh)
-    vtd(serial, ssh)
+# 检查串口log关键信息打印，包括 CPU资源分配 / BIOS版本信息 / PCIE LINK STATUS
+# Precondition: BIOS默认密码
+# OnStart: NA
+# OnComplete: NA
+def Testcase_SerialPrint_001(serial, ssh_bmc):
+    tc = ('026', '[TC026]Testcase_SerialPrint_001', '启动关键信息打印测试')
+    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    cpu_resource = r"[\s\S]*".join([rf"CPU{n}[\s\S]*Stk07" for n in range(SysCfg.CPU_CNT)])
+    bios_ver = r"BIOS Revision :\s+\d.\d+"
+    pcie_lnk = r"PCIE LINK STATUS:"
+    try:
+        assert PowerLib.force_reset(ssh_bmc)
+        # CPU Resource Allocation
+        cpu_log = SerialLib.cut_log(serial, "CPU Resource Allocation", "START_SOCKET_0_DIMMINFO_TABLE", 100, 200, 5)
+        logging.debug(cpu_log)
+        assert re.search(cpu_resource, cpu_log), "CPU Resource Allocation not found"
+        logging.info("CPU Resource Allocation check pass")
+        # BIOS Revision
+        ver_log = SerialLib.cut_log(serial, "BootType :", "BIOS Date :", 100, 200, 3)
+        logging.debug(ver_log)
+        assert re.search(bios_ver, ver_log), "BIOS Revision not found"
+        logging.info("BIOS Revision check pass")
+        # PCIE LINK STATUS
+        pcie_log = SerialLib.cut_log(serial, "EFI1711", "Press Del go to Setup Utility", 100, 200, 3)
+        logging.debug(pcie_log)
+        assert re.search(pcie_lnk, pcie_log), "PCIE LINK STATUS not found"
+        logging.info("PCIE LINK STATUS check pass")
+        result.log_pass()
+    except AssertionError as e:
+        logging.info(e)
+        result.log_fail()

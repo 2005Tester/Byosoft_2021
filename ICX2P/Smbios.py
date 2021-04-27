@@ -164,12 +164,12 @@ def smbios_type128(serial, sshos, sshbmc, unitool):
     result = ReportGen.LogHeaderResult(tc)
     logging.info("Change setup option to enable RMT")
     try:
-        assert PowerLib.force_reset(sshbmc), "#skip#"
-        assert SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE), "#skip#"
-        assert icx2pAPI.ping_sut(), "#skip#"
-        assert unitool.set_config(BiosCfg.MFG_RMT), "#skip# Change setup by unitool failed."
-        logging.info("Reboot SUT to SUSE"), "#skip#"
-        assert PowerLib.force_reset(sshbmc), "#skip#"
+        assert PowerLib.force_reset(sshbmc)
+        assert SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE)
+        assert icx2pAPI.ping_sut()
+        assert unitool.set_config(BiosCfg.MFG_RMT), "Change setup by unitool failed."
+        logging.info("Reboot SUT to Linux")
+        assert PowerLib.force_reset(sshbmc)
         ser_rmt_data = SerialLib.cut_log(serial, "START_BSSA_RMT", "STOP_BSSA_RMT", duration=15, timeout=600)
         assert ser_rmt_data, "Invalid RMT data"
         logging.debug(ser_rmt_data)

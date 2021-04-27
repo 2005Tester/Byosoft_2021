@@ -56,6 +56,8 @@ def debug_run():
     Hotkey.Testcase_SystemInfo_002(ser, ssh_bmc)
     Hotkey.Testcase_SystemInfo_003(ser, ssh_bmc)
     Smbios.smbios_type128(ser,ssh_os, ssh_bmc, unitool)
+    DIMM.Testcase_MemoryCompa_009(ser, ssh_bmc, unitool)
+    biosTest.Testcase_SerialPrint_001(ser, ssh_bmc)
     gen_report(log_dir)
 
 

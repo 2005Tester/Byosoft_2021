@@ -1,6 +1,7 @@
 import logging
-from ICX2P.SutConfig import Key, Msg
+from ICX2P import SutConfig
 from ICX2P.BaseLib import SetUpLib
+from ICX2P.SutConfig import Key, Msg, SysCfg
 from Report import ReportGen
 
 
@@ -41,3 +42,29 @@ def rrqirq(serial, ssh):
 
     result.log_pass()
     return True
+
+
+# 检查默认状态PCIE_Root_Port带宽分配是否正确（不包括插入不同Rise/Slimline/NVME,带宽可变的root port)
+# Precondition: BIOS默认密码
+# OnStart: NA
+# OnComplete: NA
+def pcie_port_bandwidth_check(serial, ssh_bmc):
+    tc = ('102', '[TC102] Testcase_PCIeInit_001', 'PCIe带宽默认值测试')
+    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    try:
+        assert SetUpLib.boot_to_page(serial, ssh_bmc, Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(serial, Key.DOWN, Msg.PATH_IIO_CONFIG, 15, Msg.IIO_CONFIG)
+        for cpu in range(SysCfg.CPU_CNT):  # loop cpu
+            cpu_menu = f"CPU {cpu + 1} Configuration"
+            assert SetUpLib.enter_menu(serial, Key.DOWN, [cpu_menu], 15, "Port 1A")
+            for port, bwidth in SysCfg.PCIE_MAP[cpu].items():  # loop root port
+                port_menu = f"Port {port.upper()}"
+                assert SetUpLib.enter_menu(serial, Key.DOWN, [port_menu], 15, "PCIe Port")
+                assert SetUpLib.verify_info(serial, [rf"PCIe Port Link Max\s+Max Width {bwidth.lower()}"], 25), f"Socket{cpu}：port {port} = {bwidth} fail"
+                logging.info(f"Socket{cpu}：port {port} = {bwidth} pass")
+                serial.send_keys(Key.ESC)
+            serial.send_keys(Key.ESC)
+        result.log_pass()
+    except AssertionError as e:
+        logging.info(e)
+        result.log_fail(capture=True)

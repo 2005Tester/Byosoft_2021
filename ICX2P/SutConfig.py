@@ -119,6 +119,7 @@ class Msg:
     CKE_IDLE_TIMER = 'CKE Idle Timer'
     UNCORE_STATUS = 'Uncore Status'
     ACT_CPU_CORES = 'Active Processor Cores'
+    IIO_CONFIG = "IIO Configuration"
 
     # menus of PCH configuration
     PCH_CONFIG = 'PCH Configuration'
@@ -141,6 +142,7 @@ class Msg:
     PATH_ADV_PM_CFG = [CPU_CONFIG, ADV_POWER_MGF_CONFIG]
     PATH_PER_CPU_INFO = [CPU_CONFIG, PROCESSOR_CONFIG, PER_CPU]
     PATH_PRO_CFG = [CPU_CONFIG, PROCESSOR_CONFIG]
+    PATH_IIO_CONFIG = [CPU_CONFIG, IIO_CONFIG]
 
     # Menu in Boot page
     MENU_BOOT_ORDER = 'UEFI Boot'
@@ -205,9 +207,25 @@ class BiosCfg:
 
 # The SUT physical system configuration
 class SysCfg:
+    CPU_CNT = 2  # cpu socket count
     REAR_USB_CNT = 2
     BUILDIN_USB_CNT = 1
     DIMM_SIZE = 96  # /GB
+
+    PCIE_MAP = [
+        {  # cpu0
+            "0a": "x16",  # ocp
+            "1a": "x8",  # slot1
+            "1c": "x8",  # build-in raid
+            "2a": "x16",  # slot2
+            "3a": "x16"  # slot7
+        },
+        {  # cpu1
+            "0a": "x16",  # slot3
+            "1a": "x16",  # slot4
+            # "2a": "x8",  # Slimline3
+            # "2c": "x8",  # Slimline4
+        }]
 
 
 # pat

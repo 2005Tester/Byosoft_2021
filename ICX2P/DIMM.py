@@ -6,7 +6,7 @@ import numpy
 
 from ICX2P import SutConfig
 from Report import ReportGen
-from ICX2P.SutConfig import Key, Msg, SysCfg
+from ICX2P.SutConfig import Key, Msg, SysCfg, BiosCfg
 from ICX2P.BaseLib import SetUpLib, icx2pAPI, PowerLib
 from Core import SerialLib, SshLib
 from ICX2P import Os
@@ -325,3 +325,28 @@ def Testcase_MemoryCompa_006(serial, ssh_bmc, ssh_os, n=1):
             result.log_pass()
         except AssertionError:
             result.log_fail(capture=True)
+
+
+# 装备模式下打开RMT并检查串口RMT数据是否正常打印
+# Precondition: BIOS默认密码
+# OnStart: NA
+# OnComplete: SUSE OS
+def Testcase_MemoryCompa_009(serial, ssh_bmc, unitool):
+    tc = ('711', '[TC711]Testcase_MemoryCompa_009', '装备模式内存Margin功能测试')
+    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    logging.info("Change setup option to enable RMT")
+    try:
+        assert PowerLib.force_reset(ssh_bmc)
+        assert SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE)
+        assert icx2pAPI.ping_sut()
+        assert unitool.set_config(BiosCfg.MFG_RMT), "Change setup by unitool failed."
+        logging.info("Reboot SUT to Linux")
+        assert PowerLib.force_reset(ssh_bmc)
+        ser_rmt_data = SerialLib.cut_log(serial, "START_BSSA_RMT", "STOP_BSSA_RMT", 15, 600)
+        assert ("Ctl+" in ser_rmt_data), "Invalid RMT data"
+        icx2pAPI.clearCMOS(ssh_bmc)
+        result.log_pass()
+    except AssertionError as e:
+        logging.info(e)
+        icx2pAPI.clearCMOS(ssh_bmc)
+        result.log_fail()

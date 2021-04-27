@@ -52,14 +52,17 @@ def read_buffer(serial):
 
 
 # capture the section of serial log from start_str to end_str
-def cut_log(serial, start_str, end_str, duration=20, timeout=120):
+def cut_log(serial, start_str, end_str, duration=20, timeout=120, step=30):
     logging.info(f"Capture serial output from: '{start_str}' to '{end_str}'")
     data_saved = ""
     cut_begain = 0
     start_time = time.time()
     while True:
         if serial.session.in_waiting:
-            tmpdata = serial.receive_data(512)
+            tmpdata = ""
+            for i in range(step):  # read multi lines for speed up
+                tmp = serial.session.readline().decode("utf-8")  # read one line to avoid keywords split
+                tmpdata += tmp
             clndata = serial.cleanup_data(tmpdata)
             if re.search(start_str, clndata):  # start_str found
                 cut_begain = time.time()
@@ -70,10 +73,12 @@ def cut_log(serial, start_str, end_str, duration=20, timeout=120):
                     logging.debug(f"Capturing serial output:\n{clndata}")
                 if re.search(end_str, clndata):  # cache last tmpdata
                     logging.info(f"End string found: {end_str}")
-                    data_saved += clndata
+                    if data_saved != clndata:  # in case of first tmpdata contains start_str and end_str
+                        data_saved += clndata
                     return data_saved
                 if time.time()-cut_begain > duration:  # duration timeout
-                    logging.info("Start string found but missing end string: duration timeout")
+                    logging.info(f"Start string found but missing end string: duration timeout for {duration}s")
                     return data_saved
         if time.time() - start_time > timeout:  # nothing found, timeout limit
+            logging.info(f"Nothing found, timeout for {timeout}s")
             return data_saved
