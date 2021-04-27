@@ -118,6 +118,7 @@ class Msg:
     CKE_FEATURE = 'CKE Feature'
     CKE_IDLE_TIMER = 'CKE Idle Timer'
     UNCORE_STATUS = 'Uncore Status'
+    ACT_CPU_CORES = 'Active Processor Cores'
 
     # menus of PCH configuration
     PCH_CONFIG = 'PCH Configuration'
@@ -139,6 +140,7 @@ class Msg:
     PATH_USB_CFG = [PCH_CONFIG, USB_CONFIG]
     PATH_ADV_PM_CFG = [CPU_CONFIG, ADV_POWER_MGF_CONFIG]
     PATH_PER_CPU_INFO = [CPU_CONFIG, PROCESSOR_CONFIG, PER_CPU]
+    PATH_PRO_CFG = [CPU_CONFIG, PROCESSOR_CONFIG]
 
     # Menu in Boot page
     MENU_BOOT_ORDER = 'UEFI Boot'

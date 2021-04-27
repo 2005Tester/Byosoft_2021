@@ -106,3 +106,25 @@ def cpu_mem_info(serial, ssh):
         return True
     except AssertionError:
         result.log_fail(capture=True)
+
+
+# Verify CPU Active Processor Cores information
+# Precondition: NA
+# OnStart: NA
+# OnComplete: Processor Configuration Page
+def cpu_cores_active(serial, ssh):
+    tc = ('204', '[204]Testcase_CoreDisable_001', 'CPU Active Processor Cores information')
+    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    ACT_CPU_CORES = ['Active Processor Cores', '<All>']
+    list_info = ['All', '27', '26', '25', '24', '23', '22', '21', '20', '19', '18', '17', '16', '15', '14', '13', '12', '11', '10', '9', '8', '7', '6', '5', '4', '3', '2', '1']
+    try:
+        assert SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(serial, ssh, Msg.PATH_PRO_CFG, 20, Msg.ACT_CPU_CORES)
+        assert SetUpLib.locate_option(serial, Key.DOWN, ACT_CPU_CORES, 20)
+        SerialLib.send_key(serial, Key.ENTER)
+        logging.info("**Active Processor Cores**")
+        assert icx2pAPI.verify_setup_options_up(serial, list_info, 28)
+        result.log_pass()
+        return True
+    except AssertionError:
+        result.log_fail(capture=True)
