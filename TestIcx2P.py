@@ -11,7 +11,8 @@ from sys import argv
 from Common import LogConfig, Unitool
 from Common import SutSerial
 from Common import ssh
-from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest, Pwd, Os, Release, Smbios, Legacy, DIMM, Cpu, Pch
+from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest, Pwd, Os, Release, Smbios, Legacy, DIMM, Cpu, \
+    Pch, Hotkey
 from Report.ReportGen import ReportGenerator
 
 # init seril
@@ -51,6 +52,9 @@ def debug_run():
     Cpu.cpu_mem_info(ser, ssh_bmc)
     DIMM.Testcase_MemoryCompa_001(ser, ssh_bmc)
     DIMM.Testcase_MemoryCompa_006(ser, ssh_bmc, ssh_os)
+    Hotkey.Testcase_SystemInfo_001(ser, ssh_bmc)
+    Hotkey.Testcase_SystemInfo_002(ser, ssh_bmc)
+    Hotkey.Testcase_SystemInfo_003(ser, ssh_bmc)
     Smbios.smbios_type128(ser,ssh_os, ssh_bmc, unitool)
     gen_report(log_dir)
 
