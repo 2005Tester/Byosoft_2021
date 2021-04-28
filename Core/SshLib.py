@@ -2,7 +2,6 @@ import re
 import logging
 import os
 import time
-from ICX2P import SutConfig
 from Common.LogAnalyzer import LogAnalyzer
 
 
@@ -27,9 +26,8 @@ def interaction(ssh, commands, rets):
 
 
 # Run one command from ssh (e.g. dmidecode) output result to a log file
-def dump_info(ssh, command, log_name=None):
+def dump_info(ssh, command, log_dir, log_name=None):
     if ssh.login():
-        log_dir = SutConfig.LOG_DIR
         return ssh.dump_info(command, log_dir, log_name)
 
 

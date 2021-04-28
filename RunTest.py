@@ -4,7 +4,7 @@ from Core import TcExecutor
 cli = TcExecutor.CliParse()
 
 if cli.get_project() == "icx2p":
-    from ICX2P import SutConfig as cfg
+    from ICX2P.Config import SutConfig as cfg
     from ICX2P import Main as script
     
 elif cli.get_project() == "pangea":
