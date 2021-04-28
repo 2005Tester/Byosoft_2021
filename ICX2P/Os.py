@@ -1,7 +1,7 @@
 import logging
 from Core import SerialLib
-from ICX2P import SutConfig
-from ICX2P.SutConfig import Key, Msg
+from ICX2P.Config import SutConfig
+from ICX2P.Config.PlatConfig import Key, Msg
 from ICX2P.BaseLib import SetUpLib
 from Report import ReportGen
 
@@ -10,6 +10,7 @@ from Report import ReportGen
 ##########################################
 #         OS and Boot Test Cases         #
 ##########################################
+
 
 # Boot to SUSE Linux from boot manager
 def boot_to_suse(serial, ssh):

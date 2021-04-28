@@ -7,54 +7,7 @@
 #  means without the express written consent of Byosoft Corporation.
 
 # -*- encoding=utf8 -*-
-import os
-import datetime
 
-# Report Setting
-PROJECT_NAME = "2288V6"
-SUT_CONFIG = "SUT1-Full-DIMM"
-REPORT_TEMPLATE = "ICX2P\\Report\\template"
-
-# Environment settings
-timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-LOG_DIR = 'c:\\daily\\ICX2P\\{0}'.format(timestamp)
-if not os.path.exists(LOG_DIR):
-    os.makedirs(LOG_DIR)
-SMBIOS_DIR = 'c:\\daily\\SMBIOS'
-# if not os.path.exists(SMBIOS_DIR):
-#     os.makedirs(SMBIOS_DIR)
-SERIAL_LOG = os.path.join(LOG_DIR, 'serial.log')
-
-HPM_DIR = ''
-INI_DIR = ''
-SHAR_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\AT Report\\2288V6\\{0}'.format(timestamp)
-
-# Serial Port Configuration
-BIOS_SERIAL = "com3"
-
-# BMC Configuration
-BMC_IP = '192.168.2.102'
-BMC_USER = 'Administrator'
-BMC_PASSWORD = 'Admin@9001'
-PORT = 22
-
-# BIOS Configuration
-BIOS_PW_DEFAULT = "Admin@9000"
-BIOS_PASSWORD = 'Admin@9009'
-
-# OS Configuration
-OS_IP = '192.168.3.200'
-OS_USER = 'root'
-OS_PASSWORD = '1'
-
-
-# Tool definition
-UNI_PATH = "/root/flashtool/unitool"
-RW_PATH = '/root/rw'
-
-
-# BIOS Firmware Directory, Must manual copy image files to the directory before test
-BIOS_PATH = r"\\ByoDiskStation1\PublicRW\QA\Firmware\2288V6\BIOS"
 
 # Key mapping
 class Key:
@@ -164,7 +117,7 @@ class Msg:
     iBMC_IP = 'iBMC IP : 192.168.2.101'
     CPU_TYPE = 'CPU type : Ice Lake'
     TOTAL_MEMORY = 'Total Memory : 65536MB'
-    
+
     # POST GPIO ERROR Keywords print in serial log
     GPIO_ERR = "GPIO ERROR"
 
@@ -204,77 +157,3 @@ class BiosCfg:
         "SvrMngmntFrb2Enable": 1,
     }
 
-
-# The SUT physical system configuration
-class SysCfg:
-    CPU_CNT = 2  # cpu socket count
-    REAR_USB_CNT = 2
-    BUILDIN_USB_CNT = 1
-    DIMM_SIZE = 96  # /GB
-
-    PCIE_MAP = [
-        {  # cpu0
-            "0a": "x16",  # ocp
-            "1a": "x8",  # slot1
-            "1c": "x8",  # build-in raid
-            "2a": "x16",  # slot2
-            "3a": "x16"  # slot7
-        },
-        {  # cpu1
-            "0a": "x16",  # slot3
-            "1a": "x16",  # slot4
-            # "2a": "x8",  # Slimline3
-            # "2c": "x8",  # Slimline4
-        }]
-
-
-# pat
-pat = '[(\d+);\d+H[\w\s\d<>\[\]&-]'
-
-
-# defined the msg info
-press_f2 = 'Press F2'
-msg5 = 'USB Mouse\s+1'
-msg6 = 'USB Keyboard\s+1'
-msg7 = 'USB Mass Storage\s+0'
-pwd_info = 'The current password is the default password.Please update password!'
-
-# BIOS Setup options,
-# level 1
-PXE_option = 'UEFI HTTPSv4: Network - Port00 SLOT1'
-option = 'PCH Configuration'
-option2 = 'CPU Configuration'
-OS = 'P0-ubuntu - HDD 0'
-# SUSE = 'P0-SUSE Linux Enterprise - HDD 0'
-SUSE = 'SUSE Linux Enterprise\(LUN0\)'
-pwd_item = 'Manage Supervisor Password'
-pwd_item1 = 'Simple Password'
-
-
-# BIOS items info,
-ufs = ['<Enabled>\s+UFS']
-dram = ['<Enabled>\s+DRAM RAPL']
-cnd_status = ['<Enabled>\s+Network CDN']
-
-# TPM info
-tpm_info = ['TPM Device\s+TPM 2.0', 'TPM2 Active PCR Hash\s+Algorithm+\s+SHA1\, SHA256',
-            'TPM2 Hardware Supported Hash\s+Algorithm+\s+SHA1\, SHA256']
-
-# UPI Status
-upi_state = ['Current UPI Link Speed\s+Fast', 'Current UPI Link Frequency\s+11\.2\s+GT\/s']
-
-# CPU, DIMM info
-CPU_info = ['Processor ID\s+000606A6', 'Processor Frequency\s+2.000GHz']
-DIMM_info = ['DIMM020\(C\)\s+S0.CC.D0:2933MT/s Hynix DRx4 32GB RDIMM',
-             'DIMM160\(G\)\s+S1.CG.D0:2933MT/s Hynix DRx4 32GB RDIMM']
-
-# Common key order
-key2Setup = [Key.RIGHT, Key.RIGHT, Key.DOWN, Key.ENTER]
-key2OS = [Key.RIGHT, Key.ENTER]
-key2pwd = [Key.RIGHT, Key.RIGHT, Key.RIGHT]
-
-# WA
-w2key = [Key.RIGHT, Key.UP]
-
-# rw os data
-CKE_POWER_DOWN = ['020f', '1100', '0080', '1000']

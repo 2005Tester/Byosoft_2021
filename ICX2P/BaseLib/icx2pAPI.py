@@ -11,8 +11,8 @@ import logging
 import subprocess
 import time
 
-from ICX2P import SutConfig
-from ICX2P.SutConfig import Key, Msg
+from ICX2P.Config import SutConfig
+from ICX2P.Config.PlatConfig import Key, Msg
 from ICX2P.BaseLib import PowerLib
 
 

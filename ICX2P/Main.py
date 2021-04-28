@@ -1,5 +1,6 @@
 from Common import SutSerial, Unitool, ssh
-from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest, Os, Release, Smbios, Pwd, Legacy, DIMM, Cpu
+from ICX2P import UpdateBIOS, biosTest, DefaultValueTest, Os, Release, Smbios, Pwd, Legacy, DIMM, Cpu
+from ICX2P.Config import SutConfig
 
 
 # init seril

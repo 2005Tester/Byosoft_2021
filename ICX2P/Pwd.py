@@ -14,8 +14,8 @@ import os
 import unittest
 from Core import SerialLib, SshLib
 from Report import ReportGen
-from ICX2P.SutConfig import Key, Msg
-from ICX2P import SutConfig
+from ICX2P.Config.PlatConfig import Key, Msg
+from ICX2P.Config import SutConfig
 from ICX2P.BaseLib import icx2pAPI, SetUpLib, Update, PowerLib
 
 # Test case ID: TC030-TC070
@@ -688,7 +688,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         try:
             self.assertTrue(PowerLib.force_reset(ssh))
             logging.info("Booting to setup")
-            self.assertTrue(serial.waitString(SutConfig.Msg.HOTKEY_PROMPT_DEL, timeout=600))
+            self.assertTrue(serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=600))
             SetUpLib.send_key(serial, Key.DEL)
             logging.info("Hot Key sent")
             self.assertTrue(serial.waitString(SutConfig.press_f2, timeout=60))
@@ -721,7 +721,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         try:
             self.assertTrue(PowerLib.force_reset(ssh))
             logging.info("Booting to setup")
-            self.assertTrue(serial.waitString(SutConfig.Msg.HOTKEY_PROMPT_DEL, timeout=600))
+            self.assertTrue(serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=600))
             SetUpLib.send_key(serial, Key.DEL)
             logging.info("Hot Key sent")
             self.assertTrue(serial.waitString(SutConfig.press_f2, timeout=10))
@@ -733,7 +733,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
                     if list_error != pwd_error[-1]:
                         self.assertTrue(serial.waitString(invalid_info, timeout=10))
                         SetUpLib.send_key(serial, Key.ENTER)
-                        self.assertTrue(serial.waitString(SutConfig.Msg.PW_PROMPT, timeout=10))
+                        self.assertTrue(serial.waitString(Msg.PW_PROMPT, timeout=10))
                         logging.info("input password again")
                     else:
                         # self.assertTrue(serial.waitString(SutConfig.pwd_info))
@@ -756,7 +756,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         try:
             self.assertTrue(PowerLib.force_reset(ssh))
             logging.info("Booting to setup")
-            self.assertTrue(serial.waitString(SutConfig.Msg.HOTKEY_PROMPT_DEL, timeout=600))
+            self.assertTrue(serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=600))
             SetUpLib.send_key(serial, Key.DEL)
             logging.info("Hot Key sent")
             self.assertTrue(serial.waitString(SutConfig.press_f2, timeout=60))
@@ -791,7 +791,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         try:
             self.assertTrue(PowerLib.force_reset(ssh))
             logging.info("Booting to setup")
-            self.assertTrue(serial.waitString(SutConfig.Msg.HOTKEY_PROMPT_DEL, timeout=600))
+            self.assertTrue(serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=600))
             SetUpLib.send_key(serial, Key.DEL)
             logging.info("Hot Key sent")
             self.assertTrue(serial.waitString(SutConfig.press_f2, timeout=10))
@@ -946,7 +946,7 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
         try:
             for hk in hot_key:
                 self.assertTrue(PowerLib.force_reset(ssh))
-                self.assertTrue(serial.waitString(SutConfig.Msg.HOTKEY_PROMPT_DEL, timeout=600))
+                self.assertTrue(serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=600))
                 logging.info("Rebooting SUT")
                 try:
                     SetUpLib.send_key(serial, hk)
@@ -978,7 +978,7 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
         try:
             self.assertTrue(PowerLib.force_reset(ssh))
             logging.info("Booting to setup")
-            self.assertTrue(serial.waitString(SutConfig.Msg.HOTKEY_PROMPT_DEL, timeout=600))
+            self.assertTrue(serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=600))
             SetUpLib.send_key(serial, Key.DEL)
             logging.info("Hot Key sent")
             self.assertTrue(serial.waitString(SutConfig.press_f2, timeout=60))
@@ -1030,7 +1030,7 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
             # set 4
             logging.info("Enter the correct login password for ordinary users and log in to the setup menu")
             SetUpLib.send_key(serial, Key.CTRL_ALT_DELETE)
-            self.assertTrue(serial.waitString(SutConfig.Msg.HOTKEY_PROMPT_DEL, timeout=600))
+            self.assertTrue(serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=600))
             SetUpLib.send_key(serial, Key.DEL)
             logging.info("Hot Key sent")
             self.assertTrue(serial.waitString(SutConfig.press_f2, timeout=10))
@@ -1062,7 +1062,7 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
         try:
             self.assertTrue(PowerLib.force_reset(ssh))
             logging.info("Booting to setup")
-            self.assertTrue(serial.waitString(SutConfig.Msg.HOTKEY_PROMPT_DEL, timeout=600))
+            self.assertTrue(serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=600))
             serial.send_keys(Key.DEL)
             logging.info("Hot Key sent")
             self.assertTrue(serial.waitString(SutConfig.press_f2, timeout=60))

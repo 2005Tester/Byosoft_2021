@@ -13,8 +13,8 @@ import os
 import re
 from Core import SshLib, SerialLib
 from Common import ssh, GitLab
-from ICX2P import SutConfig
-from ICX2P.SutConfig import Msg
+from ICX2P.Config import SutConfig
+from ICX2P.Config.PlatConfig import Msg
 from ICX2P.BaseLib import SetUpLib, PowerLib
 
 

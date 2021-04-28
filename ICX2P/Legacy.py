@@ -1,6 +1,4 @@
-import logging
-from ICX2P import SutConfig
-from ICX2P.SutConfig import Key, Msg, BiosCfg
+from ICX2P.Config import SutConfig
 from ICX2P.BaseLib import SetUpLib
 from Report import ReportGen
 

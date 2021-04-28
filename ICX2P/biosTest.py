@@ -6,13 +6,13 @@
 #  stored in a retrieval system, or transmitted in any form or by any
 #  means without the express written consent of Byosoft Corporation.
 # -*- encoding=utf8 -*-
-import datetime
 import logging
 import re
 import time
 from Core import SerialLib
-from ICX2P.SutConfig import Key, Msg, SysCfg
-from ICX2P import SutConfig
+from ICX2P.Config.SutConfig import SysCfg
+from ICX2P.Config.PlatConfig import Msg, Key
+from ICX2P.Config import SutConfig
 from ICX2P.BaseLib import PowerLib, icx2pAPI, SetUpLib
 from Report import ReportGen
 from Common.LogAnalyzer import LogAnalyzer

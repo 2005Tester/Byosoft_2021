@@ -1,8 +1,8 @@
 import os
 import glob
 import logging
-from ICX2P import SutConfig
-from ICX2P.SutConfig import Key, Msg, BiosCfg
+from ICX2P.Config import SutConfig
+from ICX2P.Config.PlatConfig import Key, Msg, BiosCfg
 from ICX2P.BaseLib import PowerLib, SetUpLib, Update, icx2pAPI
 from Report import ReportGen
 

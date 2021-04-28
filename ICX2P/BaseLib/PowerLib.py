@@ -1,5 +1,5 @@
 import logging
-from ICX2P import SutConfig
+from ICX2P.Config import SutConfig
 
 
 # update by arthur,

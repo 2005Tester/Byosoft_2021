@@ -4,9 +4,10 @@ import logging
 import unittest
 import numpy
 
-from ICX2P import SutConfig
 from Report import ReportGen
-from ICX2P.SutConfig import Key, Msg, SysCfg, BiosCfg
+from ICX2P.Config import SutConfig
+from ICX2P.Config.SutConfig import SysCfg
+from ICX2P.Config.PlatConfig import Key, Msg, BiosCfg
 from ICX2P.BaseLib import SetUpLib, icx2pAPI, PowerLib
 from Core import SerialLib, SshLib
 from ICX2P import Os
@@ -16,6 +17,7 @@ from ICX2P import Os
 ##########################################
 #            Release Test Cases          #
 ##########################################
+
 
 # 03 支持内存电源管理配置
 class dimm_memPower(unittest.TestCase):

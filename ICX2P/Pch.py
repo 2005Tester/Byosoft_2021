@@ -1,9 +1,10 @@
 import os
 import re
 import logging
-from ICX2P import SutConfig
 from Report import ReportGen
-from ICX2P.SutConfig import Key, Msg, SysCfg
+from ICX2P.Config import SutConfig
+from ICX2P.Config.PlatConfig import Key, Msg
+from ICX2P.Config.SutConfig import SysCfg
 from ICX2P.BaseLib import SetUpLib, icx2pAPI, PowerLib
 from Core import SerialLib
 

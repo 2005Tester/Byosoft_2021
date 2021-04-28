@@ -1,11 +1,9 @@
 # this script just for hotkey related function test
 
-import logging
-
-from Core import SerialLib, SshLib
-from ICX2P import SutConfig
+from Core import SerialLib
 from Report import ReportGen
-from ICX2P.SutConfig import Key, Msg
+from ICX2P.Config import SutConfig
+from ICX2P.Config.PlatConfig import Key, Msg
 from ICX2P.BaseLib import SetUpLib, PowerLib
 
 
