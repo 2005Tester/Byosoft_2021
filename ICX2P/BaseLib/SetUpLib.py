@@ -245,3 +245,9 @@ def update_default_password(serial, ssh_bmc):
     logging.info("Password changed to non-default successfully")
     return True
 
+
+# get value of a setupoption
+# option_patten: [name, patten of value] e.g. ["MMIO High Base", "<.+>"]
+def get_option_value(serial, option_patten, key, try_counts):
+    value_patten = "H<(\w+)>\x1B"
+    return serial.get_option_value(option_patten, value_patten, key, try_counts)

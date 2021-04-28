@@ -407,3 +407,17 @@ class SutControl:
         data = self.session.read_until(expected=msg).decode('utf-8')
         data = self.cleanup_data(data)
         return data
+
+    # navigate and get setup option value by name
+    def get_option_value(self, option_patten, value_patten, key, try_counts):
+        if not self.locate_setup_option(key, option_patten, try_counts):
+            logging.info("Setup option not found.")
+            return
+        pat_value = re.compile(value_patten)
+        res = pat_value.findall(self.data)
+        if len(res) != 1:
+            logging.info("Error: Multiple match found {0}".format(res))
+            return
+        else:
+            logging.info("Value of option: {0} is {1}".format(option_patten[0], res[0]))
+            return res[0]
