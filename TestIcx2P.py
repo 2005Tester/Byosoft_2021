@@ -11,8 +11,9 @@ from sys import argv
 from Common import LogConfig, Unitool
 from Common import SutSerial
 from Common import ssh
-from ICX2P import UpdateBIOS, SutConfig, biosTest, DefaultValueTest, Pwd, Os, Release, Smbios, Legacy, DIMM, Cpu, \
+from ICX2P import UpdateBIOS, biosTest, DefaultValueTest, Pwd, Os, Release, Smbios, Legacy, DIMM, Cpu, \
     Pch, Hotkey
+from ICX2P.Config import SutConfig 
 from Report.ReportGen import ReportGenerator
 
 # init seril
