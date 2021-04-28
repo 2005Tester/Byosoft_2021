@@ -277,4 +277,4 @@ key2pwd = [Key.RIGHT, Key.RIGHT, Key.RIGHT]
 w2key = [Key.RIGHT, Key.UP]
 
 # rw os data
-CKE_POWER_DOWN = ['c61218a0: 020f 1100 020f 1100 020f 1100 020f 1100 ', 'fb9a18a4: 0080 1000 0080 1000 0080 1000 ffff ffff ']
+CKE_POWER_DOWN = ['020f', '1100', '0080', '1000']

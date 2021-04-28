@@ -83,24 +83,27 @@ def osTime(ssh):
 
 
 # used for rw test
-def rw_everything(ssh, exp_res, mem_bar, str=' .', num=1, index=0):
+def rw_everything(ssh, exp_res, mem_bar, cmd='mmr', str=' ', start=1, stop=3):
     """
-    :str is split flag, default is ' . '
-    :num is times to split, default is 1
-    :index is the list index
+    :str is split flag, default is ' ' - blank
+    :start from list, default is 1
+    :stop by list, default is 3
     :param exp_res is a excepted num list
     :param mem_bar should be printed in full debug message, e.g mem0_bar and mem1_bar address - list
+    :param cmd is a parameter supported by rw tool, e.g mmr
     """
     time.sleep(5)
     org_list = []
     if ssh.login():
         logging.info('Start to rw the address...')
         for i in mem_bar:
-            res = ssh.execute_command(r'cd {0};./rw mmr {1} | grep {2}'.format(SutConfig.RW_PATH, i, i))
-            org_list.append(res.split(str, num)[index])
+            res = ssh.execute_command(r'cd {0};./rw {1} {2} | grep {2}'.format(SutConfig.RW_PATH, cmd, i, i))
+            logging.debug(res)
+            for j in res.split(str)[start:stop]:
+                org_list.append(j)
         time.sleep(1)
-    logging.debug(org_list)
-    if exp_res != org_list:
+    logging.debug(list(set(org_list)))
+    if exp_res != list(set(org_list)):
         logging.info('Register verified - fail')
         return False
     logging.info('Register verified - pass')

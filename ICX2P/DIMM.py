@@ -178,8 +178,7 @@ class dimm_memPower(unittest.TestCase):
             self.assertTrue(SetUpLib.boot_to_bootmanager(serial, ssh_bmc))
             self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
             self.assertTrue(icx2pAPI.ping_sut())
-            self.assertTrue(
-                icx2pAPI.rw_everything(ssh_os, ['c61218a0: 010f 1100 010f 1100 010f 1100 010f 1100 '], ['c61218a0']))
+            self.assertTrue(icx2pAPI.rw_everything(ssh_os, ['1100', '010f'], ['c61218a0']))
         except AssertionError as err:
             result.log_fail(capture=True)
             icx2pAPI.reset_default(serial, ssh_bmc)
@@ -211,8 +210,7 @@ class dimm_memPower(unittest.TestCase):
             self.assertTrue(SetUpLib.boot_to_bootmanager(serial, ssh_bmc))
             self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
             self.assertTrue(icx2pAPI.ping_sut())
-            self.assertTrue(
-                icx2pAPI.rw_everything(ssh_os, ['c61218a0: 02bf 1100 02bf 1100 02bf 1100 02bf 1100 '], ['c61218a0']))
+            self.assertTrue(icx2pAPI.rw_everything(ssh_os, ['1100', '02bf'], ['c61218a0']))
         except AssertionError as err:
             result.log_fail(capture=True)
             icx2pAPI.reset_default(serial, ssh_bmc)
@@ -325,6 +323,49 @@ def Testcase_MemoryCompa_006(serial, ssh_bmc, ssh_os, n=1):
             result.log_pass()
         except AssertionError:
             result.log_fail(capture=True)
+
+
+# 01 设置动态内存刷新模式功能测试
+# Precondition: BIOS默认密码
+# OnStart: NA
+# OnComplete: SUSE OS
+def Testcase_MemRefresh_001(serial, ssh_bmc, ssh_os):
+    tc = ('711', '[TC711] Testcase_MemRefresh_001', '01 设置动态内存刷新模式功能测试')
+    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    try:
+        assert SetUpLib.boot_to_page(serial, ssh_bmc, Msg.CPU_CONFIG), "boot_to_page -> fail"
+        assert SetUpLib.locate_option(serial, Key.DOWN, [Msg.MEM2X_REFRESH, 'Disabled'], 10), "locate_option -> fail"
+        SerialLib.send_keys_with_delay(serial, [Key.F5, Key.F10, Key.Y])
+        assert Os.boot_to_suse(serial, ssh_bmc), "boot_to_os -> fail"
+        assert icx2pAPI.ping_sut(), "ping_os_ip-> fail"
+        assert icx2pAPI.rw_everything(ssh_os, ['005f', '5a55'], ['c99224e0', 'fb9224e0'])
+        assert icx2pAPI.reset_default(serial, ssh_bmc)
+        result.log_pass()
+    except AssertionError:
+        assert icx2pAPI.reset_default(serial, ssh_bmc)
+        result.log_fail(capture=True)
+
+
+# 02 设置静态2X内存刷新模式功能测试
+# Precondition: BIOS默认密码
+# OnStart: NA
+# OnComplete: SUSE OS
+def Testcase_MemRefresh_002(serial, ssh_bmc, ssh_os):
+    tc = ('712', '[TC712] Testcase_MemRefresh_001', '02 设置静态2X内存刷新模式功能测试')
+    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    try:
+        assert SetUpLib.boot_to_page(serial, ssh_bmc, Msg.CPU_CONFIG), "boot_to_page -> fail"
+        assert SetUpLib.enter_menu(serial, Key.DOWN, Msg.MEMORY_CONFIG, 10, Msg.MEM_FRE), "enter_menu -> fail"
+        assert SetUpLib.locate_option(serial, Key.DOWN, [Msg.MEM2X_REFRESH, 'Disabled'], 10), "locate_option -> fail"
+        SerialLib.send_keys_with_delay(serial, [Key.F6 * 3, Key.F10, Key.Y])
+        assert Os.boot_to_suse(serial, ssh_bmc), "boot_to_os -> fail"
+        assert icx2pAPI.ping_sut(), "ping_os_ip-> fail"
+        assert icx2pAPI.rw_everything(ssh_os, ['005f', '5a55'], ['c99224e0', 'fb9224e0'])
+        assert icx2pAPI.reset_default(serial, ssh_bmc)
+        result.log_pass()
+    except AssertionError:
+        assert icx2pAPI.reset_default(serial, ssh_bmc)
+        result.log_fail(capture=True)
 
 
 # 装备模式下打开RMT并检查串口RMT数据是否正常打印
