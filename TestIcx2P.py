@@ -97,7 +97,6 @@ def run_test():
     if Legacy.enable_legacy_boot(ser, ssh_bmc):
         Legacy.disable_legacy_boot(ser, ssh_bmc)
     if UpdateBIOS.update_bios_mfg(ser, ssh_bmc, sftp_bmc, 'master'):
-        Os.move_suse_to_first(ser, ssh_bmc)
         Release.equip_mode_version_check(ser, ssh_bmc)
         Os.boot_to_suse_mfg(ser, ssh_bmc)
         Smbios.smbios_type128(ser, ssh_os, ssh_bmc, unitool)

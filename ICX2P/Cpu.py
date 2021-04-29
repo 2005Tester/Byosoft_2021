@@ -71,7 +71,7 @@ def ufs_default_value(serial, ssh):
 # OnStart: NA
 # OnComplete: Setup Advanced power management page
 def static_turbo_default(serial, ssh):
-    tc = ('202', '[202]Testcase_Static_Turbo_001', '静态Turbo默认值测试')
+    tc = ('202', '[TC202]Testcase_Static_Turbo_001', '静态Turbo默认值测试')
     result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
     static_turbo_default = ['Static Turbo', '<Disabled>']
     try:
@@ -91,7 +91,7 @@ def static_turbo_default(serial, ssh):
 # OnStart: NA
 # OnComplete: Setup Memory Topology Page
 def cpu_mem_info(serial, ssh):
-    tc = ('203', '[203]CPU Memory Information', 'Verify CPU and Memory Information')
+    tc = ('203', '[TC203]CPU Memory Information', 'Verify CPU and Memory Information')
     result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
     try:
         assert SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_ADVANCED)
