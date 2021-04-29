@@ -161,8 +161,6 @@ class SutControl:
                 if self.session.in_waiting:
                     data = self.session.read(256).decode("utf-8")
                     data = self.cleanup_data(data)
-                    with open(self.log, 'a') as f:
-                        f.write(data)
                     if self.find_msg("Press F2", data):
                         self.send_data("Admin@9009")
                         self.send_data(chr(0x0D))  # Send Enter
@@ -189,8 +187,6 @@ class SutControl:
                 if self.session.in_waiting:
                     data = self.session.read(256).decode("utf-8")
                     data = self.cleanup_data(data)
-                    with open(self.log, 'a') as f:
-                        f.write(data)
                     if self.find_msg("Press F2", data):
                         self.send_data("Admin@9009")
                         self.send_data(chr(0x0D))  # Send Enter
@@ -295,8 +291,6 @@ class SutControl:
                 if self.session.in_waiting:
                     data = self.session.read(256).decode("utf-8")
                     data = self.cleanup_data(data)
-                    with open(self.log, 'a') as f:
-                        f.write(data)
                     if self.find_msg(hotkey_prompt, data):
                         self.send_keys(key)
                         logging.info("Hot Key sent")
