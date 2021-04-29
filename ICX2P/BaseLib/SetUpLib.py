@@ -293,3 +293,28 @@ def update_default_password(serial, ssh_bmc):
 def get_option_value(serial, option_patten, key, try_counts):
     value_patten = "H<(\w+)>\x1B"
     return serial.get_option_value(option_patten, value_patten, key, try_counts)
+
+
+# set value of a setup option
+def set_option_value(serial, locate_key, locate_try, option_name, set_key, set_counts, exp_value, verify_counts):
+    """
+    :param locate_key: press key to locate the specify option
+    :param locate_try: the counts to press the locate_key
+    :param option_name: the specify option, should be a list, e.g ['Active Processor Cores', '<All>']
+    :param set_key: press key to set the specify option, e.g Key.F5 - Down, Key.F6 - Up, depends on the BIOS ket rule
+    :param set_counts: the counts to press the set_key
+    :param exp_value: the expected value set to the option, should be a list, e.g [['Active Processor Cores', '<15>']]
+    :param verify_counts: the counts to press the key, and verify the option value after modified
+    :return: True, the option value set successfully
+             False, the option value set fail
+    """
+    assert locate_option(serial, locate_key, option_name, locate_try), 'local_option -> fail'
+    logging.info('Start to set value...')
+    SerialLib.send_keys_with_delay(serial, [set_key * set_counts])
+    logging.info('Value set done, start to check if set successfully...')
+    # return verify_options(serial, locate_key, exp_value, verify_counts)
+    if not verify_counts(serial, locate_key, exp_value, verify_counts):
+        logging.info('Set option value -> fail')
+        return
+    logging.info('Set option value successfully')
+    return True
