@@ -128,3 +128,107 @@ def cpu_cores_active(serial, ssh):
         return True
     except AssertionError:
         result.log_fail(capture=True)
+
+
+# Verify CPU Active Processor Cores information
+# Precondition: NA
+# OnStart: NA
+# OnComplete: suse Page
+
+#  function Module
+def cpu_cores_active_enable(serial, ssh, ssh_os,num, set_n):
+    ACT_CPU_CORES = ['Active Processor Cores', '<All>']
+    try:
+        assert SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(serial, ssh, Msg.PATH_PRO_CFG, 20, Msg.ACT_CPU_CORES)
+        assert SetUpLib.locate_option(serial, Key.DOWN, ACT_CPU_CORES, 20)
+        SerialLib.send_keys_with_delay(serial, [Key.F6]*set_n)
+        logging.info("**Active Processor Cores**")
+        SerialLib.send_keys_with_delay(serial, [Key.F10, Key.Y], 5)
+        logging.info("**reboot**")
+        assert SetUpLib.continue_to_page(serial, Msg.PAGE_ADVANCED)
+        # assert SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_ADVANCED)
+        SerialLib.send_keys_with_delay(serial, Key.ENTER)
+        assert SetUpLib.enter_menu(serial, Key.DOWN, [Msg.MEMORY_TOP], 20, 'DIMM000')
+        logging.info("**Verify Memory Information**")
+        assert SetUpLib.verify_info(serial, SutConfig.DIMM_info, 20)
+        ### boot suse
+        assert SetUpLib.boot_with_hotkey(serial, ssh, Key.F11, "Boot Manager Menu", 300)
+        assert SetUpLib.enter_menu(serial, Key.DOWN, ["SUSE Linux Enterprise\(LUN0\)"], 20, "Welcome to GRUB")
+        assert SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE, 170)
+        logging.info("Suse_OS Boot Successful")
+        ### 每个CPU下只有num个core。
+        res1 = SshLib.execute_command(ssh_os, r'lscpu | grep " per socket" ').replace('\n', '').split(':')[-1].strip()
+        print("res1 = ", res1)
+        if int(res1) == num:
+            logging.info("**Core Enable pass**")
+        else:
+            logging.info("**Core Enable eorro**")
+            return False
+        ### 在smbios4中检查：Core数量为总数，Core Enable为num，线程数为Enabled核数的两倍
+        smbios4_Core_Count = SshLib.execute_command(ssh_os, r'dmidecode -t 4 | grep "Core Count" ').replace('\n', '').split(':')[-1].strip()
+        logging.info("**Core_Count = {}**".format(smbios4_Core_Count))
+        smbios4_Core_Enabled = SshLib.execute_command(ssh_os, r'dmidecode -t 4 | grep "Core Enabled" ').replace('\n', '').split(':')[-1].strip()
+        logging.info("**Core_Enabled = {}**".format(smbios4_Core_Enabled))
+        smbios4_Thread_Count = SshLib.execute_command(ssh_os, r'dmidecode -t 4 | grep "Thread Count" ').replace('\n', '').split(':')[-1].strip()
+        logging.info("**Thread_Count = {}**".format(smbios4_Thread_Count))
+        if smbios4_Core_Count == '28' and smbios4_Core_Enabled == str(num) and smbios4_Thread_Count == str(num*2):
+            logging.info("**Core_Count pass, Core_Enabled pass,Thread_Count pass")
+        else:
+            logging.info("**Core eorro**")
+            return False
+        ###使用 unitool 还原 'Active Processor Cores', '<All>'
+        logging.info("**restore parameters**")
+        SshLib.execute_command(ssh_os, r'cd {0};insmod ufudev.ko'.format(SutConfig.UNI_PATH))
+        res = SshLib.execute_command(ssh_os,
+                                     r'cd {0};./unitool -w ActiveCpuCores:0'.format(SutConfig.UNI_PATH))
+        logging.info(res)
+        if len(res) == 0:
+            logging.info('blank, maybe the ko module failed')
+            return
+        elif 'error' in res:
+            logging.info("Modify BIOS PWD:Fail")
+            return
+        return True
+    except AssertionError:
+        logging.info("Test failed, restore parameters")
+        SshLib.execute_command(ssh_os, r'cd {0};insmod ufudev.ko'.format(SutConfig.UNI_PATH))
+        SshLib.execute_command(ssh_os,
+                                     r'cd {0};./unitool -w ActiveCpuCores:0'.format(SutConfig.UNI_PATH))
+        return False
+
+
+def cpu_cores_active_enable_1(serial, ssh, ssh_os):
+    tc = ('205', '[205]Testcase_CoreDisable_002', 'Enable 1 CPU core test')
+    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    try:
+        num = 1
+        set_n = 28
+        assert cpu_cores_active_enable(serial, ssh, ssh_os, num, set_n)
+        result.log_pass()
+    except AssertionError:
+        result.log_fail(capture=True)
+
+
+def cpu_cores_active_enable_middle(serial, ssh, ssh_os):
+    tc = ('206', '[206]Testcase_CoreDisable_003', 'Enable middle-num CPU core test')
+    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    try:
+        num = 14
+        set_n = 14
+        assert cpu_cores_active_enable(serial, ssh, ssh_os, num, set_n)
+        result.log_pass()
+    except AssertionError:
+        result.log_fail(capture=True)
+
+
+def cpu_cores_active_enable_max(serial, ssh, ssh_os):
+    tc = ('207', '[207]Testcase_CoreDisable_004', 'Enable max-1 CPU core test')
+    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    try:
+        num = 27
+        set_n = 1
+        assert cpu_cores_active_enable(serial, ssh, ssh_os, num, set_n)
+        result.log_pass()
+    except AssertionError:
+        result.log_fail(capture=True)

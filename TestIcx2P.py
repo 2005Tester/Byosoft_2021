@@ -60,6 +60,9 @@ def debug_run():
     DIMM.Testcase_MemoryCompa_009(ser, ssh_bmc, unitool)
     biosTest.Testcase_SerialPrint_001(ser, ssh_bmc)
     biosTest.Testcase_SerialPrint_002(ser, ssh_bmc)
+    Cpu.cpu_cores_active_enable_1(ser, ssh_bmc, ssh_os)
+    Cpu.cpu_cores_active_enable_middle(ser, ssh_bmc, ssh_os)
+    Cpu.cpu_cores_active_enable_max(ser, ssh_bmc, ssh_os)
     gen_report(log_dir)
 
 

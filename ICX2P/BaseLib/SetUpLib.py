@@ -157,8 +157,8 @@ def boot_to_page(serial, ssh, page_name):
 
 
 # Continue boot to specific page in bios configuration without a force reset, assume reset is done in previous step
-def continue_to_page(serial, ssh, page_name):
-    if not continue_to_bios_config(serial, ssh):
+def continue_to_page(serial, page_name):
+    if not continue_to_bios_config(serial):
         return
     logging.info("SetUpLib: Move to specified setup page")
     if not serial.locate_setup_option(Key.RIGHT, [page_name], 12):
