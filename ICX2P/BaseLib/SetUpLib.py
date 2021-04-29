@@ -71,6 +71,16 @@ def boot_to_setup(serial, ssh):
     return True
 
 
+# Continue boot to setup home page without a force reset
+def continue_to_setup(serial):
+    logging.info("SetUpLib: Continue boot to setup main page")
+    if not serial.boot_with_hotkey(Key.DEL, Msg.HOME_PAGE, 300):
+        logging.info("SetUpLib: Boot to setup failed.")
+        return
+    logging.info("SetUpLib: Boot to setup main page successfully")
+    return True
+
+
 def boot_with_hotkey(serial, ssh, key, msg, timeout):
     hotkey_prompt = Msg.HOTKEY_PROMPT_DEL
     pw_prompt = Msg.PW_PROMPT
@@ -83,7 +93,7 @@ def boot_with_hotkey(serial, ssh, key, msg, timeout):
     return True
 
 
-# Boot to boot manager without a force reset
+# Continue Boot to boot manager without a force reset
 def continue_to_bootmanager(serial):
     logging.info("SetUpLib: continue boot to bootmanager")
     msg = "Boot Manager Menu"
@@ -114,9 +124,41 @@ def boot_to_bios_config(serial, ssh):
     return True
 
 
+# Continue Boot to BIOS configuration without a force reset
+def continue_to_bios_config(serial):
+    if not continue_to_setup(serial):
+        return
+    logging.info("Move to \"BIOS Configuration\"")
+    SerialLib.send_key(serial, Key.DOWN)
+    if SerialLib.is_msg_present(serial, "Boot From File", delay=10):
+        logging.info("UEFI boot mode detected.")
+        SerialLib.send_keys_with_delay(serial, [Key.RIGHT, Key.RIGHT])
+    else:
+        logging.info("Legacy boot mode detected")
+        SerialLib.send_key(serial, Key.RIGHT)
+    SerialLib.send_key(serial, Key.ENTER)
+    if not serial.is_msg_present('System Time'):
+        logging.info("SetUpLib: Boot to BIOS Configuration Failed")
+        return
+    logging.info("SetUpLib: Boot to BIOS Configuration successfully")
+    return True
+
+
 # boot to specific page in bios configuration
 def boot_to_page(serial, ssh, page_name):
     if not boot_to_bios_config(serial, ssh):
+        return
+    logging.info("SetUpLib: Move to specified setup page")
+    if not serial.locate_setup_option(Key.RIGHT, [page_name], 12):
+        logging.info("SetUpLib: Specified setup page not found.")
+        return
+    logging.info("SetUpLib: Specified setup page found.")
+    return True
+
+
+# Continue boot to specific page in bios configuration without a force reset, assume reset is done in previous step
+def continue_to_page(serial, ssh, page_name):
+    if not continue_to_bios_config(serial, ssh):
         return
     logging.info("SetUpLib: Move to specified setup page")
     if not serial.locate_setup_option(Key.RIGHT, [page_name], 12):
