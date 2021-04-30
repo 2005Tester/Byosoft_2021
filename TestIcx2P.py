@@ -60,9 +60,6 @@ def debug_run():
     DIMM.Testcase_MemoryCompa_009(ser, ssh_bmc, unitool)
     biosTest.Testcase_SerialPrint_001(ser, ssh_bmc)
     biosTest.Testcase_SerialPrint_002(ser, ssh_bmc)
-    Cpu.cpu_cores_active_enable_1(ser, ssh_bmc, ssh_os)
-    Cpu.cpu_cores_active_enable_middle(ser, ssh_bmc, ssh_os)
-    Cpu.cpu_cores_active_enable_max(ser, ssh_bmc, ssh_os)
     gen_report(log_dir)
 
 
@@ -83,6 +80,9 @@ def run_test():
     biosTest.vtd(ser, ssh_bmc)
     biosTest.cnd_default_enable(ser, ssh_bmc)
     Cpu.upi_link_status(ser, ssh_bmc)
+    Cpu.cpu_cores_active_enable_1(ser, ssh_bmc, ssh_os)
+    Cpu.cpu_cores_active_enable_middle(ser, ssh_bmc, ssh_os)
+    Cpu.cpu_cores_active_enable_max(ser, ssh_bmc, ssh_os)
     if Os.boot_to_suse(ser, ssh_bmc):
         Smbios.smbios_test_all(ssh_os)
         Release.equip_mode_flag_check(unitool)

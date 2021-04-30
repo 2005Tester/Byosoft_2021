@@ -1,5 +1,5 @@
 import logging
-from Core import SerialLib
+from Core import SerialLib, SshLib
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg
 from ICX2P.BaseLib import icx2pAPI, SetUpLib
