@@ -152,30 +152,6 @@ class SutControl:
                         logging.info("is_msg_present_general: {0} not found after waiting {1} seconds".format(msg, delay))
                     break
 
-    def is_msg_present(self, msg):
-        logging.info("Waiting for:\"{0}\"".format(msg))
-        start_time = time.time()
-        logging.debug("is_msg_present: receiving data from serial port...")
-        while True:
-            try:
-                if self.session.in_waiting:
-                    data = self.session.read(256).decode("utf-8")
-                    data = self.cleanup_data(data)
-                    if self.find_msg("Press F2", data):
-                        self.send_data("Admin@9009")
-                        self.send_data(chr(0x0D))  # Send Enter
-                        logging.info("Send password...")
-                    if self.find_msg(msg, data):
-                        return True
-                    # else:
-                    #    keys = [chr(0x1b), chr(0x5b), chr(0x42), chr(0x1b), chr(0x5b), chr(0x41)]
-                    #    self.send_keys(keys)
-            except Exception as e:
-                logging.error("is_msg_present:{0}".format(e))
-                break
-            if self.is_timeout(start_time, 300):
-                logging.debug("is_msg_present: timeout")
-                break
 
     # verify specified message (msg1) should not appeare in serial log, but msg2 should be present
     def is_msg_not_present(self, msg1, msg2):
@@ -381,17 +357,6 @@ class SutControl:
         logging.info("Enter menu: {0} successfully".format(option_path[-1]))
         return True
 
-    # debug, to support to_highlight_option def,
-    def readLines(self, limit=None):
-        """
-        :param limit: most limit bytes to be read,
-        :return: Data read from serial port,
-        """
-        if limit is None:
-            read = self.session.readline()
-        else:
-            read = self.session.readline(limit)
-        return read.decode()
 
     # run command from serial port until spefified message occur
     def run_command(self, cmd, msg):

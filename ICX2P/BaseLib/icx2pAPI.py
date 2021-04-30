@@ -10,7 +10,7 @@ import datetime
 import logging
 import subprocess
 import time
-
+from Core import SerialLib
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg
 from ICX2P.BaseLib import PowerLib
@@ -250,7 +250,7 @@ def reset_default(serial, ssh):
         return
     # time.sleep(1)
     serial.send_keys_with_delay(Key.RESET_DEFAULT)
-    if not serial.is_msg_present(Msg.BIOS_BOOT_COMPLETE):
+    if not SerialLib.is_msg_present(Msg.BIOS_BOOT_COMPLETE):
         logging.info("Reset dafault by F9:Fail")
         return False
     logging.info("Reset dafault by F9:Pass")

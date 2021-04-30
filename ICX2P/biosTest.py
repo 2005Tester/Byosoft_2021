@@ -314,14 +314,14 @@ def vtd(serial, ssh):
         return
     logging.info("Diasble VT-d")
     serial.send_keys(Key.F5)
-    if not serial.is_msg_present("Disabled"):
+    if not SerialLib.is_msg_present(serial, "Disabled"):
         logging.info("VT-d option is not disaled.")
         result.log_fail()
         return
     logging.info("Save and reboot")
     serial.send_keys(Key.F10 + Key.Y)
     logging.info("Verify OS boot with VT-D disabled.")
-    if not serial.is_msg_present(Msg.BIOS_BOOT_COMPLETE):
+    if not SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE):
         logging.info("OS boot failed")
         result.log_fail()
         return

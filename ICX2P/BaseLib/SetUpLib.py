@@ -117,7 +117,7 @@ def boot_to_bios_config(serial, ssh):
         logging.info("Legacy boot mode detected")
         SerialLib.send_key(serial, Key.RIGHT)
     SerialLib.send_key(serial, Key.ENTER)
-    if not serial.is_msg_present('System Time'):
+    if not SerialLib.is_msg_present(serial, 'System Time'):
         logging.info("SetUpLib: Boot to BIOS Configuration Failed")
         return
     logging.info("SetUpLib: Boot to BIOS Configuration successfully")
@@ -137,7 +137,7 @@ def continue_to_bios_config(serial):
         logging.info("Legacy boot mode detected")
         SerialLib.send_key(serial, Key.RIGHT)
     SerialLib.send_key(serial, Key.ENTER)
-    if not serial.is_msg_present('System Time'):
+    if not SerialLib.is_msg_present(serial, 'System Time'):
         logging.info("SetUpLib: Boot to BIOS Configuration Failed")
         return
     logging.info("SetUpLib: Boot to BIOS Configuration successfully")
@@ -172,7 +172,7 @@ def continue_to_page(serial, page_name):
 # valuses: string, e.g: DisabledAutoLowMediumHighManual
 def verify_supported_values(serial, values):
     serial.send_keys(Key.ENTER)
-    if not serial.is_msg_present(values):
+    if not SerialLib.is_msg_present(serial, values):
         logging.info("Supported values are not correct.")
         serial.send_keys(Key.ESC)
         return

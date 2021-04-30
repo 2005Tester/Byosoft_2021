@@ -263,14 +263,14 @@ def Testcase_MemMargin_001(serial, ssh_bmc):
         icx2pAPI.debug_message(ssh_bmc, enable=False)
         icx2pAPI.clearCMOS(ssh_bmc)
         PowerLib.force_power_cycle(ssh_bmc)
-        serial.is_msg_present(Msg.HOTKEY_PROMPT_DEL)
+        SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL)
         result.log_pass()
     except AssertionError as e:
         logging.error(e)
         icx2pAPI.debug_message(ssh_bmc, enable=False)
         icx2pAPI.clearCMOS(ssh_bmc)
         PowerLib.force_power_cycle(ssh_bmc)
-        serial.is_msg_present(Msg.HOTKEY_PROMPT_DEL)
+        SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL)
         result.log_fail()
 
 
