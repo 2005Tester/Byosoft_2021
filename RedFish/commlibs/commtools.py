@@ -39,7 +39,7 @@ def reboot_to_os(ssh_bmc, timeout=600):
     return True if ping_sut(timeout=timeout) else False
 
 
-def reboot_to_setup(ssh_bmc, serial, msg="Press Del go to Setup Utility", timeout=300):
+def reboot_to_setup(ssh_bmc, serial, msg="BIOS boot completed", timeout=300):
     cmd_off = 'ipmcset -d powerstate -v 2\n'
     cmd_on = 'ipmcset -d powerstate -v 1\n'
     ret_ensure = 'Do you want to continue'

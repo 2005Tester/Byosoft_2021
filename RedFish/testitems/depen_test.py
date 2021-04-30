@@ -307,9 +307,11 @@ class DepenTest(RedFish):
 
     def run_test(self):
         # 初始化整理数据
-        self.attributes_info()
-        self.mapfrom_info()
-        self.drop_hidden_false()
+        self.depenfor_info(dump=True)
+        self.mapto_info(dump=True)
+        self.attributes_info(dump=True)
+        self.mapfrom_info(dump=True)
+        self.drop_hidden_false(dump=True)
         pdlist = self.map_from_pd.columns.tolist()
         pdlist = pdlist[:1] + ["IndexStr", "PATCH", "IsMapped", "PatchStatus", "CheckStatus", "CheckMapTo",
                                "Summary"] + pdlist[1:]
@@ -318,67 +320,79 @@ class DepenTest(RedFish):
 
         # 遍历测试
         for row, mf_item in self.map_from_pd["index"].iteritems():
-            logging.info("==========================================================")
+            try:
+                logging.info("==========================================================")
 
-            # Load Default and Reboot
-            self.load_default()
-            if not reboot_to_setup(ssh_bmc=self.ssh, serial=self.serial):
-                logging.info("Boot up failed")
-                continue
-            logging.info("Boot up successfully")
-
-            # Gen PATCH Data
-            key_value = self.gen_patch_data(mf_item)
-            logging.info("Start test {}".format(key_value))
-            if self.mapped_as_unchanged(mf_item):
-                logging.info(r"Items is mapped as Hidden or ReadOnly, try patch with top-level")
-                # 多级联动的情况，将主菜单和子菜单一起修改，主菜单要改为 非 Hidden / ReadOnly
-                self.map_from_pd.loc[row, "IsMapped"] = "yes"
-                kv = self.gen_data_w_top(mf_item)
-                self.map_from_pd.loc[row, "PATCH"] = json.dumps(kv, indent=4)
-                patch_result = self.write(**kv)
-                if not patch_result["result"]:
-                    logging.info(r"[PATCH] {} <fail>".format(kv))
-                    logging.info(f"Status: {patch_result['status']}")
-                    logging.info(rf"Message: {patch_result['body']}")
-                    self.map_from_pd.loc[row, "PatchStatus"] = "fail"
+                # Load Default and Reboot
+                self.load_default()
+                if not reboot_to_setup(ssh_bmc=self.ssh, serial=self.serial):
+                    logging.info("Boot up failed")
                     continue
-                logging.info(r"[PATCH] {} <pass>".format(kv))
-                logging.info(rf"Status: {patch_result['status']}")
-                self.map_from_pd.loc[row, "PatchStatus"] = "pass"
+                logging.info("Boot up successfully")
 
-            # PATCH
-            self.map_from_pd.loc[row, "PATCH"] = json.dumps(key_value, indent=4)
-            patch_result = self.write(**key_value)
-            if not patch_result["result"]:
-                logging.info(r"[PATCH] {} <fail>".format(key_value))
-                logging.info(rf"Error Message: {patch_result['body']}")
-                self.map_from_pd.loc[row, "PatchStatus"] = "fail"
-                continue
-            logging.info(r"[PATCH] {} <pass>".format(key_value))
-            self.map_from_pd.loc[row, "PatchStatus"] = "pass"
+                # print test title
+                key_value = self.gen_patch_data(mf_item)
+                logging.info("Start test {}".format(key_value))
 
-            # REBOOT
-            if not reboot_to_setup(ssh_bmc=self.ssh, serial=self.serial):
-                logging.info("Boot up failed")
-                continue
-            logging.info("Boot up successfully")
+                # PATCH items of mapped as unchanged
+                if self.mapped_as_unchanged(mf_item):
+                    logging.info(r"Items is mapped as Hidden or ReadOnly, try patch with top-level")
+                    # 多级联动的情况，将主菜单和子菜单一起修改，主菜单要改为 非 Hidden / ReadOnly
+                    self.map_from_pd.loc[row, "IsMapped"] = "yes"
+                    key_value = self.gen_data_w_top(mf_item)
+                    self.map_from_pd.loc[row, "PATCH"] = json.dumps(key_value, indent=4)
+                    patch_result = self.write(**key_value)
+                    if not patch_result["result"]:
+                        logging.info(r"[PATCH] {} <fail>".format(key_value))
+                        logging.info(f"Status: {patch_result['status']}")
+                        logging.info(rf"Message: {patch_result['body']}")
+                        self.map_from_pd.loc[row, "PatchStatus"] = "fail"
+                        continue
+                    logging.info(r"[PATCH] {} <pass>".format(key_value))
+                    logging.info(rf"Status: {patch_result['status']}")
+                    self.map_from_pd.loc[row, "PatchStatus"] = "pass"
+                else:
+                    # Normal PATCH
+                    self.map_from_pd.loc[row, "PATCH"] = json.dumps(key_value, indent=4)
+                    patch_result = self.write(**key_value)
+                    if not patch_result["result"]:
+                        logging.info(r"[PATCH] {} <fail>".format(key_value))
+                        logging.info(rf"Error Message: {patch_result['body']}")
+                        self.map_from_pd.loc[row, "PatchStatus"] = "fail"
+                        continue
+                    logging.info(r"[PATCH] {} <pass>".format(key_value))
+                    self.map_from_pd.loc[row, "PatchStatus"] = "pass"
 
-            # CHECK MapFrom
-            if not self.check(**key_value):
-                logging.info(r"[CHECK] MapFrom: {} <fail>".format(key_value))
-                self.map_from_pd.loc[row, "CheckStatus"] = "fail"
-                continue
-            logging.info(r"[CHECK] MapFrom: {} <pass>".format(key_value))
-            self.map_from_pd.loc[row, "CheckStatus"] = "pass"
+                # REBOOT
+                if not reboot_to_setup(ssh_bmc=self.ssh, serial=self.serial):
+                    logging.info("Boot up failed")
+                    continue
+                logging.info("Boot up successfully")
 
-            # CHECK MapTo
-            if not self.check_mapto(mf_item):
-                self.map_from_pd.loc[row, "CheckMapTo"] = "fail"
-                logging.info(r"[CHECK] >>>>>>>>>>>>>>>> MapTo Result: <fail>")
+                # CHECK MapFrom
+                if not self.check(**key_value):
+                    logging.info(r"[CHECK] >>> MapFrom: {} <fail>".format(key_value))
+                    self.map_from_pd.loc[row, "CheckStatus"] = "fail"
+                    continue
+                logging.info(r"[CHECK] >>> MapFrom: {} <pass>".format(key_value))
+                self.map_from_pd.loc[row, "CheckStatus"] = "pass"
+
+                # CHECK MapTo
+                if not self.check_mapto(mf_item):
+                    self.map_from_pd.loc[row, "CheckMapTo"] = "fail"
+                    logging.info(r"[CHECK] >>> MapTo Result: <fail>")
+                    continue
+                self.map_from_pd.loc[row, "CheckMapTo"] = "pass"
+                logging.info(r"[CHECK] >>> MapTo Result: <pass>")
+
+                # Force to UEFI if 'BootType' is set to 'LegacyBoot' (this attribute can't be load default with post)
+                if ('BootType', 'LegacyBoot') in key_value.items():
+                    assert self.write(BootType='UEFIBoot')["result"]
+                    assert reboot_to_setup(self.ssh, self.serial)
+
+            except Exception as e:
+                logging.info(e)
                 continue
-            self.map_from_pd.loc[row, "CheckMapTo"] = "pass"
-            logging.info(r"[CHECK] >>>>>>>>>>>>>>>> MapTo Result: <pass>")
 
         # Result Summary
         self.gen_report()

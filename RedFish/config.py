@@ -23,7 +23,7 @@ os_pw = "root"
 os_timeout = 1200
 unitool_path = "/root/flashtool/unitool"
 
-AppExcel = r".\baseline\能效菜单模板.xls"
+AppExcel = r".\baseline\PowerEfficiency_Baseline.xls"
 
 REPORT_DIR = r".\report"
 
