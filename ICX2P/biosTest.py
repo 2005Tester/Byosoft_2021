@@ -37,25 +37,27 @@ def POST_Test(serial, ssh):  # POST: POST Log(TBD) and Information Check
 
 # PM: Warm reset n times, Cold reset n times and AC (TBD)
 def PM(serial, ssh, n=5):
-    tc = ('003', 'Power Control Test', 'Power Control Test')
+    tc = ('003', '[TC003]Power Control Test', 'Power Control Test')
     result = ReportGen.LogHeaderResult(tc, serial)
     res_lst = []
-    if not icx2pAPI.toBIOS(serial, ssh):
+    if not SetUpLib.boot_to_bios_config(serial, ssh):
         result.log_fail()
         return
     logging.info("Warm reset loops: {0}".format(n))
     for i in range(n):
         try:
             logging.info("Warm reset cycle: {0}".format(i + 1))
-            serial.send_keys(Key.CTRL_ALT_DELETE)
+            SerialLib.send_key(serial, Key.CTRL_ALT_DELETE)
             logging.debug("Ctrl + Alt + Del key sent")
-            if not icx2pAPI.toBIOSnp(serial):
+            if not SetUpLib.boot_to_bios_config(serial, ssh):
                 logging.info("Warm reset Test:Fail")
                 flag_reset = 1
                 res_lst.append(flag_reset)
                 continue
         except Exception as e:
             logging.error(e)
+            result.log_fail()
+            return
     # DC cycle n times
     logging.info("Cold reset loops: {0}".format(n))
     for j in range(n):
@@ -68,6 +70,8 @@ def PM(serial, ssh, n=5):
                 return
         except Exception as e:
             logging.error(e)
+            result.log_fail()
+            return
     logging.debug(res_lst)
     if len(res_lst) != 0:
         result.log_fail()

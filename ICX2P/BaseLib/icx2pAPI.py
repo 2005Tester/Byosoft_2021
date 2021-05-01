@@ -13,7 +13,7 @@ import time
 from Core import SerialLib
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg
-from ICX2P.BaseLib import PowerLib
+from ICX2P.BaseLib import PowerLib, SetUpLib
 
 
 def dump_smbios(ssh, cmd='dmidecode'):
@@ -182,12 +182,12 @@ def toBIOSnp(serial, pwd=SutConfig.BIOS_PASSWORD):
 
 
 def dcCycle(serial, ssh):
-    if not toBIOS(serial, ssh):
+    if not SetUpLib.boot_to_setup(serial, ssh):
         return
     if not PowerLib.force_power_cycle(ssh):
         return
     logging.info("Booting to setup")
-    if not toBIOSnp(serial):
+    if not SetUpLib.continue_to_setup(serial):
         return
 
     return True
