@@ -244,15 +244,12 @@ def pressF12(serial, ssh):
 
 def reset_default(serial, ssh):
     logging.info("Reset BIOS to dafault by F9")
-    if not toBIOS(serial, ssh):
+    if not SetUpLib.boot_to_bios_config(serial, ssh):
         return
-    if not toBIOSConf(serial):
-        return
-    # time.sleep(1)
-    serial.send_keys_with_delay(Key.RESET_DEFAULT)
-    if not SerialLib.is_msg_present(Msg.BIOS_BOOT_COMPLETE):
+    SerialLib.send_keys_with_delay(Key.RESET_DEFAULT)
+    if not SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE):
         logging.info("Reset dafault by F9:Fail")
-        return False
+        return
     logging.info("Reset dafault by F9:Pass")
     return True
 
