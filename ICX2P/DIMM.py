@@ -111,18 +111,18 @@ class dimm_memPower(unittest.TestCase):
         result.log_pass()
 
     def dimm_power_mgt_07(self, serial, ssh):
-        tc = ('704', 'Testcase_MemPower_007', '内存省电模式选项互斥测试')
+        tc = ('704', '[TC704]Testcase_MemPower_007', '内存省电模式选项互斥测试')
         result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             dimm_memPower.navigate_to_cke(self, serial)
             self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
-            SerialLib.send_key(Key.F5)
+            SerialLib.send_key(serial, Key.F5)
             self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
             self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [['APD', '<Disabled>'], ['PPD', '<Enabled>']], 7))
             self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [['APD', '<Disabled>']], 7))
-            SerialLib.send_key(Key.F5)
+            SerialLib.send_key(serial, Key.F5)
             self.assertTrue(SetUpLib.verify_options(serial, Key.DOWN, [['APD', '<Enabled>']], 3))
             self.assertFalse(SetUpLib.verify_options(serial, Key.DOWN, [['PPD', '<Enabled>']], 3))
         except AssertionError as err:

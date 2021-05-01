@@ -688,24 +688,24 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         try:
             self.assertTrue(PowerLib.force_reset(ssh))
             logging.info("Booting to setup")
-            self.assertTrue(serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=600))
+            self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
             SetUpLib.send_key(serial, Key.DEL)
             logging.info("Hot Key sent")
-            self.assertTrue(serial.waitString(SutConfig.press_f2, timeout=60))
+            self.assertTrue(SerialLib.is_msg_present(serial, SutConfig.press_f2, 60))
             for list_error in pwd_error:
                 try:
                     SerialLib.send_data(serial, list_error)
                     SetUpLib.send_key(serial, Key.ENTER)
                     logging.info("Send  password...")
                     if list_error != pwd_error[-1]:
-                        self.assertTrue(serial.waitString(invalid_info))
+                        self.assertTrue(SerialLib.is_msg_present(serial, invalid_info))
                         time.sleep(2)
                         SetUpLib.send_key(serial, Key.ENTER)
-                        self.assertTrue(serial.waitString('Enter Current Password'))
+                        self.assertTrue(SerialLib.is_msg_present(serial, 'Enter Current Password'))
                         logging.info("input password again")
                     else:
                         SetUpLib.send_key(serial, Key.ENTER)
-                        self.assertTrue(serial.waitString(error_info))
+                        self.assertTrue(SerialLib.is_msg_present(serial, error_info))
                         logging.info("Enter incorrect password 3 times,System Locked")
                 except:
                     logging.info("eorro password :", format(list_error))
@@ -721,24 +721,24 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         try:
             self.assertTrue(PowerLib.force_reset(ssh))
             logging.info("Booting to setup")
-            self.assertTrue(serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=600))
+            self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
             SetUpLib.send_key(serial, Key.DEL)
             logging.info("Hot Key sent")
-            self.assertTrue(serial.waitString(SutConfig.press_f2, timeout=10))
+            self.assertTrue(SerialLib.is_msg_present(serial, SutConfig.press_f2, 10))
             for list_error in pwd_error:
                 try:
                     SerialLib.send_data(serial, list_error)
                     logging.info("Send password...")
                     SetUpLib.send_key(serial, Key.ENTER)
                     if list_error != pwd_error[-1]:
-                        self.assertTrue(serial.waitString(invalid_info, timeout=10))
+                        self.assertTrue(SerialLib.is_msg_present(serial, invalid_info, 10))
                         SetUpLib.send_key(serial, Key.ENTER)
-                        self.assertTrue(serial.waitString(Msg.PW_PROMPT, timeout=10))
+                        self.assertTrue(SerialLib.is_msg_present(serial, Msg.PW_PROMPT, 10))
                         logging.info("input password again")
                     else:
-                        # self.assertTrue(serial.waitString(SutConfig.pwd_info))
+                        # self.assertTrue(SerialLib.is_msg_present(serial, SutConfig.pwd_info))
                         SetUpLib.send_key(serial, Key.ENTER)
-                        self.assertTrue(serial.waitString('Continue', timeout=60))
+                        self.assertTrue(SerialLib.is_msg_present(serial, 'Continue', 60))
                         logging.info("Booting to setup successfully")
                 except:
                     logging.info("eorro password :", format(list_error))
@@ -756,24 +756,24 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         try:
             self.assertTrue(PowerLib.force_reset(ssh))
             logging.info("Booting to setup")
-            self.assertTrue(serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=600))
+            self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
             SetUpLib.send_key(serial, Key.DEL)
             logging.info("Hot Key sent")
-            self.assertTrue(serial.waitString(SutConfig.press_f2, timeout=60))
+            self.assertTrue(SerialLib.is_msg_present(serial, SutConfig.press_f2))
             for list_error in pwd_error:
                 try:
                     SerialLib.send_data(serial, list_error)
                     SetUpLib.send_key(serial, Key.ENTER)
                     logging.info("Send  password...")
                     if list_error != pwd_error[-1]:
-                        self.assertTrue(serial.waitString(invalid_info))
+                        self.assertTrue(SerialLib.is_msg_present(serial, invalid_info))
                         time.sleep(1)
                         SetUpLib.send_key(serial, Key.ENTER)
-                        self.assertTrue(serial.waitString('Enter Current Password'))
+                        self.assertTrue(SerialLib.is_msg_present(serial, 'Enter Current Password'))
                         logging.info("input password again")
                     else:
                         SetUpLib.send_key(serial, Key.ENTER)
-                        self.assertTrue(serial.waitString(error_info))
+                        self.assertTrue(SerialLib.is_msg_present(serial, error_info))
                         logging.info("Enter incorrect password 3 times,System Locked")
                 except:
                     logging.info("eorro password :", format(list_error))
@@ -791,10 +791,10 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         try:
             self.assertTrue(PowerLib.force_reset(ssh))
             logging.info("Booting to setup")
-            self.assertTrue(serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=600))
+            self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
             SetUpLib.send_key(serial, Key.DEL)
             logging.info("Hot Key sent")
-            self.assertTrue(serial.waitString(SutConfig.press_f2, timeout=10))
+            self.assertTrue(SerialLib.is_msg_present(serial, SutConfig.press_f2))
             SerialLib.send_data(serial, SutConfig.BIOS_PW_DEFAULT)
             time.sleep(1)
             try:
@@ -945,19 +945,22 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
         hot_key = [Key.DEL, Key.F11, Key.F12, Key.F6]
         try:
             for hk in hot_key:
+                logging.info("Testing with hotkey: {0}".format(hk))
                 self.assertTrue(PowerLib.force_reset(ssh))
-                self.assertTrue(serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=600))
+                self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
                 logging.info("Rebooting SUT")
                 try:
                     SetUpLib.send_key(serial, hk)
-                    self.assertTrue(serial.waitString('Enter Current Password'))
+                    self.assertTrue(SerialLib.is_msg_present(serial, 'Enter Current Password'))
                 except:
                     logging.info("error key :", format(hk))
+                    result.log_fail()
                     return
         except AssertionError as err:
             result.log_fail(capture=True)
-            return False
+            return
         result.log_pass()
+        return True
 
     def pwd_auth_mgt_07(self, serial, ssh, ssh_os):
         tc = ('054', '[TC054]Testcase_AuthenticationManagement_007', '禁止提供自动登录等特殊功能')
@@ -978,10 +981,10 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
         try:
             self.assertTrue(PowerLib.force_reset(ssh))
             logging.info("Booting to setup")
-            self.assertTrue(serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=600))
+            self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
             SetUpLib.send_key(serial, Key.DEL)
             logging.info("Hot Key sent")
-            self.assertTrue(serial.waitString(SutConfig.press_f2, timeout=60))
+            self.assertTrue(SerialLib.is_msg_present(serial, SutConfig.press_f2))
             logging.info("input 3 times error pwd,System Locked")
             for list_error in pwd_error:
                 try:
@@ -989,14 +992,14 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
                     SetUpLib.send_key(serial, Key.ENTER)
                     logging.info("Send  password...")
                     if list_error != pwd_error[-1]:
-                        self.assertTrue(serial.waitString(invalid_info))
+                        self.assertTrue(SerialLib.is_msg_present(serial, invalid_info))
                         time.sleep(2)
                         SetUpLib.send_key(serial, Key.ENTER)
-                        self.assertTrue(serial.waitString('Enter Current Password'))
+                        self.assertTrue(SerialLib.is_msg_present(serial, 'Enter Current Password'))
                         logging.info("input password again")
                     else:
                         SetUpLib.send_key(serial, Key.ENTER)
-                        self.assertTrue(serial.waitString(error_info))
+                        self.assertTrue(SerialLib.is_msg_present(serial, error_info))
                         logging.info("Enter incorrect password 3 times,System Locked")
                 except:
                     logging.info("error password :", format(list_error))
@@ -1030,13 +1033,13 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
             # set 4
             logging.info("Enter the correct login password for ordinary users and log in to the setup menu")
             SetUpLib.send_key(serial, Key.CTRL_ALT_DELETE)
-            self.assertTrue(serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=600))
+            self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
             SetUpLib.send_key(serial, Key.DEL)
             logging.info("Hot Key sent")
-            self.assertTrue(serial.waitString(SutConfig.press_f2, timeout=10))
+            self.assertTrue(SerialLib.is_msg_present(serial, SutConfig.press_f2, 10))
             SerialLib.send_data(serial, 'Inter@4567')
             SetUpLib.send_key(serial, Key.ENTER)
-            self.assertTrue(serial.waitString(SutConfig.pwd_info))
+            self.assertTrue(SerialLib.is_msg_present(serial, SutConfig.pwd_info))
             SetUpLib.send_key(serial, Key.ENTER)
             # set 5
             logging.info("Modify the login password of ordinary users with more than 16 digits")
@@ -1062,14 +1065,14 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
         try:
             self.assertTrue(PowerLib.force_reset(ssh))
             logging.info("Booting to setup")
-            self.assertTrue(serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=600))
+            self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
             serial.send_keys(Key.DEL)
             logging.info("Hot Key sent")
-            self.assertTrue(serial.waitString(SutConfig.press_f2, timeout=60))
+            self.assertTrue(SerialLib.is_msg_present(serial, SutConfig.press_f2, 60))
             SetUpLib.send_key(serial, "Admin@6666")
             SetUpLib.send_key(serial, Key.ENTER)
             logging.info("Send  password...")
-            self.assertTrue(serial.waitString(invalid_info))
+            self.assertTrue(SerialLib.is_msg_present(serial, invalid_info))
         except AssertionError as err:
             result.log_fail(capture=True)
             return False
@@ -1082,28 +1085,28 @@ PBPWS = PWD_BiosPasswordSecurity()
 
 # Main function
 def Pwd_test(ser, ssh_bmc, ssh_os):
-    simplePWDTest(ser, ssh_bmc, ssh_os)
-    Simple_password_validity(ser, ssh_bmc, ssh_os)
+#    simplePWDTest(ser, ssh_bmc, ssh_os)
+#    Simple_password_validity(ser, ssh_bmc, ssh_os)
     # Simple_password_disenable(ser, ssh_bmc, ssh_os)
-    Simple_password_save_enable(ser, ssh_bmc, ssh_os)
-    Simple_password_save_disable(ser, ssh_bmc, ssh_os)
-    PBPWS.Testcase_BiosPasswordSecurity_002(ser, ssh_bmc, ssh_os)
-    PBPWS.Testcase_BiosPasswordSecurity_003(ser, ssh_bmc, ssh_os)
-    PBPWS.Testcase_BiosPasswordSecurity_004(ser, ssh_bmc, ssh_os)
-    PBPWS.Testcase_BiosPasswordSecurity_005_019_021(ser, ssh_bmc, ssh_os)
-    PBPWS.Testcase_BiosPasswordSecurity_006(ser, ssh_bmc, ssh_os)
-    PBPWS.Testcase_BiosPasswordSecurity_007(ser, ssh_bmc, ssh_os)
-    PBPWS.Testcase_BiosPasswordSecurity_008(ser, ssh_bmc, ssh_os)
-    PBPWS.Testcase_BiosPasswordSecurity_009(ser, ssh_bmc, ssh_os)
-    PBPWS.Testcase_BiosPasswordSecurity_010(ser, ssh_bmc, ssh_os)
-    PBPWS.Testcase_BiosPasswordSecurity_011_012_014(ser, ssh_bmc)
-    PBPWS.Testcase_BiosPasswordSecurity_013(ser, ssh_bmc, ssh_os)
-    PBPWS.Testcase_BiosPasswordSecurity_014_015(ser, ssh_bmc)
-    PBPWS.Testcase_BiosPasswordSecurity_016_017(ser, ssh_bmc)
-    PBPWS.Testcase_BiosPasswordSecurity_020(ser, ssh_bmc)
-    PBPWS.Testcase_BiosPasswordSecurity_022(ser, ssh_bmc, ssh_os)
-    PBPWS.Testcase_BiosPasswordSecurity_025(ser, ssh_bmc, ssh_os)
+#    Simple_password_save_enable(ser, ssh_bmc, ssh_os)
+#    Simple_password_save_disable(ser, ssh_bmc, ssh_os)
+#    PBPWS.Testcase_BiosPasswordSecurity_002(ser, ssh_bmc, ssh_os)
+#    PBPWS.Testcase_BiosPasswordSecurity_003(ser, ssh_bmc, ssh_os)
+#    PBPWS.Testcase_BiosPasswordSecurity_004(ser, ssh_bmc, ssh_os)
+#    PBPWS.Testcase_BiosPasswordSecurity_005_019_021(ser, ssh_bmc, ssh_os)
+#    PBPWS.Testcase_BiosPasswordSecurity_006(ser, ssh_bmc, ssh_os)
+#    PBPWS.Testcase_BiosPasswordSecurity_007(ser, ssh_bmc, ssh_os)
+#    PBPWS.Testcase_BiosPasswordSecurity_008(ser, ssh_bmc, ssh_os)
+#    PBPWS.Testcase_BiosPasswordSecurity_009(ser, ssh_bmc, ssh_os)
+#    PBPWS.Testcase_BiosPasswordSecurity_010(ser, ssh_bmc, ssh_os)
+#    PBPWS.Testcase_BiosPasswordSecurity_011_012_014(ser, ssh_bmc)
+#    PBPWS.Testcase_BiosPasswordSecurity_013(ser, ssh_bmc, ssh_os)
+#    PBPWS.Testcase_BiosPasswordSecurity_014_015(ser, ssh_bmc)
+#    PBPWS.Testcase_BiosPasswordSecurity_016_017(ser, ssh_bmc)
+#    PBPWS.Testcase_BiosPasswordSecurity_020(ser, ssh_bmc)
+#    PBPWS.Testcase_BiosPasswordSecurity_022(ser, ssh_bmc, ssh_os)
+#    PBPWS.Testcase_BiosPasswordSecurity_025(ser, ssh_bmc, ssh_os)
     PWDAUTHMGT.pwd_auth_mgt_01(ser, ssh_bmc)
-    PWDAUTHMGT.pwd_auth_mgt_07(ser, ssh_bmc, ssh_os)
-    PWDAUTHMGT.pwd_auth_mgt_08_10(ser, ssh_bmc, ssh_os)
-    PWDAUTHMGT.pwd_auth_mgt_09(ser, ssh_bmc)
+#    PWDAUTHMGT.pwd_auth_mgt_07(ser, ssh_bmc, ssh_os)
+#    PWDAUTHMGT.pwd_auth_mgt_08_10(ser, ssh_bmc, ssh_os)
+#    PWDAUTHMGT.pwd_auth_mgt_09(ser, ssh_bmc)

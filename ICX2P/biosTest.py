@@ -10,7 +10,7 @@ import logging
 import re
 import time
 from Core import SerialLib
-from ICX2P.Config.SutConfig import SysCfg
+from ICX2P.Config.SutConfig import SUT_CONFIG, SysCfg
 from ICX2P.Config.PlatConfig import Msg, Key
 from ICX2P.Config import SutConfig
 from ICX2P.BaseLib import PowerLib, icx2pAPI, SetUpLib
@@ -263,22 +263,16 @@ def dram_rapl_option_check(serial, ssh):
 # OnComplete: Setup Miscellaneous Configuration page
 def cnd_default_enable(serial, ssh):
     tc = ('017', '[TC017]检查CDN开关默认值', '支持网口CDN特性开关')
-    result = ReportGen.LogHeaderResult(tc, serial)
-    if not icx2pAPI.toBIOS(serial, ssh):
-        result.log_fail()
-        return
-    if not icx2pAPI.toBIOSConf(serial):
-        result.log_fail()
-        return
-    serial.send_keys(Key.RIGHT)
-    if not SetUpLib.enter_menu(serial, Key.DOWN, [Msg.MISC_CONFIG], 20, 'Miscellaneous'):
-        result.log_fail()
-        return
-    if not icx2pAPI.verify_setup_options_down(serial, SutConfig.cnd_status, 12):
-        result.log_fail()
-        return
-    result.log_pass()
-    return True
+    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    cdn_status = ['Network CDN', '<Enabled>']
+    try:
+        assert SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(serial, Key.DOWN, [Msg.MISC_CONFIG], 20, 'Miscellaneous')
+        assert SetUpLib.verify_options(serial, Key.DOWN, [cdn_status], 12)
+        result.log_pass()
+        return True
+    except AssertionError:
+        result.log_fail(capture=True)
 
 
 # Testcase_SecurityBoot_001

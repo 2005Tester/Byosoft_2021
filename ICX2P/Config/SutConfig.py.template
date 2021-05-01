@@ -105,7 +105,6 @@ pwd_item1 = 'Simple Password'
 # BIOS items info,
 ufs = ['<Enabled>\s+UFS']
 dram = ['<Enabled>\s+DRAM RAPL']
-cnd_status = ['<Enabled>\s+Network CDN']
 
 # TPM info
 tpm_info = ['TPM Device\s+TPM 2.0', 'TPM2 Active PCR Hash\s+Algorithm+\s+SHA1\, SHA256',
