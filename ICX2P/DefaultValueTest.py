@@ -35,9 +35,9 @@ def rrqirq(serial, ssh):
         result.log_fail()
         return
     logging.info("Verify default value of RRQ and IRQ when set to manual.")
-    SetUpLib.send_keys(serial, [Key.F5, Key.F5, Key.F5, Key.F5])
+    SetUpLib.send_keys([Key.F5, Key.F5, Key.F5, Key.F5])
     manual_opts = [["IRQ Threshold", "\[7\]"],["RRQ Threshold", "\[7\]"]]
-    if not SetUpLib.verify_options(serial, Key.DOWN, manual_opts, 12):
+    if not SetUpLib.verify_options(Key.DOWN, manual_opts, 12):
         result.log_fail()
         return
 
@@ -61,7 +61,7 @@ def pcie_port_bandwidth_check(serial, ssh_bmc):
             for port, bwidth in SysCfg.PCIE_MAP[cpu].items():  # loop root port
                 port_menu = f"Port {port.upper()}"
                 assert SetUpLib.enter_menu(serial, Key.DOWN, [port_menu], 15, "PCIe Port")
-                assert SetUpLib.verify_info(serial, [rf"PCIe Port Link Max\s+Max Width {bwidth.lower()}"], 25), f"Socket{cpu}：port {port} = {bwidth} fail"
+                assert SetUpLib.verify_info([rf"PCIe Port Link Max\s+Max Width {bwidth.lower()}"], 25), f"Socket{cpu}：port {port} = {bwidth} fail"
                 logging.info(f"Socket{cpu}：port {port} = {bwidth} pass")
                 serial.send_keys(Key.ESC)
             serial.send_keys(Key.ESC)

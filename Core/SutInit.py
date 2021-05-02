@@ -4,34 +4,44 @@ from Common import SutSerial
 from Common import ssh
 
 
+class Sut:
+    BIOS_COM = None
+    BMC_COM = None
+    BMC_SSH = None
+    BMC_SFTP = None
+    OS_SSH = None
+    OS_SFTP = None
+
+
 class SutInit:
     def __init__(self, project):
-        config = importlib.import_module('.SutConfig', package=project)
-        self.sut = config.Sut
+        config = importlib.import_module('.Config.SutConfig', package=project)
+        self.sut = config
         self.serial_log = config.SERIAL_LOG
         logging.info("Initilizing SUT Connection...")
-        self.bios_serial = self.init_bios_serial()
-        if not self.bios_serial:
+
+        Sut.BIOS_COM = self.init_bios_serial()
+        if not Sut.BIOS_COM:
             logging.info("Failed to initilize BIOS serial port")
 
-        self.bmc_serial = self.init_bmc_serial()
-        if not self.bmc_serial:
+        Sut.BMC_COM = self.init_bmc_serial()
+        if not Sut.BMC_COM:
             logging.info("Failed to initilize BMC serial port")
 
-        self.bmc_ssh = self.init_bmc_ssh()
-        if not self.bmc_ssh:
+        Sut.BMC_SSH = self.init_bmc_ssh()
+        if not Sut.BMC_SSH:
             logging.info("Failed to initilize BMC ssh connection")
 
-        self.os_ssh = self.init_os_ssh()
-        if not self.os_ssh:
+        Sut.OS_SSH = self.init_os_ssh()
+        if not Sut.OS_SSH:
             logging.info("Failed to initilize OS ssh connection")
 
-        self.bmc_sftp = self.init_bmc_sftp()
-        if not self.bmc_sftp:
+        Sut.BMC_SFTP = self.init_bmc_sftp()
+        if not Sut.BMC_SFTP:
             logging.info("Failed to initilize BMC SFTP connection")
 
-        self.os_sftp = self.init_os_sftp()
-        if not self.os_sftp:
+        Sut.OS_SFTP = self.init_os_sftp()
+        if not Sut.OS_SFTP:
             logging.info("Failed to initilize OS SFTP connection")
 
     def init_bios_serial(self):

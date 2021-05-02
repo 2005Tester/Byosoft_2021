@@ -1,17 +1,18 @@
 from Common import SutSerial, Unitool, ssh
+from Core import SutInit
+from Core.SutInit import Sut
 from ICX2P import UpdateBIOS, biosTest, DefaultValueTest, Os, Release, Smbios, Pwd, Legacy, DIMM, Cpu, Pch, Hotkey
 from ICX2P.Config import SutConfig
 
 
-# init seril
-ser = SutSerial.SutControl(SutConfig.BIOS_SERIAL, 115200, 0.5, SutConfig.SERIAL_LOG)
+# init SUT
+SutInit.SutInit("ICX2P")
+ser = Sut.BIOS_COM
+ssh_bmc = Sut.BMC_SSH
+ssh_os = Sut.OS_SSH
+sftp_bmc = Sut.BMC_SFTP
 
-# init BMC SSH interface
-ssh_bmc = ssh.SshConnection(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)
-sftp_bmc = ssh.sftp(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)
-
-# init ssh os interface
-ssh_os = ssh.SshConnection(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASSWORD)
+# init unitool
 unitool = Unitool.SshUnitool(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASSWORD, SutConfig.UNI_PATH)
 
 

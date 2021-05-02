@@ -55,7 +55,7 @@ log_dir = SutConfig.LOG_DIR
 # OnStart:光标停留在"Manage Supervisor Password"
 # OnComplete: 修改密码成功, 光标停留在"Manage Supervisor Password"
 def change_password(serial, old_password, new_password):
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_key(Key.ENTER)
     if not SerialLib.is_msg_present(serial, pwd_info_1):
         return
     SerialLib.send_data(serial, old_password)
@@ -103,24 +103,24 @@ def change_password_negtive(serial, old_password, new_password):
 def checkPWD(serial, pwd1, pwd2):
     if not icx2pAPI.pressDelnp(serial):
         return
-    SetUpLib.send_keys(serial, pwd2)
+    SetUpLib.send_keys(pwd2)
     logging.info("check_password_2")
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_key(Key.ENTER)
     if not SerialLib.is_msg_present(serial, invalid_info):
         return
-    SetUpLib.send_key(serial, Key.ENTER)
-    SetUpLib.send_keys(serial, SutConfig.BIOS_PASSWORD)
+    SetUpLib.send_key(Key.ENTER)
+    SetUpLib.send_keys(SutConfig.BIOS_PASSWORD)
     logging.info("check_password_BIOS_PASSWORD")
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_key(Key.ENTER)
     if not SerialLib.is_msg_present(serial, invalid_info):
         return
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_key(Key.ENTER)
     time.sleep(1)
-    SetUpLib.send_keys(serial, pwd1)
+    SetUpLib.send_keys(pwd1)
     logging.info("check_password_1 ")
     time.sleep(1)
-    SetUpLib.send_key(serial, Key.ENTER)
-    SetUpLib.send_keys(serial, [Key.RIGHT, Key.LEFT])
+    SetUpLib.send_key(Key.ENTER)
+    SetUpLib.send_keys([Key.RIGHT, Key.LEFT])
     if not SerialLib.is_msg_present(serial, 'Continue'):
         return
     return True
@@ -180,7 +180,7 @@ def simplePWDTest(serial, ssh, ssh_os):
     if not icx2pAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    SetUpLib.send_keys(serial, SutConfig.key2pwd)
+    SetUpLib.send_keys(SutConfig.key2pwd)
     # #checkin "Simple Password"  Default value "Disabled"
     if not SetUpLib.locate_option(serial, Key.DOWN, ["Simple Password", "<Disabled>"], 20):
         result.log_fail()
@@ -217,14 +217,14 @@ def Simple_password_validity(serial, ssh, ssh_os):
     if not icx2pAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    SetUpLib.send_keys(serial, SutConfig.key2pwd)
+    SetUpLib.send_keys(SutConfig.key2pwd)
     # #checkin "Simple Password"  Default value "Disabled"
     if not SetUpLib.locate_option(serial, Key.DOWN, ["Simple Password", "<Disabled>"], 20):
         result.log_fail()
         return
     logging.info("Simple Password   <Disabled> ")
     serial.send_keys(Key.F5)
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_key(Key.ENTER)
     if not SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20):
         result.log_fail()
         return
@@ -255,45 +255,45 @@ def Simple_password_disenable(serial, ssh, ssh_os):  # 异常待处理
     if not icx2pAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    SetUpLib.send_keys(serial, SutConfig.key2pwd)
+    SetUpLib.send_keys(SutConfig.key2pwd)
     # #checkin "Simple Password"  Default value "Disabled"
     if not SetUpLib.locate_option(serial, Key.DOWN, ["Simple Password", "<Disabled>"], 20):
         result.log_fail()
         return
     logging.info("Simple Password   <Enabled> ")
     serial.send_keys(Key.F5)
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_key(Key.ENTER)
     if not SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20):
         result.log_fail()
         return
     """
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_key(Key.ENTER)
     if not SerialLib.is_msg_present(serial, pwd_info_1):
         result.log_fail()
         return
-    SetUpLib.send_keys(serial, SutConfig.BIOS_PASSWORD)
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_keys(SutConfig.BIOS_PASSWORD)
+    SetUpLib.send_key(Key.ENTER)
     if not SerialLib.is_msg_present(serial, pwd_info_2):
         result.log_fail()
         return
-    SetUpLib.send_keys(serial, simple_pwd)
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_keys(simple_pwd)
+    SetUpLib.send_key(Key.ENTER)
     if not SerialLib.is_msg_present(serial, pwd_info_3):
         result.log_fail()
         return
-    SetUpLib.send_keys(serial, simple_pwd)
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_keys(simple_pwd)
+    SetUpLib.send_key(Key.ENTER)
     if not SerialLib.is_msg_present(serial, pwd_info_4):
         result.log_fail()
         return
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_key(Key.ENTER)
     """
     serial.send_keys(Key.F10 + Key.Y)
     if not checkPWD(serial, '44444444', '333333'):
         result.log_fail()
     ###以上，是此用例的前置条件##############
-    SetUpLib.send_keys(serial, SutConfig.key2Setup)
-    SetUpLib.send_keys(serial, SutConfig.key2pwd)
+    SetUpLib.send_keys(SutConfig.key2Setup)
+    SetUpLib.send_keys(SutConfig.key2pwd)
     if not SetUpLib.locate_option(serial, Key.DOWN, ["Simple Password", "<Enabled>"], 20):
         result.log_fail()
         return
@@ -304,51 +304,51 @@ def Simple_password_disenable(serial, ssh, ssh_os):  # 异常待处理
         result.log_fail()
         return
     """
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_key(Key.ENTER)
     if not SerialLib.is_msg_present(serial, pwd_info_1):
         result.log_fail()
         return
-    SetUpLib.send_keys(serial, simple_pwd)
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_keys(simple_pwd)
+    SetUpLib.send_key(Key.ENTER)
     if not SerialLib.is_msg_present(serial, pwd_info_2):
         result.log_fail()
         return
-    SetUpLib.send_keys(serial, new_pwd_7)
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_keys(new_pwd_7)
+    SetUpLib.send_key(Key.ENTER)
     if not SerialLib.is_msg_present(serial, " confirm ",5):
         logging.info('**confirm 找不到 ,显示这个提示**')
         result.log_fail()
         return
-    SetUpLib.send_keys(serial, new_pwd_7)
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_keys(new_pwd_7)
+    SetUpLib.send_key(Key.ENTER)
     if not SerialLib.is_msg_present(serial, invalid_info):
         result.log_fail()
         return
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_key(Key.ENTER)
     """
     if not change_password_negtive(serial, '44444444', '555555'):
         result.log_fail()
         return
     time.sleep(1)
     """
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_key(Key.ENTER)
     if not SerialLib.is_msg_present(serial, pwd_info_1):
         result.log_fail()
         return
-    SetUpLib.send_keys(serial, simple_pwd)
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_keys(simple_pwd)
+    SetUpLib.send_key(Key.ENTER)
     if not SerialLib.is_msg_present(serial, pwd_info_2):
         result.log_fail()
         return
-    SetUpLib.send_keys(serial, new_pwd_9)
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_keys(new_pwd_9)
+    SetUpLib.send_key(Key.ENTER)
     if not SerialLib.is_msg_present(serial, pwd_info_3):
         result.log_fail()
-    SetUpLib.send_keys(serial, new_pwd_9)
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_keys(new_pwd_9)
+    SetUpLib.send_key(Key.ENTER)
     if not SerialLib.is_msg_present(serial, pwd_info_4):
         result.log_fail()
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_key(Key.ENTER)
     """
     if not change_password(serial, '44444444', 'Admin@9002'):
         result.log_fail()
@@ -373,14 +373,14 @@ def Simple_password_save_enable(serial, ssh, ssh_os):
     if not icx2pAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    SetUpLib.send_keys(serial, SutConfig.key2pwd)
+    SetUpLib.send_keys(SutConfig.key2pwd)
     # #checkin "Simple Password"  Default value "Disabled"
     if not SetUpLib.locate_option(serial, Key.DOWN, ["Simple Password", "<Disabled>"], 20):
         result.log_fail()
         return
     logging.info("Simple Password   <Enabled> ")
     serial.send_keys(Key.F5)
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_key(Key.ENTER)
     # 以上，为前置条件-简易密码开关打开#
     if not SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20):
         result.log_fail()
@@ -392,11 +392,11 @@ def Simple_password_save_enable(serial, ssh, ssh_os):
     if not checkPWD(serial, '55555555', ""):
         result.log_fail()
         return
-    SetUpLib.send_key(serial, Key.CTRL_ALT_DELETE)
+    SetUpLib.send_key(Key.CTRL_ALT_DELETE)
     if not checkPWD(serial, '55555555', 'Admin@9001Admin@'):
         result.log_fail()
         return
-    SetUpLib.send_key(serial, Key.CTRL_ALT_DELETE)
+    SetUpLib.send_key(Key.CTRL_ALT_DELETE)
     if not checkPWD(serial, '55555555', 'Admin@9002'):
         result.log_fail()
         return
@@ -416,14 +416,14 @@ def Simple_password_save_disable(serial, ssh, ssh_os):
     if not icx2pAPI.toBIOSConf(serial):
         result.log_fail()
         return
-    SetUpLib.send_keys(serial, SutConfig.key2pwd)
+    SetUpLib.send_keys(SutConfig.key2pwd)
     # #checkin "Simple Password"  Default value "Disabled"
     if not SetUpLib.locate_option(serial, Key.DOWN, ["Simple Password", "<Disabled>"], 20):
         result.log_fail()
         return
     logging.info("Simple Password   <Enabled> ")
     serial.send_keys(Key.F5)
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_key(Key.ENTER)
     # 以上，为前置条件-简易密码开关打开#
     if not SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20):
         result.log_fail()
@@ -431,32 +431,32 @@ def Simple_password_save_disable(serial, ssh, ssh_os):
     if not change_password(serial, SutConfig.BIOS_PASSWORD, '66666666'):
         result.log_fail()
         return
-    SetUpLib.send_key(serial, Key.CTRL_ALT_DELETE)
+    SetUpLib.send_key(Key.CTRL_ALT_DELETE)
     if not icx2pAPI.pressDelnp(serial):
         return
-    SetUpLib.send_keys(serial, "")
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_keys("")
+    SetUpLib.send_key(Key.ENTER)
     if not SerialLib.is_msg_present(serial, invalid_info):
         return
-    SetUpLib.send_key(serial, Key.ENTER)
-    SetUpLib.send_keys(serial, 'Admin@9001Admin@')
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_key(Key.ENTER)
+    SetUpLib.send_keys('Admin@9001Admin@')
+    SetUpLib.send_key(Key.ENTER)
     if not SerialLib.is_msg_present(serial, invalid_info):
         return
-    SetUpLib.send_key(serial, Key.ENTER)
-    SetUpLib.send_keys(serial, '333333')
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_key(Key.ENTER)
+    SetUpLib.send_keys('333333')
+    SetUpLib.send_key(Key.ENTER)
     if not SerialLib.is_msg_present(serial, invalid_info):
         return
-    SetUpLib.send_key(serial, Key.ENTER)
-    SetUpLib.send_key(serial, Key.CTRL_ALT_DELETE)
+    SetUpLib.send_key(Key.ENTER)
+    SetUpLib.send_key(Key.CTRL_ALT_DELETE)
     if not icx2pAPI.pressDelnp(serial):
         return
-    SetUpLib.send_keys(serial, '11111111')
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_keys('11111111')
+    SetUpLib.send_key(Key.ENTER)
     if not SerialLib.is_msg_present(serial, invalid_info):
         return
-    SetUpLib.send_key(serial, Key.ENTER)
+    SetUpLib.send_key(Key.ENTER)
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
         return
@@ -475,7 +475,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
-            SetUpLib.send_keys(serial, SutConfig.key2pwd)
+            SetUpLib.send_keys(SutConfig.key2pwd)
             self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
             self.assertTrue(change_password_negtive(serial, SutConfig.BIOS_PASSWORD, 'Ad@90'))
             logging.info("show invalid_password")
@@ -493,10 +493,10 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
-            SetUpLib.send_keys(serial, SutConfig.key2pwd)
+            SetUpLib.send_keys(SutConfig.key2pwd)
             self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
             self.assertTrue(change_password(serial, SutConfig.BIOS_PASSWORD, 'Admin@9!'))
-            SetUpLib.send_keys(serial, [Key.F10, Key.Y])
+            SetUpLib.send_keys([Key.F10, Key.Y])
             logging.info("Changes have been saved after press")
             self.assertTrue(checkPWD(serial, 'Admin@9!', '11111111'))
             self.assertTrue(reset_password_by_unipwd(serial, ssh, ssh_os))
@@ -512,10 +512,10 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
-            SetUpLib.send_keys(serial, SutConfig.key2pwd)
+            SetUpLib.send_keys(SutConfig.key2pwd)
             self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
             self.assertTrue(change_password(serial, SutConfig.BIOS_PASSWORD, 'Admin@9003'))
-            SetUpLib.send_keys(serial, [Key.F10, Key.Y])
+            SetUpLib.send_keys([Key.F10, Key.Y])
             logging.info("Changes have been saved after press")
             self.assertTrue(checkPWD(serial, 'Admin@9003', '11111111'))
             self.assertTrue(reset_password_by_unipwd(serial, ssh, ssh_os))
@@ -533,10 +533,10 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
-            SetUpLib.send_keys(serial, SutConfig.key2pwd)
+            SetUpLib.send_keys(SutConfig.key2pwd)
             self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
             self.assertTrue(change_password(serial, SutConfig.BIOS_PASSWORD, 'Admin@9001Admin@'))
-            SetUpLib.send_keys(serial, [Key.F10, Key.Y])
+            SetUpLib.send_keys([Key.F10, Key.Y])
             logging.info("Changes have been saved after press")
             self.assertTrue(checkPWD(serial, 'Admin@9001Admin@', '11111111'))
             self.assertTrue(reset_password_by_unipwd(serial, ssh, ssh_os))
@@ -552,19 +552,19 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
-            SetUpLib.send_keys(serial, SutConfig.key2pwd)
+            SetUpLib.send_keys(SutConfig.key2pwd)
             self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 10))
             self.assertTrue(change_password(serial, SutConfig.BIOS_PASSWORD, 'Byosoft@5000soft'))
-            SetUpLib.send_keys(serial, [Key.F10, Key.Y])
+            SetUpLib.send_keys([Key.F10, Key.Y])
             logging.info("Changes have been saved after press")
             self.assertTrue(checkPWD(serial, 'Byosoft@5000soft', '11111111'))
             # 超出最大字符
             logging.info("Maximum characters exceeded")
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
-            SetUpLib.send_keys(serial, SutConfig.key2pwd)
+            SetUpLib.send_keys(SutConfig.key2pwd)
             self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 10))
             self.assertTrue(change_password(serial, 'Byosoft@5000soft', 'Inter@8000Byosof4'))
-            SetUpLib.send_keys(serial, [Key.F10, Key.Y])
+            SetUpLib.send_keys([Key.F10, Key.Y])
             logging.info("Changes have been saved after press")
             self.assertTrue(checkPWD(serial, 'Inter@8000Byosof', 'Byosoft@5000soft'))
             self.assertTrue(reset_password_by_unipwd(serial, ssh, ssh_os))
@@ -580,14 +580,14 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
-            SetUpLib.send_keys(serial, SutConfig.key2pwd)
+            SetUpLib.send_keys(SutConfig.key2pwd)
             self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
             for i in pwd_list:
                 try:
                     self.assertTrue(change_password_negtive(serial, SutConfig.BIOS_PASSWORD, i))
                 except:
                     logging.info("eorro password :", format(i))
-            SetUpLib.send_key(serial, Key.CTRL_ALT_DELETE)
+            SetUpLib.send_key(Key.CTRL_ALT_DELETE)
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
         except AssertionError as err:
             result.log_fail(capture=True)
@@ -600,14 +600,14 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
-            SetUpLib.send_keys(serial, SutConfig.key2pwd)
+            SetUpLib.send_keys(SutConfig.key2pwd)
             self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
             for j in pwd_list1:
                 try:
                     self.assertTrue(change_password_negtive(serial, SutConfig.BIOS_PASSWORD, j))
                 except:
                     logging.info("error password :", format(j))
-            SetUpLib.send_key(serial, Key.CTRL_ALT_DELETE)
+            SetUpLib.send_key(Key.CTRL_ALT_DELETE)
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
         except AssertionError as err:
             result.log_fail(capture=True)
@@ -623,35 +623,35 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             while k < len(pwd_list2) - 1:
                 m = k + 1
                 self.assertTrue(icx2pAPI.toBIOSConf(serial))
-                SetUpLib.send_keys(serial, SutConfig.key2pwd)
+                SetUpLib.send_keys(SutConfig.key2pwd)
                 self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
-                SetUpLib.send_key(serial, Key.ENTER)
+                SetUpLib.send_key(Key.ENTER)
                 self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_1))
                 SerialLib.send_data(serial, pwd_list2[k])
                 logging.info("input default_pwd")
-                SetUpLib.send_key(serial, Key.ENTER)
+                SetUpLib.send_key(Key.ENTER)
                 self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_2))
                 SerialLib.send_data(serial, pwd_list2[m])
                 logging.info("input new_pwd")
-                SetUpLib.send_key(serial, Key.ENTER)
+                SetUpLib.send_key(Key.ENTER)
                 self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_3))
                 SerialLib.send_data(serial, pwd_list2[m])
                 logging.info("confirm new_pwd")
-                SetUpLib.send_key(serial, Key.ENTER)
+                SetUpLib.send_key(Key.ENTER)
                 # 满足密码测试用例规则
                 if pwd_list2[m] != 'Administrator1':
                     logging.info("Meet the password test case rules")
                     self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_4))
-                    SetUpLib.send_key(serial, Key.ENTER)
-                    SetUpLib.send_keys(serial, [Key.F10, Key.Y])
+                    SetUpLib.send_key(Key.ENTER)
+                    SetUpLib.send_keys([Key.F10, Key.Y])
                     self.assertTrue(checkPWD(serial, pwd_list2[m], pwd_list2[k]))
                 # 不满足密码测试用例规则
                 else:
                     logging.info("Does not meet the password test case rules")
                     self.assertTrue(SerialLib.is_msg_present(serial, invalid_info))
                     logging.info("show invalid_password")
-                    SetUpLib.send_key(serial, Key.ENTER)
-                    SetUpLib.send_key(serial, Key.CTRL_ALT_DELETE)
+                    SetUpLib.send_key(Key.ENTER)
+                    SetUpLib.send_key(Key.CTRL_ALT_DELETE)
                     self.assertTrue(checkPWD(serial, pwd_list2[k], pwd_list2[m]))
                 k = k + 1
             self.assertTrue(reset_password_by_unipwd(serial, ssh, ssh_os))
@@ -667,10 +667,10 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
-            SetUpLib.send_keys(serial, SutConfig.key2pwd)
+            SetUpLib.send_keys(SutConfig.key2pwd)
             self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
             self.assertTrue(change_password(serial, SutConfig.BIOS_PASSWORD, 'Admin@6789'))
-            SetUpLib.send_keys(serial, [Key.F10, Key.Y])
+            SetUpLib.send_keys([Key.F10, Key.Y])
             logging.info("Changes have been saved after press")
             self.assertTrue(checkPWD(serial, 'Admin@6789', 'Admin6789admin'))
             self.assertTrue(reset_password_by_unipwd(serial, ssh, ssh_os))
@@ -689,22 +689,22 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             self.assertTrue(PowerLib.force_reset(ssh))
             logging.info("Booting to setup")
             self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
-            SetUpLib.send_key(serial, Key.DEL)
+            SetUpLib.send_key(Key.DEL)
             logging.info("Hot Key sent")
             self.assertTrue(SerialLib.is_msg_present(serial, SutConfig.press_f2, 60))
             for list_error in pwd_error:
                 try:
                     SerialLib.send_data(serial, list_error)
-                    SetUpLib.send_key(serial, Key.ENTER)
+                    SetUpLib.send_key(Key.ENTER)
                     logging.info("Send  password...")
                     if list_error != pwd_error[-1]:
                         self.assertTrue(SerialLib.is_msg_present(serial, invalid_info))
                         time.sleep(2)
-                        SetUpLib.send_key(serial, Key.ENTER)
+                        SetUpLib.send_key(Key.ENTER)
                         self.assertTrue(SerialLib.is_msg_present(serial, 'Enter Current Password'))
                         logging.info("input password again")
                     else:
-                        SetUpLib.send_key(serial, Key.ENTER)
+                        SetUpLib.send_key(Key.ENTER)
                         self.assertTrue(SerialLib.is_msg_present(serial, error_info))
                         logging.info("Enter incorrect password 3 times,System Locked")
                 except:
@@ -722,22 +722,22 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             self.assertTrue(PowerLib.force_reset(ssh))
             logging.info("Booting to setup")
             self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
-            SetUpLib.send_key(serial, Key.DEL)
+            SetUpLib.send_key(Key.DEL)
             logging.info("Hot Key sent")
             self.assertTrue(SerialLib.is_msg_present(serial, SutConfig.press_f2, 10))
             for list_error in pwd_error:
                 try:
                     SerialLib.send_data(serial, list_error)
                     logging.info("Send password...")
-                    SetUpLib.send_key(serial, Key.ENTER)
+                    SetUpLib.send_key(Key.ENTER)
                     if list_error != pwd_error[-1]:
                         self.assertTrue(SerialLib.is_msg_present(serial, invalid_info, 10))
-                        SetUpLib.send_key(serial, Key.ENTER)
+                        SetUpLib.send_key(Key.ENTER)
                         self.assertTrue(SerialLib.is_msg_present(serial, Msg.PW_PROMPT, 10))
                         logging.info("input password again")
                     else:
                         # self.assertTrue(SerialLib.is_msg_present(serial, SutConfig.pwd_info))
-                        SetUpLib.send_key(serial, Key.ENTER)
+                        SetUpLib.send_key(Key.ENTER)
                         self.assertTrue(SerialLib.is_msg_present(serial, 'Continue', 60))
                         logging.info("Booting to setup successfully")
                 except:
@@ -757,22 +757,22 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             self.assertTrue(PowerLib.force_reset(ssh))
             logging.info("Booting to setup")
             self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
-            SetUpLib.send_key(serial, Key.DEL)
+            SetUpLib.send_key(Key.DEL)
             logging.info("Hot Key sent")
             self.assertTrue(SerialLib.is_msg_present(serial, SutConfig.press_f2))
             for list_error in pwd_error:
                 try:
                     SerialLib.send_data(serial, list_error)
-                    SetUpLib.send_key(serial, Key.ENTER)
+                    SetUpLib.send_key(Key.ENTER)
                     logging.info("Send  password...")
                     if list_error != pwd_error[-1]:
                         self.assertTrue(SerialLib.is_msg_present(serial, invalid_info))
                         time.sleep(1)
-                        SetUpLib.send_key(serial, Key.ENTER)
+                        SetUpLib.send_key(Key.ENTER)
                         self.assertTrue(SerialLib.is_msg_present(serial, 'Enter Current Password'))
                         logging.info("input password again")
                     else:
-                        SetUpLib.send_key(serial, Key.ENTER)
+                        SetUpLib.send_key(Key.ENTER)
                         self.assertTrue(SerialLib.is_msg_present(serial, error_info))
                         logging.info("Enter incorrect password 3 times,System Locked")
                 except:
@@ -792,7 +792,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             self.assertTrue(PowerLib.force_reset(ssh))
             logging.info("Booting to setup")
             self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
-            SetUpLib.send_key(serial, Key.DEL)
+            SetUpLib.send_key(Key.DEL)
             logging.info("Hot Key sent")
             self.assertTrue(SerialLib.is_msg_present(serial, SutConfig.press_f2))
             SerialLib.send_data(serial, SutConfig.BIOS_PW_DEFAULT)
@@ -813,16 +813,16 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
-            SetUpLib.send_keys(serial, SutConfig.key2pwd)
+            SetUpLib.send_keys(SutConfig.key2pwd)
             self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
-            SetUpLib.send_key(serial, Key.ENTER)
+            SetUpLib.send_key(Key.ENTER)
             self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_1))
-            SetUpLib.send_key(serial, 'Inter#9999')
+            SetUpLib.send_key('Inter#9999')
             logging.info("input error password")
-            SetUpLib.send_key(serial, Key.ENTER)
+            SetUpLib.send_key(Key.ENTER)
             self.assertTrue(SerialLib.is_msg_present(serial, invalid_info))
             logging.info("show invalid_password")
-            SetUpLib.send_key(serial, Key.ENTER)
+            SetUpLib.send_key(Key.ENTER)
         except AssertionError as err:
             result.log_fail(capture=True)
             return False
@@ -834,23 +834,23 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
-            SetUpLib.send_keys(serial, SutConfig.key2pwd)
+            SetUpLib.send_keys(SutConfig.key2pwd)
             self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
-            SetUpLib.send_key(serial, Key.ENTER)
+            SetUpLib.send_key(Key.ENTER)
             self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_1))
-            SetUpLib.send_key(serial, SutConfig.BIOS_PASSWORD)
+            SetUpLib.send_key(SutConfig.BIOS_PASSWORD)
             logging.info("input default_pwd")
-            SetUpLib.send_key(serial, Key.ENTER)
+            SetUpLib.send_key(Key.ENTER)
             self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_2))
-            SetUpLib.send_key(serial, "Admin@9999")
+            SetUpLib.send_key("Admin@9999")
             logging.info("input new_pwd")
-            SetUpLib.send_key(serial, Key.ENTER)
+            SetUpLib.send_key(Key.ENTER)
             self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_3))
-            SetUpLib.send_key(serial, "Admin@9998")
+            SetUpLib.send_key("Admin@9998")
             logging.info("input error confirm new_pwd")
-            SetUpLib.send_key(serial, Key.ENTER)
+            SetUpLib.send_key(Key.ENTER)
             self.assertTrue(SerialLib.is_msg_present(serial, 'Passwords are not the same'))
-            SetUpLib.send_key(serial, Key.CTRL_ALT_DELETE)
+            SetUpLib.send_key(Key.CTRL_ALT_DELETE)
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(reset_password_by_unipwd(serial, ssh, ssh_os))
         except AssertionError as err:
@@ -869,40 +869,40 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             while k < len(times_pwd) - 2:
                 m = k + 1
                 self.assertTrue(icx2pAPI.toBIOSConf(serial))
-                SetUpLib.send_keys(serial, SutConfig.key2pwd)
+                SetUpLib.send_keys(SutConfig.key2pwd)
                 self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
-                SetUpLib.send_key(serial, Key.ENTER)
+                SetUpLib.send_key(Key.ENTER)
                 self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_1))
                 serial.send_data(times_pwd[k])
                 logging.info("input default_pwd")
-                SetUpLib.send_key(serial, Key.ENTER)
+                SetUpLib.send_key(Key.ENTER)
                 self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_2))
                 serial.send_data(times_pwd[m])
                 logging.info("input new_pwd")
-                SetUpLib.send_key(serial, Key.ENTER)
+                SetUpLib.send_key(Key.ENTER)
                 self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_3))
                 serial.send_data(times_pwd[m])
                 logging.info("confirm new_pwd")
-                SetUpLib.send_key(serial, Key.ENTER)
+                SetUpLib.send_key(Key.ENTER)
                 if times_pwd[m] != "Admin@9009":
                     logging.info("Password changed successfully")
                     self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_4))
-                    SetUpLib.send_key(serial, Key.ENTER)
-                    SetUpLib.send_keys(serial, [Key.F10, Key.Y])
+                    SetUpLib.send_key(Key.ENTER)
+                    SetUpLib.send_keys([Key.F10, Key.Y])
                     self.assertTrue(checkPWD(serial, times_pwd[m], times_pwd[k]))
                 else:
                     logging.info("Password changed Failed")
                     self.assertTrue(SerialLib.is_msg_present(serial, invalid_info))
                     logging.info("use old pwd,invalid.")
-                    SetUpLib.send_key(serial, Key.ENTER)
-                    SetUpLib.send_key(serial, Key.CTRL_ALT_DELETE)
+                    SetUpLib.send_key(Key.ENTER)
+                    SetUpLib.send_key(Key.CTRL_ALT_DELETE)
                     self.assertTrue(checkPWD(serial, times_pwd[k], times_pwd[m]))
                 k = k + 1
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
-            SetUpLib.send_keys(serial, SutConfig.key2pwd)
+            SetUpLib.send_keys(SutConfig.key2pwd)
             self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
             self.assertTrue(change_password(serial, times_pwd[4], times_pwd[6]))
-            SetUpLib.send_keys(serial, [Key.F10, Key.Y])
+            SetUpLib.send_keys([Key.F10, Key.Y])
             self.assertTrue(checkPWD(serial, times_pwd[6], times_pwd[4]))
             self.assertTrue(reset_password_by_unipwd(serial, ssh, ssh_os))
         except AssertionError as err:
@@ -917,13 +917,13 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
-            SetUpLib.send_keys(serial, SutConfig.key2pwd)
+            SetUpLib.send_keys(SutConfig.key2pwd)
             self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Power On Password", "<Disabled>"], 20))
-            SetUpLib.send_keys(serial,[Key.F5,Key.F10, Key.Y])
+            SetUpLib.send_keys([Key.F5,Key.F10, Key.Y])
             logging.info("set Power on Password Enable")
             self.assertTrue(SerialLib.is_msg_present(serial, 'Enter Current Password:'))
             SerialLib.send_data(serial, SutConfig.BIOS_PASSWORD)
-            SetUpLib.send_key(serial, Key.ENTER)
+            SetUpLib.send_key(Key.ENTER)
             logging.info("reboot ,input BIOS_PASSWORD ")
             time.sleep(30)
             self.assertTrue(icx2pAPI.ping_sut())
@@ -950,7 +950,7 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
                 self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
                 logging.info("Rebooting SUT")
                 try:
-                    SetUpLib.send_key(serial, hk)
+                    SetUpLib.send_key(hk)
                     self.assertTrue(SerialLib.is_msg_present(serial, 'Enter Current Password'))
                 except:
                     logging.info("error key :", format(hk))
@@ -982,76 +982,76 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
             self.assertTrue(PowerLib.force_reset(ssh))
             logging.info("Booting to setup")
             self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
-            SetUpLib.send_key(serial, Key.DEL)
+            SetUpLib.send_key(Key.DEL)
             logging.info("Hot Key sent")
             self.assertTrue(SerialLib.is_msg_present(serial, SutConfig.press_f2))
             logging.info("input 3 times error pwd,System Locked")
             for list_error in pwd_error:
                 try:
                     SerialLib.send_data(serial, list_error)
-                    SetUpLib.send_key(serial, Key.ENTER)
+                    SetUpLib.send_key(Key.ENTER)
                     logging.info("Send  password...")
                     if list_error != pwd_error[-1]:
                         self.assertTrue(SerialLib.is_msg_present(serial, invalid_info))
                         time.sleep(2)
-                        SetUpLib.send_key(serial, Key.ENTER)
+                        SetUpLib.send_key(Key.ENTER)
                         self.assertTrue(SerialLib.is_msg_present(serial, 'Enter Current Password'))
                         logging.info("input password again")
                     else:
-                        SetUpLib.send_key(serial, Key.ENTER)
+                        SetUpLib.send_key(Key.ENTER)
                         self.assertTrue(SerialLib.is_msg_present(serial, error_info))
                         logging.info("Enter incorrect password 3 times,System Locked")
                 except:
                     logging.info("error password :", format(list_error))
             # set 2
             logging.info("Enter the correct password,to setup")
-            SetUpLib.send_key(serial, Key.CTRL_ALT_DELETE)
+            SetUpLib.send_key(Key.CTRL_ALT_DELETE)
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
-            SetUpLib.send_keys(serial, SutConfig.key2pwd)
+            SetUpLib.send_keys(SutConfig.key2pwd)
             # set 3
             logging.info("change administrator login password more than 16 digits")
             self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
             self.assertTrue(change_password(serial, SutConfig.BIOS_PASSWORD, 'Admin@6789byosoft'))
-            SetUpLib.send_keys(serial, [Key.F10, Key.Y])
+            SetUpLib.send_keys([Key.F10, Key.Y])
             self.assertTrue(checkPWD(serial, 'Admin@6789byosof', 'Am@23'))
             # set 4 前置条件
             logging.info("Set step 4 preconditions")
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
-            SetUpLib.send_keys(serial, SutConfig.key2pwd)
+            SetUpLib.send_keys(SutConfig.key2pwd)
             self.assertTrue(SetUpLib.locate_option(serial, Key.DOWN, ["Manage User Password"], 5))
-            SetUpLib.send_key(serial, Key.ENTER)
+            SetUpLib.send_key(Key.ENTER)
             self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_2))
             SerialLib.send_data(serial, 'Inter@4567')
-            SetUpLib.send_key(serial, Key.ENTER)
+            SetUpLib.send_key(Key.ENTER)
             self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_3))
             SerialLib.send_data(serial, 'Inter@4567')
-            SetUpLib.send_key(serial, Key.ENTER)
+            SetUpLib.send_key(Key.ENTER)
             self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_4))
-            SetUpLib.send_key(serial, Key.ENTER)
-            SetUpLib.send_keys(serial, [Key.F10, Key.Y])
+            SetUpLib.send_key(Key.ENTER)
+            SetUpLib.send_keys([Key.F10, Key.Y])
             # set 4
             logging.info("Enter the correct login password for ordinary users and log in to the setup menu")
-            SetUpLib.send_key(serial, Key.CTRL_ALT_DELETE)
+            SetUpLib.send_key(Key.CTRL_ALT_DELETE)
             self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
-            SetUpLib.send_key(serial, Key.DEL)
+            SetUpLib.send_key(Key.DEL)
             logging.info("Hot Key sent")
             self.assertTrue(SerialLib.is_msg_present(serial, SutConfig.press_f2, 10))
             SerialLib.send_data(serial, 'Inter@4567')
-            SetUpLib.send_key(serial, Key.ENTER)
+            SetUpLib.send_key(Key.ENTER)
             self.assertTrue(SerialLib.is_msg_present(serial, SutConfig.pwd_info))
-            SetUpLib.send_key(serial, Key.ENTER)
+            SetUpLib.send_key(Key.ENTER)
             # set 5
             logging.info("Modify the login password of ordinary users with more than 16 digits")
-            SetUpLib.send_keys(serial, [Key.RIGHT, Key.ENTER])
-            SetUpLib.send_keys(serial, SutConfig.key2pwd)
-            SetUpLib.send_key(serial, Key.ENTER)
+            SetUpLib.send_keys([Key.RIGHT, Key.ENTER])
+            SetUpLib.send_keys(SutConfig.key2pwd)
+            SetUpLib.send_key(Key.ENTER)
             self.assertTrue(SerialLib.is_msg_present(serial, "Enter New Password:"))
             SerialLib.send_data(serial, 'Inter@4567byosoft')
             logging.info('input User_Password ')
-            SetUpLib.send_key(serial, Key.ENTER)
+            SetUpLib.send_key(Key.ENTER)
             self.assertTrue(SerialLib.is_msg_present(serial, invalid_info))
-            SetUpLib.send_key(serial, Key.ENTER)
+            SetUpLib.send_key(Key.ENTER)
             self.assertTrue(reset_password_by_unipwd(serial, ssh, ssh_os))
         except AssertionError as err:
             reset_password_by_unipwd(serial, ssh, ssh_os)
@@ -1069,8 +1069,8 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
             serial.send_keys(Key.DEL)
             logging.info("Hot Key sent")
             self.assertTrue(SerialLib.is_msg_present(serial, SutConfig.press_f2, 60))
-            SetUpLib.send_key(serial, "Admin@6666")
-            SetUpLib.send_key(serial, Key.ENTER)
+            SetUpLib.send_key("Admin@6666")
+            SetUpLib.send_key(Key.ENTER)
             logging.info("Send  password...")
             self.assertTrue(SerialLib.is_msg_present(serial, invalid_info))
         except AssertionError as err:
@@ -1085,28 +1085,28 @@ PBPWS = PWD_BiosPasswordSecurity()
 
 # Main function
 def Pwd_test(ser, ssh_bmc, ssh_os):
-#    simplePWDTest(ser, ssh_bmc, ssh_os)
-#    Simple_password_validity(ser, ssh_bmc, ssh_os)
+    simplePWDTest(ser, ssh_bmc, ssh_os)
+    Simple_password_validity(ser, ssh_bmc, ssh_os)
     # Simple_password_disenable(ser, ssh_bmc, ssh_os)
-#    Simple_password_save_enable(ser, ssh_bmc, ssh_os)
-#    Simple_password_save_disable(ser, ssh_bmc, ssh_os)
-#    PBPWS.Testcase_BiosPasswordSecurity_002(ser, ssh_bmc, ssh_os)
-#    PBPWS.Testcase_BiosPasswordSecurity_003(ser, ssh_bmc, ssh_os)
-#    PBPWS.Testcase_BiosPasswordSecurity_004(ser, ssh_bmc, ssh_os)
-#    PBPWS.Testcase_BiosPasswordSecurity_005_019_021(ser, ssh_bmc, ssh_os)
-#    PBPWS.Testcase_BiosPasswordSecurity_006(ser, ssh_bmc, ssh_os)
-#    PBPWS.Testcase_BiosPasswordSecurity_007(ser, ssh_bmc, ssh_os)
-#    PBPWS.Testcase_BiosPasswordSecurity_008(ser, ssh_bmc, ssh_os)
-#    PBPWS.Testcase_BiosPasswordSecurity_009(ser, ssh_bmc, ssh_os)
-#    PBPWS.Testcase_BiosPasswordSecurity_010(ser, ssh_bmc, ssh_os)
-#    PBPWS.Testcase_BiosPasswordSecurity_011_012_014(ser, ssh_bmc)
-#    PBPWS.Testcase_BiosPasswordSecurity_013(ser, ssh_bmc, ssh_os)
-#    PBPWS.Testcase_BiosPasswordSecurity_014_015(ser, ssh_bmc)
-#    PBPWS.Testcase_BiosPasswordSecurity_016_017(ser, ssh_bmc)
-#    PBPWS.Testcase_BiosPasswordSecurity_020(ser, ssh_bmc)
-#    PBPWS.Testcase_BiosPasswordSecurity_022(ser, ssh_bmc, ssh_os)
-#    PBPWS.Testcase_BiosPasswordSecurity_025(ser, ssh_bmc, ssh_os)
+    Simple_password_save_enable(ser, ssh_bmc, ssh_os)
+    Simple_password_save_disable(ser, ssh_bmc, ssh_os)
+    PBPWS.Testcase_BiosPasswordSecurity_002(ser, ssh_bmc, ssh_os)
+    PBPWS.Testcase_BiosPasswordSecurity_003(ser, ssh_bmc, ssh_os)
+    PBPWS.Testcase_BiosPasswordSecurity_004(ser, ssh_bmc, ssh_os)
+    PBPWS.Testcase_BiosPasswordSecurity_005_019_021(ser, ssh_bmc, ssh_os)
+    PBPWS.Testcase_BiosPasswordSecurity_006(ser, ssh_bmc, ssh_os)
+    PBPWS.Testcase_BiosPasswordSecurity_007(ser, ssh_bmc, ssh_os)
+    PBPWS.Testcase_BiosPasswordSecurity_008(ser, ssh_bmc, ssh_os)
+    PBPWS.Testcase_BiosPasswordSecurity_009(ser, ssh_bmc, ssh_os)
+    PBPWS.Testcase_BiosPasswordSecurity_010(ser, ssh_bmc, ssh_os)
+    PBPWS.Testcase_BiosPasswordSecurity_011_012_014(ser, ssh_bmc)
+    PBPWS.Testcase_BiosPasswordSecurity_013(ser, ssh_bmc, ssh_os)
+    PBPWS.Testcase_BiosPasswordSecurity_014_015(ser, ssh_bmc)
+    PBPWS.Testcase_BiosPasswordSecurity_016_017(ser, ssh_bmc)
+    PBPWS.Testcase_BiosPasswordSecurity_020(ser, ssh_bmc)
+    PBPWS.Testcase_BiosPasswordSecurity_022(ser, ssh_bmc, ssh_os)
+    PBPWS.Testcase_BiosPasswordSecurity_025(ser, ssh_bmc, ssh_os)
     PWDAUTHMGT.pwd_auth_mgt_01(ser, ssh_bmc)
-#    PWDAUTHMGT.pwd_auth_mgt_07(ser, ssh_bmc, ssh_os)
-#    PWDAUTHMGT.pwd_auth_mgt_08_10(ser, ssh_bmc, ssh_os)
-#    PWDAUTHMGT.pwd_auth_mgt_09(ser, ssh_bmc)
+    PWDAUTHMGT.pwd_auth_mgt_07(ser, ssh_bmc, ssh_os)
+    PWDAUTHMGT.pwd_auth_mgt_08_10(ser, ssh_bmc, ssh_os)
+    PWDAUTHMGT.pwd_auth_mgt_09(ser, ssh_bmc)

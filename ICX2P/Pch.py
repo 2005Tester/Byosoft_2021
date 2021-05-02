@@ -54,7 +54,7 @@ def usb_default_enable_check(serial, ssh_bmc):
     try:
         assert SetUpLib.boot_to_page(serial, ssh_bmc, Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(serial, Key.DOWN, Msg.PATH_USB_CFG, 6, "USB")
-        if SetUpLib.verify_info(serial, [rear_usb, buildin_usb], 10):
+        if SetUpLib.verify_info([rear_usb, buildin_usb], 10):
             result.log_pass()  # return pass if verify_info match
             return True
         assert os.path.isfile(SutConfig.SERIAL_LOG), "Invalid serial log"

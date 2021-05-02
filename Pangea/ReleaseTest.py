@@ -111,7 +111,7 @@ def processor_dimm_basic_info(serial, ssh):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
-    if not SetUpLib.verify_info(serial, ['Microcode Revision\s+0D0001B2  \|  0D0001B2'], 12):
+    if not SetUpLib.verify_info(['Microcode Revision\s+0D0001B2  \|  0D0001B2'], 12):
         result.log_fail()
         return
     serial.send_keys(Key.ESC)
@@ -123,7 +123,7 @@ def processor_dimm_basic_info(serial, ssh):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
-    if not SetUpLib.verify_info(serial, ['Socket0.ChE.Dimm1\: 2933MT/s Samsung SRx4 16GB\s+RDIMM'], 12):
+    if not SetUpLib.verify_info(['Socket0.ChE.Dimm1\: 2933MT/s Samsung SRx4 16GB\s+RDIMM'], 12):
         result.log_fail()
         return
 
@@ -143,7 +143,7 @@ def load_default_save_reset(serial, ssh):
     if not SetUpLib.enter_menu(serial, Key.RIGHT, [Msg.Boot_MENU], 12, Msg.Boot_OPTION):
         result.log_fail()
         return
-    if not SetUpLib.verify_info(serial, option_bfo, 7):
+    if not SetUpLib.verify_info(option_bfo, 7):
         result.log_fail()
         return
     serial.send_keys_with_delay([Key.ESC, Key.ENTER, Key.ENTER, Key.DOWN, Key.ENTER])
@@ -161,7 +161,7 @@ def load_default_save_reset(serial, ssh):
     if not SetUpLib.enter_menu(serial, Key.RIGHT, [Msg.Boot_MENU], 12, Msg.Boot_OPTION):
         result.log_fail()
         return
-    if not SetUpLib.verify_info(serial, option_aft, 7):
+    if not SetUpLib.verify_info(option_aft, 7):
         result.log_fail()
         if not PangeaLib.reset_default(serial, ssh):
             return
@@ -177,7 +177,7 @@ def load_default_save_reset(serial, ssh):
         if not PangeaLib.reset_default(serial, ssh):
             return
     time.sleep(1)
-    if not SetUpLib.verify_info(serial, option_bfo, 7):
+    if not SetUpLib.verify_info(option_bfo, 7):
         result.log_fail()
         if not PangeaLib.reset_default(serial, ssh):
             return

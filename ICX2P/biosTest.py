@@ -114,7 +114,7 @@ def usbTest(serial, ssh):
         result.log_fail(capture=True)
         return
 
-    if not SetUpLib.verify_info(serial, msg_list, 7):
+    if not SetUpLib.verify_info(msg_list, 7):
         result.log_fail()
         return
     result.log_pass()
@@ -195,7 +195,7 @@ def loadDefault(serial, ssh):
         result.log_fail(capture=True)
         return
     result.capture_screen()
-    if not SetUpLib.verify_options(serial, Key.DOWN, changed_options, 15):
+    if not SetUpLib.verify_options(Key.DOWN, changed_options, 15):
         result.log_fail(capture=True)
         return
     logging.info("Modified options are verified.")
@@ -210,7 +210,7 @@ def loadDefault(serial, ssh):
         result.log_fail(capture=True)
         return
     result.capture_screen()
-    if not SetUpLib.verify_options(serial, Key.DOWN, default_options, 15):
+    if not SetUpLib.verify_options(Key.DOWN, default_options, 15):
         result.log_fail(capture=True)
         return
     result.capture_screen()
@@ -268,7 +268,7 @@ def cnd_default_enable(serial, ssh):
     try:
         assert SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(serial, Key.DOWN, [Msg.MISC_CONFIG], 20, 'Miscellaneous')
-        assert SetUpLib.verify_options(serial, Key.DOWN, [cdn_status], 12)
+        assert SetUpLib.verify_options(Key.DOWN, [cdn_status], 12)
         result.log_pass()
         return True
     except AssertionError:
@@ -287,7 +287,7 @@ def securityBoot(serial, ssh):
     logging.info("Enter secure boot configuration.")
     SerialLib.send_keys_with_delay(serial, keys_secure_boot)
     logging.info("Checking secure boot status")
-    if not SetUpLib.verify_info(serial, secureboot_disable, 5):
+    if not SetUpLib.verify_info(secureboot_disable, 5):
         result.log_fail(capture=True)
         return
     result.log_pass()

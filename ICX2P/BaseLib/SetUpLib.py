@@ -1,35 +1,36 @@
 import logging
 from Core import SerialLib
+from Core.SutInit import Sut
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg
 from ICX2P.BaseLib import PowerLib
 
 
 # Send a single key, e.g. ENTER, DOWN, UP
-def send_key(serial, key):
-    serial.send_keys(key)
+def send_key(key):
+    Sut.BIOS_COM.send_keys(key)
 
 
 # send keys with default delay = 1s, e.g. [F10, Y]
-def send_keys(serial, keys, delay=1):
-    serial.send_keys_with_delay(keys, delay=1)
+def send_keys(keys, delay=1):
+    Sut.BIOS_COM.send_keys_with_delay(keys, delay=1)
 
 
 # verify information like CPU, memory in one setup page, option name is highlighted
 # infos: list e.g. ['BIOS Revision\s+5.[0-9]{2}']
-def verify_info(serial, info_list, trycounts):
-    if serial.navigate_and_verify(Key.DOWN, info_list, trycounts):
+def verify_info(info_list, trycounts):
+    if Sut.BIOS_COM.navigate_and_verify(Key.DOWN, info_list, trycounts):
         return True
-    if serial.navigate_and_verify(Key.UP, info_list, trycounts):
+    if Sut.BIOS_COM.navigate_and_verify(Key.UP, info_list, trycounts):
         return True
 
 
 # Verify a few setup options and desired values, option value is highlighted
 # options: list of setupoption and value e.g.[["IRQ Threshold", "\[7\]"],[RRQ Threshold", "\[7\]]
-def verify_options(serial, key, options, trycounts):
+def verify_options(key, options, trycounts):
     verified_items = []
     for option in options:
-        if serial.locate_setup_option(key, option, trycounts):
+        if Sut.BIOS_COM.locate_setup_option(key, option, trycounts):
             verified_items.append(option)
         else:
             logging.info("Option: {0} not verified".format(option))
