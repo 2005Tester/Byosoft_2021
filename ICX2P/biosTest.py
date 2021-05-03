@@ -40,7 +40,7 @@ def PM(serial, ssh, n=5):
     tc = ('003', '[TC003]Power Control Test', 'Power Control Test')
     result = ReportGen.LogHeaderResult(tc, serial)
     res_lst = []
-    if not SetUpLib.boot_to_bios_config(serial, ssh):
+    if not SetUpLib.boot_to_bios_config(ssh):
         result.log_fail()
         return
     logging.info("Warm reset loops: {0}".format(n))
@@ -49,7 +49,7 @@ def PM(serial, ssh, n=5):
             logging.info("Warm reset cycle: {0}".format(i + 1))
             SerialLib.send_key(serial, Key.CTRL_ALT_DELETE)
             logging.debug("Ctrl + Alt + Del key sent")
-            if not SetUpLib.boot_to_bios_config(serial, ssh):
+            if not SetUpLib.boot_to_bios_config(ssh):
                 logging.info("Warm reset Test:Fail")
                 flag_reset = 1
                 res_lst.append(flag_reset)
@@ -63,7 +63,7 @@ def PM(serial, ssh, n=5):
     for j in range(n):
         try:
             logging.info("DC reset cycle: {0}".format(j + 1))
-            if not icx2pAPI.dcCycle(serial, ssh):
+            if not icx2pAPI.dcCycle(ssh):
                 logging.info("DC cycle Test:Fail")
                 flag_dc = 2
                 res_lst.append(flag_dc)
@@ -110,7 +110,7 @@ def usbTest(serial, ssh):
         return
     serial.send_keys_with_delay(SutConfig.w2key)
 
-    if not SetUpLib.enter_menu(serial, Key.DOWN, Msg.PATH_USB_CFG, 10, 'USB'):
+    if not SetUpLib.enter_menu(Key.DOWN, Msg.PATH_USB_CFG, 10, 'USB'):
         result.log_fail(capture=True)
         return
 
@@ -166,13 +166,13 @@ def loadDefault(serial, ssh):
     boot_fail_policy_2 = ["Boot Fail Policy", "<Cold Boot>"]
     default_options = [boot_fail_policy, pxe_boot]
     changed_options = [boot_fail_policy_2, pxe_boot_2]
-    if not SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_BOOT):
+    if not SetUpLib.boot_to_page(ssh, Msg.PAGE_BOOT):
         result.log_fail(capture=True)
         return
 
     # change option boot fail policy from "Boot Retry" to "Cold Boot"
     logging.info("change option boot fail policy from Boot Retry to Cold Boot")
-    if not SetUpLib.locate_option(serial, Key.DOWN, boot_fail_policy, 15):
+    if not SetUpLib.locate_option(Key.DOWN, boot_fail_policy, 15):
         result.log_fail(capture=True)
         return
     SerialLib.send_key(serial, Key.F5)
@@ -180,7 +180,7 @@ def loadDefault(serial, ssh):
 
     # change pxe option from IPV4 to IPV6
     logging.info("change pxe option from IPV4 to IPV6")
-    if not SetUpLib.locate_option(serial, Key.DOWN, pxe_boot, 15):
+    if not SetUpLib.locate_option(Key.DOWN, pxe_boot, 15):
         result.log_fail(capture=True)
         return
     SerialLib.send_key(serial, Key.F5)
@@ -191,7 +191,7 @@ def loadDefault(serial, ssh):
     time.sleep(15)
 
     # Verify modified options
-    if not SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_BOOT):
+    if not SetUpLib.boot_to_page(ssh, Msg.PAGE_BOOT):
         result.log_fail(capture=True)
         return
     result.capture_screen()
@@ -206,7 +206,7 @@ def loadDefault(serial, ssh):
     time.sleep(15)
 
     # Verify whether options are reset to default
-    if not SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_BOOT):
+    if not SetUpLib.boot_to_page(ssh, Msg.PAGE_BOOT):
         result.log_fail(capture=True)
         return
     result.capture_screen()
@@ -238,11 +238,11 @@ def dram_rapl_option_check(serial, ssh):
     os.system('pause')
     """
 
-    if not SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_ADVANCED):
+    if not SetUpLib.boot_to_page(ssh, Msg.PAGE_ADVANCED):
         result.log_fail()
         return
 
-    if not SetUpLib.enter_menu(serial, Key.DOWN, Msg.PATH_DRAM_RAPL, 20, Msg.DRAM_RAPL_CONFIG):
+    if not SetUpLib.enter_menu(Key.DOWN, Msg.PATH_DRAM_RAPL, 20, Msg.DRAM_RAPL_CONFIG):
         result.log_fail()
         return
 
@@ -266,8 +266,8 @@ def cnd_default_enable(serial, ssh):
     result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
     cdn_status = ['Network CDN', '<Enabled>']
     try:
-        assert SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_ADVANCED)
-        assert SetUpLib.enter_menu(serial, Key.DOWN, [Msg.MISC_CONFIG], 20, 'Miscellaneous')
+        assert SetUpLib.boot_to_page(ssh, Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, [Msg.MISC_CONFIG], 20, 'Miscellaneous')
         assert SetUpLib.verify_options(Key.DOWN, [cdn_status], 12)
         result.log_pass()
         return True
@@ -281,7 +281,7 @@ def securityBoot(serial, ssh):
     result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
     keys_secure_boot = [Key.RIGHT, Key.DOWN, Key.ENTER]
     secureboot_disable = ['Current Secure Boot State\s+Disabled']
-    if not SetUpLib.boot_to_setup(serial, ssh):
+    if not SetUpLib.boot_to_setup(ssh):
         result.log_fail(capture=True)
         return
     logging.info("Enter secure boot configuration.")
@@ -298,16 +298,16 @@ def securityBoot(serial, ssh):
 def vtd(serial, ssh):
     tc = ('025', 'Testcase_VTD_002', '关闭VT-d功能启动测试')
     result = ReportGen.LogHeaderResult(tc, serial)
-    if not SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_ADVANCED):
+    if not SetUpLib.boot_to_page(ssh, Msg.PAGE_ADVANCED):
         result.log_fail()
         return
     vt_d_menu = ["Virtualization Configuration", "Intel\(R\) VT for Directed I/O \(VT-d\)"]
-    if not SetUpLib.enter_menu(serial, Key.DOWN, vt_d_menu, 20, "Directed"):
+    if not SetUpLib.enter_menu(Key.DOWN, vt_d_menu, 20, "Directed"):
         logging.info("Failed to vir config")
         result.log_fail()
         return
     opt_vt = ["Intel\(R\) VT for Directed I/O", "<Enabled>"]
-    if not SetUpLib.locate_option(serial, Key.DOWN, opt_vt, 4):
+    if not SetUpLib.locate_option(Key.DOWN, opt_vt, 4):
         result.log_fail()
         return
     logging.info("Diasble VT-d")

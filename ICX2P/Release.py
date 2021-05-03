@@ -16,10 +16,10 @@ from Report import ReportGen
 def me_version_status(serial, ssh):
     tc = ('901', 'ME_Check ME Version and status', 'ME version should be match within BIOS bin file, ME Status shoule be normal.')
     result = ReportGen.LogHeaderResult(tc, serial)
-    if not SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_ADVANCED):
+    if not SetUpLib.boot_to_page(ssh, Msg.PAGE_ADVANCED):
         result.log_fail()
         return
-    if not SetUpLib.enter_menu(serial, Key.DOWN, ["Server ME Configuration"], 20, "General ME Configuration"):
+    if not SetUpLib.enter_menu(Key.DOWN, ["Server ME Configuration"], 20, "General ME Configuration"):
         result.log_fail()
         return
     me_info = ['Oper. Firmware Version\s+{0}'.format(Msg.ME_VERSION), 
@@ -47,11 +47,11 @@ def equip_mode_flag_check(unitool):
 
 
 # 装备模式BIOS version = 5.xx.
-def equip_mode_version_check(serial, ssh):
+def equip_mode_version_check(ssh):
     tc = ('903', '装备模式: Equipment mode version check', '装备模式版本号为5.xx.')
     result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
     mfg_version = ['BIOS Revision\s+5.[0-9]{2}']
-    if not SetUpLib.boot_to_bios_config(serial, ssh):
+    if not SetUpLib.boot_to_bios_config(ssh):
         result.log_fail(capture=True)
         return
     logging.info("Verify bios version.")

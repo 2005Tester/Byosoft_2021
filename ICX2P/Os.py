@@ -16,12 +16,12 @@ from Report import ReportGen
 def boot_to_suse(serial, ssh):
     tc = ('300', 'Boot to UEFI SUSE Linux', 'Boot to UEFI SUSE Linux')
     result = ReportGen.LogHeaderResult(tc, serial)
-    if not SetUpLib.boot_to_bootmanager(serial, ssh):
+    if not SetUpLib.boot_to_bootmanager(ssh):
         result.log_fail()
         return
     suse_linux = ["SUSE Linux Enterprise\(LUN0\)"]
     msg = "Welcome to GRUB"
-    if not SetUpLib.enter_menu(serial, Key.DOWN, suse_linux, 20, msg):
+    if not SetUpLib.enter_menu(Key.DOWN, suse_linux, 20, msg):
         result.log_fail()
         return
     if not SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE):
@@ -36,12 +36,12 @@ def boot_to_suse(serial, ssh):
 def boot_to_suse_mfg(serial, ssh):
     tc = ('301', '装备模式: Boot to UEFI SUSE Linux', 'Boot to UEFI SUSE Linux in Manufacture mode')
     result = ReportGen.LogHeaderResult(tc, serial)
-    if not SetUpLib.boot_to_bootmanager(serial, ssh):
+    if not SetUpLib.boot_to_bootmanager(ssh):
         result.log_fail()
         return
     suse_linux = ["SUSE Linux Enterprise\(LUN0\)"]
     msg = "Welcome to GRUB"
-    if not SetUpLib.enter_menu(serial, Key.DOWN, suse_linux, 20, msg):
+    if not SetUpLib.enter_menu(Key.DOWN, suse_linux, 20, msg):
         result.log_fail()
         return
     if not SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE):

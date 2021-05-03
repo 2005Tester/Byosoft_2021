@@ -52,8 +52,8 @@ def usb_default_enable_check(serial, ssh_bmc):
     buildin_usb = rf"Built-in USB Control(?:\s+<Enabled>\s+USB Physical Port\d+){{{SysCfg.BUILDIN_USB_CNT}}}"
     key_words = f"{rear_usb}.+{buildin_usb}"
     try:
-        assert SetUpLib.boot_to_page(serial, ssh_bmc, Msg.PAGE_ADVANCED)
-        assert SetUpLib.enter_menu(serial, Key.DOWN, Msg.PATH_USB_CFG, 6, "USB")
+        assert SetUpLib.boot_to_page(ssh_bmc, Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_USB_CFG, 6, "USB")
         if SetUpLib.verify_info([rear_usb, buildin_usb], 10):
             result.log_pass()  # return pass if verify_info match
             return True

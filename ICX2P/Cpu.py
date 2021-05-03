@@ -20,11 +20,11 @@ def upi_link_status(serial, ssh):
     tc = ('200', '[TC200]UPI link链路检测测试', 'CPU兼容性测试')
     result = ReportGen.LogHeaderResult(tc, serial)
 
-    if not SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_ADVANCED):
+    if not SetUpLib.boot_to_page(ssh, Msg.PAGE_ADVANCED):
         result.log_fail()
         return
 
-    if not SetUpLib.enter_menu(serial, Key.DOWN, Msg.PATH_UNCORE_STATUS, 22, 'Uncore Status'):
+    if not SetUpLib.enter_menu(Key.DOWN, Msg.PATH_UNCORE_STATUS, 22, 'Uncore Status'):
         result.log_fail()
         return
 
@@ -43,19 +43,19 @@ def ufs_default_value(serial, ssh):
     tc = ('201', '[TC201]Testcase_UFS_001', 'UFS默认值测试')
     result = ReportGen.LogHeaderResult(tc, serial)
 
-    if not SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_ADVANCED):
+    if not SetUpLib.boot_to_page(ssh, Msg.PAGE_ADVANCED):
         result.log_fail()
         return
 
-    if not SetUpLib.enter_menu(serial, Key.DOWN, Msg.PATH_PSTATE_CTL, 20, Msg.CPU_P_STATE):
+    if not SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PSTATE_CTL, 20, Msg.CPU_P_STATE):
         result.log_fail()
         return
 
     if not icx2pAPI.verify_setup_options_up(serial, SutConfig.ufs, 4):
         result.log_fail()
         return
-    serial.send_keys_with_delay([Key.ESC, Key.ENTER])
-    if not SetUpLib.locate_option(serial, Key.DOWN, ["UFS", "<Enabled>"], 12):
+    SetUpLib.send_keys([Key.ESC, Key.ENTER])
+    if not SetUpLib.locate_option(Key.DOWN, ["UFS", "<Enabled>"], 12):
         result.log_fail()
         return
     SerialLib.send_key(serial, Key.ENTER)
@@ -75,9 +75,9 @@ def static_turbo_default(serial, ssh):
     result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
     static_turbo_default = ['Static Turbo', '<Disabled>']
     try:
-        assert SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_ADVANCED)
-        assert SetUpLib.enter_menu(serial, Key.DOWN, Msg.PATH_ADV_PM_CFG, 20, Msg.ADV_POWER_MGF_CONFIG)
-        assert SetUpLib.locate_option(serial, Key.DOWN, static_turbo_default, 10)
+        assert SetUpLib.boot_to_page(ssh, Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_ADV_PM_CFG, 20, Msg.ADV_POWER_MGF_CONFIG)
+        assert SetUpLib.locate_option(Key.DOWN, static_turbo_default, 10)
         SerialLib.send_key(serial, Key.ENTER)
         assert SerialLib.is_msg_present(serial, r'AutoManualDisabled')
         result.log_pass()
@@ -94,12 +94,12 @@ def cpu_mem_info(serial, ssh):
     tc = ('203', '[TC203]CPU Memory Information', 'Verify CPU and Memory Information')
     result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
     try:
-        assert SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_ADVANCED)
-        assert SetUpLib.enter_menu(serial, Key.DOWN, Msg.PATH_PER_CPU_INFO, 20, 'BSP Revision')
+        assert SetUpLib.boot_to_page(ssh, Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PER_CPU_INFO, 20, 'BSP Revision')
         logging.info("**Verify CPU Information**")
         assert SetUpLib.verify_info(SutConfig.CPU_info, 20)
         SerialLib.send_keys_with_delay(serial, [Key.ESC, Key.ESC])
-        assert SetUpLib.enter_menu(serial, Key.DOWN, [Msg.MEMORY_TOP], 20, 'DIMM000')
+        assert SetUpLib.enter_menu(Key.DOWN, [Msg.MEMORY_TOP], 20, 'DIMM000')
         logging.info("**Verify Memory Information**")
         assert SetUpLib.verify_info(SutConfig.DIMM_info, 20)
         result.log_pass()
@@ -118,9 +118,9 @@ def cpu_cores_active(serial, ssh):
     ACT_CPU_CORES = ['Active Processor Cores', '<All>']
     list_info = ['All', '27', '26', '25', '24', '23', '22', '21', '20', '19', '18', '17', '16', '15', '14', '13', '12', '11', '10', '9', '8', '7', '6', '5', '4', '3', '2', '1']
     try:
-        assert SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_ADVANCED)
-        assert SetUpLib.enter_menu(serial, ssh, Msg.PATH_PRO_CFG, 20, Msg.ACT_CPU_CORES)
-        assert SetUpLib.locate_option(serial, Key.DOWN, ACT_CPU_CORES, 20)
+        assert SetUpLib.boot_to_page(ssh, Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.ACT_CPU_CORES)
+        assert SetUpLib.locate_option(Key.DOWN, ACT_CPU_CORES, 20)
         SerialLib.send_key(serial, Key.ENTER)
         logging.info("**Active Processor Cores**")
         assert icx2pAPI.verify_setup_options_up(serial, list_info, 28)
@@ -139,22 +139,22 @@ def cpu_cores_active(serial, ssh):
 def cpu_cores_active_enable(serial, ssh, ssh_os,num, set_n):
     ACT_CPU_CORES = ['Active Processor Cores', '<All>']
     try:
-        assert SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_ADVANCED)
-        assert SetUpLib.enter_menu(serial, ssh, Msg.PATH_PRO_CFG, 20, Msg.ACT_CPU_CORES)
-        assert SetUpLib.locate_option(serial, Key.DOWN, ACT_CPU_CORES, 20)
+        assert SetUpLib.boot_to_page(ssh, Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.ACT_CPU_CORES)
+        assert SetUpLib.locate_option(Key.DOWN, ACT_CPU_CORES, 20)
         SerialLib.send_keys_with_delay(serial, [Key.F6]*set_n)
         logging.info("**Active Processor Cores**")
         SerialLib.send_keys_with_delay(serial, [Key.F10, Key.Y], 5)
         logging.info("**reboot**")
-        assert SetUpLib.continue_to_page(serial, Msg.PAGE_ADVANCED)
-        # assert SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_ADVANCED)
+        assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
+        # assert SetUpLib.boot_to_page(ssh, Msg.PAGE_ADVANCED)
         SerialLib.send_keys_with_delay(serial, Key.ENTER)
-        assert SetUpLib.enter_menu(serial, Key.DOWN, [Msg.MEMORY_TOP], 20, 'DIMM000')
+        assert SetUpLib.enter_menu(Key.DOWN, [Msg.MEMORY_TOP], 20, 'DIMM000')
         logging.info("**Verify Memory Information**")
         assert SetUpLib.verify_info(SutConfig.DIMM_info, 20)
         ### boot suse
-        assert SetUpLib.boot_with_hotkey(serial, ssh, Key.F11, "Boot Manager Menu", 300)
-        assert SetUpLib.enter_menu(serial, Key.DOWN, ["SUSE Linux Enterprise\(LUN0\)"], 20, "Welcome to GRUB")
+        assert SetUpLib.boot_with_hotkey(ssh, Key.F11, "Boot Manager Menu", 300)
+        assert SetUpLib.enter_menu(Key.DOWN, ["SUSE Linux Enterprise\(LUN0\)"], 20, "Welcome to GRUB")
         assert SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE, 170)
         logging.info("Suse_OS Boot Successful")
         ### 每个CPU下只有num个core。

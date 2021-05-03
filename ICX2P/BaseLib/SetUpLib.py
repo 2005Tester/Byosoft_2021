@@ -8,12 +8,12 @@ from ICX2P.BaseLib import PowerLib
 
 # Send a single key, e.g. ENTER, DOWN, UP
 def send_key(key):
-    Sut.BIOS_COM.send_keys(key)
+    SerialLib.send_key(Sut.BIOS_COM, key)
 
 
 # send keys with default delay = 1s, e.g. [F10, Y]
 def send_keys(keys, delay=1):
-    Sut.BIOS_COM.send_keys_with_delay(keys, delay=1)
+    SerialLib.send_keys_with_delay(Sut.BIOS_COM, keys, delay)
 
 
 # verify information like CPU, memory in one setup page, option name is highlighted
@@ -42,9 +42,9 @@ def verify_options(key, options, trycounts):
 
 
 # Enter setup menu
-def enter_menu(serial, key, option_path, try_counts, confirm_msg):
+def enter_menu(key, option_path, try_counts, confirm_msg):
     try:
-        return serial.enter_menu(key, option_path, try_counts, confirm_msg)
+        return Sut.BIOS_COM.enter_menu(key, option_path, try_counts, confirm_msg)
     except Exception as e:
         logging.error("Exception occur: {0}".format(e))
 
@@ -53,19 +53,19 @@ def enter_menu(serial, key, option_path, try_counts, confirm_msg):
 # setupoption = ['name','value'] e.g. ["Boot Type", "<UEFI Boot Type>"]
 # Patten1: Only option name is highlighted, name should be specified, value not required
 # Patten2: Only value is highlighted, both name and value need to be specified, e.g.["Boot Type", "<UEFI Boot Type>"]
-def locate_option(serial, key, setupoption, try_counts):
-    return serial.locate_setup_option(key, setupoption, try_counts)
+def locate_option(key, setupoption, try_counts):
+    return Sut.BIOS_COM.locate_setup_option(key, setupoption, try_counts)
 
 
 # Boot to setup home page after a force reset
-def boot_to_setup(serial, ssh):
+def boot_to_setup(ssh):
     logging.info("SetUpLib: Boot to setup main page")
     logging.info("SetUpLib: Rebooting SUT...")
     if not PowerLib.force_reset(ssh):
         logging.info("SetUpLib: Rebooting SUT Failed.")
         return
     logging.info("SetUpLib: Booting to setup")
-    if not serial.boot_with_hotkey(Key.DEL, Msg.HOME_PAGE, 300):
+    if not Sut.BIOS_COM.boot_with_hotkey(Key.DEL, Msg.HOME_PAGE, 300):
         logging.info("SetUpLib: Boot to setup failed.")
         return
     logging.info("SetUpLib: Boot to setup main page successfully")
@@ -73,32 +73,32 @@ def boot_to_setup(serial, ssh):
 
 
 # Continue boot to setup home page without a force reset
-def continue_to_setup(serial):
+def continue_to_setup():
     logging.info("SetUpLib: Continue boot to setup main page")
-    if not serial.boot_with_hotkey(Key.DEL, Msg.HOME_PAGE, 300):
+    if not Sut.BIOS_COM.boot_with_hotkey(Key.DEL, Msg.HOME_PAGE, 300):
         logging.info("SetUpLib: Boot to setup failed.")
         return
     logging.info("SetUpLib: Boot to setup main page successfully")
     return True
 
 
-def boot_with_hotkey(serial, ssh, key, msg, timeout):
+def boot_with_hotkey(ssh, key, msg, timeout):
     hotkey_prompt = Msg.HOTKEY_PROMPT_DEL
     pw_prompt = Msg.PW_PROMPT
     password = SutConfig.BIOS_PASSWORD
     if not PowerLib.force_reset(ssh):
         return
-    if not serial.boot_with_hotkey(key, msg, timeout, hotkey_prompt, pw_prompt, password):
+    if not Sut.BIOS_COM.boot_with_hotkey(key, msg, timeout, hotkey_prompt, pw_prompt, password):
         return
     logging.info("Boot with hotkey successfully.")
     return True
 
 
 # Continue Boot to boot manager without a force reset
-def continue_to_bootmanager(serial):
+def continue_to_bootmanager():
     logging.info("SetUpLib: continue boot to bootmanager")
     msg = "Boot Manager Menu"
-    if not serial.boot_with_hotkey(Key.F11, msg, 300):
+    if not Sut.BIOS_COM.boot_with_hotkey(Key.F11, msg, 300):
         logging.info("SetUpLib: Continue boot to bootmanager failed.")
         return
     logging.info("SetUpLib: Boot to bootmanager successful")
@@ -106,19 +106,19 @@ def continue_to_bootmanager(serial):
 
 
 # Boot to BIOS configuration
-def boot_to_bios_config(serial, ssh):
-    if not boot_to_setup(serial, ssh):
+def boot_to_bios_config(ssh):
+    if not boot_to_setup(ssh):
         return
     logging.info("Move to \"BIOS Configuration\"")
-    SerialLib.send_key(serial, Key.DOWN)
-    if SerialLib.is_msg_present(serial, "Boot From File", delay=10):
+    send_key(Key.DOWN)
+    if SerialLib.is_msg_present(Sut.BIOS_COM, "Boot From File", delay=10):
         logging.info("UEFI boot mode detected.")
-        SerialLib.send_keys_with_delay(serial, [Key.RIGHT, Key.RIGHT])
+        send_keys([Key.RIGHT, Key.RIGHT])
     else:
         logging.info("Legacy boot mode detected")
-        SerialLib.send_key(serial, Key.RIGHT)
-    SerialLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, 'System Time'):
+        send_key(Key.RIGHT)
+    send_key(Key.ENTER)
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, 'System Time'):
         logging.info("SetUpLib: Boot to BIOS Configuration Failed")
         return
     logging.info("SetUpLib: Boot to BIOS Configuration successfully")
@@ -126,19 +126,19 @@ def boot_to_bios_config(serial, ssh):
 
 
 # Continue Boot to BIOS configuration without a force reset
-def continue_to_bios_config(serial):
-    if not continue_to_setup(serial):
+def continue_to_bios_config():
+    if not continue_to_setup():
         return
     logging.info("Move to \"BIOS Configuration\"")
-    SerialLib.send_key(serial, Key.DOWN)
-    if SerialLib.is_msg_present(serial, "Boot From File", delay=10):
+    send_key(Key.DOWN)
+    if SerialLib.is_msg_present(Sut.BIOS_COM, "Boot From File", delay=10):
         logging.info("UEFI boot mode detected.")
-        SerialLib.send_keys_with_delay(serial, [Key.RIGHT, Key.RIGHT])
+        send_keys([Key.RIGHT, Key.RIGHT])
     else:
         logging.info("Legacy boot mode detected")
-        SerialLib.send_key(serial, Key.RIGHT)
-    SerialLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, 'System Time'):
+        send_key(Key.RIGHT)
+    send_key(Key.ENTER)
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, 'System Time'):
         logging.info("SetUpLib: Boot to BIOS Configuration Failed")
         return
     logging.info("SetUpLib: Boot to BIOS Configuration successfully")
@@ -146,11 +146,11 @@ def continue_to_bios_config(serial):
 
 
 # boot to specific page in bios configuration
-def boot_to_page(serial, ssh, page_name):
-    if not boot_to_bios_config(serial, ssh):
+def boot_to_page(ssh, page_name):
+    if not boot_to_bios_config(ssh):
         return
     logging.info("SetUpLib: Move to specified setup page")
-    if not serial.locate_setup_option(Key.RIGHT, [page_name], 12):
+    if not Sut.BIOS_COM.locate_setup_option(Key.RIGHT, [page_name], 12):
         logging.info("SetUpLib: Specified setup page not found.")
         return
     logging.info("SetUpLib: Specified setup page found.")
@@ -158,11 +158,11 @@ def boot_to_page(serial, ssh, page_name):
 
 
 # Continue boot to specific page in bios configuration without a force reset, assume reset is done in previous step
-def continue_to_page(serial, page_name):
-    if not continue_to_bios_config(serial):
+def continue_to_page(page_name):
+    if not continue_to_bios_config():
         return
     logging.info("SetUpLib: Move to specified setup page")
-    if not serial.locate_setup_option(Key.RIGHT, [page_name], 12):
+    if not Sut.BIOS_COM.locate_setup_option(Key.RIGHT, [page_name], 12):
         logging.info("SetUpLib: Specified setup page not found.")
         return
     logging.info("SetUpLib: Specified setup page found.")
@@ -171,34 +171,34 @@ def continue_to_page(serial, page_name):
 
 # Verify supported values of a setup option, can be called after locate_setup_option()
 # valuses: string, e.g: DisabledAutoLowMediumHighManual
-def verify_supported_values(serial, values):
-    serial.send_keys(Key.ENTER)
-    if not SerialLib.is_msg_present(serial, values):
+def verify_supported_values(values):
+    send_key(Key.ENTER)
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, values):
         logging.info("Supported values are not correct.")
-        serial.send_keys(Key.ESC)
+        send_key(Key.ESC)
         return
     logging.info("Supported values are verified.")
-    serial.send_keys(Key.ESC)
+    send_key(Key.ESC)
     return True
 
 
 # Boot to boot manager with hotkey
-def boot_to_bootmanager(serial, ssh):
+def boot_to_bootmanager(ssh):
     key = Key.F11
     msg = "Boot Manager Menu"
-    return boot_with_hotkey(serial, ssh, key, msg, 300)
+    return boot_with_hotkey(ssh, key, msg, 300)
 
 
 # Switch to legacy mode
 def enable_legacy_boot(serial, ssh):
     logging.info("Switch to legacy boot mode")
-    if not boot_to_page(serial, ssh, Msg.PAGE_BOOT):
+    if not boot_to_page(ssh, Msg.PAGE_BOOT):
         return
-    if not locate_option(serial, Key.DOWN, ["Boot Type", "<UEFIBoot>"], 25):
+    if not locate_option(Key.DOWN, ["Boot Type", "<UEFIBoot>"], 25):
         return
     logging.info("Change boot type to legacy mode")
     SerialLib.send_key(serial, Key.F5)
-    if not locate_option(serial, Key.DOWN, ["Boot Type", "<LegacyBoot>"], 25):
+    if not locate_option(Key.DOWN, ["Boot Type", "<LegacyBoot>"], 25):
         logging.info("Failed to change boot type.")
         return
     logging.info("Save and reboot")
@@ -213,13 +213,13 @@ def enable_legacy_boot(serial, ssh):
 # Switch to uefi boot mode
 def disable_legacy_boot(serial, ssh):
     logging.info("Switch to uefi boot mode")
-    if not boot_to_page(serial, ssh, Msg.PAGE_BOOT):
+    if not boot_to_page(ssh, Msg.PAGE_BOOT):
         return
-    if not locate_option(serial, Key.DOWN, ["Boot Type", "<LegacyBoot>"], 25):
+    if not locate_option(Key.DOWN, ["Boot Type", "<LegacyBoot>"], 25):
         return
     logging.info("Change boot type to UEFI mode")
     SerialLib.send_key(serial, Key.F6)
-    if not locate_option(serial, Key.DOWN, ["Boot Type", "<UEFIBoot>"], 25):
+    if not locate_option(Key.DOWN, ["Boot Type", "<UEFIBoot>"], 25):
         logging.info("Failed to change boot type.")
         return
     logging.info("Save and reboot")
@@ -235,9 +235,9 @@ def disable_legacy_boot(serial, ssh):
 def boot_suse_from_bm(serial, ssh):
     suse_linux = ["SUSE Linux Enterprise\(LUN0\)"]
     msg = "Welcome to GRUB"
-    if not boot_to_bootmanager(serial, ssh):
+    if not boot_to_bootmanager(ssh):
         return
-    if not enter_menu(serial, Key.DOWN, suse_linux, 8, msg):
+    if not enter_menu(Key.DOWN, suse_linux, 8, msg):
         return
     if not SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE):
         return
@@ -249,11 +249,11 @@ def boot_suse_from_bm(serial, ssh):
 def move_boot_option_up(serial, ssh, boot_option, count):
     hdd_group = [Msg.MENU_BOOT_ORDER, Msg.MENU_HDD_BOOT]
     logging.info("Move: {0} {1} times".format(boot_option, count))
-    if not boot_to_page(serial, ssh, Msg.PAGE_BOOT):
+    if not boot_to_page(ssh, Msg.PAGE_BOOT):
         return
-    if not enter_menu(serial, Key.DOWN, hdd_group, 25, boot_option[0]):
+    if not enter_menu(Key.DOWN, hdd_group, 25, boot_option[0]):
         return
-    if not locate_option(serial, Key.DOWN, boot_option, 10):
+    if not locate_option(Key.DOWN, boot_option, 10):
         return
     logging.info("Move option up")
     for n in range(count):
@@ -308,7 +308,7 @@ def set_option_value(serial, locate_try, option_name, set_key, set_counts, exp_v
     :return: True, the option value set successfully
              False, the option value set fail
     """
-    assert locate_option(serial, Key.DOWN, option_name, locate_try), 'local_option -> fail'
+    assert locate_option(Key.DOWN, option_name, locate_try), 'local_option -> fail'
     logging.info('Start to set value...')
     SerialLib.send_keys_with_delay(serial, [set_key * set_counts])
     logging.info('Value set done, start to check if set successfully...')

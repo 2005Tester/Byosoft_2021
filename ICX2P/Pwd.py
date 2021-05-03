@@ -182,11 +182,11 @@ def simplePWDTest(serial, ssh, ssh_os):
         return
     SetUpLib.send_keys(SutConfig.key2pwd)
     # #checkin "Simple Password"  Default value "Disabled"
-    if not SetUpLib.locate_option(serial, Key.DOWN, ["Simple Password", "<Disabled>"], 20):
+    if not SetUpLib.locate_option(Key.DOWN, ["Simple Password", "<Disabled>"], 20):
         result.log_fail()
         return
     logging.info("Simple Password   <Disabled> ")
-    if not SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20):
+    if not SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20):
         result.log_fail()
         return
 
@@ -219,13 +219,13 @@ def Simple_password_validity(serial, ssh, ssh_os):
         return
     SetUpLib.send_keys(SutConfig.key2pwd)
     # #checkin "Simple Password"  Default value "Disabled"
-    if not SetUpLib.locate_option(serial, Key.DOWN, ["Simple Password", "<Disabled>"], 20):
+    if not SetUpLib.locate_option(Key.DOWN, ["Simple Password", "<Disabled>"], 20):
         result.log_fail()
         return
     logging.info("Simple Password   <Disabled> ")
     serial.send_keys(Key.F5)
     SetUpLib.send_key(Key.ENTER)
-    if not SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20):
+    if not SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20):
         result.log_fail()
         return
     if not change_password_negtive(serial, SutConfig.BIOS_PASSWORD, '333333'):
@@ -257,13 +257,13 @@ def Simple_password_disenable(serial, ssh, ssh_os):  # 异常待处理
         return
     SetUpLib.send_keys(SutConfig.key2pwd)
     # #checkin "Simple Password"  Default value "Disabled"
-    if not SetUpLib.locate_option(serial, Key.DOWN, ["Simple Password", "<Disabled>"], 20):
+    if not SetUpLib.locate_option(Key.DOWN, ["Simple Password", "<Disabled>"], 20):
         result.log_fail()
         return
     logging.info("Simple Password   <Enabled> ")
     serial.send_keys(Key.F5)
     SetUpLib.send_key(Key.ENTER)
-    if not SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20):
+    if not SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20):
         result.log_fail()
         return
     """
@@ -294,13 +294,13 @@ def Simple_password_disenable(serial, ssh, ssh_os):  # 异常待处理
     ###以上，是此用例的前置条件##############
     SetUpLib.send_keys(SutConfig.key2Setup)
     SetUpLib.send_keys(SutConfig.key2pwd)
-    if not SetUpLib.locate_option(serial, Key.DOWN, ["Simple Password", "<Enabled>"], 20):
+    if not SetUpLib.locate_option(Key.DOWN, ["Simple Password", "<Enabled>"], 20):
         result.log_fail()
         return
     serial.send_keys(Key.F6)
 
     logging.info("Simple Password   <Disabled> ")
-    if not SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20):
+    if not SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20):
         result.log_fail()
         return
     """
@@ -375,14 +375,14 @@ def Simple_password_save_enable(serial, ssh, ssh_os):
         return
     SetUpLib.send_keys(SutConfig.key2pwd)
     # #checkin "Simple Password"  Default value "Disabled"
-    if not SetUpLib.locate_option(serial, Key.DOWN, ["Simple Password", "<Disabled>"], 20):
+    if not SetUpLib.locate_option(Key.DOWN, ["Simple Password", "<Disabled>"], 20):
         result.log_fail()
         return
     logging.info("Simple Password   <Enabled> ")
     serial.send_keys(Key.F5)
     SetUpLib.send_key(Key.ENTER)
     # 以上，为前置条件-简易密码开关打开#
-    if not SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20):
+    if not SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20):
         result.log_fail()
         return
     if not change_password(serial, SutConfig.BIOS_PASSWORD, '55555555'):
@@ -418,14 +418,14 @@ def Simple_password_save_disable(serial, ssh, ssh_os):
         return
     SetUpLib.send_keys(SutConfig.key2pwd)
     # #checkin "Simple Password"  Default value "Disabled"
-    if not SetUpLib.locate_option(serial, Key.DOWN, ["Simple Password", "<Disabled>"], 20):
+    if not SetUpLib.locate_option(Key.DOWN, ["Simple Password", "<Disabled>"], 20):
         result.log_fail()
         return
     logging.info("Simple Password   <Enabled> ")
     serial.send_keys(Key.F5)
     SetUpLib.send_key(Key.ENTER)
     # 以上，为前置条件-简易密码开关打开#
-    if not SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20):
+    if not SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20):
         result.log_fail()
         return
     if not change_password(serial, SutConfig.BIOS_PASSWORD, '66666666'):
@@ -476,7 +476,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             SetUpLib.send_keys(SutConfig.key2pwd)
-            self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
+            self.assertTrue(SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
             self.assertTrue(change_password_negtive(serial, SutConfig.BIOS_PASSWORD, 'Ad@90'))
             logging.info("show invalid_password")
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
@@ -494,7 +494,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             SetUpLib.send_keys(SutConfig.key2pwd)
-            self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
+            self.assertTrue(SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
             self.assertTrue(change_password(serial, SutConfig.BIOS_PASSWORD, 'Admin@9!'))
             SetUpLib.send_keys([Key.F10, Key.Y])
             logging.info("Changes have been saved after press")
@@ -513,7 +513,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             SetUpLib.send_keys(SutConfig.key2pwd)
-            self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
+            self.assertTrue(SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
             self.assertTrue(change_password(serial, SutConfig.BIOS_PASSWORD, 'Admin@9003'))
             SetUpLib.send_keys([Key.F10, Key.Y])
             logging.info("Changes have been saved after press")
@@ -534,7 +534,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             SetUpLib.send_keys(SutConfig.key2pwd)
-            self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
+            self.assertTrue(SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
             self.assertTrue(change_password(serial, SutConfig.BIOS_PASSWORD, 'Admin@9001Admin@'))
             SetUpLib.send_keys([Key.F10, Key.Y])
             logging.info("Changes have been saved after press")
@@ -553,7 +553,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             SetUpLib.send_keys(SutConfig.key2pwd)
-            self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 10))
+            self.assertTrue(SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 10))
             self.assertTrue(change_password(serial, SutConfig.BIOS_PASSWORD, 'Byosoft@5000soft'))
             SetUpLib.send_keys([Key.F10, Key.Y])
             logging.info("Changes have been saved after press")
@@ -562,7 +562,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             logging.info("Maximum characters exceeded")
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             SetUpLib.send_keys(SutConfig.key2pwd)
-            self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 10))
+            self.assertTrue(SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 10))
             self.assertTrue(change_password(serial, 'Byosoft@5000soft', 'Inter@8000Byosof4'))
             SetUpLib.send_keys([Key.F10, Key.Y])
             logging.info("Changes have been saved after press")
@@ -581,7 +581,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             SetUpLib.send_keys(SutConfig.key2pwd)
-            self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
+            self.assertTrue(SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
             for i in pwd_list:
                 try:
                     self.assertTrue(change_password_negtive(serial, SutConfig.BIOS_PASSWORD, i))
@@ -601,7 +601,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             SetUpLib.send_keys(SutConfig.key2pwd)
-            self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
+            self.assertTrue(SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
             for j in pwd_list1:
                 try:
                     self.assertTrue(change_password_negtive(serial, SutConfig.BIOS_PASSWORD, j))
@@ -624,7 +624,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
                 m = k + 1
                 self.assertTrue(icx2pAPI.toBIOSConf(serial))
                 SetUpLib.send_keys(SutConfig.key2pwd)
-                self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
+                self.assertTrue(SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
                 SetUpLib.send_key(Key.ENTER)
                 self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_1))
                 SerialLib.send_data(serial, pwd_list2[k])
@@ -668,7 +668,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             SetUpLib.send_keys(SutConfig.key2pwd)
-            self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
+            self.assertTrue(SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
             self.assertTrue(change_password(serial, SutConfig.BIOS_PASSWORD, 'Admin@6789'))
             SetUpLib.send_keys([Key.F10, Key.Y])
             logging.info("Changes have been saved after press")
@@ -814,7 +814,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             SetUpLib.send_keys(SutConfig.key2pwd)
-            self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
+            self.assertTrue(SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
             SetUpLib.send_key(Key.ENTER)
             self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_1))
             SetUpLib.send_key('Inter#9999')
@@ -835,7 +835,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             SetUpLib.send_keys(SutConfig.key2pwd)
-            self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
+            self.assertTrue(SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
             SetUpLib.send_key(Key.ENTER)
             self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_1))
             SetUpLib.send_key(SutConfig.BIOS_PASSWORD)
@@ -870,7 +870,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
                 m = k + 1
                 self.assertTrue(icx2pAPI.toBIOSConf(serial))
                 SetUpLib.send_keys(SutConfig.key2pwd)
-                self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
+                self.assertTrue(SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
                 SetUpLib.send_key(Key.ENTER)
                 self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_1))
                 serial.send_data(times_pwd[k])
@@ -900,7 +900,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
                 k = k + 1
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             SetUpLib.send_keys(SutConfig.key2pwd)
-            self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
+            self.assertTrue(SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
             self.assertTrue(change_password(serial, times_pwd[4], times_pwd[6]))
             SetUpLib.send_keys([Key.F10, Key.Y])
             self.assertTrue(checkPWD(serial, times_pwd[6], times_pwd[4]))
@@ -918,7 +918,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             SetUpLib.send_keys(SutConfig.key2pwd)
-            self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Power On Password", "<Disabled>"], 20))
+            self.assertTrue(SetUpLib.locate_option(Key.UP, ["Power On Password", "<Disabled>"], 20))
             SetUpLib.send_keys([Key.F5,Key.F10, Key.Y])
             logging.info("set Power on Password Enable")
             self.assertTrue(SerialLib.is_msg_present(serial, 'Enter Current Password:'))
@@ -1011,7 +1011,7 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
             SetUpLib.send_keys(SutConfig.key2pwd)
             # set 3
             logging.info("change administrator login password more than 16 digits")
-            self.assertTrue(SetUpLib.locate_option(serial, Key.UP, ["Manage Supervisor Password"], 20))
+            self.assertTrue(SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
             self.assertTrue(change_password(serial, SutConfig.BIOS_PASSWORD, 'Admin@6789byosoft'))
             SetUpLib.send_keys([Key.F10, Key.Y])
             self.assertTrue(checkPWD(serial, 'Admin@6789byosof', 'Am@23'))
@@ -1019,7 +1019,7 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
             logging.info("Set step 4 preconditions")
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             SetUpLib.send_keys(SutConfig.key2pwd)
-            self.assertTrue(SetUpLib.locate_option(serial, Key.DOWN, ["Manage User Password"], 5))
+            self.assertTrue(SetUpLib.locate_option(Key.DOWN, ["Manage User Password"], 5))
             SetUpLib.send_key(Key.ENTER)
             self.assertTrue(SerialLib.is_msg_present(serial, pwd_info_2))
             SerialLib.send_data(serial, 'Inter@4567')

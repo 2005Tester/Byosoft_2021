@@ -16,22 +16,22 @@ from Report import ReportGen
 def rrqirq(serial, ssh):
     tc = ('101', 'Testcase_RRQIRQ_001', 'Setup菜单RRQ和IRQ选项默认值测试')
     result = ReportGen.LogHeaderResult(tc, serial)
-    if not SetUpLib.boot_to_page(serial, ssh, Msg.PAGE_ADVANCED):
+    if not SetUpLib.boot_to_page(ssh, Msg.PAGE_ADVANCED):
         result.log_fail()
         return
     msg = 'Uncore Status'
-    if not SetUpLib.enter_menu(serial, Key.DOWN, Msg.PATH_UNCORE_GENERAL, 20, msg):
+    if not SetUpLib.enter_menu(Key.DOWN, Msg.PATH_UNCORE_GENERAL, 20, msg):
         result.log_fail()
         return
 
     logging.info("Find option and verify default value.")
-    if not SetUpLib.locate_option(serial, Key.DOWN, ["Local/Remote Threshold", "<Auto>"], 20):
+    if not SetUpLib.locate_option(Key.DOWN, ["Local/Remote Threshold", "<Auto>"], 20):
         result.log_fail()
         return
 
     logging.info("Verify supported values.")
     values = 'DisabledAutoLowMediumHighManual'
-    if not SetUpLib.verify_supported_values(serial, values):
+    if not SetUpLib.verify_supported_values(values):
         result.log_fail()
         return
     logging.info("Verify default value of RRQ and IRQ when set to manual.")
@@ -53,14 +53,14 @@ def pcie_port_bandwidth_check(serial, ssh_bmc):
     tc = ('102', '[TC102] Testcase_PCIeInit_001', 'PCIe带宽默认值测试')
     result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
     try:
-        assert SetUpLib.boot_to_page(serial, ssh_bmc, Msg.PAGE_ADVANCED)
-        assert SetUpLib.enter_menu(serial, Key.DOWN, Msg.PATH_IIO_CONFIG, 15, Msg.IIO_CONFIG)
+        assert SetUpLib.boot_to_page(ssh_bmc, Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_IIO_CONFIG, 15, Msg.IIO_CONFIG)
         for cpu in range(SysCfg.CPU_CNT):  # loop cpu
             cpu_menu = f"CPU {cpu + 1} Configuration"
-            assert SetUpLib.enter_menu(serial, Key.DOWN, [cpu_menu], 15, "Port 1A")
+            assert SetUpLib.enter_menu(Key.DOWN, [cpu_menu], 15, "Port 1A")
             for port, bwidth in SysCfg.PCIE_MAP[cpu].items():  # loop root port
                 port_menu = f"Port {port.upper()}"
-                assert SetUpLib.enter_menu(serial, Key.DOWN, [port_menu], 15, "PCIe Port")
+                assert SetUpLib.enter_menu(Key.DOWN, [port_menu], 15, "PCIe Port")
                 assert SetUpLib.verify_info([rf"PCIe Port Link Max\s+Max Width {bwidth.lower()}"], 25), f"Socket{cpu}：port {port} = {bwidth} fail"
                 logging.info(f"Socket{cpu}：port {port} = {bwidth} pass")
                 serial.send_keys(Key.ESC)

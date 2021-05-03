@@ -23,18 +23,18 @@ from ICX2P import Os
 # 03 支持内存电源管理配置
 class dimm_memPower(unittest.TestCase):
     # go to memory frequency page
-    def navigate_to_mem_fre(self, serial):
-        self.assertTrue(SetUpLib.locate_option(serial, Key.RIGHT, [Msg.PAGE_ADVANCED], 6))
-        self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, [Msg.CPU_CONFIG], 12, Msg.PROCESSOR_CONFIG))
-        self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, [Msg.MEMORY_CONFIG], 12, Msg.MEM_FRE))
+    def navigate_to_mem_fre(self):
+        self.assertTrue(SetUpLib.locate_option(Key.RIGHT, [Msg.PAGE_ADVANCED], 6))
+        self.assertTrue(SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG], 12, Msg.PROCESSOR_CONFIG))
+        self.assertTrue(SetUpLib.enter_menu(Key.DOWN, [Msg.MEMORY_CONFIG], 12, Msg.MEM_FRE))
 
     # go to cke power down page
-    def navigate_to_cke(self, serial):
-        self.assertTrue(SetUpLib.locate_option(serial, Key.RIGHT, [Msg.PAGE_ADVANCED], 6))
-        self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, [Msg.CPU_CONFIG], 12, Msg.PROCESSOR_CONFIG))
-        self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, [Msg.ADV_POWER_MGF_CONFIG], 12, Msg.PFM_PRO))
-        self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, [Msg.MEM_POWER_THER_CONFIG], 12, Msg.DRAM_RAPL_CONFIG))
-        self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, [Msg.MEM_POWER_ADV], 12, Msg.CKE))
+    def navigate_to_cke(self):
+        self.assertTrue(SetUpLib.locate_option(Key.RIGHT, [Msg.PAGE_ADVANCED], 6))
+        self.assertTrue(SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG], 12, Msg.PROCESSOR_CONFIG))
+        self.assertTrue(SetUpLib.enter_menu(Key.DOWN, [Msg.ADV_POWER_MGF_CONFIG], 12, Msg.PFM_PRO))
+        self.assertTrue(SetUpLib.enter_menu(Key.DOWN, [Msg.MEM_POWER_THER_CONFIG], 12, Msg.DRAM_RAPL_CONFIG))
+        self.assertTrue(SetUpLib.enter_menu(Key.DOWN, [Msg.MEM_POWER_ADV], 12, Msg.CKE))
 
     def dimm_power_mgt_01(self, serial, ssh):
         tc = ('700', 'Testcase_MemPower_001', 'BIOS默认关闭DDR4内存的LP-ASR模式测试')
@@ -43,10 +43,10 @@ class dimm_memPower(unittest.TestCase):
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             if SetUpLib.verify_info(['CPU Number\s+2'], 7):
-                dimm_memPower.navigate_to_mem_fre(self, serial)
+                dimm_memPower.navigate_to_mem_fre(self)
                 self.assertTrue(SetUpLib.verify_options(Key.DOWN, [[Msg.MEM2X_REFRESH, '<Disabled>']], 7))
             elif SetUpLib.verify_info(['CPU Number\s+4'], 7):
-                dimm_memPower.navigate_to_mem_fre(self, serial)
+                dimm_memPower.navigate_to_mem_fre(self)
                 self.assertTrue(SetUpLib.verify_options(Key.DOWN, [[Msg.MEM2X_REFRESH, '<Extended>']], 7))
             else:
                 logging.info('Unsupported CPU Number...')
@@ -62,12 +62,12 @@ class dimm_memPower(unittest.TestCase):
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
-            dimm_memPower.navigate_to_mem_fre(self, serial)
+            dimm_memPower.navigate_to_mem_fre(self)
             serial.send_keys(Key.ESC)
-            self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, [Msg.ADV_POWER_MGF_CONFIG], 12, Msg.PFM_PRO))
+            self.assertTrue(SetUpLib.enter_menu(Key.DOWN, [Msg.ADV_POWER_MGF_CONFIG], 12, Msg.PFM_PRO))
             self.assertTrue(
-                SetUpLib.enter_menu(serial, Key.DOWN, [Msg.MEM_POWER_THER_CONFIG], 12, Msg.DRAM_RAPL_CONFIG))
-            self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, [Msg.MEM_POWER_ADV], 12, Msg.CKE))
+                SetUpLib.enter_menu(Key.DOWN, [Msg.MEM_POWER_THER_CONFIG], 12, Msg.DRAM_RAPL_CONFIG))
+            self.assertTrue(SetUpLib.enter_menu(Key.DOWN, [Msg.MEM_POWER_ADV], 12, Msg.CKE))
             self.assertTrue(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
         except AssertionError as err:
             result.log_fail(capture=True)
@@ -80,10 +80,10 @@ class dimm_memPower(unittest.TestCase):
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
-            dimm_memPower.navigate_to_cke(self, serial)
+            dimm_memPower.navigate_to_cke(self)
             self.assertTrue(SetUpLib.verify_options(Key.DOWN, [[Msg.LPASR_MODE, '<Auto SR>']], 7))
-            self.assertTrue(SetUpLib.boot_to_bootmanager(serial, ssh))
-            self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
+            self.assertTrue(SetUpLib.boot_to_bootmanager(ssh))
+            self.assertTrue(SetUpLib.enter_menu(Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
         except AssertionError as err:
             result.log_fail(capture=True)
             return False
@@ -95,15 +95,15 @@ class dimm_memPower(unittest.TestCase):
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
-            dimm_memPower.navigate_to_cke(self, serial)
+            dimm_memPower.navigate_to_cke(self)
             self.assertTrue(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
             serial.send_keys_with_delay([Key.F5, Key.F10, Key.Y])
             self.assertTrue(icx2pAPI.toBIOSnp(serial))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
-            dimm_memPower.navigate_to_cke(self, serial)
+            dimm_memPower.navigate_to_cke(self)
             self.assertTrue(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
-            self.assertTrue(SetUpLib.boot_to_bootmanager(serial, ssh))
-            self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
+            self.assertTrue(SetUpLib.boot_to_bootmanager(ssh))
+            self.assertTrue(SetUpLib.enter_menu(Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
             self.assertTrue(icx2pAPI.ping_sut())
         except AssertionError as err:
             result.log_fail(capture=True)
@@ -116,10 +116,10 @@ class dimm_memPower(unittest.TestCase):
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
-            dimm_memPower.navigate_to_cke(self, serial)
+            dimm_memPower.navigate_to_cke(self)
             self.assertTrue(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
             SerialLib.send_key(serial, Key.F5)
-            self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
+            self.assertTrue(SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
             self.assertTrue(SetUpLib.verify_options(Key.DOWN, [['APD', '<Disabled>'], ['PPD', '<Enabled>']], 7))
             self.assertTrue(SetUpLib.verify_options(Key.DOWN, [['APD', '<Disabled>']], 7))
             SerialLib.send_key(serial, Key.F5)
@@ -138,15 +138,15 @@ class dimm_memPower(unittest.TestCase):
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh_bmc))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
-            dimm_memPower.navigate_to_cke(self, serial)
+            dimm_memPower.navigate_to_cke(self)
             self.assertTrue(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
             SerialLib.send_keys_with_delay([Key.F5, Key.F10, Key.Y])
             self.assertTrue(icx2pAPI.toBIOSnp(serial))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
-            dimm_memPower.navigate_to_cke(self, serial)
+            dimm_memPower.navigate_to_cke(self)
             self.assertTrue(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
-            self.assertTrue(SetUpLib.boot_to_bootmanager(serial, ssh_bmc))
-            self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
+            self.assertTrue(SetUpLib.boot_to_bootmanager(ssh_bmc))
+            self.assertTrue(SetUpLib.enter_menu(Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
             self.assertTrue(icx2pAPI.ping_sut())
             self.assertTrue(icx2pAPI.rw_everything(ssh_os, SutConfig.CKE_POWER_DOWN, ['c61218a0', 'fb9a18a4']))
         except AssertionError as err:
@@ -162,10 +162,10 @@ class dimm_memPower(unittest.TestCase):
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh_bmc))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
-            dimm_memPower.navigate_to_cke(self, serial)
+            dimm_memPower.navigate_to_cke(self)
             self.assertTrue(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
             serial.send_keys(Key.F5)
-            self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
+            self.assertTrue(SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
             self.assertTrue(SetUpLib.verify_options(Key.DOWN, [['APD', '<Disabled>'], ['PPD', '<Enabled>']], 7))
             self.assertTrue(SetUpLib.verify_options(Key.DOWN, [['APD', '<Disabled>']], 7))
             serial.send_keys(Key.F5)
@@ -174,12 +174,12 @@ class dimm_memPower(unittest.TestCase):
             serial.send_keys_with_delay([Key.F10, Key.Y])
             self.assertTrue(icx2pAPI.toBIOSnp(serial))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
-            dimm_memPower.navigate_to_cke(self, serial)
+            dimm_memPower.navigate_to_cke(self)
             self.assertTrue(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
-            self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
+            self.assertTrue(SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
             self.assertTrue(SetUpLib.verify_options(Key.DOWN, [['APD', '<Enabled>']], 3))
-            self.assertTrue(SetUpLib.boot_to_bootmanager(serial, ssh_bmc))
-            self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
+            self.assertTrue(SetUpLib.boot_to_bootmanager(ssh_bmc))
+            self.assertTrue(SetUpLib.enter_menu(Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
             self.assertTrue(icx2pAPI.ping_sut())
             self.assertTrue(icx2pAPI.rw_everything(ssh_os, ['1100', '010f'], ['c61218a0']))
         except AssertionError as err:
@@ -195,10 +195,10 @@ class dimm_memPower(unittest.TestCase):
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh_bmc))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
-            dimm_memPower.navigate_to_cke(self, serial)
+            dimm_memPower.navigate_to_cke(self)
             self.assertTrue(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
             serial.send_keys(Key.F5)
-            self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
+            self.assertTrue(SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
             self.assertTrue(SetUpLib.verify_options(Key.DOWN, [['CKE Idle Timer', '\[20\]']], 7))
             serial.send_data(chr(0x0D))  # Send Enter
             serial.send_data('255')  # set 255
@@ -206,12 +206,12 @@ class dimm_memPower(unittest.TestCase):
             serial.send_keys_with_delay([Key.F10, Key.Y])
             self.assertTrue(icx2pAPI.toBIOSnp(serial))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
-            dimm_memPower.navigate_to_cke(self, serial)
+            dimm_memPower.navigate_to_cke(self)
             self.assertTrue(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
-            self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
+            self.assertTrue(SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
             self.assertTrue(SetUpLib.verify_options(Key.DOWN, [['CKE Idle Timer', '\[255\]']], 7))
-            self.assertTrue(SetUpLib.boot_to_bootmanager(serial, ssh_bmc))
-            self.assertTrue(SetUpLib.enter_menu(serial, Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
+            self.assertTrue(SetUpLib.boot_to_bootmanager(ssh_bmc))
+            self.assertTrue(SetUpLib.enter_menu(Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
             self.assertTrue(icx2pAPI.ping_sut())
             self.assertTrue(icx2pAPI.rw_everything(ssh_os, ['1100', '02bf'], ['c61218a0']))
         except AssertionError as err:
@@ -239,18 +239,18 @@ def Testcase_MemMargin_001(serial, ssh_bmc):
     BSSA_RMT_FAST = "BSSA RMT on Fast Cold Boot"
     SERIAL_RMT_FLAG = ["START_BSSA_RMT", "Ctl+"]
     try:
-        assert SetUpLib.boot_to_page(serial, ssh_bmc, Msg.PAGE_ADVANCED), "boot_to_page -> fail"
+        assert SetUpLib.boot_to_page(ssh_bmc, Msg.PAGE_ADVANCED), "boot_to_page -> fail"
         logging.info("Press Enter")
         serial.send_keys(Key.ENTER)
-        assert SetUpLib.enter_menu(serial, Key.DOWN, [Msg.MEMORY_CONFIG, BSSA_MENU], 15, BSSA_RMT), "enter_menu >> fail"
+        assert SetUpLib.enter_menu(Key.DOWN, [Msg.MEMORY_CONFIG, BSSA_MENU], 15, BSSA_RMT), "enter_menu >> fail"
         # BSSA Rank Margin Tool: Enable
-        assert SetUpLib.locate_option(serial, Key.DOWN, [BSSA_RMT, "<Disabled>"], 15), "locate_option >> fail"
+        assert SetUpLib.locate_option(Key.DOWN, [BSSA_RMT, "<Disabled>"], 15), "locate_option >> fail"
         logging.info("Press F6")
         serial.send_keys(Key.F6)
         assert SetUpLib.verify_options(Key.DOWN, [[BSSA_RMT, "<Enabled>"]], 15), "verify_options >> fail"
         logging.info(f"{BSSA_RMT} -> Enabled")
         # BSSA RMT on Fast Cold Boot: Enable
-        assert SetUpLib.locate_option(serial, Key.DOWN, [BSSA_RMT_FAST, "<Disabled>"], 15), "locate_option >> fail"
+        assert SetUpLib.locate_option(Key.DOWN, [BSSA_RMT_FAST, "<Disabled>"], 15), "locate_option >> fail"
         logging.info("Press F6")
         serial.send_keys(Key.F6)
         assert SetUpLib.verify_options(Key.DOWN, [[BSSA_RMT_FAST, "<Enabled>"]], 15), "verify_options >> fail"
@@ -282,8 +282,8 @@ def Testcase_MemoryCompa_001(serial, ssh_bmc):
     tc = ('709', '[TC709] Testcase_MemoryCompa_001', '01 内存初始化测试')
     result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
     try:
-        assert SetUpLib.boot_to_page(serial, ssh_bmc, Msg.PAGE_ADVANCED), "boot_to_page -> fail"
-        assert SetUpLib.enter_menu(serial, Key.DOWN, [Msg.CPU_CONFIG, Msg.MEMORY_TOP], 15,
+        assert SetUpLib.boot_to_page(ssh_bmc, Msg.PAGE_ADVANCED), "boot_to_page -> fail"
+        assert SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, Msg.MEMORY_TOP], 15,
                                    'DIMM000\(A\)'), "enter_menu >> fail"
         assert SetUpLib.verify_info(SutConfig.DIMM_info, 20)
         result.log_pass()
@@ -301,7 +301,7 @@ def Testcase_MemoryCompa_006(serial, ssh_bmc, ssh_os, n=1):
     res_lst = []
     for i in range(n):
         try:
-            assert SetUpLib.boot_to_page(serial, ssh_bmc, 'BIOS Revision'), "boot_to_page -> fail"
+            assert SetUpLib.boot_to_page(ssh_bmc, 'BIOS Revision'), "boot_to_page -> fail"
             assert SetUpLib.verify_info('Total Memory\s+65536 MB', 20), "dimm_size_verify -> fail"
             assert Os.boot_to_suse(serial, ssh_bmc), "boot_to_os -> fail"
             assert icx2pAPI.ping_sut(), "ping_os_ip-> fail"
@@ -336,8 +336,8 @@ def Testcase_MemRefresh_001(serial, ssh_bmc, ssh_os):
     tc = ('711', '[TC711] Testcase_MemRefresh_001', '01 设置动态内存刷新模式功能测试')
     result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
     try:
-        assert SetUpLib.boot_to_page(serial, ssh_bmc, Msg.CPU_CONFIG), "boot_to_page -> fail"
-        assert SetUpLib.locate_option(serial, Key.DOWN, [Msg.MEM2X_REFRESH, '<Disabled>'], 10), "locate_option -> fail"
+        assert SetUpLib.boot_to_page(ssh_bmc, Msg.CPU_CONFIG), "boot_to_page -> fail"
+        assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM2X_REFRESH, '<Disabled>'], 10), "locate_option -> fail"
         SerialLib.send_keys_with_delay(serial, [Key.F5, Key.F10, Key.Y])
         assert Os.boot_to_suse(serial, ssh_bmc), "boot_to_os -> fail"
         assert icx2pAPI.ping_sut(), "ping_os_ip-> fail"
@@ -357,9 +357,9 @@ def Testcase_MemRefresh_002(serial, ssh_bmc, ssh_os):
     tc = ('712', '[TC712] Testcase_MemRefresh_001', '02 设置静态2X内存刷新模式功能测试')
     result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
     try:
-        assert SetUpLib.boot_to_page(serial, ssh_bmc, Msg.CPU_CONFIG), "boot_to_page -> fail"
-        assert SetUpLib.enter_menu(serial, Key.DOWN, Msg.MEMORY_CONFIG, 10, Msg.MEM_FRE), "enter_menu -> fail"
-        assert SetUpLib.locate_option(serial, Key.DOWN, [Msg.MEM2X_REFRESH, '<Disabled>'], 10), "locate_option -> fail"
+        assert SetUpLib.boot_to_page(ssh_bmc, Msg.CPU_CONFIG), "boot_to_page -> fail"
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.MEMORY_CONFIG, 10, Msg.MEM_FRE), "enter_menu -> fail"
+        assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM2X_REFRESH, '<Disabled>'], 10), "locate_option -> fail"
         SerialLib.send_keys_with_delay(serial, [Key.F6 * 3, Key.F10, Key.Y])
         assert Os.boot_to_suse(serial, ssh_bmc), "boot_to_os -> fail"
         assert icx2pAPI.ping_sut(), "ping_os_ip-> fail"
@@ -402,9 +402,9 @@ def Testcase_MemoryCompa_009(serial, ssh_bmc, unitool):
 # OnStart: NA
 # OnComplete: SUSE OS
 def navegate_to_mem_fre_option(serial, ssh_bmc, n=1):  # used to set mem freq test
-    assert SetUpLib.boot_to_page(serial, ssh_bmc, Msg.CPU_CONFIG), "boot_to_page -> fail"
-    assert SetUpLib.enter_menu(serial, Key.DOWN, Msg.MEMORY_CONFIG, 10, Msg.MEM_FRE), "enter_menu -> fail"
-    assert SetUpLib.locate_option(serial, Key.DOWN, [Msg.MEM_FRE, 'Auto'], 10), "locate_option -> fail"
+    assert SetUpLib.boot_to_page(ssh_bmc, Msg.CPU_CONFIG), "boot_to_page -> fail"
+    assert SetUpLib.enter_menu(Key.DOWN, Msg.MEMORY_CONFIG, 10, Msg.MEM_FRE), "enter_menu -> fail"
+    assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM_FRE, 'Auto'], 10), "locate_option -> fail"
     SerialLib.send_keys_with_delay(serial, [Key.F6 * n, Key.F10, Key.Y])
     assert Os.boot_to_suse(serial, ssh_bmc), "boot_to_os -> fail"
     assert icx2pAPI.ping_sut(), "ping_os_ip-> fail"
@@ -415,7 +415,7 @@ def Testcase_SetMemFreq_001_006(serial, ssh_bmc, n=1):
     tc = ('714', '[TC714] Testcase_SetMemFreq_001_006', '01-06 内存频率选项测试')
     result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
     try:
-        assert SetUpLib.boot_to_page(serial, ssh_bmc, 'BIOS Revision'), "boot_to_page -> fail"
+        assert SetUpLib.boot_to_page(ssh_bmc, 'BIOS Revision'), "boot_to_page -> fail"
         if SetUpLib.verify_info('System Memory Speed\s+2666 MT\/s', 20):
             logging.info('DIMM FRE is 2666 MT/s')
             assert navegate_to_mem_fre_option(serial, ssh_bmc), '2666-dimm_2666_mem_freq_test -> fail'

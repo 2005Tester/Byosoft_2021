@@ -55,7 +55,7 @@ def TestScope():
 
 # Test scope for euipment mode image
 def EquipScope():
-    Release.equip_mode_version_check(ser, ssh_bmc)
+    Release.equip_mode_version_check(ssh_bmc)
     Os.boot_to_suse_mfg(ser, ssh_bmc)
     Smbios.smbios_type128(ser, ssh_os, ssh_bmc, unitool)
 

@@ -79,14 +79,14 @@ def pxeTest(serial, ssh, n=1):
         if not PangeaLib.toBIOS(serial, ssh):
             result.log_fail()
             return
-        if not SetUpLib.locate_option(serial, Key.RIGHT, [Msg.Boot_OPTION], 7):
+        if not SetUpLib.locate_option(Key.RIGHT, [Msg.Boot_OPTION], 7):
             result.log_fail()
             return
-        if not SetUpLib.locate_option(serial, Key.DOWN, [Msg.Boot_MANAGER], 7):
+        if not SetUpLib.locate_option(Key.DOWN, [Msg.Boot_MANAGER], 7):
             result.log_fail()
             return
         serial.send_keys(Key.ENTER)
-        if not SetUpLib.enter_menu(serial, Key.DOWN, [Msg.PXE_PORT], 12, msg):
+        if not SetUpLib.enter_menu(Key.DOWN, [Msg.PXE_PORT], 12, msg):
             result.log_fail()
             return
     result.log_pass()
@@ -100,14 +100,14 @@ def processor_dimm_basic_info(serial, ssh):
     if not PangeaLib.toBIOS(serial, ssh):
         result.log_fail()
         return
-    if not SetUpLib.locate_option(serial, Key.RIGHT, [Msg.CPU_MENU], 7):
+    if not SetUpLib.locate_option(Key.RIGHT, [Msg.CPU_MENU], 7):
         result.log_fail()
         return
-    if not SetUpLib.locate_option(serial, Key.DOWN, [Msg.CPU_CONFIG], 12):
+    if not SetUpLib.locate_option(Key.DOWN, [Msg.CPU_CONFIG], 12):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
-    if not SetUpLib.locate_option(serial, Key.DOWN, [Msg.PROCESSOR_CONFIG], 12):
+    if not SetUpLib.locate_option(Key.DOWN, [Msg.PROCESSOR_CONFIG], 12):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
@@ -115,11 +115,11 @@ def processor_dimm_basic_info(serial, ssh):
         result.log_fail()
         return
     serial.send_keys(Key.ESC)
-    if not SetUpLib.locate_option(serial, Key.DOWN, [Msg.MEMORY_CONFIG], 12):
+    if not SetUpLib.locate_option(Key.DOWN, [Msg.MEMORY_CONFIG], 12):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
-    if not SetUpLib.locate_option(serial, Key.DOWN, [Msg.MEMORY_TOPOLOGY], 70):
+    if not SetUpLib.locate_option(Key.DOWN, [Msg.MEMORY_TOPOLOGY], 70):
         result.log_fail()
         return
     serial.send_keys(Key.ENTER)
@@ -140,7 +140,7 @@ def load_default_save_reset(serial, ssh):
     if not PangeaLib.toBIOS(serial, ssh):
         result.log_fail()
         return
-    if not SetUpLib.enter_menu(serial, Key.RIGHT, [Msg.Boot_MENU], 12, Msg.Boot_OPTION):
+    if not SetUpLib.enter_menu(Key.RIGHT, [Msg.Boot_MENU], 12, Msg.Boot_OPTION):
         result.log_fail()
         return
     if not SetUpLib.verify_info(option_bfo, 7):
@@ -158,7 +158,7 @@ def load_default_save_reset(serial, ssh):
     if not PangeaLib.toBIOSnp(serial):
         result.log_fail()
         return
-    if not SetUpLib.enter_menu(serial, Key.RIGHT, [Msg.Boot_MENU], 12, Msg.Boot_OPTION):
+    if not SetUpLib.enter_menu(Key.RIGHT, [Msg.Boot_MENU], 12, Msg.Boot_OPTION):
         result.log_fail()
         return
     if not SetUpLib.verify_info(option_aft, 7):
@@ -195,14 +195,14 @@ def boot_eulerOS(serial, ssh, n=1):
         if not PangeaLib.toBIOS(serial, ssh):
             result.log_fail()
             return
-        if not SetUpLib.locate_option(serial, Key.RIGHT, [Msg.Boot_OPTION], 7):
+        if not SetUpLib.locate_option(Key.RIGHT, [Msg.Boot_OPTION], 7):
             result.log_fail()
             return
-        if not SetUpLib.locate_option(serial, Key.DOWN, [Msg.Boot_MANAGER], 7):
+        if not SetUpLib.locate_option(Key.DOWN, [Msg.Boot_MANAGER], 7):
             result.log_fail()
             return
         serial.send_keys(Key.ENTER)
-        if not SetUpLib.enter_menu(serial, Key.DOWN, [Msg.OS_PORT], 12, msg):
+        if not SetUpLib.enter_menu(Key.DOWN, [Msg.OS_PORT], 12, msg):
             result.log_fail()
             return
     result.log_pass()

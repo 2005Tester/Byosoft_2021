@@ -63,13 +63,13 @@ def Testcase_SystemInfo_003(serial, ssh_bmc):
     result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
     try:
         assert PowerLib.force_reset(ssh_bmc), 'force_reset -> fail'
-        assert SetUpLib.boot_with_hotkey(serial, ssh_bmc, Key.DEL, Msg.HOTKEY_PROMPT_DEL, 300)
+        assert SetUpLib.boot_with_hotkey(ssh_bmc, Key.DEL, Msg.HOTKEY_PROMPT_DEL, 300)
         SerialLib.send_key(serial, Key.CTRL_ALT_DELETE)
-        assert SetUpLib.boot_to_bootmanager(serial, ssh_bmc)
+        assert SetUpLib.boot_to_bootmanager(ssh_bmc)
         SerialLib.send_key(serial, Key.CTRL_ALT_DELETE)
-        assert SetUpLib.boot_with_hotkey(serial, ssh_bmc, Key.F12, Msg.HOTKEY_PROMPT_F12, 300)
+        assert SetUpLib.boot_with_hotkey(ssh_bmc, Key.F12, Msg.HOTKEY_PROMPT_F12, 300)
         SerialLib.send_key(serial, Key.CTRL_ALT_DELETE)
-        assert SetUpLib.boot_with_hotkey(serial, ssh_bmc, Key.F6, Msg.HOTKEY_PROMPT_F6, 300)
+        assert SetUpLib.boot_with_hotkey(ssh_bmc, Key.F6, Msg.HOTKEY_PROMPT_F6, 300)
         assert SetUpLib.disable_legacy_boot(serial, ssh_bmc), 'test_pass_switch_to_uefi_mode -> fail'
         result.log_pass()
     except AssertionError:

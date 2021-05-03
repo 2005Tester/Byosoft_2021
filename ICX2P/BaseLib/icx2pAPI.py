@@ -181,13 +181,13 @@ def toBIOSnp(serial, pwd=SutConfig.BIOS_PASSWORD):
     return True
 
 
-def dcCycle(serial, ssh):
-    if not SetUpLib.boot_to_setup(serial, ssh):
+def dcCycle(ssh):
+    if not SetUpLib.boot_to_setup(ssh):
         return
     if not PowerLib.force_power_cycle(ssh):
         return
     logging.info("Booting to setup")
-    if not SetUpLib.continue_to_setup(serial):
+    if not SetUpLib.continue_to_setup():
         return
 
     return True
@@ -244,7 +244,7 @@ def pressF12(serial, ssh):
 
 def reset_default(serial, ssh):
     logging.info("Reset BIOS to dafault by F9")
-    if not SetUpLib.boot_to_bios_config(serial, ssh):
+    if not SetUpLib.boot_to_bios_config(ssh):
         return
     SerialLib.send_keys_with_delay(serial, Key.RESET_DEFAULT)
     if not SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE):
