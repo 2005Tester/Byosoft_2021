@@ -18,23 +18,23 @@ unitool = Unitool.SshUnitool(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PA
 
 # Test scope for non-equipment build
 def TestScope():
-    biosTest.POST_Test(ser, ssh_bmc)
-    biosTest.PM(ser, ssh_bmc)
+    biosTest.POST_Test(ser)
+    biosTest.PM(ser)
     biosTest.usbTest(ser, ssh_bmc)
-    Cpu.cpu_mem_info(ser, ssh_bmc)
-    biosTest.pressF2(ser, ssh_bmc)
-    Cpu.static_turbo_default(ser, ssh_bmc)
-    Cpu.ufs_default_value(ser, ssh_bmc)
-    DefaultValueTest.rrqirq(ser, ssh_bmc)
+    Cpu.cpu_mem_info(ser)
+    biosTest.pressF2(ser)
+    Cpu.static_turbo_default(ser)
+    Cpu.ufs_default_value(ser)
+    DefaultValueTest.rrqirq(ser)
     biosTest.dram_rapl_option_check(ser, ssh_bmc)
-    biosTest.securityBoot(ser, ssh_bmc)
-    biosTest.vtd(ser, ssh_bmc)
+    biosTest.securityBoot(ser)
+    biosTest.vtd(ser)
     biosTest.cnd_default_enable(ser, ssh_bmc)
-    Cpu.upi_link_status(ser, ssh_bmc)
+    Cpu.upi_link_status(ser)
     Cpu.cpu_cores_active_enable_1(ser, ssh_bmc, ssh_os)
     Cpu.cpu_cores_active_enable_middle(ser, ssh_bmc, ssh_os)
     Cpu.cpu_cores_active_enable_max(ser, ssh_bmc, ssh_os)
-    if Os.boot_to_suse(ser, ssh_bmc):
+    if Os.boot_to_suse(ser):
         Smbios.smbios_test_all(ssh_os)
         Release.equip_mode_flag_check(unitool)
     Pwd.Pwd_test(ser, ssh_bmc, ssh_os)
@@ -43,20 +43,20 @@ def TestScope():
     DIMM.DPM.dimm_power_mgt_04(ser, ssh_bmc)
     DIMM.DPM.dimm_power_mgt_05(ser, ssh_bmc)
     DIMM.DPM.dimm_power_mgt_07(ser, ssh_bmc)
-    Release.me_version_status(ser, ssh_bmc)
+    Release.me_version_status(ser)
     biosTest.loadDefault(ser, ssh_bmc)
-    biosTest.vtd(ser, ssh_bmc)
+    biosTest.vtd(ser)
     DIMM.Testcase_MemMargin_001(ser, ssh_bmc)
-    Pch.usb_default_enable_check(ser, ssh_bmc)
+    Pch.usb_default_enable_check(ser)
     Pch.post_gpio_error_check(ser, ssh_bmc)
-    if Legacy.enable_legacy_boot(ser, ssh_bmc):
-        Legacy.disable_legacy_boot(ser, ssh_bmc)
+    if Legacy.enable_legacy_boot():
+        Legacy.disable_legacy_boot()
 
 
 # Test scope for euipment mode image
 def EquipScope():
-    Release.equip_mode_version_check(ssh_bmc)
-    Os.boot_to_suse_mfg(ser, ssh_bmc)
+    Release.equip_mode_version_check()
+    Os.boot_to_suse_mfg(ser)
     Smbios.smbios_type128(ser, ssh_os, ssh_bmc, unitool)
 
 
@@ -77,12 +77,12 @@ def ReleaseTest():
 
 def Debug():
     Cpu.cpu_mem_info(ser, ssh_bmc)
-    DIMM.Testcase_MemoryCompa_001(ser, ssh_bmc)
+    DIMM.Testcase_MemoryCompa_001(ser)
     DIMM.Testcase_MemoryCompa_006(ser, ssh_bmc, ssh_os)
-    Hotkey.Testcase_SystemInfo_001(ser, ssh_bmc)
-    Hotkey.Testcase_SystemInfo_002(ser, ssh_bmc)
-    Hotkey.Testcase_SystemInfo_003(ser, ssh_bmc)
+    Hotkey.Testcase_SystemInfo_001(ser)
+    Hotkey.Testcase_SystemInfo_002(ser)
+    Hotkey.Testcase_SystemInfo_003(ser)
     Smbios.smbios_type128(ser, ssh_os, ssh_bmc, unitool)
     DIMM.Testcase_MemoryCompa_009(ser, ssh_bmc, unitool)
     biosTest.Testcase_SerialPrint_001(ser, ssh_bmc)
-    biosTest.Testcase_SerialPrint_002(ser, ssh_bmc)
+    biosTest.Testcase_SerialPrint_002(ser)

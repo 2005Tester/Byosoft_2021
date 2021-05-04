@@ -54,10 +54,10 @@ def clearCMOS(ssh):
     ret_confirm = 'successfully'
     cmds = [cmd_clearcoms, cmd_confirm]
     rets = [ret_clearcmos, ret_confirm]
-    if PowerLib.is_power_off(ssh):
+    if PowerLib.is_power_off():
         pass
     else:
-        if PowerLib.power_off(ssh):
+        if PowerLib.power_off():
             time.sleep(30)  # wait for 30s due to if in OS
             pass
 
@@ -129,7 +129,7 @@ def toBIOSConf(serial):
 
 # to BIOS with power action, for restore test Env,
 def toBIOS(serial, ssh, pwd=SutConfig.BIOS_PASSWORD):
-    if not PowerLib.force_reset(ssh):
+    if not PowerLib.force_reset():
         logging.info("Rebooting SUT Failed.")
         return
     logging.info("Booting to setup")
@@ -181,10 +181,10 @@ def toBIOSnp(serial, pwd=SutConfig.BIOS_PASSWORD):
     return True
 
 
-def dcCycle(ssh):
-    if not SetUpLib.boot_to_setup(ssh):
+def dcCycle():
+    if not SetUpLib.boot_to_setup():
         return
-    if not PowerLib.force_power_cycle(ssh):
+    if not PowerLib.force_power_cycle():
         return
     logging.info("Booting to setup")
     if not SetUpLib.continue_to_setup():
@@ -208,18 +208,6 @@ def verify_setup_options_down(serial, setup_options, try_count):
         return True
 
 
-# updated by arthur, press Delete - common def, not test cases
-def pressDel(serial, ssh):
-    if not PowerLib.force_reset(ssh):
-        return
-    if not serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=300):
-        return
-    serial.send_keys(Key.DEL)
-    if not serial.waitString(SutConfig.press_f2, timeout=60):
-        return
-    return True
-
-
 def pressDelnp(serial):
     if not serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=300):
         return
@@ -229,22 +217,9 @@ def pressDelnp(serial):
     return True
 
 
-def pressF12(serial, ssh):
-    if not PowerLib.force_reset(ssh):
-        return
-    if not serial.waitString(Msg.HOTKEY_PROMPT_F12, timeout=300):
-        return
-    serial.send_keys(Key.F12)
-    if not serial.waitString(SutConfig.press_f2, timeout=60):
-        return
-    serial.send_data(SutConfig.BIOS_PASSWORD)
-    serial.send_data(chr(0x0D))  # Send Enter
-    return True
-
-
-def reset_default(serial, ssh):
+def reset_default(serial):
     logging.info("Reset BIOS to dafault by F9")
-    if not SetUpLib.boot_to_bios_config(ssh):
+    if not SetUpLib.boot_to_bios_config():
         return
     SerialLib.send_keys_with_delay(serial, Key.RESET_DEFAULT)
     if not SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE):

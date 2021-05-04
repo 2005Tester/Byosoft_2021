@@ -13,10 +13,10 @@ from Report import ReportGen
 ##########################################
 
 # Testcase_RRQIRQ_001
-def rrqirq(serial, ssh):
+def rrqirq(serial):
     tc = ('101', 'Testcase_RRQIRQ_001', 'Setup菜单RRQ和IRQ选项默认值测试')
     result = ReportGen.LogHeaderResult(tc, serial)
-    if not SetUpLib.boot_to_page(ssh, Msg.PAGE_ADVANCED):
+    if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED):
         result.log_fail()
         return
     msg = 'Uncore Status'
@@ -49,11 +49,11 @@ def rrqirq(serial, ssh):
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: NA
-def pcie_port_bandwidth_check(serial, ssh_bmc):
+def pcie_port_bandwidth_check(serial):
     tc = ('102', '[TC102] Testcase_PCIeInit_001', 'PCIe带宽默认值测试')
     result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
     try:
-        assert SetUpLib.boot_to_page(ssh_bmc, Msg.PAGE_ADVANCED)
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_IIO_CONFIG, 15, Msg.IIO_CONFIG)
         for cpu in range(SysCfg.CPU_CNT):  # loop cpu
             cpu_menu = f"CPU {cpu + 1} Configuration"

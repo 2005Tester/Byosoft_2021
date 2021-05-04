@@ -91,7 +91,7 @@ def upload_bios(src):
 def hpm_update(ssh_bmc, hpm_name="bios.hpm"):
     cmd_hpmupdate = 'ipmcset -d upgrade -v /tmp/{}\n'.format(hpm_name)
     rtn_flash_done = 'successfully'
-    PowerLib.power_off(ssh_bmc)
+    PowerLib.power_off()
     logging.info('Start to flash hpm image')
     if SshLib.interaction_time_limit(ssh=ssh_bmc, cmd_list=cmd_hpmupdate, rtn_list=rtn_flash_done, timeout=600):
         logging.info("HPM BIOS flash successfully")
@@ -144,7 +144,7 @@ def update_specific_img(bios, serial, ssh_bmc):
         return
     if not serial.is_boot_success():
         return
-    if not SetUpLib.update_default_password(serial, ssh_bmc):
+    if not SetUpLib.update_default_password():
         return
     time.sleep(15)
     return True
@@ -158,7 +158,7 @@ def update_bios(serial, ssh_bmc, sftp_bmc, bios_img):
         return
     if not program_flash(ssh_bmc):
         return
-    if not PowerLib.power_on(ssh_bmc):
+    if not PowerLib.power_on():
         return
     if not SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE):
         return
@@ -187,7 +187,7 @@ def flash_local_hpm(serial, ssh_bmc, sftp_bmc, img_file):
         return
     if not hpm_update(ssh_bmc=ssh_bmc, hpm_name=hpm_name):
         return
-    if not PowerLib.power_on(ssh_bmc):
+    if not PowerLib.power_on():
         return
     if not SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL, delay=600):
         return

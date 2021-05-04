@@ -16,11 +16,11 @@ from Report import ReportGen
 # Precondition: NA
 # OnStart: NA
 # OnComplete: Setup Uncore status page
-def upi_link_status(serial, ssh):
+def upi_link_status(serial):
     tc = ('200', '[TC200]UPI link链路检测测试', 'CPU兼容性测试')
     result = ReportGen.LogHeaderResult(tc, serial)
 
-    if not SetUpLib.boot_to_page(ssh, Msg.PAGE_ADVANCED):
+    if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED):
         result.log_fail()
         return
 
@@ -39,11 +39,11 @@ def upi_link_status(serial, ssh):
 # Precondition: NA
 # OnStart: NA
 # OnComplete: Setup P-State control page
-def ufs_default_value(serial, ssh):
+def ufs_default_value(serial):
     tc = ('201', '[TC201]Testcase_UFS_001', 'UFS默认值测试')
     result = ReportGen.LogHeaderResult(tc, serial)
 
-    if not SetUpLib.boot_to_page(ssh, Msg.PAGE_ADVANCED):
+    if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED):
         result.log_fail()
         return
 
@@ -70,12 +70,12 @@ def ufs_default_value(serial, ssh):
 # Precondition: NA
 # OnStart: NA
 # OnComplete: Setup Advanced power management page
-def static_turbo_default(serial, ssh):
+def static_turbo_default(serial):
     tc = ('202', '[TC202]Testcase_Static_Turbo_001', '静态Turbo默认值测试')
     result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
     static_turbo_default = ['Static Turbo', '<Disabled>']
     try:
-        assert SetUpLib.boot_to_page(ssh, Msg.PAGE_ADVANCED)
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_ADV_PM_CFG, 20, Msg.ADV_POWER_MGF_CONFIG)
         assert SetUpLib.locate_option(Key.DOWN, static_turbo_default, 10)
         SerialLib.send_key(serial, Key.ENTER)
@@ -90,11 +90,11 @@ def static_turbo_default(serial, ssh):
 # Precondition: NA
 # OnStart: NA
 # OnComplete: Setup Memory Topology Page
-def cpu_mem_info(serial, ssh):
+def cpu_mem_info(serial):
     tc = ('203', '[TC203]CPU Memory Information', 'Verify CPU and Memory Information')
     result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
     try:
-        assert SetUpLib.boot_to_page(ssh, Msg.PAGE_ADVANCED)
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PER_CPU_INFO, 20, 'BSP Revision')
         logging.info("**Verify CPU Information**")
         assert SetUpLib.verify_info(SutConfig.CPU_info, 20)
@@ -112,13 +112,13 @@ def cpu_mem_info(serial, ssh):
 # Precondition: NA
 # OnStart: NA
 # OnComplete: Processor Configuration Page
-def cpu_cores_active(serial, ssh):
+def cpu_cores_active(serial):
     tc = ('204', '[204]Testcase_CoreDisable_001', 'CPU Active Processor Cores information')
     result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
     ACT_CPU_CORES = ['Active Processor Cores', '<All>']
     list_info = ['All', '27', '26', '25', '24', '23', '22', '21', '20', '19', '18', '17', '16', '15', '14', '13', '12', '11', '10', '9', '8', '7', '6', '5', '4', '3', '2', '1']
     try:
-        assert SetUpLib.boot_to_page(ssh, Msg.PAGE_ADVANCED)
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.ACT_CPU_CORES)
         assert SetUpLib.locate_option(Key.DOWN, ACT_CPU_CORES, 20)
         SerialLib.send_key(serial, Key.ENTER)
@@ -136,10 +136,10 @@ def cpu_cores_active(serial, ssh):
 # OnComplete: suse Page
 
 #  function Module
-def cpu_cores_active_enable(serial, ssh, ssh_os,num, set_n):
+def cpu_cores_active_enable(serial, ssh_os, num, set_n):
     ACT_CPU_CORES = ['Active Processor Cores', '<All>']
     try:
-        assert SetUpLib.boot_to_page(ssh, Msg.PAGE_ADVANCED)
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.ACT_CPU_CORES)
         assert SetUpLib.locate_option(Key.DOWN, ACT_CPU_CORES, 20)
         SerialLib.send_keys_with_delay(serial, [Key.F6]*set_n)
@@ -147,13 +147,13 @@ def cpu_cores_active_enable(serial, ssh, ssh_os,num, set_n):
         SerialLib.send_keys_with_delay(serial, [Key.F10, Key.Y], 5)
         logging.info("**reboot**")
         assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
-        # assert SetUpLib.boot_to_page(ssh, Msg.PAGE_ADVANCED)
+        # assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         SerialLib.send_keys_with_delay(serial, Key.ENTER)
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.MEMORY_TOP], 20, 'DIMM000')
         logging.info("**Verify Memory Information**")
         assert SetUpLib.verify_info(SutConfig.DIMM_info, 20)
         ### boot suse
-        assert SetUpLib.boot_with_hotkey(ssh, Key.F11, "Boot Manager Menu", 300)
+        assert SetUpLib.boot_with_hotkey(Key.F11, "Boot Manager Menu", 300)
         assert SetUpLib.enter_menu(Key.DOWN, ["SUSE Linux Enterprise\(LUN0\)"], 20, "Welcome to GRUB")
         assert SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE, 170)
         logging.info("Suse_OS Boot Successful")
@@ -204,7 +204,7 @@ def cpu_cores_active_enable_1(serial, ssh, ssh_os):
     try:
         num = 1
         set_n = 28
-        assert cpu_cores_active_enable(serial, ssh, ssh_os, num, set_n)
+        assert cpu_cores_active_enable(serial, ssh_os, num, set_n)
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
@@ -216,7 +216,7 @@ def cpu_cores_active_enable_middle(serial, ssh, ssh_os):
     try:
         num = 14
         set_n = 14
-        assert cpu_cores_active_enable(serial, ssh, ssh_os, num, set_n)
+        assert cpu_cores_active_enable(serial, ssh_os, num, set_n)
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
@@ -228,7 +228,7 @@ def cpu_cores_active_enable_max(serial, ssh, ssh_os):
     try:
         num = 27
         set_n = 1
-        assert cpu_cores_active_enable(serial, ssh, ssh_os, num, set_n)
+        assert cpu_cores_active_enable(serial, ssh_os, num, set_n)
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)

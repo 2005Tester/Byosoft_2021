@@ -21,10 +21,10 @@ P = LogAnalyzer(SutConfig.LOG_DIR)
 
 
 # POST, Boot, Setup, OS Installation, PM, Device, Chipsec Test and Source code cons.
-def POST_Test(serial, ssh):  # POST: POST Log(TBD) and Information Check
+def POST_Test(serial):  # POST: POST Log(TBD) and Information Check
     tc = ('002', 'POST Information Test', 'POST Information Test')
     result = ReportGen.LogHeaderResult(tc, serial)
-    if not PowerLib.force_reset(ssh):
+    if not PowerLib.force_reset():
         result.log_fail()
         return
     msg_list = [Msg.HOTKEY_PROMPT_DEL, Msg.HOTKEY_PROMPT_F11, Msg.HOTKEY_PROMPT_F12, Msg.HOTKEY_PROMPT_F6]
@@ -36,11 +36,11 @@ def POST_Test(serial, ssh):  # POST: POST Log(TBD) and Information Check
 
 
 # PM: Warm reset n times, Cold reset n times and AC (TBD)
-def PM(serial, ssh, n=5):
+def PM(serial, n=5):
     tc = ('003', '[TC003]Power Control Test', 'Power Control Test')
     result = ReportGen.LogHeaderResult(tc, serial)
     res_lst = []
-    if not SetUpLib.boot_to_bios_config(ssh):
+    if not SetUpLib.boot_to_bios_config():
         result.log_fail()
         return
     logging.info("Warm reset loops: {0}".format(n))
@@ -49,7 +49,7 @@ def PM(serial, ssh, n=5):
             logging.info("Warm reset cycle: {0}".format(i + 1))
             SerialLib.send_key(serial, Key.CTRL_ALT_DELETE)
             logging.debug("Ctrl + Alt + Del key sent")
-            if not SetUpLib.boot_to_bios_config(ssh):
+            if not SetUpLib.boot_to_bios_config():
                 logging.info("Warm reset Test:Fail")
                 flag_reset = 1
                 res_lst.append(flag_reset)
@@ -63,7 +63,7 @@ def PM(serial, ssh, n=5):
     for j in range(n):
         try:
             logging.info("DC reset cycle: {0}".format(j + 1))
-            if not icx2pAPI.dcCycle(ssh):
+            if not icx2pAPI.dcCycle():
                 logging.info("DC cycle Test:Fail")
                 flag_dc = 2
                 res_lst.append(flag_dc)
@@ -85,10 +85,7 @@ def pxeTest(serial, ssh, n=1):
     tc = ('004', 'PXE Test', 'PXE Test')
     result = ReportGen.LogHeaderResult(tc, serial)
     for i in range(n):
-        if not icx2pAPI.pressF12(serial, ssh):
-            result.log_fail()
-            return
-        if not serial.waitString('NBP file downloaded successfully', timeout=60):
+        if not SetUpLib.boot_with_hotkey(Key.F12, 'NBP file downloaded successfully', 180):
             result.log_fail()
             return
     result.log_pass()
@@ -122,10 +119,10 @@ def usbTest(serial, ssh):
 
 
 # press F2
-def pressF2(serial, ssh):
+def pressF2(serial):
     tc = ('009', 'Setup菜单用户输入界面按F2切换键盘制式', '支持热键配置')
     result = ReportGen.LogHeaderResult(tc, serial)
-    if not PowerLib.force_reset(ssh):
+    if not PowerLib.force_reset():
         result.log_fail()
         return
     if not serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=300):
@@ -166,7 +163,7 @@ def loadDefault(serial, ssh):
     boot_fail_policy_2 = ["Boot Fail Policy", "<Cold Boot>"]
     default_options = [boot_fail_policy, pxe_boot]
     changed_options = [boot_fail_policy_2, pxe_boot_2]
-    if not SetUpLib.boot_to_page(ssh, Msg.PAGE_BOOT):
+    if not SetUpLib.boot_to_page(Msg.PAGE_BOOT):
         result.log_fail(capture=True)
         return
 
@@ -191,7 +188,7 @@ def loadDefault(serial, ssh):
     time.sleep(15)
 
     # Verify modified options
-    if not SetUpLib.boot_to_page(ssh, Msg.PAGE_BOOT):
+    if not SetUpLib.boot_to_page(Msg.PAGE_BOOT):
         result.log_fail(capture=True)
         return
     result.capture_screen()
@@ -206,7 +203,7 @@ def loadDefault(serial, ssh):
     time.sleep(15)
 
     # Verify whether options are reset to default
-    if not SetUpLib.boot_to_page(ssh, Msg.PAGE_BOOT):
+    if not SetUpLib.boot_to_page(Msg.PAGE_BOOT):
         result.log_fail(capture=True)
         return
     result.capture_screen()
@@ -238,7 +235,7 @@ def dram_rapl_option_check(serial, ssh):
     os.system('pause')
     """
 
-    if not SetUpLib.boot_to_page(ssh, Msg.PAGE_ADVANCED):
+    if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED):
         result.log_fail()
         return
 
@@ -266,7 +263,7 @@ def cnd_default_enable(serial, ssh):
     result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
     cdn_status = ['Network CDN', '<Enabled>']
     try:
-        assert SetUpLib.boot_to_page(ssh, Msg.PAGE_ADVANCED)
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.MISC_CONFIG], 20, 'Miscellaneous')
         assert SetUpLib.verify_options(Key.DOWN, [cdn_status], 12)
         result.log_pass()
@@ -276,12 +273,12 @@ def cnd_default_enable(serial, ssh):
 
 
 # Testcase_SecurityBoot_001
-def securityBoot(serial, ssh):
+def securityBoot(serial):
     tc = ('023', 'Secure Boot默认值', 'Secure Boot默认值')
     result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
     keys_secure_boot = [Key.RIGHT, Key.DOWN, Key.ENTER]
     secureboot_disable = ['Current Secure Boot State\s+Disabled']
-    if not SetUpLib.boot_to_setup(ssh):
+    if not SetUpLib.boot_to_setup():
         result.log_fail(capture=True)
         return
     logging.info("Enter secure boot configuration.")
@@ -295,10 +292,10 @@ def securityBoot(serial, ssh):
 
 
 # Testcase_VTD_002
-def vtd(serial, ssh):
+def vtd(serial):
     tc = ('025', 'Testcase_VTD_002', '关闭VT-d功能启动测试')
     result = ReportGen.LogHeaderResult(tc, serial)
-    if not SetUpLib.boot_to_page(ssh, Msg.PAGE_ADVANCED):
+    if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED):
         result.log_fail()
         return
     vt_d_menu = ["Virtualization Configuration", "Intel\(R\) VT for Directed I/O \(VT-d\)"]
@@ -340,7 +337,7 @@ def Testcase_SerialPrint_001(serial, ssh_bmc):
     pcie_lnk = r"PCIE LINK STATUS:"
 
     def check_process(timeout):
-        assert PowerLib.force_reset(ssh_bmc)
+        assert PowerLib.force_reset()
         # CPU Resource Allocation
         cpu_log = SerialLib.cut_log(serial, "CPU Resource Allocation", "START_SOCKET_0_DIMMINFO_TABLE", 100, timeout, 5)
         logging.debug(cpu_log)
@@ -375,13 +372,13 @@ def Testcase_SerialPrint_001(serial, ssh_bmc):
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: NA
-def Testcase_SerialPrint_002(serial, ssh_bmc):
+def Testcase_SerialPrint_002(serial):
     tc = ('027', '[TC027]Testcase_SerialPrint_003', 'BIOS启动阶段串口报错检查')
     result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
     error_msg = ["error", "fail", "assert", "exception"]
     ignore_list = ["IdFromBmc Fail,Status: Device Error"]
     try:
-        assert PowerLib.force_reset(ssh_bmc)
+        assert PowerLib.force_reset()
         ser_log = SerialLib.cut_log(serial, "BIOS Log @", Msg.BIOS_BOOT_COMPLETE, 120, 120, 3)
         for line in ser_log.split("\n"):
             for err in error_msg:

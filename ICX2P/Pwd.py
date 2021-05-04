@@ -101,7 +101,8 @@ def change_password_negtive(serial, old_password, new_password):
 
 # after set password, checkin password
 def checkPWD(serial, pwd1, pwd2):
-    if not icx2pAPI.pressDelnp(serial):
+    if not SetUpLib.continue_to_pw_prompt(Key.DEL):
+#    if not icx2pAPI.pressDelnp(serial):
         return
     SetUpLib.send_keys(pwd2)
     logging.info("check_password_2")
@@ -146,7 +147,7 @@ def restore_env(serial, ssh_bmc, log_dir):
 def reset_password_by_unipwd(serial, ssh_bmc, ssh_os):
     icx2pAPI.clearCMOS(ssh_bmc)
     logging.info("Modify PWD to SutConfig.BIOS_PW by unipwd tool")
-    if not PowerLib.force_reset(ssh_bmc):
+    if not PowerLib.force_reset():
         logging.info("Boot to boot manager fail.")
         return restore_env(serial, ssh_bmc, log_dir)
     if not icx2pAPI.ping_sut():
@@ -432,7 +433,8 @@ def Simple_password_save_disable(serial, ssh, ssh_os):
         result.log_fail()
         return
     SetUpLib.send_key(Key.CTRL_ALT_DELETE)
-    if not icx2pAPI.pressDelnp(serial):
+    if not SetUpLib.continue_to_pw_prompt(Key.DEL):
+#    if not icx2pAPI.pressDelnp(serial):
         return
     SetUpLib.send_keys("")
     SetUpLib.send_key(Key.ENTER)
@@ -450,7 +452,8 @@ def Simple_password_save_disable(serial, ssh, ssh_os):
         return
     SetUpLib.send_key(Key.ENTER)
     SetUpLib.send_key(Key.CTRL_ALT_DELETE)
-    if not icx2pAPI.pressDelnp(serial):
+    if not SetUpLib.continue_to_pw_prompt(Key.DEL):
+#    if not icx2pAPI.pressDelnp(serial):
         return
     SetUpLib.send_keys('11111111')
     SetUpLib.send_key(Key.ENTER)
@@ -680,13 +683,13 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             return False
         result.log_pass()
 
-    def Testcase_BiosPasswordSecurity_011_012_014(self, serial, ssh):
+    def Testcase_BiosPasswordSecurity_011_012_014(self, serial):
         tc = (
         '045', 'Testcase_BiosPasswordSecurity_011,012,014', '输入错误密码次3次内，提示报错，并可以再次输入测试；输错3次后不允许再输入密码测试；输入错误密码超出阈值测试')
         result = ReportGen.LogHeaderResult(tc, serial)
         pwd_error = ['Admin@7890', 'Ad@90', '555555']
         try:
-            self.assertTrue(PowerLib.force_reset(ssh))
+            self.assertTrue(PowerLib.force_reset())
             logging.info("Booting to setup")
             self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
             SetUpLib.send_key(Key.DEL)
@@ -719,7 +722,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         result = ReportGen.LogHeaderResult(tc, serial)
         pwd_error = ['Admin@9876', 'Da@89', SutConfig.BIOS_PASSWORD]
         try:
-            self.assertTrue(PowerLib.force_reset(ssh))
+            self.assertTrue(PowerLib.force_reset())
             logging.info("Booting to setup")
             self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
             SetUpLib.send_key(Key.DEL)
@@ -754,7 +757,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         result = ReportGen.LogHeaderResult(tc, serial)
         pwd_error = ['Admin@3456', 'Qa@12', '222222']
         try:
-            self.assertTrue(PowerLib.force_reset(ssh))
+            self.assertTrue(PowerLib.force_reset())
             logging.info("Booting to setup")
             self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
             SetUpLib.send_key(Key.DEL)
@@ -785,11 +788,11 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
             return False
         result.log_pass()
 
-    def Testcase_BiosPasswordSecurity_016_017(self, serial, ssh):
+    def Testcase_BiosPasswordSecurity_016_017(self, serial):
         tc = ('048', 'Testcase_BiosPasswordSecurity_016', '密码不能明文显示_不显示或用*代替字符测试;任意密码不显示或用*代替字符测试')
         result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
         try:
-            self.assertTrue(PowerLib.force_reset(ssh))
+            self.assertTrue(PowerLib.force_reset())
             logging.info("Booting to setup")
             self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
             SetUpLib.send_key(Key.DEL)
@@ -939,14 +942,14 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
 # 02 认证管理
 class PWD_AUTH_MANAGERMENT(unittest.TestCase):
 
-    def pwd_auth_mgt_01(self, serial, ssh):
+    def pwd_auth_mgt_01(self, serial):
         tc = ('053', '[TC053]Testcase_AuthenticationManagement_001', '热键页面遍历热键，检查进入Setup菜单是否需要输入密码')
         result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
         hot_key = [Key.DEL, Key.F11, Key.F12, Key.F6]
         try:
             for hk in hot_key:
                 logging.info("Testing with hotkey: {0}".format(hk))
-                self.assertTrue(PowerLib.force_reset(ssh))
+                self.assertTrue(PowerLib.force_reset())
                 self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
                 logging.info("Rebooting SUT")
                 try:
@@ -979,7 +982,7 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
         result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
         pwd_error = ['Admin@3456', 'Pw@99', '666666']
         try:
-            self.assertTrue(PowerLib.force_reset(ssh))
+            self.assertTrue(PowerLib.force_reset())
             logging.info("Booting to setup")
             self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
             SetUpLib.send_key(Key.DEL)
@@ -1059,11 +1062,11 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
             return False
         result.log_pass()
 
-    def pwd_auth_mgt_09(self, serial, ssh):
+    def pwd_auth_mgt_09(self, serial):
         tc = ('056', '[TC056]Testcase_AuthenticationManagement_009', '禁止提示有助攻击者猜解系统口令的信息,输入错误的登录密码,仅提示密码错误')
         result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
         try:
-            self.assertTrue(PowerLib.force_reset(ssh))
+            self.assertTrue(PowerLib.force_reset())
             logging.info("Booting to setup")
             self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
             serial.send_keys(Key.DEL)
@@ -1099,14 +1102,14 @@ def Pwd_test(ser, ssh_bmc, ssh_os):
     PBPWS.Testcase_BiosPasswordSecurity_008(ser, ssh_bmc, ssh_os)
     PBPWS.Testcase_BiosPasswordSecurity_009(ser, ssh_bmc, ssh_os)
     PBPWS.Testcase_BiosPasswordSecurity_010(ser, ssh_bmc, ssh_os)
-    PBPWS.Testcase_BiosPasswordSecurity_011_012_014(ser, ssh_bmc)
+    PBPWS.Testcase_BiosPasswordSecurity_011_012_014(ser)
     PBPWS.Testcase_BiosPasswordSecurity_013(ser, ssh_bmc, ssh_os)
     PBPWS.Testcase_BiosPasswordSecurity_014_015(ser, ssh_bmc)
-    PBPWS.Testcase_BiosPasswordSecurity_016_017(ser, ssh_bmc)
+    PBPWS.Testcase_BiosPasswordSecurity_016_017(ser)
     PBPWS.Testcase_BiosPasswordSecurity_020(ser, ssh_bmc)
     PBPWS.Testcase_BiosPasswordSecurity_022(ser, ssh_bmc, ssh_os)
     PBPWS.Testcase_BiosPasswordSecurity_025(ser, ssh_bmc, ssh_os)
-    PWDAUTHMGT.pwd_auth_mgt_01(ser, ssh_bmc)
+    PWDAUTHMGT.pwd_auth_mgt_01(ser)
     PWDAUTHMGT.pwd_auth_mgt_07(ser, ssh_bmc, ssh_os)
     PWDAUTHMGT.pwd_auth_mgt_08_10(ser, ssh_bmc, ssh_os)
-    PWDAUTHMGT.pwd_auth_mgt_09(ser, ssh_bmc)
+    PWDAUTHMGT.pwd_auth_mgt_09(ser)
