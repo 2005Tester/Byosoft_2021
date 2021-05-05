@@ -14,7 +14,7 @@ from Core import SerialLib
 from Core.SutInit import Sut
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg
-from ICX2P.BaseLib import PowerLib, SetUpLib
+from ICX2P.BaseLib import BmcLib, SetUpLib
 
 
 def dump_smbios(ssh, cmd='dmidecode'):
@@ -45,28 +45,6 @@ def ping_sut():
             # except Exception as e:
             #     print(e)
 
-
-# clear CMOS on BMC side
-def clearCMOS(ssh):
-    logging.info("Clear CMOS")
-    cmd_clearcoms = 'ipmcset -d clearcmos\n'
-    ret_clearcmos = 'Do you want to continue'
-    cmd_confirm = 'Y\n'
-    ret_confirm = 'successfully'
-    cmds = [cmd_clearcoms, cmd_confirm]
-    rets = [ret_clearcmos, ret_confirm]
-    if PowerLib.is_power_off():
-        pass
-    else:
-        if PowerLib.power_off():
-            time.sleep(30)  # wait for 30s due to if in OS
-            pass
-
-    if ssh.login():
-        return ssh.interaction(cmds, rets)
-    else:
-        logging.error("HY5 Common TC: clear CMOS failed")
-        return
 
 
 # OS - capture time,
@@ -130,7 +108,7 @@ def toBIOSConf(serial):
 
 # to BIOS with power action, for restore test Env,
 def toBIOS(serial, ssh, pwd=SutConfig.BIOS_PASSWORD):
-    if not PowerLib.force_reset():
+    if not BmcLib.force_reset():
         logging.info("Rebooting SUT Failed.")
         return
     logging.info("Booting to setup")
@@ -185,7 +163,7 @@ def toBIOSnp(serial, pwd=SutConfig.BIOS_PASSWORD):
 def dcCycle():
     if not SetUpLib.boot_to_setup():
         return
-    if not PowerLib.force_power_cycle():
+    if not BmcLib.force_power_cycle():
         return
     logging.info("Booting to setup")
     if not SetUpLib.continue_to_setup():
@@ -217,18 +195,3 @@ def pressDelnp(serial):
         return
     return True
 
-
-# open/close debug message with bmc cmd
-def debug_message(ssh_bmc, enable=True):
-    value = 1 if enable else 2
-    cmd1 = f"ipmcset -t maintenance -d biosprint -v {value}\n"
-    rtn1 = 'Do you want to continue'
-    cmd2 = 'Y\n'
-    rtn2 = 'successfully'
-    if not ssh_bmc.login():
-        return
-    if not enable:
-        logging.info("[Serial Debug Message] -> Disabled")
-        return ssh_bmc.interaction([cmd1], [rtn2])
-    logging.info("[Serial Debug Message] -> Enabled")
-    return ssh_bmc.interaction([cmd1, cmd2], [rtn1, rtn2])

@@ -45,9 +45,9 @@ def TestScope():
     DIMM.DPM.dimm_power_mgt_07()
     Release.me_version_status()
     biosTest.loadDefault()
-    DIMM.Testcase_MemMargin_001(ser, ssh_bmc)
+    DIMM.Testcase_MemMargin_001(ser)
     Pch.usb_default_enable_check()
-    Pch.post_gpio_error_check(ser, ssh_bmc)
+    Pch.post_gpio_error_check(ser)
     if Legacy.enable_legacy_boot():
         Legacy.disable_legacy_boot()
 
@@ -56,7 +56,7 @@ def TestScope():
 def EquipScope():
     Release.equip_mode_version_check()
     Os.boot_to_suse_mfg()
-    Smbios.smbios_type128(ser, ssh_os, ssh_bmc, unitool)
+    Smbios.smbios_type128(ser, ssh_os, unitool)
 
 
 # Define test scope for daily test

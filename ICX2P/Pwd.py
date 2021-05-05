@@ -17,7 +17,7 @@ from Core import SerialLib, SshLib
 from Report import ReportGen
 from ICX2P.Config.PlatConfig import Key, Msg
 from ICX2P.Config import SutConfig
-from ICX2P.BaseLib import icx2pAPI, SetUpLib, Update, PowerLib
+from ICX2P.BaseLib import icx2pAPI, SetUpLib, Update, BmcLib
 
 # Test case ID: TC030-TC070
 
@@ -146,9 +146,9 @@ def restore_env(serial, ssh_bmc, log_dir):
 
 # 用于新密码机制，外部unipwd工具修改为Admin@909密码
 def reset_password_by_unipwd(serial, ssh_bmc, ssh_os):
-    icx2pAPI.clearCMOS(ssh_bmc)
+    BmcLib.clear_cmos()
     logging.info("Modify PWD to SutConfig.BIOS_PW by unipwd tool")
-    if not PowerLib.force_reset():
+    if not BmcLib.force_reset():
         logging.info("Boot to boot manager fail.")
         return restore_env(serial, ssh_bmc, log_dir)
     if not icx2pAPI.ping_sut():
@@ -690,7 +690,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         result = ReportGen.LogHeaderResult(tc)
         pwd_error = ['Admin@7890', 'Ad@90', '555555']
         try:
-            self.assertTrue(PowerLib.force_reset())
+            self.assertTrue(BmcLib.force_reset())
             logging.info("Booting to setup")
             self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
             SetUpLib.send_key(Key.DEL)
@@ -724,7 +724,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         pwd_error = ['Admin@9876', 'Da@89', SutConfig.BIOS_PASSWORD]
         try:
             self.assertTrue(SetUpLib.boot_to_pw_prompt(Key.DEL))
-#            self.assertTrue(PowerLib.force_reset())
+#            self.assertTrue(BmcLib.force_reset())
 #            logging.info("Booting to setup")
 #            self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
 #            SetUpLib.send_key(Key.DEL)
@@ -759,7 +759,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         result = ReportGen.LogHeaderResult(tc)
         pwd_error = ['Admin@3456', 'Qa@12', '222222']
         try:
-            self.assertTrue(PowerLib.force_reset())
+            self.assertTrue(BmcLib.force_reset())
             logging.info("Booting to setup")
             self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
             SetUpLib.send_key(Key.DEL)
@@ -794,7 +794,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         tc = ('048', 'Testcase_BiosPasswordSecurity_016', '密码不能明文显示_不显示或用*代替字符测试;任意密码不显示或用*代替字符测试')
         result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
         try:
-            self.assertTrue(PowerLib.force_reset())
+            self.assertTrue(BmcLib.force_reset())
             logging.info("Booting to setup")
             self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
             SetUpLib.send_key(Key.DEL)
@@ -951,7 +951,7 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
         try:
             for hk in hot_key:
                 logging.info("Testing with hotkey: {0}".format(hk))
-                self.assertTrue(PowerLib.force_reset())
+                self.assertTrue(BmcLib.force_reset())
                 self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
                 logging.info("Rebooting SUT")
                 try:
@@ -984,7 +984,7 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
         result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
         pwd_error = ['Admin@3456', 'Pw@99', '666666']
         try:
-            self.assertTrue(PowerLib.force_reset())
+            self.assertTrue(BmcLib.force_reset())
             logging.info("Booting to setup")
             self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
             SetUpLib.send_key(Key.DEL)
@@ -1068,7 +1068,7 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
         tc = ('056', '[TC056]Testcase_AuthenticationManagement_009', '禁止提示有助攻击者猜解系统口令的信息,输入错误的登录密码,仅提示密码错误')
         result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
         try:
-            self.assertTrue(PowerLib.force_reset())
+            self.assertTrue(BmcLib.force_reset())
             logging.info("Booting to setup")
             self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
             serial.send_keys(Key.DEL)

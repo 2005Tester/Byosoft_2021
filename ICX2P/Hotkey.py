@@ -4,7 +4,7 @@ from Core import SerialLib
 from Report import ReportGen
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg
-from ICX2P.BaseLib import SetUpLib, PowerLib
+from ICX2P.BaseLib import SetUpLib, BmcLib
 
 
 # Test case ID: TC800-850
@@ -25,7 +25,7 @@ def Testcase_SystemInfo_001(serial):
                   Msg.TOTAL_MEMORY]
     check_list_msg = [Msg.HOTKEY_PROMPT_DEL, Msg.HOTKEY_PROMPT_F6, Msg.HOTKEY_PROMPT_F11, Msg.HOTKEY_PROMPT_F12]
     try:
-        assert PowerLib.force_reset(), 'force_reset -> fail'
+        assert BmcLib.force_reset(), 'force_reset -> fail'
         # bug: if check_list does not exist by designed, will effect verification of the check_list_msg
         assert serial.waitStrings(check_list, timeout=120), 'info_verify -> fail'
         assert serial.waitStrings(check_list_msg, timeout=120), 'hotkey_info_verify -> fail'
@@ -62,7 +62,7 @@ def Testcase_SystemInfo_003(serial):
     tc = ('802', '[TC802] Testcase_SystemInfo_003', '03 按热键后屏幕底部显示提示信息测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
-        assert PowerLib.force_reset(), 'force_reset -> fail'
+        assert BmcLib.force_reset(), 'force_reset -> fail'
         assert SetUpLib.boot_with_hotkey(Key.DEL, Msg.HOTKEY_PROMPT_DEL, 300)
         SerialLib.send_key(serial, Key.CTRL_ALT_DELETE)
         assert SetUpLib.boot_to_bootmanager()

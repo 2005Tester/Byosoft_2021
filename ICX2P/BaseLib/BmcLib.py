@@ -1,4 +1,5 @@
 import logging
+import time
 from Core.SutInit import Sut
 
 
@@ -83,3 +84,42 @@ def force_power_cycle():
     else:
         logging.error("HY5 Common TC: force powercycle failed")
         return
+
+
+# clear CMOS by BMC command
+def clear_cmos():
+    logging.info("Clear CMOS")
+    cmd_clearcoms = 'ipmcset -d clearcmos\n'
+    ret_clearcmos = 'Do you want to continue'
+    cmd_confirm = 'Y\n'
+    ret_confirm = ''
+    cmds = [cmd_clearcoms, cmd_confirm]
+    rets = [ret_clearcmos, ret_confirm]
+    if is_power_off():
+        pass
+    else:
+        if power_off():
+            time.sleep(30)  # wait for 30s due to if in OS
+            pass
+
+    if Sut.BMC_SSH.login():
+        return Sut.BMC_SSH.interaction(cmds, rets)
+    else:
+        logging.error("BmcLib: clear CMOS failed by BMC command")
+        return
+
+
+# open/close debug message with bmc cmd
+def debug_message(enable=True):
+    value = 1 if enable else 2
+    cmd1 = f"ipmcset -t maintenance -d biosprint -v {value}\n"
+    rtn1 = 'Do you want to continue'
+    cmd2 = 'Y\n'
+    rtn2 = 'successfully'
+    if not Sut.BMC_SSH.login():
+        return
+    if not enable:
+        logging.info("[Serial Debug Message] -> Disabled")
+        return Sut.BMC_SSH.interaction([cmd1], [rtn2])
+    logging.info("[Serial Debug Message] -> Enabled")
+    return Sut.BMC_SSH.interaction([cmd1, cmd2], [rtn1, rtn2])

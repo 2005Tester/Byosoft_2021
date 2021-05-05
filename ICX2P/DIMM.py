@@ -8,7 +8,7 @@ from Report import ReportGen
 from ICX2P.Config import SutConfig
 from ICX2P.Config.SutConfig import SysCfg
 from ICX2P.Config.PlatConfig import Key, Msg, BiosCfg
-from ICX2P.BaseLib import SetUpLib, icx2pAPI, PowerLib
+from ICX2P.BaseLib import SetUpLib, icx2pAPI, BmcLib
 from Core import SerialLib, SshLib
 from ICX2P import Os
 
@@ -224,7 +224,7 @@ DPM = dimm_memPower()
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: NA
-def Testcase_MemMargin_001(serial, ssh_bmc):
+def Testcase_MemMargin_001(serial):
     tc = ('708', '[TC708] Testcase_MemMargin_001', '01 内存margin测试菜单选项测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
 
@@ -250,20 +250,20 @@ def Testcase_MemMargin_001(serial, ssh_bmc):
         assert SetUpLib.verify_options(Key.DOWN, [[BSSA_RMT_FAST, "<Enabled>"]], 15), "verify_options >> fail"
         logging.info(f"{BSSA_RMT_FAST} -> Enabled")
         # Serial Debug Message: Enable
-        assert icx2pAPI.debug_message(ssh_bmc, enable=True), "bmc_debug_message >> fail"
+        assert BmcLib.debug_message(enable=True), "bmc_debug_message >> fail"
         SetUpLib.send_keys([Key.F10, Key.Y])
         assert serial.waitStrings(SERIAL_RMT_FLAG, timeout=600), "waitStrings >> fail"
         # BIOS load default
-        icx2pAPI.debug_message(ssh_bmc, enable=False)
-        icx2pAPI.clearCMOS(ssh_bmc)
-        PowerLib.force_power_cycle()
+        BmcLib.debug_message(enable=False)
+        BmcLib.clear_cmos()
+        BmcLib.force_power_cycle()
         SerialLib.is_msg_present(Sut.BIOS_COM, Msg.HOTKEY_PROMPT_DEL)
         result.log_pass()
     except AssertionError as e:
         logging.error(e)
-        icx2pAPI.debug_message(ssh_bmc, enable=False)
-        icx2pAPI.clearCMOS(ssh_bmc)
-        PowerLib.force_power_cycle()
+        BmcLib.debug_message(enable=False)
+        BmcLib.clear_cmos()
+        BmcLib.force_power_cycle()
         SerialLib.is_msg_present(Sut.BIOS_COM, Msg.HOTKEY_PROMPT_DEL)
         result.log_fail()
 
@@ -374,19 +374,19 @@ def Testcase_MemoryCompa_009(serial, ssh_bmc, unitool):
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     logging.info("Change setup option to enable RMT")
     try:
-        assert PowerLib.force_reset()
+        assert BmcLib.force_reset()
         assert SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE)
         assert icx2pAPI.ping_sut()
         assert unitool.set_config(BiosCfg.MFG_RMT), "Change setup by unitool failed."
         logging.info("Reboot SUT to Linux")
-        assert PowerLib.force_reset()
+        assert BmcLib.force_reset()
         ser_rmt_data = SerialLib.cut_log(serial, "START_BSSA_RMT", "STOP_BSSA_RMT", 15, 600)
         assert ("Ctl+" in ser_rmt_data), "Invalid RMT data"
-        icx2pAPI.clearCMOS(ssh_bmc)
+        BmcLib.clear_cmos()
         result.log_pass()
     except AssertionError as e:
         logging.info(e)
-        icx2pAPI.clearCMOS(ssh_bmc)
+        BmcLib.clear_cmos()
         result.log_fail()
 
 
@@ -461,7 +461,7 @@ def Testcase_MTRR_002(serial, ssh_bmc, ssh_os):
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     flag = []
     try:
-        assert PowerLib.force_reset(), 'reset_system -> fail'
+        assert BmcLib.force_reset(), 'reset_system -> fail'
         assert not serial.waitString('0xa0300', timeout=60), 'find 0xa0300 string'
         assert Os.boot_to_suse(serial), "boot_to_os -> fail"
         assert icx2pAPI.ping_sut(), "ping_os_ip-> fail"

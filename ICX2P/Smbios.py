@@ -8,7 +8,7 @@ from Core import SerialLib, SshLib
 from Common.LogAnalyzer import LogAnalyzer
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import BiosCfg, Msg
-from ICX2P.BaseLib import PowerLib, icx2pAPI
+from ICX2P.BaseLib import BmcLib, icx2pAPI
 
 
 # Test case ID: 400-440, 527 reserved
@@ -159,17 +159,17 @@ def smbios_test_all(ssh):
 # Precondition: Linux配置好 unitool和rw工具, os ssh可访问
 # OnStart: 进入Linux系统
 # OnComplete: clearCMOS后正常启动
-def smbios_type128(serial, sshos, sshbmc, unitool):
+def smbios_type128(serial, sshos, unitool):
     tc = ('528', '[TC528]Testcase_MemMargin_002', '装备模式下内存margin测试, 检查Smbios Type128信息')
     result = ReportGen.LogHeaderResult(tc)
     logging.info("Change setup option to enable RMT")
     try:
-        assert PowerLib.force_reset()
+        assert BmcLib.force_reset()
         assert SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE)
         assert icx2pAPI.ping_sut()
         assert unitool.set_config(BiosCfg.MFG_RMT), "Change setup by unitool failed."
         logging.info("Reboot SUT to Linux")
-        assert PowerLib.force_reset()
+        assert BmcLib.force_reset()
         ser_rmt_data = SerialLib.cut_log(serial, "START_BSSA_RMT", "STOP_BSSA_RMT", duration=15, timeout=600)
         assert ser_rmt_data, "Invalid RMT data"
         logging.debug(ser_rmt_data)
@@ -179,9 +179,9 @@ def smbios_type128(serial, sshos, sshbmc, unitool):
         logging.debug(type128data)
         test = Type128Test(type128data, ser_rmt_data, sshos)
         assert test.run_test(), "SMBIOS Type128 test failed"
-        icx2pAPI.clearCMOS(sshbmc)
+        BmcLib.clear_cmos()
         result.log_pass()
     except AssertionError as e:
         logging.info(e)
-        icx2pAPI.clearCMOS(sshbmc)
+        BmcLib.clear_cmos()
         result.log_fail()

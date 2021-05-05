@@ -3,7 +3,7 @@ from Core import SerialLib
 from Core.SutInit import Sut
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg
-from ICX2P.BaseLib import PowerLib
+from ICX2P.BaseLib import BmcLib
 
 
 # Send a single key, e.g. ENTER, DOWN, UP
@@ -66,7 +66,7 @@ def locate_option(key, setupoption, try_counts):
 def boot_to_setup():
     logging.info("SetUpLib: Boot to setup main page")
     logging.info("SetUpLib: Rebooting SUT...")
-    if not PowerLib.force_reset():
+    if not BmcLib.force_reset():
         logging.info("SetUpLib: Rebooting SUT Failed.")
         return
     logging.info("SetUpLib: Booting to setup")
@@ -91,7 +91,7 @@ def boot_with_hotkey(key, msg, timeout):
     hotkey_prompt = Msg.HOTKEY_PROMPT_DEL
     pw_prompt = Msg.PW_PROMPT
     password = SutConfig.BIOS_PASSWORD
-    if not PowerLib.force_reset():
+    if not BmcLib.force_reset():
         return
     if not Sut.BIOS_COM.boot_with_hotkey(key, msg, timeout, hotkey_prompt, pw_prompt, password):
         return
@@ -124,7 +124,7 @@ def continue_to_pw_prompt(key):
 # boot to password prompt by a hotkey
 def boot_to_pw_prompt(key):
     logging.info("SetUpLib: Boot to password prompt by pressing: {0}".format(key))
-    if not PowerLib.force_reset():
+    if not BmcLib.force_reset():
         return
     return continue_to_pw_prompt(key)
 
@@ -292,7 +292,7 @@ def move_boot_option_up(boot_option, count):
 # Update default password, should be called after update bios
 def update_default_password():
     logging.info("Change BIOS password to non-default.")
-    if not PowerLib.force_reset():
+    if not BmcLib.force_reset():
         return
     if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.HOTKEY_PROMPT_DEL):
         return

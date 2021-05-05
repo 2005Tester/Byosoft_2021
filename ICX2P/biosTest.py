@@ -14,7 +14,7 @@ from Core.SutInit import Sut
 from ICX2P.Config.SutConfig import SUT_CONFIG, SysCfg
 from ICX2P.Config.PlatConfig import Msg, Key
 from ICX2P.Config import SutConfig
-from ICX2P.BaseLib import PowerLib, icx2pAPI, SetUpLib
+from ICX2P.BaseLib import BmcLib, icx2pAPI, SetUpLib
 from Report import ReportGen
 from Common.LogAnalyzer import LogAnalyzer
 
@@ -25,7 +25,7 @@ P = LogAnalyzer(SutConfig.LOG_DIR)
 def POST_Test(serial):  # POST: POST Log(TBD) and Information Check
     tc = ('002', 'POST Information Test', 'POST Information Test')
     result = ReportGen.LogHeaderResult(tc)
-    if not PowerLib.force_reset():
+    if not BmcLib.force_reset():
         result.log_fail()
         return
     msg_list = [Msg.HOTKEY_PROMPT_DEL, Msg.HOTKEY_PROMPT_F11, Msg.HOTKEY_PROMPT_F12, Msg.HOTKEY_PROMPT_F6]
@@ -120,7 +120,7 @@ def usbTest():
 def pressF2():
     tc = ('009', 'Setup菜单用户输入界面按F2切换键盘制式', '支持热键配置')
     result = ReportGen.LogHeaderResult(tc)
-    if not PowerLib.force_reset():
+    if not BmcLib.force_reset():
         result.log_fail()
         return
     if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.HOTKEY_PROMPT_DEL, 300):
@@ -327,7 +327,7 @@ def Testcase_SerialPrint_001(serial, ssh_bmc):
     pcie_lnk = r"PCIE LINK STATUS:"
 
     def check_process(timeout):
-        assert PowerLib.force_reset()
+        assert BmcLib.force_reset()
         # CPU Resource Allocation
         cpu_log = SerialLib.cut_log(serial, "CPU Resource Allocation", "START_SOCKET_0_DIMMINFO_TABLE", 100, timeout, 5)
         logging.debug(cpu_log)
@@ -347,10 +347,10 @@ def Testcase_SerialPrint_001(serial, ssh_bmc):
 
     try:
         # Open serial debug message
-        assert icx2pAPI.debug_message(ssh_bmc, True)
+        assert BmcLib.debug_message(True)
         assert check_process(timeout=600)
         # Close serial debug message
-        assert icx2pAPI.debug_message(ssh_bmc, False)
+        assert BmcLib.debug_message(False)
         assert check_process(timeout=200)
         result.log_pass()
     except AssertionError as e:
@@ -368,7 +368,7 @@ def Testcase_SerialPrint_002(serial):
     error_msg = ["error", "fail", "assert", "exception"]
     ignore_list = ["IdFromBmc Fail,Status: Device Error"]
     try:
-        assert PowerLib.force_reset()
+        assert BmcLib.force_reset()
         ser_log = SerialLib.cut_log(serial, "BIOS Log @", Msg.BIOS_BOOT_COMPLETE, 120, 120, 3)
         for line in ser_log.split("\n"):
             for err in error_msg:
