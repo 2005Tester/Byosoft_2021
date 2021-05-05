@@ -22,7 +22,7 @@ from Core import SerialLib
 # OnComplete: NA
 def post_gpio_error_check(serial, ssh_bmc):
     tc = ('600', '[TC600] Testcase_GPIO_002', '02 BIOS启动阶段GPIO初始化测试')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         assert icx2pAPI.debug_message(ssh_bmc, enable=True), "debug message enable fail"
         assert PowerLib.force_power_cycle(), "force_power_cycle fail"
@@ -45,9 +45,9 @@ def post_gpio_error_check(serial, ssh_bmc):
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: NA
-def usb_default_enable_check(serial):
+def usb_default_enable_check():
     tc = ('601', '[TC601] Testcase_USB_Port_001', '01 Setup菜单默认打开USB Port选项测试')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     rear_usb = rf"Rear USB Control(?:\s+<Enabled>\s+USB Physical Port\d+){{{SysCfg.REAR_USB_CNT}}}"
     buildin_usb = rf"Built-in USB Control(?:\s+<Enabled>\s+USB Physical Port\d+){{{SysCfg.BUILDIN_USB_CNT}}}"
     key_words = f"{rear_usb}.+{buildin_usb}"

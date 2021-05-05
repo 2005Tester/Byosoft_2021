@@ -14,6 +14,7 @@ import requests
 import glob
 import pyautogui
 import logging.config
+from Core.SutInit import Sut
 from json2html import *
 
 
@@ -27,9 +28,9 @@ class Progress:
 # tc: tuple of test case basic information, 0:id, 1:tittle, 2:description
 class LogHeaderResult:
     # write test case info to serial log and test log
-    def __init__(self, tc, serial=None, imgdir=None):
+    def __init__(self, tc, imgdir=None):
         self.tc = tc
-        self.serial = serial
+        self.serial = Sut.BIOS_COM
         self.imgdir = imgdir
         self.suffix = 1
         self.msg_start = '<TC{0}><Tittle>{1}:Start'.format(tc[0], tc[1])
@@ -41,9 +42,9 @@ class LogHeaderResult:
             if not os.path.isdir(imgdir):
                 os.makedirs(imgdir)
 
-        if serial:
+        if self.serial:
             self.msg_serial = '\n##### TC{0} {1} #####\n'.format(tc[0], tc[1])
-            serial.write_data2log(self.msg_serial)
+            self.serial.write_data2log(self.msg_serial)
         logging.info(self.msg_start)
         logging.info(self.msg_description)
 

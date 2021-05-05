@@ -11,6 +11,7 @@
 import logging
 import time
 import os
+from typing import Set
 import unittest
 from Core import SerialLib, SshLib
 from Report import ReportGen
@@ -174,7 +175,7 @@ def reset_password_by_unipwd(serial, ssh_bmc, ssh_os):
 
 def simplePWDTest(serial, ssh, ssh_os):
     tc = ('031', 'PasswordSecurity_01', ' 简易密码开关默认值测试，密码开关为初始状态')
-    result = ReportGen.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc)
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
         return
@@ -211,7 +212,7 @@ def simplePWDTest(serial, ssh, ssh_os):
 
 def Simple_password_validity(serial, ssh, ssh_os):
     tc = ('032', 'PasswordSecurity_02', '简易密码开关打开,修改密码为简易密码,简易密码有效性测试')
-    result = ReportGen.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc)
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
         return
@@ -249,7 +250,7 @@ def Simple_password_validity(serial, ssh, ssh_os):
 
 def Simple_password_disenable(serial, ssh, ssh_os):  # 异常待处理
     tc = ('033', 'PasswordSecurity_03', '设置简易密码并保存后，再次关闭简易密码开关测试')
-    result = ReportGen.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc)
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
         return
@@ -367,7 +368,7 @@ def Simple_password_disenable(serial, ssh, ssh_os):  # 异常待处理
 
 def Simple_password_save_enable(serial, ssh, ssh_os):
     tc = ('034', 'PasswordSecurity_04', '简易密码开关打开，设置简易密码后保存生效测试')
-    result = ReportGen.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc)
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
         return
@@ -410,7 +411,7 @@ def Simple_password_save_enable(serial, ssh, ssh_os):
 
 def Simple_password_save_disable(serial, ssh, ssh_os):
     tc = ('035', 'PasswordSecurity_05', '简易密码开关打开，设置简易密码后不保存退出')
-    result = ReportGen.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc)
     if not icx2pAPI.toBIOS(serial, ssh):
         result.log_fail()
         return
@@ -474,7 +475,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
 
     def Testcase_BiosPasswordSecurity_002(self, serial, ssh, ssh_os):
         tc = ('036', 'Testcase_BiosPasswordSecurity_002', '设置密码长度测试_密码长度小于最少字符数，修改失败测试')
-        result = ReportGen.LogHeaderResult(tc, serial)
+        result = ReportGen.LogHeaderResult(tc)
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
@@ -492,7 +493,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
 
     def Testcase_BiosPasswordSecurity_003(self, serial, ssh, ssh_os):
         tc = ('037', 'Testcase_BiosPasswordSecurity_003', '设置密码长度度测试_密码长度等于最少字符数，修改成功测试')
-        result = ReportGen.LogHeaderResult(tc, serial)
+        result = ReportGen.LogHeaderResult(tc)
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
@@ -511,7 +512,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
 
     def Testcase_BiosPasswordSecurity_004(self, serial, ssh, ssh_os):
         tc = ('038', 'Testcase_BiosPasswordSecurity_004', '设置密码长度测试_密码长度大于最少字符数，小于最大字符数，修改成功测试')
-        result = ReportGen.LogHeaderResult(tc, serial)
+        result = ReportGen.LogHeaderResult(tc)
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
@@ -532,7 +533,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         tc = (
             '039', 'Testcase_BiosPasswordSecurity_005_019_021',
             '设置密码长度度测试_密码长度最大字符数，修改成功测试；密码修改时要验证旧密码测试；新密码需要再次输入确认测试')
-        result = ReportGen.LogHeaderResult(tc, serial)
+        result = ReportGen.LogHeaderResult(tc)
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
@@ -551,7 +552,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
 
     def Testcase_BiosPasswordSecurity_006(self, serial, ssh, ssh_os):
         tc = ('040', 'Testcase_BiosPasswordSecurity_006', '设置密码长度测试_密码长度超出最大字符数,修改失败测试')
-        result = ReportGen.LogHeaderResult(tc, serial)
+        result = ReportGen.LogHeaderResult(tc)
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
@@ -579,7 +580,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
 
     def Testcase_BiosPasswordSecurity_007(self, serial, ssh, ssh_os):
         tc = ('041', 'Testcase_BiosPasswordSecurity_007', '设置密码字符类型测试_只有1种字符类型密码测试')
-        result = ReportGen.LogHeaderResult(tc, serial)
+        result = ReportGen.LogHeaderResult(tc)
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
@@ -599,7 +600,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
 
     def Testcase_BiosPasswordSecurity_008(self, serial, ssh, ssh_os):
         tc = ('042', 'Testcase_BiosPasswordSecurity_008', '设置密码字符类型测试_2种字符类型密码测试')
-        result = ReportGen.LogHeaderResult(tc, serial)
+        result = ReportGen.LogHeaderResult(tc)
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
@@ -619,7 +620,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
 
     def Testcase_BiosPasswordSecurity_009(self, serial, ssh, ssh_os):
         tc = ('043', 'Testcase_BiosPasswordSecurity_009', '设置密码字符类型测试_3种字符类型密码测试')
-        result = ReportGen.LogHeaderResult(tc, serial)
+        result = ReportGen.LogHeaderResult(tc)
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             k = 0
@@ -666,7 +667,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
 
     def Testcase_BiosPasswordSecurity_010(self, serial, ssh, ssh_os):
         tc = ('044', 'Testcase_BiosPasswordSecurity_010', '设置密码字符类型测试_4种字符类型密码')
-        result = ReportGen.LogHeaderResult(tc, serial)
+        result = ReportGen.LogHeaderResult(tc)
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
@@ -686,7 +687,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
     def Testcase_BiosPasswordSecurity_011_012_014(self, serial):
         tc = (
         '045', 'Testcase_BiosPasswordSecurity_011,012,014', '输入错误密码次3次内，提示报错，并可以再次输入测试；输错3次后不允许再输入密码测试；输入错误密码超出阈值测试')
-        result = ReportGen.LogHeaderResult(tc, serial)
+        result = ReportGen.LogHeaderResult(tc)
         pwd_error = ['Admin@7890', 'Ad@90', '555555']
         try:
             self.assertTrue(PowerLib.force_reset())
@@ -718,16 +719,17 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         result.log_pass()
 
     def Testcase_BiosPasswordSecurity_013(self, serial, ssh, ssh_os):
-        tc = ('046', 'Testcase_BiosPasswordSecurity_013', '输入错误密码次数测试_阈值内连续输入错误密码后输入正确密码测试')
-        result = ReportGen.LogHeaderResult(tc, serial)
+        tc = ('046', '[TC046]BiosPasswordSecurity_013', '输入错误密码次数测试_阈值内连续输入错误密码后输入正确密码测试')
+        result = ReportGen.LogHeaderResult(tc)
         pwd_error = ['Admin@9876', 'Da@89', SutConfig.BIOS_PASSWORD]
         try:
-            self.assertTrue(PowerLib.force_reset())
-            logging.info("Booting to setup")
-            self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
-            SetUpLib.send_key(Key.DEL)
-            logging.info("Hot Key sent")
-            self.assertTrue(SerialLib.is_msg_present(serial, SutConfig.press_f2, 10))
+            self.assertTrue(SetUpLib.boot_to_pw_prompt(Key.DEL))
+#            self.assertTrue(PowerLib.force_reset())
+#            logging.info("Booting to setup")
+#            self.assertTrue(SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
+#            SetUpLib.send_key(Key.DEL)
+#            logging.info("Hot Key sent")
+#            self.assertTrue(SerialLib.is_msg_present(serial, SutConfig.press_f2, 10))
             for list_error in pwd_error:
                 try:
                     SerialLib.send_data(serial, list_error)
@@ -753,8 +755,8 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
         result.log_pass()
 
     def Testcase_BiosPasswordSecurity_014_015(self, serial, ssh):
-        tc = ('047', 'Testcase_BiosPasswordSecurity_014_015', '输入错误密码次数测试_超出阈值锁定输入界面，提示报错、并提示复位；超出阈值重启后不影响下一次登录')
-        result = ReportGen.LogHeaderResult(tc, serial)
+        tc = ('047', '[TC047]Testcase_BiosPasswordSecurity_014_015', '输入错误密码次数测试_超出阈值锁定输入界面，提示报错、并提示复位；超出阈值重启后不影响下一次登录')
+        result = ReportGen.LogHeaderResult(tc)
         pwd_error = ['Admin@3456', 'Qa@12', '222222']
         try:
             self.assertTrue(PowerLib.force_reset())
@@ -790,7 +792,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
 
     def Testcase_BiosPasswordSecurity_016_017(self, serial):
         tc = ('048', 'Testcase_BiosPasswordSecurity_016', '密码不能明文显示_不显示或用*代替字符测试;任意密码不显示或用*代替字符测试')
-        result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+        result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
         try:
             self.assertTrue(PowerLib.force_reset())
             logging.info("Booting to setup")
@@ -812,7 +814,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
 
     def Testcase_BiosPasswordSecurity_020(self, serial, ssh):
         tc = ('049', 'Testcase_BiosPasswordSecurity_020', '密码修改验证旧密码测试_输入错误旧密码，不能修改密码')
-        result = ReportGen.LogHeaderResult(tc, serial)
+        result = ReportGen.LogHeaderResult(tc)
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
@@ -833,7 +835,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
 
     def Testcase_BiosPasswordSecurity_022(self, serial, ssh, ssh_os):
         tc = ('050', 'Testcase_BiosPasswordSecurity_022', '密码修改验证新密码测试_新密码确认时，输入错误新密码，修改失败测试')
-        result = ReportGen.LogHeaderResult(tc, serial)
+        result = ReportGen.LogHeaderResult(tc)
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
@@ -864,7 +866,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
 
     def Testcase_BiosPasswordSecurity_025(self, serial, ssh, ssh_os):
         tc = ('051', 'Testcase_BiosPasswordSecurity_025', '历史密码5次范围内重复修改无效,超过5次后可以修改为5次前的密码测试')
-        result = ReportGen.LogHeaderResult(tc, serial)
+        result = ReportGen.LogHeaderResult(tc)
         times_pwd = ['Admin@9009', 'Admin@9010', 'Admin@9012', 'Admin@9013', 'Admin@9014', 'Admin@9009', 'Admin@9015']
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
@@ -916,7 +918,7 @@ class PWD_BiosPasswordSecurity(unittest.TestCase):
 
     def Testcase_BiosPasswordSecurity_028(self, serial, ssh, ssh_os):
         tc = ('052', 'Testcase_BiosPasswordSecurity_028', '开启OS引导时,弹出密码输入框,需要输入管理员密码测试')
-        result = ReportGen.LogHeaderResult(tc, serial)
+        result = ReportGen.LogHeaderResult(tc)
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
@@ -944,7 +946,7 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
 
     def pwd_auth_mgt_01(self, serial):
         tc = ('053', '[TC053]Testcase_AuthenticationManagement_001', '热键页面遍历热键，检查进入Setup菜单是否需要输入密码')
-        result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+        result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
         hot_key = [Key.DEL, Key.F11, Key.F12, Key.F6]
         try:
             for hk in hot_key:
@@ -967,7 +969,7 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
 
     def pwd_auth_mgt_07(self, serial, ssh, ssh_os):
         tc = ('054', '[TC054]Testcase_AuthenticationManagement_007', '禁止提供自动登录等特殊功能')
-        result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+        result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
         except AssertionError as err:
@@ -979,7 +981,7 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
     def pwd_auth_mgt_08_10(self, serial, ssh, ssh_os):
         tc = ('055', '[TC055]Testcase_AuthenticationManagement_008_010',
               '管理员登录密码大于16位字符无法输入,普通用户登录密码大于16位无法输入;修改管理员密码界面需要先输入旧密码，再输入两次新密码')
-        result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+        result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
         pwd_error = ['Admin@3456', 'Pw@99', '666666']
         try:
             self.assertTrue(PowerLib.force_reset())
@@ -1064,7 +1066,7 @@ class PWD_AUTH_MANAGERMENT(unittest.TestCase):
 
     def pwd_auth_mgt_09(self, serial):
         tc = ('056', '[TC056]Testcase_AuthenticationManagement_009', '禁止提示有助攻击者猜解系统口令的信息,输入错误的登录密码,仅提示密码错误')
-        result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+        result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
         try:
             self.assertTrue(PowerLib.force_reset())
             logging.info("Booting to setup")

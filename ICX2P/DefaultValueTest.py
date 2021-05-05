@@ -13,9 +13,9 @@ from Report import ReportGen
 ##########################################
 
 # Testcase_RRQIRQ_001
-def rrqirq(serial):
+def rrqirq():
     tc = ('101', 'Testcase_RRQIRQ_001', 'Setup菜单RRQ和IRQ选项默认值测试')
-    result = ReportGen.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc)
     if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED):
         result.log_fail()
         return
@@ -51,7 +51,7 @@ def rrqirq(serial):
 # OnComplete: NA
 def pcie_port_bandwidth_check(serial):
     tc = ('102', '[TC102] Testcase_PCIeInit_001', 'PCIe带宽默认值测试')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_IIO_CONFIG, 15, Msg.IIO_CONFIG)

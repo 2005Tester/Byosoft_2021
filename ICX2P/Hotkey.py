@@ -20,7 +20,7 @@ from ICX2P.BaseLib import SetUpLib, PowerLib
 # OnComplete: OS (BIOS boot completed)
 def Testcase_SystemInfo_001(serial):
     tc = ('800', '[TC800] Testcase_SystemInfo_003', '01 【UEFI模式】POST启动第一屏显示信息测试')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     check_list = [Msg.RC_VERSION, Msg.BIOS_REVISION, Msg.BIOS_DATE, Msg.iBMC_VERSION, Msg.iBMC_IP, Msg.CPU_TYPE,
                   Msg.TOTAL_MEMORY]
     check_list_msg = [Msg.HOTKEY_PROMPT_DEL, Msg.HOTKEY_PROMPT_F6, Msg.HOTKEY_PROMPT_F11, Msg.HOTKEY_PROMPT_F12]
@@ -40,7 +40,7 @@ def Testcase_SystemInfo_001(serial):
 # OnComplete: OS (BIOS boot completed)
 def Testcase_SystemInfo_002(serial):
     tc = ('801', '[TC801] Testcase_SystemInfo_003', '02 【Legacy模式】POST启动第一屏显示信息测试')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     check_list = [Msg.RC_VERSION, Msg.BIOS_REVISION, Msg.BIOS_DATE, Msg.iBMC_VERSION, Msg.iBMC_IP, Msg.CPU_TYPE,
                   Msg.TOTAL_MEMORY]
     check_list_msg = [Msg.HOTKEY_PROMPT_DEL, Msg.HOTKEY_PROMPT_F6, Msg.HOTKEY_PROMPT_F11, Msg.HOTKEY_PROMPT_F12]
@@ -60,7 +60,7 @@ def Testcase_SystemInfo_002(serial):
 # OnComplete: SP SETUP
 def Testcase_SystemInfo_003(serial):
     tc = ('802', '[TC802] Testcase_SystemInfo_003', '03 按热键后屏幕底部显示提示信息测试')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         assert PowerLib.force_reset(), 'force_reset -> fail'
         assert SetUpLib.boot_with_hotkey(Key.DEL, Msg.HOTKEY_PROMPT_DEL, 300)

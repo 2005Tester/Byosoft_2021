@@ -38,7 +38,7 @@ class dimm_memPower(unittest.TestCase):
 
     def dimm_power_mgt_01(self, serial, ssh):
         tc = ('700', 'Testcase_MemPower_001', 'BIOS默认关闭DDR4内存的LP-ASR模式测试')
-        result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+        result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
@@ -58,7 +58,7 @@ class dimm_memPower(unittest.TestCase):
 
     def dimm_power_mgt_02(self, serial, ssh):
         tc = ('701', 'Testcase_MemPower_002&3', 'BIOS默认关闭CKE Power Down&Setup菜单提供内存自刷新和CKE Power Down选项测试')
-        result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+        result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
@@ -76,7 +76,7 @@ class dimm_memPower(unittest.TestCase):
 
     def dimm_power_mgt_04(self, serial, ssh):
         tc = ('702', 'Testcase_MemPower_004', '打开DDR4内存的LP-ASR模式功能测试')
-        result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+        result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
@@ -91,7 +91,7 @@ class dimm_memPower(unittest.TestCase):
 
     def dimm_power_mgt_05(self, serial, ssh):
         tc = ('703', 'Testcase_MemPower_005', '打开CKE Power down功能测试')
-        result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+        result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
@@ -112,7 +112,7 @@ class dimm_memPower(unittest.TestCase):
 
     def dimm_power_mgt_07(self, serial, ssh):
         tc = ('704', '[TC704]Testcase_MemPower_007', '内存省电模式选项互斥测试')
-        result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+        result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
@@ -134,7 +134,7 @@ class dimm_memPower(unittest.TestCase):
 
     def dimm_power_mgt_010(self, serial, ssh_os, ssh_bmc):
         tc = ('705', 'Testcase_MemPower_010', '内存省电模式使能PPD时寄存器状态测试')
-        result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+        result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh_bmc))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
@@ -158,7 +158,7 @@ class dimm_memPower(unittest.TestCase):
 
     def dimm_power_mgt_011(self, serial, ssh_os, ssh_bmc):
         tc = ('706', 'Testcase_MemPower_011', '内存省电模式使能APD时寄存器状态测试')
-        result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+        result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh_bmc))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
@@ -191,7 +191,7 @@ class dimm_memPower(unittest.TestCase):
 
     def dimm_power_mgt_012(self, serial, ssh_os, ssh_bmc):
         tc = ('707', 'Testcase_MemPower_012', '内存省电模式使能时更改定时器选项测试')
-        result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+        result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
         try:
             self.assertTrue(icx2pAPI.toBIOS(serial, ssh_bmc))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
@@ -232,7 +232,7 @@ DPM = dimm_memPower()
 # OnComplete: NA
 def Testcase_MemMargin_001(serial, ssh_bmc):
     tc = ('708', '[TC708] Testcase_MemMargin_001', '01 内存margin测试菜单选项测试')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
 
     BSSA_MENU = "BSSA Configuration Menu"
     BSSA_RMT = "BSSA Rank Margin Tool"
@@ -278,9 +278,9 @@ def Testcase_MemMargin_001(serial, ssh_bmc):
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: BIOS SETUP
-def Testcase_MemoryCompa_001(serial):
+def Testcase_MemoryCompa_001():
     tc = ('709', '[TC709] Testcase_MemoryCompa_001', '01 内存初始化测试')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED), "boot_to_page -> fail"
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, Msg.MEMORY_TOP], 15,
@@ -295,9 +295,9 @@ def Testcase_MemoryCompa_001(serial):
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: SUSE OS
-def Testcase_MemoryCompa_006(serial, ssh_bmc, ssh_os, n=1):
+def Testcase_MemoryCompa_006(serial, ssh_os, n=1):
     tc = ('710', '[TC710] Testcase_MemoryCompa_006', '06 内存容量一致性测试')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     res_lst = []
     for i in range(n):
         try:
@@ -334,7 +334,7 @@ def Testcase_MemoryCompa_006(serial, ssh_bmc, ssh_os, n=1):
 # OnComplete: SUSE OS
 def Testcase_MemRefresh_001(serial, ssh_os):
     tc = ('711', '[TC711] Testcase_MemRefresh_001', '01 设置动态内存刷新模式功能测试')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         assert SetUpLib.boot_to_page(Msg.CPU_CONFIG), "boot_to_page -> fail"
         assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM2X_REFRESH, '<Disabled>'], 10), "locate_option -> fail"
@@ -355,7 +355,7 @@ def Testcase_MemRefresh_001(serial, ssh_os):
 # OnComplete: SUSE OS
 def Testcase_MemRefresh_002(serial, ssh_os):
     tc = ('712', '[TC712] Testcase_MemRefresh_001', '02 设置静态2X内存刷新模式功能测试')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         assert SetUpLib.boot_to_page(Msg.CPU_CONFIG), "boot_to_page -> fail"
         assert SetUpLib.enter_menu(Key.DOWN, Msg.MEMORY_CONFIG, 10, Msg.MEM_FRE), "enter_menu -> fail"
@@ -377,7 +377,7 @@ def Testcase_MemRefresh_002(serial, ssh_os):
 # OnComplete: SUSE OS
 def Testcase_MemoryCompa_009(serial, ssh_bmc, unitool):
     tc = ('713', '[TC713]Testcase_MemoryCompa_009', '装备模式内存Margin功能测试')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     logging.info("Change setup option to enable RMT")
     try:
         assert PowerLib.force_reset()
@@ -413,7 +413,7 @@ def navegate_to_mem_fre_option(serial, n=1):  # used to set mem freq test
 
 def Testcase_SetMemFreq_001_006(serial, ssh_bmc, n=1):
     tc = ('714', '[TC714] Testcase_SetMemFreq_001_006', '01-06 内存频率选项测试')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         assert SetUpLib.boot_to_page('BIOS Revision'), "boot_to_page -> fail"
         if SetUpLib.verify_info('System Memory Speed\s+2666 MT\/s', 20):
@@ -443,7 +443,7 @@ def Testcase_SetMemFreq_001_006(serial, ssh_bmc, n=1):
 # OnComplete: SUSE OS
 def Testcase_MTRR_001(serial, ssh_bmc, ssh_os):
     tc = ('715', '[TC715] Testcase_MTRR_002', '01 MTRR最大内存地址范围测试')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         # assert Os.boot_to_suse(serial, ssh_bmc), "boot_to_os -> fail"
         assert icx2pAPI.ping_sut(), "ping_os_ip-> fail"
@@ -464,7 +464,7 @@ def Testcase_MTRR_001(serial, ssh_bmc, ssh_os):
 # OnComplete: SUSE OS
 def Testcase_MTRR_002(serial, ssh_bmc, ssh_os):
     tc = ('716', '[TC716] Testcase_MTRR_002', '02 MTRR Fixed ranges测试')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     flag = []
     try:
         assert PowerLib.force_reset(), 'reset_system -> fail'

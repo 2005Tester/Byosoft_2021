@@ -23,7 +23,7 @@ P = LogAnalyzer(SutConfig.LOG_DIR)
 # POST, Boot, Setup, OS Installation, PM, Device, Chipsec Test and Source code cons.
 def POST_Test(serial):  # POST: POST Log(TBD) and Information Check
     tc = ('002', 'POST Information Test', 'POST Information Test')
-    result = ReportGen.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc)
     if not PowerLib.force_reset():
         result.log_fail()
         return
@@ -38,7 +38,7 @@ def POST_Test(serial):  # POST: POST Log(TBD) and Information Check
 # PM: Warm reset n times, Cold reset n times and AC (TBD)
 def PM(serial, n=5):
     tc = ('003', '[TC003]Power Control Test', 'Power Control Test')
-    result = ReportGen.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc)
     res_lst = []
     if not SetUpLib.boot_to_bios_config():
         result.log_fail()
@@ -81,9 +81,9 @@ def PM(serial, n=5):
 
 
 # PXE Test
-def pxeTest(serial, ssh, n=1):
+def pxeTest(n=1):
     tc = ('004', 'PXE Test', 'PXE Test')
-    result = ReportGen.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc)
     for i in range(n):
         if not SetUpLib.boot_with_hotkey(Key.F12, 'NBP file downloaded successfully', 180):
             result.log_fail()
@@ -98,7 +98,7 @@ def pxeTest(serial, ssh, n=1):
 # OnComplete: USB Configuration Page
 def usbTest(serial, ssh):
     tc = ('006', '[TC006]USB Test', 'USB Test')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     msg_list = ['USB Mouse\s+1', 'USB Keyboard\s+1', 'USB Mass Storage\s+0']
     if not icx2pAPI.toBIOS(serial, ssh):
         return
@@ -121,7 +121,7 @@ def usbTest(serial, ssh):
 # press F2
 def pressF2(serial):
     tc = ('009', 'Setup菜单用户输入界面按F2切换键盘制式', '支持热键配置')
-    result = ReportGen.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc)
     if not PowerLib.force_reset():
         result.log_fail()
         return
@@ -154,9 +154,9 @@ def pressF2(serial):
 
 
 # Setup: Load default and setting saving - AT test cases below,
-def loadDefault(serial, ssh):
+def loadDefault(serial):
     tc = ('011', 'Load default and setting saving Test', 'BIOS Load default Test')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     pxe_boot = ["PXE Boot Capability", "<UEFI:IPv4>"]
     boot_fail_policy = ["Boot Fail Policy", "<Boot Retry>"]
     pxe_boot_2 = ["PXE Boot Capability", "<UEFI:IPv6>"]
@@ -220,20 +220,9 @@ def loadDefault(serial, ssh):
 # Precondition: NA
 # OnStart: NA
 # OnComplete: Setup DRAM RAPL page
-def dram_rapl_option_check(serial, ssh):
+def dram_rapl_option_check(serial):
     tc = ('015', '[TC015]Testcase_DRAM_RAPL_001, 菜单项DRAM RAPL选单检查', '支持DRAM RAPL设置')
-    result = ReportGen.LogHeaderResult(tc, serial)
-    """
-    if not icx2pAPI.toBIOS(serial, ssh):
-        result.log_fail()
-        return
-    if not icx2pAPI.toBIOSConf(serial):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay(SutConfig.w2key)
-    import os
-    os.system('pause')
-    """
+    result = ReportGen.LogHeaderResult(tc)
 
     if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED):
         result.log_fail()
@@ -258,9 +247,9 @@ def dram_rapl_option_check(serial, ssh):
 # Precondition: NA
 # OnStart: NA
 # OnComplete: Setup Miscellaneous Configuration page
-def cnd_default_enable(serial, ssh):
+def cnd_default_enable():
     tc = ('017', '[TC017]检查CDN开关默认值', '支持网口CDN特性开关')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     cdn_status = ['Network CDN', '<Enabled>']
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
@@ -275,7 +264,7 @@ def cnd_default_enable(serial, ssh):
 # Testcase_SecurityBoot_001
 def securityBoot(serial):
     tc = ('023', 'Secure Boot默认值', 'Secure Boot默认值')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     keys_secure_boot = [Key.RIGHT, Key.DOWN, Key.ENTER]
     secureboot_disable = ['Current Secure Boot State\s+Disabled']
     if not SetUpLib.boot_to_setup():
@@ -294,7 +283,7 @@ def securityBoot(serial):
 # Testcase_VTD_002
 def vtd(serial):
     tc = ('025', 'Testcase_VTD_002', '关闭VT-d功能启动测试')
-    result = ReportGen.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc)
     if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED):
         result.log_fail()
         return
@@ -331,7 +320,7 @@ def vtd(serial):
 # OnComplete: NA
 def Testcase_SerialPrint_001(serial, ssh_bmc):
     tc = ('026', '[TC026]Testcase_SerialPrint_001', '启动关键信息打印测试')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     cpu_resource = r"[\s\S]*".join([rf"CPU{n}[\s\S]*Stk07" for n in range(SysCfg.CPU_CNT)])
     bios_ver = r"BIOS Revision :\s+\d.\d+"
     pcie_lnk = r"PCIE LINK STATUS:"
@@ -374,7 +363,7 @@ def Testcase_SerialPrint_001(serial, ssh_bmc):
 # OnComplete: NA
 def Testcase_SerialPrint_002(serial):
     tc = ('027', '[TC027]Testcase_SerialPrint_003', 'BIOS启动阶段串口报错检查')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     error_msg = ["error", "fail", "assert", "exception"]
     ignore_list = ["IdFromBmc Fail,Status: Device Error"]
     try:

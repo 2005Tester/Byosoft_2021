@@ -18,7 +18,7 @@ from Report import ReportGen
 # OnComplete: Setup Uncore status page
 def upi_link_status(serial):
     tc = ('200', '[TC200]UPI link链路检测测试', 'CPU兼容性测试')
-    result = ReportGen.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc)
 
     if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED):
         result.log_fail()
@@ -41,7 +41,7 @@ def upi_link_status(serial):
 # OnComplete: Setup P-State control page
 def ufs_default_value(serial):
     tc = ('201', '[TC201]Testcase_UFS_001', 'UFS默认值测试')
-    result = ReportGen.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc)
 
     if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED):
         result.log_fail()
@@ -72,7 +72,7 @@ def ufs_default_value(serial):
 # OnComplete: Setup Advanced power management page
 def static_turbo_default(serial):
     tc = ('202', '[TC202]Testcase_Static_Turbo_001', '静态Turbo默认值测试')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     static_turbo_default = ['Static Turbo', '<Disabled>']
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
@@ -92,7 +92,7 @@ def static_turbo_default(serial):
 # OnComplete: Setup Memory Topology Page
 def cpu_mem_info(serial):
     tc = ('203', '[TC203]CPU Memory Information', 'Verify CPU and Memory Information')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PER_CPU_INFO, 20, 'BSP Revision')
@@ -114,7 +114,7 @@ def cpu_mem_info(serial):
 # OnComplete: Processor Configuration Page
 def cpu_cores_active(serial):
     tc = ('204', '[204]Testcase_CoreDisable_001', 'CPU Active Processor Cores information')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     ACT_CPU_CORES = ['Active Processor Cores', '<All>']
     list_info = ['All', '27', '26', '25', '24', '23', '22', '21', '20', '19', '18', '17', '16', '15', '14', '13', '12', '11', '10', '9', '8', '7', '6', '5', '4', '3', '2', '1']
     try:
@@ -198,9 +198,9 @@ def cpu_cores_active_enable(serial, ssh_os, num, set_n):
         return False
 
 
-def cpu_cores_active_enable_1(serial, ssh, ssh_os):
+def cpu_cores_active_enable_1(serial, ssh_os):
     tc = ('205', '[205]Testcase_CoreDisable_002', 'Enable 1 CPU core test')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         num = 1
         set_n = 28
@@ -210,9 +210,9 @@ def cpu_cores_active_enable_1(serial, ssh, ssh_os):
         result.log_fail(capture=True)
 
 
-def cpu_cores_active_enable_middle(serial, ssh, ssh_os):
+def cpu_cores_active_enable_middle(serial, ssh_os):
     tc = ('206', '[206]Testcase_CoreDisable_003', 'Enable middle-num CPU core test')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         num = 14
         set_n = 14
@@ -222,9 +222,9 @@ def cpu_cores_active_enable_middle(serial, ssh, ssh_os):
         result.log_fail(capture=True)
 
 
-def cpu_cores_active_enable_max(serial, ssh, ssh_os):
+def cpu_cores_active_enable_max(serial, ssh_os):
     tc = ('207', '[207]Testcase_CoreDisable_004', 'Enable max-1 CPU core test')
-    result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         num = 27
         set_n = 1

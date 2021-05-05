@@ -110,7 +110,7 @@ def continue_to_bootmanager():
     return True
 
 
-# Continue boot to password prompt by pressing hotkey
+# Continue boot to password prompt by pressing hotkey without a force reset
 def continue_to_pw_prompt(key):
     logging.info("SetUpLib: continue boot to password prompt by pressing: {0}".format(key))
     if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.HOTKEY_PROMPT_DEL):
@@ -119,6 +119,14 @@ def continue_to_pw_prompt(key):
     if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.PW_PROMPT):
         return
     return True
+
+
+# boot to password prompt by a hotkey
+def boot_to_pw_prompt(key):
+    logging.info("SetUpLib: Boot to password prompt by pressing: {0}".format(key))
+    if not PowerLib.force_reset():
+        return
+    return continue_to_pw_prompt(key)
 
 
 # Boot to BIOS configuration

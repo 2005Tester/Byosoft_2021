@@ -13,9 +13,9 @@ from Report import ReportGen
 #            Release Test Cases          #
 ##########################################
 
-def me_version_status(serial):
+def me_version_status():
     tc = ('901', 'ME_Check ME Version and status', 'ME version should be match within BIOS bin file, ME Status shoule be normal.')
-    result = ReportGen.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc)
     if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED):
         result.log_fail()
         return
