@@ -110,8 +110,6 @@ dram = ['<Enabled>\s+DRAM RAPL']
 tpm_info = ['TPM Device\s+TPM 2.0', 'TPM2 Active PCR Hash\s+Algorithm+\s+SHA1\, SHA256',
             'TPM2 Hardware Supported Hash\s+Algorithm+\s+SHA1\, SHA256']
 
-# UPI Status
-upi_state = ['Current UPI Link Speed\s+Fast', 'Current UPI Link Frequency\s+11\.2\s+GT\/s']
 
 # CPU, DIMM info
 CPU_info = ['Processor ID\s+000606A6', 'Processor Frequency\s+2.000GHz']

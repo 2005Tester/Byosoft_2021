@@ -44,6 +44,7 @@ class Msg:
     BIOS_BOOT_COMPLETE = 'BIOS boot completed'
 
     # pages in bios configuration
+    PAGE_INFO = "BIOS Revision"
     PAGE_ADVANCED = 'CPU Configuration'
     PAGE_BMC = 'Additional System Information'
     PAGE_SECURITY = 'TPM Device'

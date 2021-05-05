@@ -10,6 +10,7 @@ import logging
 import re
 import time
 from Core import SerialLib
+from Core.SutInit import Sut
 from ICX2P.Config.SutConfig import SUT_CONFIG, SysCfg
 from ICX2P.Config.PlatConfig import Msg, Key
 from ICX2P.Config import SutConfig
@@ -36,7 +37,7 @@ def POST_Test(serial):  # POST: POST Log(TBD) and Information Check
 
 
 # PM: Warm reset n times, Cold reset n times and AC (TBD)
-def PM(serial, n=5):
+def PM(n=5):
     tc = ('003', '[TC003]Power Control Test', 'Power Control Test')
     result = ReportGen.LogHeaderResult(tc)
     res_lst = []
@@ -47,7 +48,7 @@ def PM(serial, n=5):
     for i in range(n):
         try:
             logging.info("Warm reset cycle: {0}".format(i + 1))
-            SerialLib.send_key(serial, Key.CTRL_ALT_DELETE)
+            SetUpLib.send_key(Key.CTRL_ALT_DELETE)
             logging.debug("Ctrl + Alt + Del key sent")
             if not SetUpLib.boot_to_bios_config():
                 logging.info("Warm reset Test:Fail")
@@ -96,16 +97,13 @@ def pxeTest(n=1):
 # Precondition: No USB key installed
 # OnStart: NA
 # OnComplete: USB Configuration Page
-def usbTest(serial, ssh):
+def usbTest():
     tc = ('006', '[TC006]USB Test', 'USB Test')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     msg_list = ['USB Mouse\s+1', 'USB Keyboard\s+1', 'USB Mass Storage\s+0']
-    if not icx2pAPI.toBIOS(serial, ssh):
+    if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED):
+        result.log_fail(capture=True)
         return
-    if not icx2pAPI.toBIOSConf(serial):
-        result.log_fail()
-        return
-    serial.send_keys_with_delay(SutConfig.w2key)
 
     if not SetUpLib.enter_menu(Key.DOWN, Msg.PATH_USB_CFG, 10, 'USB'):
         result.log_fail(capture=True)
@@ -119,42 +117,42 @@ def usbTest(serial, ssh):
 
 
 # press F2
-def pressF2(serial):
+def pressF2():
     tc = ('009', 'Setup菜单用户输入界面按F2切换键盘制式', '支持热键配置')
     result = ReportGen.LogHeaderResult(tc)
     if not PowerLib.force_reset():
         result.log_fail()
         return
-    if not serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=300):
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.HOTKEY_PROMPT_DEL, 300):
         result.log_fail()
         return
-    serial.send_keys(Key.DEL)
-    if not serial.waitString("Press F2", timeout=60):
+    SetUpLib.send_key(Key.DEL)
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, "Press F2", 60):
         result.log_fail()
         return
-    serial.send_keys(Key.F2)
-    if not serial.waitString('fr-FR'):
+    SetUpLib.send_key(Key.F2)
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, 'fr-FR'):
         result.log_fail()
         return
-    serial.send_keys(Key.F2)
-    if not serial.waitString('ja-JP'):
+    SetUpLib.send_key(Key.F2)
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, 'ja-JP'):
         result.log_fail()
         return
-    serial.send_keys(Key.F2)
-    if not serial.waitString('en-US'):
+    SetUpLib.send_key(Key.F2)
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, 'en-US'):
         result.log_fail()
         return
-    serial.send_data(SutConfig.BIOS_PASSWORD)
-    serial.send_data(chr(0x0D))  # Send Enter
+    SetUpLib.send_data(SutConfig.BIOS_PASSWORD)
+    SetUpLib.send_key(Key.ENTER)  # Send Enter
     logging.info("Send password...")
-    if not serial.waitString('Continue', timeout=30):
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, 'Continue', 30):
         return
     result.log_pass()
     return True
 
 
 # Setup: Load default and setting saving - AT test cases below,
-def loadDefault(serial):
+def loadDefault():
     tc = ('011', 'Load default and setting saving Test', 'BIOS Load default Test')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     pxe_boot = ["PXE Boot Capability", "<UEFI:IPv4>"]
@@ -172,7 +170,7 @@ def loadDefault(serial):
     if not SetUpLib.locate_option(Key.DOWN, boot_fail_policy, 15):
         result.log_fail(capture=True)
         return
-    SerialLib.send_key(serial, Key.F5)
+    SetUpLib.send_key(Key.F5)
     result.capture_screen()
 
     # change pxe option from IPV4 to IPV6
@@ -180,11 +178,11 @@ def loadDefault(serial):
     if not SetUpLib.locate_option(Key.DOWN, pxe_boot, 15):
         result.log_fail(capture=True)
         return
-    SerialLib.send_key(serial, Key.F5)
+    SetUpLib.send_key(Key.F5)
     result.capture_screen()
 
     logging.info("Save and reset.")
-    SerialLib.send_keys_with_delay(serial, [Key.F10, Key.Y])
+    SetUpLib.send_keys([Key.F10, Key.Y])
     time.sleep(15)
 
     # Verify modified options
@@ -198,7 +196,7 @@ def loadDefault(serial):
     logging.info("Modified options are verified.")
 
     logging.info("Reset defaul by hotkey")
-    SerialLib.send_keys_with_delay(serial, [Key.F9, Key.Y, Key.F10, Key.Y], delay=5)
+    SetUpLib.send_keys([Key.F9, Key.Y, Key.F10, Key.Y], delay=5)
     result.capture_screen()
     time.sleep(15)
 
@@ -220,10 +218,10 @@ def loadDefault(serial):
 # Precondition: NA
 # OnStart: NA
 # OnComplete: Setup DRAM RAPL page
-def dram_rapl_option_check(serial):
+def dram_rapl_option_check():
     tc = ('015', '[TC015]Testcase_DRAM_RAPL_001, 菜单项DRAM RAPL选单检查', '支持DRAM RAPL设置')
     result = ReportGen.LogHeaderResult(tc)
-
+    dram_rapl = [['DRAM RAPL', '<Enabled>']]
     if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED):
         result.log_fail()
         return
@@ -232,13 +230,15 @@ def dram_rapl_option_check(serial):
         result.log_fail()
         return
 
-    if not icx2pAPI.verify_setup_options_up(serial, SutConfig.dram, 4):
+    if not SetUpLib.verify_options(Key.DOWN, dram_rapl, 4):
         result.log_fail()
         return
-    SerialLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, r'DisabledEnabled', 10):
+    logging.info("**DRAM rapl default value verified.")
+    SetUpLib.send_key(Key.ENTER)
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, r'DisabledEnabled', 10):
         result.log_fail()
         return
+    logging.info("**DRAM rapl supported values verified.")
     result.log_pass()
     return True
 
@@ -262,7 +262,7 @@ def cnd_default_enable():
 
 
 # Testcase_SecurityBoot_001
-def securityBoot(serial):
+def securityBoot():
     tc = ('023', 'Secure Boot默认值', 'Secure Boot默认值')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     keys_secure_boot = [Key.RIGHT, Key.DOWN, Key.ENTER]
@@ -271,17 +271,18 @@ def securityBoot(serial):
         result.log_fail(capture=True)
         return
     logging.info("Enter secure boot configuration.")
-    SerialLib.send_keys_with_delay(serial, keys_secure_boot)
+    SetUpLib.send_keys(keys_secure_boot)
     logging.info("Checking secure boot status")
     if not SetUpLib.verify_info(secureboot_disable, 5):
         result.log_fail(capture=True)
         return
+    logging.info("**Secure boot default status verified.")
     result.log_pass()
     return True
 
 
 # Testcase_VTD_002
-def vtd(serial):
+def vtd():
     tc = ('025', 'Testcase_VTD_002', '关闭VT-d功能启动测试')
     result = ReportGen.LogHeaderResult(tc)
     if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED):
@@ -297,15 +298,15 @@ def vtd(serial):
         result.log_fail()
         return
     logging.info("Diasble VT-d")
-    serial.send_keys(Key.F5)
-    if not SerialLib.is_msg_present(serial, "Disabled"):
+    SetUpLib.send_key(Key.F5)
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, "Disabled"):
         logging.info("VT-d option is not disaled.")
         result.log_fail()
         return
     logging.info("Save and reboot")
-    serial.send_keys(Key.F10 + Key.Y)
+    SetUpLib.send_keys([Key.F10, Key.Y])
     logging.info("Verify OS boot with VT-D disabled.")
-    if not SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE):
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE):
         logging.info("OS boot failed")
         result.log_fail()
         return

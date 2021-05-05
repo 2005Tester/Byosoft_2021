@@ -342,3 +342,16 @@ def set_option_value(serial, locate_try, option_name, set_key, set_counts, exp_v
         return
     logging.info('Set option value successfully')
     return True
+
+
+# Boot to BIOS configuration reset default by F9
+def reset_default():
+    logging.info("Reset BIOS to dafault by F9")
+    if not boot_to_bios_config():
+        return
+    send_keys(Key.RESET_DEFAULT)
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE):
+        logging.info("Reset dafault by F9:Fail")
+        return
+    logging.info("Reset dafault by F9:Pass")
+    return True

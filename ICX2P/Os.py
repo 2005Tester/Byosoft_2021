@@ -1,5 +1,6 @@
 import logging
 from Core import SerialLib
+from Core.SutInit import Sut
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg
 from ICX2P.BaseLib import SetUpLib
@@ -13,7 +14,7 @@ from Report import ReportGen
 
 
 # Boot to SUSE Linux from boot manager
-def boot_to_suse(serial):
+def boot_to_suse():
     tc = ('300', 'Boot to UEFI SUSE Linux', 'Boot to UEFI SUSE Linux')
     result = ReportGen.LogHeaderResult(tc)
     if not SetUpLib.boot_to_bootmanager():
@@ -24,7 +25,7 @@ def boot_to_suse(serial):
     if not SetUpLib.enter_menu(Key.DOWN, suse_linux, 20, msg):
         result.log_fail()
         return
-    if not SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE):
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE):
         result.log_fail()
         return
     logging.info("OS Boot Successful")
@@ -33,7 +34,7 @@ def boot_to_suse(serial):
 
 
 # Boot to SUSE Linux from boot manager
-def boot_to_suse_mfg(serial):
+def boot_to_suse_mfg():
     tc = ('301', '装备模式: Boot to UEFI SUSE Linux', 'Boot to UEFI SUSE Linux in Manufacture mode')
     result = ReportGen.LogHeaderResult(tc)
     if not SetUpLib.boot_to_bootmanager():
@@ -44,7 +45,7 @@ def boot_to_suse_mfg(serial):
     if not SetUpLib.enter_menu(Key.DOWN, suse_linux, 20, msg):
         result.log_fail()
         return
-    if not SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE):
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE):
         result.log_fail()
         return
     logging.info("OS Boot Successful")
@@ -52,7 +53,7 @@ def boot_to_suse_mfg(serial):
     return True
 
 
-def move_suse_to_first(serial):
+def move_suse_to_first():
     tc = ('302', 'Move UEFI SUSE Linux to first boot option', 'Move UEFI SUSE Linux to first boot option')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     if not SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_SUSE, 5):

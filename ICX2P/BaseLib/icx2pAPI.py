@@ -11,6 +11,7 @@ import logging
 import subprocess
 import time
 from Core import SerialLib
+from Core.SutInit import Sut
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg
 from ICX2P.BaseLib import PowerLib, SetUpLib
@@ -214,18 +215,6 @@ def pressDelnp(serial):
     serial.send_keys(Key.DEL)
     if not serial.waitString(SutConfig.press_f2, timeout=60):
         return
-    return True
-
-
-def reset_default(serial):
-    logging.info("Reset BIOS to dafault by F9")
-    if not SetUpLib.boot_to_bios_config():
-        return
-    SerialLib.send_keys_with_delay(serial, Key.RESET_DEFAULT)
-    if not SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE):
-        logging.info("Reset dafault by F9:Fail")
-        return
-    logging.info("Reset dafault by F9:Pass")
     return True
 
 

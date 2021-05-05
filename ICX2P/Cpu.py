@@ -1,5 +1,6 @@
 import logging
 from Core import SerialLib, SshLib
+from Core.SutInit import Sut
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg
 from ICX2P.BaseLib import icx2pAPI, SetUpLib
@@ -16,10 +17,10 @@ from Report import ReportGen
 # Precondition: NA
 # OnStart: NA
 # OnComplete: Setup Uncore status page
-def upi_link_status(serial):
+def upi_link_status():
     tc = ('200', '[TC200]UPI link链路检测测试', 'CPU兼容性测试')
     result = ReportGen.LogHeaderResult(tc)
-
+    upi_state = ['Current UPI Link Speed\s+Fast', 'Current UPI Link Frequency\s+11\.2\s+GT\/s']
     if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED):
         result.log_fail()
         return
@@ -28,9 +29,10 @@ def upi_link_status(serial):
         result.log_fail()
         return
 
-    if not icx2pAPI.verify_setup_options_down(serial, SutConfig.upi_state, 4):
+    if not SetUpLib.verify_info(upi_state, 4):
         result.log_fail()
         return
+    logging.info("**UPI Link speed and frequency verified.")
     result.log_pass()
     return True
 
@@ -39,9 +41,10 @@ def upi_link_status(serial):
 # Precondition: NA
 # OnStart: NA
 # OnComplete: Setup P-State control page
-def ufs_default_value(serial):
+def ufs_default_value():
     tc = ('201', '[TC201]Testcase_UFS_001', 'UFS默认值测试')
     result = ReportGen.LogHeaderResult(tc)
+    ufs = ['UFS', '<Enabled>']
 
     if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED):
         result.log_fail()
@@ -51,17 +54,19 @@ def ufs_default_value(serial):
         result.log_fail()
         return
 
-    if not icx2pAPI.verify_setup_options_up(serial, SutConfig.ufs, 4):
+    if not SetUpLib.verify_options(Key.DOWN, [ufs], 4):
         result.log_fail()
         return
     SetUpLib.send_keys([Key.ESC, Key.ENTER])
     if not SetUpLib.locate_option(Key.DOWN, ["UFS", "<Enabled>"], 12):
         result.log_fail()
         return
-    SerialLib.send_key(serial, Key.ENTER)
-    if not SerialLib.is_msg_present(serial, r'Disabled_MaxDisabled_Min', 10):
+    logging.info("**UFS default value verified.")
+    SetUpLib.send_key(Key.ENTER)
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, r'Disabled_MaxDisabled_Min', 10):
         result.log_fail()
         return
+    logging.info("**UFS Supported values verified.")
     result.log_pass()
     return True
 
@@ -70,7 +75,7 @@ def ufs_default_value(serial):
 # Precondition: NA
 # OnStart: NA
 # OnComplete: Setup Advanced power management page
-def static_turbo_default(serial):
+def static_turbo_default():
     tc = ('202', '[TC202]Testcase_Static_Turbo_001', '静态Turbo默认值测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     static_turbo_default = ['Static Turbo', '<Disabled>']
@@ -78,8 +83,8 @@ def static_turbo_default(serial):
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_ADV_PM_CFG, 20, Msg.ADV_POWER_MGF_CONFIG)
         assert SetUpLib.locate_option(Key.DOWN, static_turbo_default, 10)
-        SerialLib.send_key(serial, Key.ENTER)
-        assert SerialLib.is_msg_present(serial, r'AutoManualDisabled')
+        SetUpLib.send_key(Key.ENTER)
+        assert SerialLib.is_msg_present(Sut.BIOS_COM, r'AutoManualDisabled')
         result.log_pass()
         return True
     except AssertionError:
@@ -90,7 +95,7 @@ def static_turbo_default(serial):
 # Precondition: NA
 # OnStart: NA
 # OnComplete: Setup Memory Topology Page
-def cpu_mem_info(serial):
+def cpu_mem_info():
     tc = ('203', '[TC203]CPU Memory Information', 'Verify CPU and Memory Information')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
@@ -98,7 +103,7 @@ def cpu_mem_info(serial):
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PER_CPU_INFO, 20, 'BSP Revision')
         logging.info("**Verify CPU Information**")
         assert SetUpLib.verify_info(SutConfig.CPU_info, 20)
-        SerialLib.send_keys_with_delay(serial, [Key.ESC, Key.ESC])
+        SetUpLib.send_keys([Key.ESC, Key.ESC])
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.MEMORY_TOP], 20, 'DIMM000')
         logging.info("**Verify Memory Information**")
         assert SetUpLib.verify_info(SutConfig.DIMM_info, 20)
@@ -112,7 +117,7 @@ def cpu_mem_info(serial):
 # Precondition: NA
 # OnStart: NA
 # OnComplete: Processor Configuration Page
-def cpu_cores_active(serial):
+def cpu_cores_active():
     tc = ('204', '[204]Testcase_CoreDisable_001', 'CPU Active Processor Cores information')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     ACT_CPU_CORES = ['Active Processor Cores', '<All>']
@@ -121,9 +126,9 @@ def cpu_cores_active(serial):
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.ACT_CPU_CORES)
         assert SetUpLib.locate_option(Key.DOWN, ACT_CPU_CORES, 20)
-        SerialLib.send_key(serial, Key.ENTER)
+        SetUpLib.send_key(Key.ENTER)
         logging.info("**Active Processor Cores**")
-        assert icx2pAPI.verify_setup_options_up(serial, list_info, 28)
+        assert SetUpLib.verify_info(list_info, 28)
         result.log_pass()
         return True
     except AssertionError:
@@ -136,26 +141,26 @@ def cpu_cores_active(serial):
 # OnComplete: suse Page
 
 #  function Module
-def cpu_cores_active_enable(serial, ssh_os, num, set_n):
+def cpu_cores_active_enable(ssh_os, num, set_n):
     ACT_CPU_CORES = ['Active Processor Cores', '<All>']
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.ACT_CPU_CORES)
         assert SetUpLib.locate_option(Key.DOWN, ACT_CPU_CORES, 20)
-        SerialLib.send_keys_with_delay(serial, [Key.F6]*set_n)
+        SetUpLib.send_keys([Key.F6]*set_n)
         logging.info("**Active Processor Cores**")
-        SerialLib.send_keys_with_delay(serial, [Key.F10, Key.Y], 5)
+        SetUpLib.send_keys([Key.F10, Key.Y], 5)
         logging.info("**reboot**")
         assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
         # assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
-        SerialLib.send_keys_with_delay(serial, Key.ENTER)
+        SetUpLib.send_keys(Key.ENTER)
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.MEMORY_TOP], 20, 'DIMM000')
         logging.info("**Verify Memory Information**")
         assert SetUpLib.verify_info(SutConfig.DIMM_info, 20)
         ### boot suse
         assert SetUpLib.boot_with_hotkey(Key.F11, "Boot Manager Menu", 300)
         assert SetUpLib.enter_menu(Key.DOWN, ["SUSE Linux Enterprise\(LUN0\)"], 20, "Welcome to GRUB")
-        assert SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE, 170)
+        assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE, 170)
         logging.info("Suse_OS Boot Successful")
         ### 每个CPU下只有num个core。
         res1 = SshLib.execute_command(ssh_os, r'lscpu | grep " per socket" ').replace('\n', '').split(':')[-1].strip()
@@ -198,37 +203,37 @@ def cpu_cores_active_enable(serial, ssh_os, num, set_n):
         return False
 
 
-def cpu_cores_active_enable_1(serial, ssh_os):
+def cpu_cores_active_enable_1(ssh_os):
     tc = ('205', '[205]Testcase_CoreDisable_002', 'Enable 1 CPU core test')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         num = 1
         set_n = 28
-        assert cpu_cores_active_enable(serial, ssh_os, num, set_n)
+        assert cpu_cores_active_enable(ssh_os, num, set_n)
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
 
 
-def cpu_cores_active_enable_middle(serial, ssh_os):
+def cpu_cores_active_enable_middle(ssh_os):
     tc = ('206', '[206]Testcase_CoreDisable_003', 'Enable middle-num CPU core test')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         num = 14
         set_n = 14
-        assert cpu_cores_active_enable(serial, ssh_os, num, set_n)
+        assert cpu_cores_active_enable(ssh_os, num, set_n)
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
 
 
-def cpu_cores_active_enable_max(serial, ssh_os):
+def cpu_cores_active_enable_max(ssh_os):
     tc = ('207', '[207]Testcase_CoreDisable_004', 'Enable max-1 CPU core test')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         num = 27
         set_n = 1
-        assert cpu_cores_active_enable(serial, ssh_os, num, set_n)
+        assert cpu_cores_active_enable(ssh_os, num, set_n)
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
