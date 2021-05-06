@@ -134,7 +134,7 @@ class dimm_memPower(unittest.TestCase):
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             dimm_memPower.navigate_to_cke(self)
             self.assertTrue(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
-            SerialLib.send_keys_with_delay([Key.F5, Key.F10, Key.Y])
+            SetUpLib.send_keys([Key.F5, Key.F10, Key.Y])
             self.assertTrue(icx2pAPI.toBIOSnp(serial))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             dimm_memPower.navigate_to_cke(self)
@@ -158,14 +158,14 @@ class dimm_memPower(unittest.TestCase):
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             dimm_memPower.navigate_to_cke(self)
             self.assertTrue(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
-            serial.send_keys(Key.F5)
+            SetUpLib.send_key(Key.F5)
             self.assertTrue(SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
             self.assertTrue(SetUpLib.verify_options(Key.DOWN, [['APD', '<Disabled>'], ['PPD', '<Enabled>']], 7))
             self.assertTrue(SetUpLib.verify_options(Key.DOWN, [['APD', '<Disabled>']], 7))
-            serial.send_keys(Key.F5)
+            SetUpLib.send_key(Key.F5)
             self.assertTrue(SetUpLib.verify_options(Key.DOWN, [['APD', '<Enabled>']], 3))
             self.assertFalse(SetUpLib.verify_options(Key.DOWN, [['PPD', '<Enabled>']], 3))
-            serial.send_keys_with_delay([Key.F10, Key.Y])
+            SetUpLib.send_keys(Key.SAVE_RESET)
             self.assertTrue(icx2pAPI.toBIOSnp(serial))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             dimm_memPower.navigate_to_cke(self)
@@ -191,13 +191,13 @@ class dimm_memPower(unittest.TestCase):
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             dimm_memPower.navigate_to_cke(self)
             self.assertTrue(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
-            serial.send_keys(Key.F5)
+            SetUpLib.send_key(Key.F5)
             self.assertTrue(SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
             self.assertTrue(SetUpLib.verify_options(Key.DOWN, [['CKE Idle Timer', '\[20\]']], 7))
-            serial.send_data(chr(0x0D))  # Send Enter
-            serial.send_data('255')  # set 255
-            serial.send_data(chr(0x0D))  # Send Enter
-            serial.send_keys_with_delay([Key.F10, Key.Y])
+            SetUpLib.send_key(Key.ENTER)  # Send Enter
+            SetUpLib.send_data('255')  # set 255
+            SetUpLib.send_key(Key.ENTER)  # Send Enter
+            SetUpLib.send_keys(Key.SAVE_RESET)
             self.assertTrue(icx2pAPI.toBIOSnp(serial))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))
             dimm_memPower.navigate_to_cke(self)
@@ -224,7 +224,7 @@ DPM = dimm_memPower()
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: NA
-def Testcase_MemMargin_001(serial):
+def Testcase_MemMargin_001():
     tc = ('708', '[TC708] Testcase_MemMargin_001', '01 内存margin测试菜单选项测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
 
@@ -251,8 +251,8 @@ def Testcase_MemMargin_001(serial):
         logging.info(f"{BSSA_RMT_FAST} -> Enabled")
         # Serial Debug Message: Enable
         assert BmcLib.debug_message(enable=True), "bmc_debug_message >> fail"
-        SetUpLib.send_keys([Key.F10, Key.Y])
-        assert serial.waitStrings(SERIAL_RMT_FLAG, timeout=600), "waitStrings >> fail"
+        SetUpLib.send_keys(Key.SAVE_RESET)
+        assert SetUpLib.wait_strings(SERIAL_RMT_FLAG, 600), "waitStrings >> fail"
         # BIOS load default
         BmcLib.debug_message(enable=False)
         BmcLib.clear_cmos()
@@ -332,7 +332,7 @@ def Testcase_MemRefresh_001(serial, ssh_os):
     try:
         assert SetUpLib.boot_to_page(Msg.CPU_CONFIG), "boot_to_page -> fail"
         assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM2X_REFRESH, '<Disabled>'], 10), "locate_option -> fail"
-        SerialLib.send_keys_with_delay(serial, [Key.F5, Key.F10, Key.Y])
+        SetUpLib.send_keys([Key.F5, Key.F10, Key.Y])
         assert Os.boot_to_suse(serial), "boot_to_os -> fail"
         assert icx2pAPI.ping_sut(), "ping_os_ip-> fail"
         assert icx2pAPI.rw_everything(ssh_os, ['005f', '5a55'], ['c99224e0', 'fb9224e0'])
@@ -354,7 +354,7 @@ def Testcase_MemRefresh_002(serial, ssh_os):
         assert SetUpLib.boot_to_page(Msg.CPU_CONFIG), "boot_to_page -> fail"
         assert SetUpLib.enter_menu(Key.DOWN, Msg.MEMORY_CONFIG, 10, Msg.MEM_FRE), "enter_menu -> fail"
         assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM2X_REFRESH, '<Disabled>'], 10), "locate_option -> fail"
-        SerialLib.send_keys_with_delay(serial, [Key.F6 * 3, Key.F10, Key.Y])
+        SetUpLib.send_keys([Key.F6 * 3, Key.F10, Key.Y])
         assert Os.boot_to_suse(serial), "boot_to_os -> fail"
         assert icx2pAPI.ping_sut(), "ping_os_ip-> fail"
         assert icx2pAPI.rw_everything(ssh_os, ['005f', '5a55'], ['c99224e0', 'fb9224e0'])
@@ -369,7 +369,7 @@ def Testcase_MemRefresh_002(serial, ssh_os):
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: SUSE OS
-def Testcase_MemoryCompa_009(serial, ssh_bmc, unitool):
+def Testcase_MemoryCompa_009(serial, unitool):
     tc = ('713', '[TC713]Testcase_MemoryCompa_009', '装备模式内存Margin功能测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     logging.info("Change setup option to enable RMT")
@@ -399,13 +399,13 @@ def navegate_to_mem_fre_option(serial, n=1):  # used to set mem freq test
     assert SetUpLib.boot_to_page(Msg.CPU_CONFIG), "boot_to_page -> fail"
     assert SetUpLib.enter_menu(Key.DOWN, Msg.MEMORY_CONFIG, 10, Msg.MEM_FRE), "enter_menu -> fail"
     assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM_FRE, 'Auto'], 10), "locate_option -> fail"
-    SerialLib.send_keys_with_delay(serial, [Key.F6 * n, Key.F10, Key.Y])
+    SetUpLib.send_keys([Key.F6 * n, Key.F10, Key.Y])
     assert Os.boot_to_suse(serial), "boot_to_os -> fail"
     assert icx2pAPI.ping_sut(), "ping_os_ip-> fail"
     assert SetUpLib.reset_default()
 
 
-def Testcase_SetMemFreq_001_006(serial, ssh_bmc, n=1):
+def Testcase_SetMemFreq_001_006(serial, n=1):
     tc = ('714', '[TC714] Testcase_SetMemFreq_001_006', '01-06 内存频率选项测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
@@ -435,7 +435,7 @@ def Testcase_SetMemFreq_001_006(serial, ssh_bmc, n=1):
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: SUSE OS
-def Testcase_MTRR_001(serial, ssh_bmc, ssh_os):
+def Testcase_MTRR_001(ssh_os):
     tc = ('715', '[TC715] Testcase_MTRR_002', '01 MTRR最大内存地址范围测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
@@ -456,13 +456,13 @@ def Testcase_MTRR_001(serial, ssh_bmc, ssh_os):
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: SUSE OS
-def Testcase_MTRR_002(serial, ssh_bmc, ssh_os):
+def Testcase_MTRR_002(serial, ssh_os):
     tc = ('716', '[TC716] Testcase_MTRR_002', '02 MTRR Fixed ranges测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     flag = []
     try:
         assert BmcLib.force_reset(), 'reset_system -> fail'
-        assert not serial.waitString('0xa0300', timeout=60), 'find 0xa0300 string'
+        assert not SetUpLib.wait_message('0xa0300', 60), 'find 0xa0300 string'
         assert Os.boot_to_suse(serial), "boot_to_os -> fail"
         assert icx2pAPI.ping_sut(), "ping_os_ip-> fail"
         res = SshLib.execute_command(ssh_os, 'dmesg | grep MTRR')

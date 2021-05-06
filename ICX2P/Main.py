@@ -45,7 +45,7 @@ def TestScope():
     DIMM.DPM.dimm_power_mgt_07()
     Release.me_version_status()
     biosTest.loadDefault()
-    DIMM.Testcase_MemMargin_001(ser)
+    DIMM.Testcase_MemMargin_001()
     Pch.usb_default_enable_check()
     Pch.post_gpio_error_check(ser)
     if Legacy.enable_legacy_boot():
@@ -82,6 +82,6 @@ def Debug():
     Hotkey.Testcase_SystemInfo_002(ser)
     Hotkey.Testcase_SystemInfo_003(ser)
     Smbios.smbios_type128(ser, ssh_os, ssh_bmc, unitool)
-    DIMM.Testcase_MemoryCompa_009(ser, ssh_bmc, unitool)
+    DIMM.Testcase_MemoryCompa_009(ser, unitool)
     biosTest.Testcase_SerialPrint_001(ser, ssh_bmc)
     biosTest.Testcase_SerialPrint_002(ser)
