@@ -355,3 +355,8 @@ def reset_default():
         return
     logging.info("Reset dafault by F9:Pass")
     return True
+
+
+# Match a list of strings from serial port
+def wait_strings(msg_list, delay=10):
+    return SerialLib.is_msg_list_present(Sut.BIOS_COM, msg_list, delay)
