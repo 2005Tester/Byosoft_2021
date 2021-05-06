@@ -267,6 +267,7 @@ def auto_test(testcase_file):
                 test_status["Failed"].append(key)
             update_test_status(test_status, (testcase_file + '.status'))
             tc_executed += 1
+            reboot_to_setup(bmc, ser, timeout=config.os_timeout)
     if tc_executed == 0:
         logging.info("Test for %s is already done." % testcase_file)
         return True

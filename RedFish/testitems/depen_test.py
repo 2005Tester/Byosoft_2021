@@ -215,6 +215,7 @@ class DepenTest(RedFish):
     def check_mapto(self, mapfrom: list):
         """ PATCH完成后重启，检查所有的MapTo的联动条件是否满足 """
         # pandas DataFrame filter doesn't support list types, use column IndexStr instead
+        mf_info = {mf["MapFromAttribute"]: mf["MapFromValue"] for mf in mapfrom}
         mapto_row = self.map_from_pd[self.map_from_pd["IndexStr"].values == json.dumps(mapfrom, indent=4)].iloc[0]
         result = True
         for mi, mt in mapto_row.items():
@@ -249,13 +250,22 @@ class DepenTest(RedFish):
                 logging.info(rf"[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <pass>")
                 continue
             # is map_key be mapped bt other item as Hidden/ReadOnly ?
-            if map_key in self.mapto_link.keys():
-                if patch_try["result"]:
-                    result = result & False
-                    logging.info(rf"[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <fail>")
-                    logging.info(rf"Message: {patch_try['body']}")
-                    continue
-                logging.info(rf"[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <pass>")
+            if self.mapto_link.get(map_key):
+                for kmf, vmf in mf_info.items():
+                    if vmf in self.mapto_link[map_key].get(kmf):
+                        if patch_try["result"]:
+                            result = result & False
+                            logging.info(rf"[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <fail>")
+                            logging.info(rf"Message: {patch_try['body']}")
+                            continue
+                        logging.info(rf"[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <pass>")
+                    else:
+                        if not patch_try["result"]:
+                            result = result & False
+                            logging.info(rf"[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <fail>")
+                            logging.info(rf"Message: {patch_try['body']}")
+                            continue
+                        logging.info(rf"[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <pass>")
                 continue
             # Others Patch pass
             if not patch_try["result"]:
