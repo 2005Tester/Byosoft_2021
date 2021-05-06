@@ -369,18 +369,18 @@ def Testcase_MemRefresh_002(serial, ssh_os):
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: SUSE OS
-def Testcase_MemoryCompa_009(serial, unitool):
+def Testcase_MemoryCompa_009(unitool):
     tc = ('713', '[TC713]Testcase_MemoryCompa_009', '装备模式内存Margin功能测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     logging.info("Change setup option to enable RMT")
     try:
         assert BmcLib.force_reset()
-        assert SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE)
+        assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE)
         assert icx2pAPI.ping_sut()
         assert unitool.set_config(BiosCfg.MFG_RMT), "Change setup by unitool failed."
         logging.info("Reboot SUT to Linux")
         assert BmcLib.force_reset()
-        ser_rmt_data = SerialLib.cut_log(serial, "START_BSSA_RMT", "STOP_BSSA_RMT", 15, 600)
+        ser_rmt_data = SerialLib.cut_log(Sut.BIOS_COM, "START_BSSA_RMT", "STOP_BSSA_RMT", 15, 600)
         assert ("Ctl+" in ser_rmt_data), "Invalid RMT data"
         BmcLib.clear_cmos()
         result.log_pass()

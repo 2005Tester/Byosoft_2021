@@ -9,6 +9,8 @@
 import logging
 import re
 import time
+import os
+import csv
 from Core import SerialLib
 from Core.SutInit import Sut
 from ICX2P.Config.SutConfig import SUT_CONFIG, SysCfg
@@ -319,7 +321,7 @@ def vtd():
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: NA
-def Testcase_SerialPrint_001(serial, ssh_bmc):
+def Testcase_SerialPrint_001():
     tc = ('026', '[TC026]Testcase_SerialPrint_001', '启动关键信息打印测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     cpu_resource = r"[\s\S]*".join([rf"CPU{n}[\s\S]*Stk07" for n in range(SysCfg.CPU_CNT)])
@@ -329,17 +331,17 @@ def Testcase_SerialPrint_001(serial, ssh_bmc):
     def check_process(timeout):
         assert BmcLib.force_reset()
         # CPU Resource Allocation
-        cpu_log = SerialLib.cut_log(serial, "CPU Resource Allocation", "START_SOCKET_0_DIMMINFO_TABLE", 100, timeout, 5)
+        cpu_log = SerialLib.cut_log(Sut.BIOS_COM, "CPU Resource Allocation", "START_SOCKET_0_DIMMINFO_TABLE", 100, timeout, 5)
         logging.debug(cpu_log)
         assert re.search(cpu_resource, cpu_log), "CPU Resource Allocation not found"
         logging.info("CPU Resource Allocation check pass")
         # BIOS Revision
-        ver_log = SerialLib.cut_log(serial, "BootType :", "BIOS Date :", 100, timeout, 3)
+        ver_log = SerialLib.cut_log(Sut.BIOS_COM, "BootType :", "BIOS Date :", 100, timeout, 3)
         logging.debug(ver_log)
         assert re.search(bios_ver, ver_log), "BIOS Revision not found"
         logging.info("BIOS Revision check pass")
         # PCIE LINK STATUS
-        pcie_log = SerialLib.cut_log(serial, "EFI1711", "Press Del go to Setup Utility", 100, timeout, 3)
+        pcie_log = SerialLib.cut_log(Sut.BIOS_COM, "EFI1711", "Press Del go to Setup Utility", 100, timeout, 3)
         logging.debug(pcie_log)
         assert re.search(pcie_lnk, pcie_log), "PCIE LINK STATUS not found"
         logging.info("PCIE LINK STATUS check pass")
@@ -362,14 +364,14 @@ def Testcase_SerialPrint_001(serial, ssh_bmc):
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: NA
-def Testcase_SerialPrint_002(serial):
+def Testcase_SerialPrint_002():
     tc = ('027', '[TC027]Testcase_SerialPrint_003', 'BIOS启动阶段串口报错检查')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     error_msg = ["error", "fail", "assert", "exception"]
     ignore_list = ["IdFromBmc Fail,Status: Device Error"]
     try:
         assert BmcLib.force_reset()
-        ser_log = SerialLib.cut_log(serial, "BIOS Log @", Msg.BIOS_BOOT_COMPLETE, 120, 120, 3)
+        ser_log = SerialLib.cut_log(Sut.BIOS_COM, "BIOS Log @", Msg.BIOS_BOOT_COMPLETE, 120, 120, 3)
         for line in ser_log.split("\n"):
             for err in error_msg:
                 if not re.search(err, line, re.I):  # 检查错误信息， 忽略大小写
@@ -379,6 +381,62 @@ def Testcase_SerialPrint_002(serial):
                     assert re.search(ig, line), line  # 排除例外
         result.log_pass()
         return True
+    except AssertionError as e:
+        logging.info(e)
+        result.log_fail()
+
+
+# 依据能效菜单基线文件(ICX2P/Tools/PowerEfficiency/2288V6_PowerEfficiency.csv)验证所有能效场景，其关联选项是否配置正确
+# Precondition: 配置好unitool
+# OnStart: Boot to linux
+# OnComplete: NA
+def Testcase_PowerEfficiency_001(unitool):
+    tc = ('028', '[TC028]Testcase_PowerEfficiency_001', 'PowerEfficiency场景配置测试')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    baseline = os.path.join(os.path.dirname(__file__), r"Tools\PowerEfficiency\2288V6_PowerEfficiency.csv")
+    with open(baseline, "r", encoding="utf-8-sig") as file:
+        data = list(csv.reader(file))
+    option = "Performance Profile"
+    # list order must follow the bios menu sequence
+    value_list = ["Custom", "Efficiency", "Performance", "Load Balance", "High RAS", "HPC", "General Computing",
+                  "Low Latency", "Server Side Java", "Memory Throughput", "I/O Throughput", "Energy Saving", "NFV"]
+    test_res = True
+    try:
+        for col_index, to_mode in enumerate(data[0][1:]):
+            # Set power efficiency mode
+            result_index = data[0].index(to_mode)+1
+            data[0].insert(result_index, f"{to_mode}_check")
+            assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+            SetUpLib.send_key(Key.UP)
+            assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_ADV_PM_CFG, 10, "Performance Profile")
+            logging.info("Load Default...")
+            SetUpLib.send_keys([Key.F9, Key.Y])
+            time.sleep(6)
+            assert SetUpLib.set_option_value(option, "Custom", to_mode, Key.F5, value_list.index(to_mode))
+            SetUpLib.send_keys([Key.F10, Key.Y])
+            assert icx2pAPI.ping_sut()
+            # Check each Attribute's value
+            for row_index, attr_name in enumerate(data[1:]):
+                key = attr_name[0]
+                value = attr_name[data[0].index(f"{to_mode}_check")-1]
+                value = str(int(value, 16)) if ("0x" in value) else value
+                read_res = unitool.read(key)
+                read_val = read_res.get(key) if read_res else None
+                if read_val != value:
+                    data[row_index + 1].insert(result_index, read_val)
+                    test_res = test_res & False
+                    continue
+                data[row_index + 1].insert(result_index, "pass")
+        # Show detail test report in test log：
+        logging.info("Show the test result table")
+        for line in data:
+            logging.info(list(map(lambda x: "{:36}".format(x), line)))
+        logging.info(f"Test result: {test_res}")
+        # Result summary
+        if test_res:
+            result.log_pass()
+            return True
+        result.log_fail()
     except AssertionError as e:
         logging.info(e)
         result.log_fail()

@@ -1,6 +1,7 @@
 import os
 import re
 import logging
+from Core.SutInit import Sut
 from Report import ReportGen
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg
@@ -20,13 +21,13 @@ from Core import SerialLib
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: NA
-def post_gpio_error_check(serial):
+def post_gpio_error_check():
     tc = ('600', '[TC600] Testcase_GPIO_002', '02 BIOS启动阶段GPIO初始化测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         assert BmcLib.debug_message(enable=True), "debug message enable fail"
         assert BmcLib.force_power_cycle(), "force_power_cycle fail"
-        assert SerialLib.is_msg_present(serial, msg=Msg.BIOS_BOOT_COMPLETE, delay=600), "boot up fail"
+        assert SerialLib.is_msg_present(Sut.BIOS_COM, msg=Msg.BIOS_BOOT_COMPLETE, delay=600), "boot up fail"
         assert os.path.isfile(SutConfig.SERIAL_LOG), "Invalid serial log"
         with open(SutConfig.SERIAL_LOG) as ser_log:
             ser_data = ser_log.read()
@@ -34,7 +35,7 @@ def post_gpio_error_check(serial):
         logging.info(f"No '{Msg.GPIO_ERR}' found in serial log, test pass")
         assert BmcLib.debug_message(enable=False), "debug message disable fail"
         assert BmcLib.force_power_cycle(), "force_power_cycle fail"
-        assert SerialLib.is_msg_present(serial, msg=Msg.BIOS_BOOT_COMPLETE), "boot up fail"
+        assert SerialLib.is_msg_present(Sut.BIOS_COM, msg=Msg.BIOS_BOOT_COMPLETE), "boot up fail"
         result.log_pass()
     except AssertionError as e:
         logging.info(e)

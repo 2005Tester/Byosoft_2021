@@ -323,26 +323,23 @@ def get_option_value(option_patten, key, try_counts):
 
 
 # set value of a setup option
-def set_option_value(serial, locate_try, option_name, set_key, set_counts, exp_value, verify_counts):
-    """
-    :param locate_try: the counts to press the locate_key
-    :param option_name: the specify option, should be a list, e.g ['Active Processor Cores', '<All>']
-    :param set_key: press key to set the specify option, e.g Key.F5 - Down, Key.F6 - Up, depends on the BIOS ket rule
-    :param set_counts: the counts to press the set_key
-    :param exp_value: the expected value set to the option, should be a list, e.g [['Active Processor Cores', '<15>']]
-    :param verify_counts: the counts to press the key, and verify the option value after modified
-    :return: True, the option value set successfully
-             False, the option value set fail
-    """
-    assert locate_option(Key.DOWN, option_name, locate_try), 'local_option -> fail'
-    logging.info('Start to set value...')
-    send_keys([set_key * set_counts])
+# Usage Example: option="Performance Profile", from_value="Custom", to_value="Performance", set_key=Key.F5, set_cnt=3
+def set_option_value(option, from_value, to_value, set_key, set_cnt, loc_cnt=15):
+    from_option = [option, f"<{from_value}>"]
+    to_option = [option, f"<{to_value}>"]
+    key_pressd = [set_key] * set_cnt
+    if not locate_option(Key.DOWN, from_option, loc_cnt):
+        logging.info('local_option -> fail')
+        return
+    logging.info(f'Try to set [{option}] from <{from_value}> to <{to_value}>...')
+    send_keys(key_pressd)
     logging.info('Value set done, start to check if set successfully...')
-    send_key(Key.UP)  # W/A to find the option
-    if not verify_counts(serial, Key.DOWN, exp_value, verify_counts):
+    if key_pressd:  # avoid mis-locate if set_cnt=0 since verify_options find str first,then send key
+        send_keys(Key.UP)
+    if not verify_options(Key.DOWN, [to_option], loc_cnt):
         logging.info('Set option value -> fail')
         return
-    logging.info('Set option value successfully')
+    logging.info(f'Set [{option}]: <{from_value}> => <{to_value}> successfully')
     return True
 
 

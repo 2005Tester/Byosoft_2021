@@ -3,6 +3,7 @@ import os
 import re
 from os.path import dirname
 import logging
+from Core.SutInit import Sut
 from Report import ReportGen
 from Core import SerialLib, SshLib
 from Common.LogAnalyzer import LogAnalyzer
@@ -159,25 +160,25 @@ def smbios_test_all(ssh):
 # Precondition: Linux配置好 unitool和rw工具, os ssh可访问
 # OnStart: 进入Linux系统
 # OnComplete: clearCMOS后正常启动
-def smbios_type128(serial, sshos, unitool):
+def smbios_type128(unitool):
     tc = ('528', '[TC528]Testcase_MemMargin_002', '装备模式下内存margin测试, 检查Smbios Type128信息')
     result = ReportGen.LogHeaderResult(tc)
     logging.info("Change setup option to enable RMT")
     try:
         assert BmcLib.force_reset()
-        assert SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE)
+        assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE)
         assert icx2pAPI.ping_sut()
         assert unitool.set_config(BiosCfg.MFG_RMT), "Change setup by unitool failed."
         logging.info("Reboot SUT to Linux")
         assert BmcLib.force_reset()
-        ser_rmt_data = SerialLib.cut_log(serial, "START_BSSA_RMT", "STOP_BSSA_RMT", duration=15, timeout=600)
+        ser_rmt_data = SerialLib.cut_log(Sut.BIOS_COM, "START_BSSA_RMT", "STOP_BSSA_RMT", duration=15, timeout=600)
         assert ser_rmt_data, "Invalid RMT data"
         logging.debug(ser_rmt_data)
         assert icx2pAPI.ping_sut()
-        type128data = SshLib.execute_command(sshos, "dmidecode -t 128")
+        type128data = SshLib.execute_command(Sut.OS_SSH, "dmidecode -t 128")
         assert type128data, "Unable to read type128 data"
         logging.debug(type128data)
-        test = Type128Test(type128data, ser_rmt_data, sshos)
+        test = Type128Test(type128data, ser_rmt_data, Sut.OS_SSH)
         assert test.run_test(), "SMBIOS Type128 test failed"
         BmcLib.clear_cmos()
         result.log_pass()

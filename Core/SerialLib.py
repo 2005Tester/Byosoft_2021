@@ -72,7 +72,7 @@ def cut_log(serial, start_str, end_str, duration=20, timeout=120, step=30):
                     data_saved += clndata
                 if re.search(end_str, clndata):  # cache last tmpdata
                     logging.info(f"End string found: {end_str}")
-                    if data_saved != clndata:  # in case of first tmpdata contains start_str and end_str
+                    if not re.search(end_str, data_saved):  # in case of first tmpdata contains start_str and end_str
                         data_saved += clndata
                     return data_saved
                 if time.time()-cut_begain > duration:  # duration timeout

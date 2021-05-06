@@ -49,7 +49,7 @@ def rrqirq():
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: NA
-def pcie_port_bandwidth_check(serial):
+def pcie_port_bandwidth_check():
     tc = ('102', '[TC102] Testcase_PCIeInit_001', 'PCIe带宽默认值测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
@@ -63,8 +63,8 @@ def pcie_port_bandwidth_check(serial):
                 assert SetUpLib.enter_menu(Key.DOWN, [port_menu], 15, "PCIe Port")
                 assert SetUpLib.verify_info([rf"PCIe Port Link Max\s+Max Width {bwidth.lower()}"], 25), f"Socket{cpu}：port {port} = {bwidth} fail"
                 logging.info(f"Socket{cpu}：port {port} = {bwidth} pass")
-                serial.send_keys(Key.ESC)
-            serial.send_keys(Key.ESC)
+                SetUpLib.send_key(Key.ESC)
+            SetUpLib.send_key(Key.ESC)
         result.log_pass()
     except AssertionError as e:
         logging.info(e)

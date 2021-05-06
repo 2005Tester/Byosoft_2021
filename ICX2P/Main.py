@@ -47,7 +47,11 @@ def TestScope():
     biosTest.loadDefault()
     DIMM.Testcase_MemMargin_001()
     Pch.usb_default_enable_check()
-    Pch.post_gpio_error_check(ser)
+    Pch.post_gpio_error_check()
+    DefaultValueTest.pcie_port_bandwidth_check()
+    biosTest.Testcase_SerialPrint_001()
+    biosTest.Testcase_SerialPrint_002()
+    biosTest.Testcase_PowerEfficiency_001(unitool)
     if Legacy.enable_legacy_boot():
         Legacy.disable_legacy_boot()
 
@@ -56,7 +60,8 @@ def TestScope():
 def EquipScope():
     Release.equip_mode_version_check()
     Os.boot_to_suse_mfg()
-    Smbios.smbios_type128(ser, ssh_os, unitool)
+    Smbios.smbios_type128(unitool)
+    DIMM.Testcase_MemoryCompa_009(unitool)
 
 
 # Define test scope for daily test
@@ -75,13 +80,14 @@ def ReleaseTest():
 
 
 def Debug():
-    Cpu.cpu_mem_info(ser)
+    Cpu.cpu_mem_info()
     DIMM.Testcase_MemoryCompa_001()
     DIMM.Testcase_MemoryCompa_006(ser, ssh_os)
     Hotkey.Testcase_SystemInfo_001(ser)
     Hotkey.Testcase_SystemInfo_002(ser)
     Hotkey.Testcase_SystemInfo_003(ser)
-    Smbios.smbios_type128(ser, ssh_os, ssh_bmc, unitool)
-    DIMM.Testcase_MemoryCompa_009(ser, unitool)
-    biosTest.Testcase_SerialPrint_001(ser, ssh_bmc)
-    biosTest.Testcase_SerialPrint_002(ser)
+    Smbios.smbios_type128(unitool)
+    DIMM.Testcase_MemoryCompa_009(unitool)
+    biosTest.Testcase_SerialPrint_001()
+    biosTest.Testcase_SerialPrint_002()
+    biosTest.Testcase_PowerEfficiency_001(unitool)
