@@ -26,7 +26,7 @@ class sftp:
         self.password = password
 
     def login(self):
-        logging.info("Try sftp login.")
+        logging.debug("Try sftp login.")
         try:
             self.transport = paramiko.Transport(self.host_ip, 22)
             self.transport.banner_timeout = 120
@@ -35,7 +35,7 @@ class sftp:
         except:
             logging.error("sftp_login: {0}".format(e))
             return
-        logging.info("Login successfully")
+        logging.info("SFTP login successfully")
         return True
 
     def ls_dir(self, dir='.'):
@@ -106,7 +106,7 @@ class SshConnection:
 
     # execute command on SUT
     def execute_command(self, command):
-        logging.info("Sending: {0}".format(command))
+        logging.debug("Sending: {0}".format(command))
         stdin, stdout, stderr = self.ssh_client.exec_command(command)
         res = stdout.read().decode()
         return res
@@ -137,7 +137,7 @@ class SshConnection:
     def interaction(self, cmds, strs):
         op = self.ssh_client.invoke_shell()
         for i in range(0, len(cmds)):
-            logging.info('Sending: {0}'.format(cmds[i].strip("\n")))
+            logging.debug('Sending: {0}'.format(cmds[i].strip("\n")))
             op.send(cmds[i])
             time.sleep(4)
             res = op.recv(1024)

@@ -1,4 +1,5 @@
 import logging
+import time
 from Core import SerialLib
 from Core.SutInit import Sut
 from ICX2P.Config import SutConfig
@@ -19,6 +20,7 @@ def send_keys(keys, delay=1):
 # send data to BIOS serial port
 def send_data(data):
     SerialLib.send_data(Sut.BIOS_COM, data)
+    time.sleep(1)
 
 
 # verify information like CPU, memory in one setup page, option name is highlighted

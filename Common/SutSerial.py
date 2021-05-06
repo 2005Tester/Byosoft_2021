@@ -130,7 +130,7 @@ class SutControl:
             while True:
                 if self.session.in_waiting:
                     try:
-                        self.data = self.session.read(512).decode("utf-8")
+                        self.data = self.session.read(1024).decode("utf-8")
                         if cleanup:
                             self.data = self.cleanup_data(self.data)
                         else:

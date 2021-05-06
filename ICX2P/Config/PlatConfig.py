@@ -28,6 +28,7 @@ class Key:
     RIGHT = [chr(0x1b), chr(0x5b), chr(0x43)]
     Y = [chr(0x59)]
     RESET_DEFAULT = [F9, Y, F10, Y]
+    SAVE_RESET = [F10, Y]
 
 
 # Messages to identify a specific boot option, page, menu or system status
