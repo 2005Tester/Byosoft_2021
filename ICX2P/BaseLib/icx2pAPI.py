@@ -89,16 +89,6 @@ def rw_everything(ssh, exp_res, mem_bar, cmd='mmr', str=' ', start=1, stop=3):
     return True
 
 
-# def to BIOS Setup - System Time page
-def toSysTime(serial):
-    if not toBIOSnp(serial):
-        return
-    serial.send_keys_with_delay(SutConfig.key2Setup)
-    if not serial.waitString('System Time', timeout=60):
-        return
-    return True
-
-
 def toBIOSConf(serial):
     serial.send_keys_with_delay(SutConfig.key2Setup)
     if not serial.waitString('System Time', timeout=60):
@@ -170,21 +160,6 @@ def dcCycle():
         return
 
     return True
-
-
-# for load default test
-def verify_setup_options_up(serial, setup_options, try_count):
-    if serial.navigate_and_verify(Key.UP, setup_options, try_count):
-        return True
-    if serial.navigate_and_verify(Key.DOWN, setup_options, try_count):
-        return True
-
-
-def verify_setup_options_down(serial, setup_options, try_count):
-    if serial.navigate_and_verify(Key.DOWN, setup_options, try_count):
-        return True
-    if serial.navigate_and_verify(Key.UP, setup_options, try_count):
-        return True
 
 
 def pressDelnp(serial):

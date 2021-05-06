@@ -62,7 +62,7 @@ def locate_option(key, setupoption, try_counts):
     return Sut.BIOS_COM.locate_setup_option(key, setupoption, try_counts)
 
 
-# Boot to setup home page after a force reset
+# Boot to setup home page (6 icons) after a force reset
 def boot_to_setup():
     logging.info("SetUpLib: Boot to setup main page")
     logging.info("SetUpLib: Rebooting SUT...")
@@ -77,7 +77,7 @@ def boot_to_setup():
     return True
 
 
-# Continue boot to setup home page without a force reset
+# Continue boot to setup home page (6 icons) without a force reset
 def continue_to_setup():
     logging.info("SetUpLib: Continue boot to setup main page")
     if not Sut.BIOS_COM.boot_with_hotkey(Key.DEL, Msg.HOME_PAGE, 300):
@@ -129,7 +129,7 @@ def boot_to_pw_prompt(key):
     return continue_to_pw_prompt(key)
 
 
-# Boot to BIOS configuration
+# Boot to BIOS configuration information page
 def boot_to_bios_config():
     if not boot_to_setup():
         return
@@ -149,7 +149,7 @@ def boot_to_bios_config():
     return True
 
 
-# Continue Boot to BIOS configuration without a force reset
+# Continue Boot to BIOS configuration information page without a force reset
 def continue_to_bios_config():
     if not continue_to_setup():
         return
@@ -169,7 +169,7 @@ def continue_to_bios_config():
     return True
 
 
-# boot to specific page in bios configuration
+# boot to a specific page in bios configuration
 def boot_to_page(page_name):
     if not boot_to_bios_config():
         return
