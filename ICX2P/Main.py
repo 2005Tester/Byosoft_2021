@@ -1,4 +1,4 @@
-from Common import SutSerial, Unitool, ssh
+from Common import Unitool
 from Core import SutInit
 from Core.SutInit import Sut
 from ICX2P import UpdateBIOS, biosTest, DefaultValueTest, Os, Release, Smbios, Pwd, Legacy, DIMM, Cpu, Pch, Hotkey

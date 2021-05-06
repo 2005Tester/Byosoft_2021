@@ -79,36 +79,10 @@ class SysCfg:
         }]
 
 
-# pat
-pat = '[(\d+);\d+H[\w\s\d<>\[\]&-]'
-
 
 # defined the msg info
 press_f2 = 'Press F2'
-msg5 = 'USB Mouse\s+1'
-msg6 = 'USB Keyboard\s+1'
-msg7 = 'USB Mass Storage\s+0'
 pwd_info = 'The current password is the default password.Please update password!'
-
-# BIOS Setup options,
-# level 1
-PXE_option = 'UEFI HTTPSv4: Network - Port00 SLOT1'
-option = 'PCH Configuration'
-option2 = 'CPU Configuration'
-OS = 'P0-ubuntu - HDD 0'
-# SUSE = 'P0-SUSE Linux Enterprise - HDD 0'
-SUSE = 'SUSE Linux Enterprise\(LUN0\)'
-pwd_item = 'Manage Supervisor Password'
-pwd_item1 = 'Simple Password'
-
-
-# BIOS items info,
-ufs = ['<Enabled>\s+UFS']
-dram = ['<Enabled>\s+DRAM RAPL']
-
-# TPM info
-tpm_info = ['TPM Device\s+TPM 2.0', 'TPM2 Active PCR Hash\s+Algorithm+\s+SHA1\, SHA256',
-            'TPM2 Hardware Supported Hash\s+Algorithm+\s+SHA1\, SHA256']
 
 
 # CPU, DIMM info
@@ -118,11 +92,8 @@ DIMM_info = ['DIMM020\(C\)\s+S0.CC.D0:2933MT/s Hynix DRx4 32GB RDIMM',
 
 # Common key order
 key2Setup = [Key.RIGHT, Key.RIGHT, Key.DOWN, Key.ENTER]
-key2OS = [Key.RIGHT, Key.ENTER]
 key2pwd = [Key.RIGHT, Key.RIGHT, Key.RIGHT]
 
-# WA
-w2key = [Key.RIGHT, Key.UP]
 
 # rw os data
 CKE_POWER_DOWN = ['020f', '1100', '0080', '1000']
