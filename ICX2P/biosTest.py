@@ -397,8 +397,7 @@ def Testcase_PowerEfficiency_001(unitool):
             result_index = data[0].index(to_mode)+1
             data[0].insert(result_index, f"{to_mode}_check")
             assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
-            SetUpLib.send_key(Key.UP)
-            assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_ADV_PM_CFG, 10, "Performance Profile")
+            assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_ADV_PM_CFG, 15, "Performance Profile")
             logging.info("Load Default...")
             SetUpLib.send_keys([Key.F9, Key.Y])
             time.sleep(6)

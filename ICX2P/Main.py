@@ -1,7 +1,7 @@
 from Common import Unitool
 from Core import SutInit
 from Core.SutInit import Sut
-from ICX2P import UpdateBIOS, biosTest, DefaultValueTest, Os, Release, Smbios, Pwd, Legacy, DIMM, Cpu, Pch, Hotkey
+from ICX2P import UpdateBIOS, biosTest, DefaultValueTest, Os, Release, Smbios, Pwd, Legacy, DIMM, Cpu, Pch, Hotkey, PCIe
 from ICX2P.Config import SutConfig
 
 
@@ -51,6 +51,8 @@ def TestScope():
     DefaultValueTest.pcie_port_bandwidth_check()
     biosTest.Testcase_SerialPrint_001()
     biosTest.Testcase_SerialPrint_002()
+    PCIe.Testcase_PCIeResource_001()
+    PCIe.Testcase_PCIeResource_002()
     biosTest.Testcase_PowerEfficiency_001(unitool)
     if Legacy.enable_legacy_boot():
         Legacy.disable_legacy_boot()
