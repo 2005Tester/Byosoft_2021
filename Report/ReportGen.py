@@ -341,7 +341,7 @@ class ReportGenerator:
 
         dir, fi = os.path.split(self.log)
         report_files = [
-            ('upload', ('serial.log', open(os.path.join(dir, 'serial.log'), 'rb'))),
+#            ('upload', ('serial.log', open(os.path.join(dir, 'serial.log'), 'rb'))),
             ('upload', ('test.log', open(os.path.join(dir, 'test.log'), 'rb')))
         ]
 

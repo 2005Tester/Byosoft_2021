@@ -69,7 +69,6 @@ def verify_info(ssh, command, infos):
 # if dir is not specified, use root directory
 def sftp_remove_file(sftp, file_re, dir='.'):
     if sftp.login():
-        logging.info("Removing: {0}".format(file_re))
         sftp.remove_file(file_re, dir)
         sftp.close_session()
         return True

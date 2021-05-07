@@ -80,6 +80,7 @@ def ReleaseTest():
 
 
 def Debug():
+    UpdateBIOS.update_bios(ser, ssh_bmc, sftp_bmc, 'master')
     Cpu.cpu_mem_info()
     DIMM.Testcase_MemoryCompa_001()
     DIMM.Testcase_MemoryCompa_006(ser, ssh_os)

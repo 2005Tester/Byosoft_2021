@@ -53,7 +53,7 @@ class sftp:
     def upload_file(self, src_file, dst_file, ret_msg=None):
         status = 0
         try:
-            logging.info("Uploading file to sftp")
+            logging.debug("Uploading file to sftp")
             res = self.sftp.put(src_file, dst_file)
         except OSError:
             logging.error("Skip due to SSH connection error.")

@@ -99,6 +99,7 @@ def hpm_update(ssh_bmc, hpm_name="bios.hpm"):
 
 
 def poweron_sut():
+    logging.info("Power on Sut.")
     sshconn = ssh.SshConnection(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)
     cmd_power_on = 'ipmcset -d powerstate -v 1\n'
     ret_power_on = 'Do you want to continue'
@@ -117,6 +118,7 @@ def poweron_sut():
 
 def program_flash(ssh):
     # Program flash procedure: power off->maint mode->attach upgrade ->load bin
+    logging.info("Programing flash...")
     cmd_shutdown = 'ipmcset -d powerstate -v 2\n'
     ret_shutdown = 'Do you want to continue'
     cmd_maint_mode = 'maint_debug_cli\n'
