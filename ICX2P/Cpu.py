@@ -3,7 +3,7 @@ from Core import SerialLib, SshLib
 from Core.SutInit import Sut
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg
-from ICX2P.BaseLib import icx2pAPI, SetUpLib
+from ICX2P.BaseLib import icx2pAPI, SetUpLib, BmcLib
 from Report import ReportGen
 
 
@@ -136,7 +136,7 @@ def cpu_cores_active():
 
 
 # Verify CPU Active Processor Cores information
-# Precondition: NA
+# Precondition: unitool
 # OnStart: NA
 # OnComplete: suse Page
 
@@ -206,9 +206,9 @@ def cpu_cores_active_enable(ssh_os, num, set_n):
 def cpu_cores_active_enable_1(ssh_os):
     tc = ('205', '[205]Testcase_CoreDisable_002', 'Enable 1 CPU core test')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    num = 1
+    set_n = 28
     try:
-        num = 1
-        set_n = 28
         assert cpu_cores_active_enable(ssh_os, num, set_n)
         result.log_pass()
     except AssertionError:
@@ -218,9 +218,9 @@ def cpu_cores_active_enable_1(ssh_os):
 def cpu_cores_active_enable_middle(ssh_os):
     tc = ('206', '[206]Testcase_CoreDisable_003', 'Enable middle-num CPU core test')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    num = 14
+    set_n = 14
     try:
-        num = 14
-        set_n = 14
         assert cpu_cores_active_enable(ssh_os, num, set_n)
         result.log_pass()
     except AssertionError:
@@ -230,10 +230,66 @@ def cpu_cores_active_enable_middle(ssh_os):
 def cpu_cores_active_enable_max(ssh_os):
     tc = ('207', '[207]Testcase_CoreDisable_004', 'Enable max-1 CPU core test')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    num = 27
+    set_n = 1
     try:
-        num = 27
-        set_n = 1
         assert cpu_cores_active_enable(ssh_os, num, set_n)
         result.log_pass()
     except AssertionError:
+        result.log_fail(capture=True)
+
+
+# Verify CPU disable Processor Cores,the system runs normally
+# Precondition: unitool
+# OnStart: NA
+# OnComplete: suse Page
+def cpu_cores_disable_sys_normally(ssh_os):
+    tc = ('208', '[TC208] CoreDisable_005', 'After disable the CPU core, the system runs normally')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    ACT_CPU_CORES = ['Active Processor Cores', '<All>']
+    n = 1
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.ACT_CPU_CORES)
+        assert SetUpLib.locate_option(Key.DOWN, ACT_CPU_CORES, 20)
+        SetUpLib.send_keys([Key.F6]*28)
+        logging.info("**Active Processor Cores**")
+        SetUpLib.send_keys([Key.F10, Key.Y], 5)
+        logging.info("**reboot**")
+        while n < 5:  #系统反复重启，暂定5次
+            ### boot suse
+            assert SetUpLib.continue_to_bootmanager()
+            assert SetUpLib.enter_menu(Key.DOWN, ["SUSE Linux Enterprise\(LUN0\)"], 20, "Welcome to GRUB")
+            assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE, 200)
+            logging.info("Suse_OS Boot Successful")
+            res = SshLib.execute_command(ssh_os, r'date')
+            logging.info("system reboot pass, system-Time is : {} ".format(res))
+            assert BmcLib.force_reset()
+            n = n+1
+        # 还原系统设置
+        logging.info("正常还原")
+        BmcLib.clear_cmos()
+        logging.info("Modify bios to default setting by unipwd tool")
+        assert BmcLib.force_reset()
+        assert icx2pAPI.ping_sut()
+        SshLib.execute_command(ssh_os, r'cd {0};insmod ufudev.ko'.format(SutConfig.UNI_PATH))
+        res = SshLib.execute_command(ssh_os, r'cd {0};./unitool -w ActiveCpuCores:0'.format(SutConfig.UNI_PATH))
+        logging.info(res)
+        if len(res) == 0:
+            logging.info('blank, maybe the ko module failed')
+            return
+        elif 'error' in res:
+            logging.info("Modify BIOS default setting :Fail")
+            return
+        else:
+            logging.info('Rebooting the SUT...')
+            SshLib.execute_command(ssh_os, 'reboot')
+        logging.info("Modify BIOS default setting :Pass")
+        result.log_pass()
+    except AssertionError:
+        logging.info("异常还原")
+        assert icx2pAPI.ping_sut()
+        BmcLib.clear_cmos()
+        SshLib.execute_command(ssh_os, r'cd {0};insmod ufudev.ko'.format(SutConfig.UNI_PATH))
+        SshLib.execute_command(ssh_os, r'cd {0};./unitool -w ActiveCpuCores:0'.format(SutConfig.UNI_PATH))
         result.log_fail(capture=True)
