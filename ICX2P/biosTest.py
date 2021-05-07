@@ -24,8 +24,8 @@ P = LogAnalyzer(SutConfig.LOG_DIR)
 
 
 # POST, Boot, Setup, OS Installation, PM, Device, Chipsec Test and Source code cons.
-def POST_Test(serial):  # POST: POST Log(TBD) and Information Check
-    tc = ('002', 'POST Information Test', 'POST Information Test')
+def post_test(serial):  # POST: POST Log(TBD) and Information Check
+    tc = ('002', '[TC002]POST Information Test', 'POST Information Test')
     result = ReportGen.LogHeaderResult(tc)
     if not BmcLib.force_reset():
         result.log_fail()
@@ -119,38 +119,28 @@ def usbTest():
 
 
 # press F2
-def pressF2():
-    tc = ('009', 'Setup菜单用户输入界面按F2切换键盘制式', '支持热键配置')
+def press_f2():
+    tc = ('009', '[TC009]Setup菜单用户输入界面按F2切换键盘制式', '支持热键配置')
     result = ReportGen.LogHeaderResult(tc)
-    if not BmcLib.force_reset():
+    try:
+        assert BmcLib.force_reset()
+        assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.HOTKEY_PROMPT_DEL, 300)
+        SetUpLib.send_key(Key.DEL)
+        assert SerialLib.is_msg_present(Sut.BIOS_COM, "Press F2", 60)
+        SetUpLib.send_key(Key.F2)
+        assert SerialLib.is_msg_present(Sut.BIOS_COM, 'fr-FR')
+        SetUpLib.send_key(Key.F2)
+        assert SerialLib.is_msg_present(Sut.BIOS_COM, 'ja-JP')
+        SetUpLib.send_key(Key.F2)
+        assert SerialLib.is_msg_present(Sut.BIOS_COM, 'en-US')
+        logging.info("Send password...")
+        SetUpLib.send_data(SutConfig.BIOS_PASSWORD)
+        SetUpLib.send_key(Key.ENTER)
+        assert SerialLib.is_msg_present(Sut.BIOS_COM, 'Continue', 30)
+        result.log_pass()
+        return True
+    except AssertionError:
         result.log_fail()
-        return
-    if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.HOTKEY_PROMPT_DEL, 300):
-        result.log_fail()
-        return
-    SetUpLib.send_key(Key.DEL)
-    if not SerialLib.is_msg_present(Sut.BIOS_COM, "Press F2", 60):
-        result.log_fail()
-        return
-    SetUpLib.send_key(Key.F2)
-    if not SerialLib.is_msg_present(Sut.BIOS_COM, 'fr-FR'):
-        result.log_fail()
-        return
-    SetUpLib.send_key(Key.F2)
-    if not SerialLib.is_msg_present(Sut.BIOS_COM, 'ja-JP'):
-        result.log_fail()
-        return
-    SetUpLib.send_key(Key.F2)
-    if not SerialLib.is_msg_present(Sut.BIOS_COM, 'en-US'):
-        result.log_fail()
-        return
-    SetUpLib.send_data(SutConfig.BIOS_PASSWORD)
-    SetUpLib.send_key(Key.ENTER)  # Send Enter
-    logging.info("Send password...")
-    if not SerialLib.is_msg_present(Sut.BIOS_COM, 'Continue', 30):
-        return
-    result.log_pass()
-    return True
 
 
 # Setup: Load default and setting saving - AT test cases below,

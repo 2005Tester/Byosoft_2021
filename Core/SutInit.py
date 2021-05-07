@@ -2,6 +2,7 @@ import importlib
 import logging
 from Common import SutSerial
 from Common import ssh
+from Core import var
 
 
 class Sut:
@@ -17,7 +18,7 @@ class SutInit:
     def __init__(self, project):
         config = importlib.import_module('.Config.SutConfig', package=project)
         self.sut = config
-        self.serial_log = config.SERIAL_LOG
+        var.set('log_dir', config.LOG_DIR)
         logging.info("Initilizing SUT Connection...")
 
         Sut.BIOS_COM = self.init_bios_serial()
@@ -47,7 +48,7 @@ class SutInit:
     def init_bios_serial(self):
         try:
             com_port = self.sut.BIOS_SERIAL
-            bios_serial = SutSerial.SutControl(com_port, 115200, 0.5, self.serial_log)
+            bios_serial = SutSerial.SutControl(com_port, 115200, 0.5)
             return bios_serial
         except AttributeError:
             print("BIOS Serial port not configured, skip initlize BIOS serial interface")
@@ -55,7 +56,7 @@ class SutInit:
     def init_bmc_serial(self):
         try:
             com_port = self.sut.BMC_SERIAL
-            bmc_serial = SutSerial.SutControl(com_port, 115200, 0.5, self.serial_log)
+            bmc_serial = SutSerial.SutControl(com_port, 115200, 0.5)
             return bmc_serial
         except AttributeError:
             print("BMC Serial port not configured, skip initlize BMC serial interface")

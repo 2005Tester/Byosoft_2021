@@ -12,17 +12,17 @@ import time
 import re
 import sys
 import logging
+from Core import var
 
 ENTER = [chr(0x0D)]
 ES = "(\x1B[@-_][0-?]*[ -/]*[@-~]){1,5}"
 
 
 class SutControl:
-    def __init__(self, port, baudrate, timeout, log):
+    def __init__(self, port, baudrate, timeout):
         self.port = port
         self.baudrate = baudrate
         self.timeout = timeout
-        self.log = log
         self.data = ''
         try:
             self.session = serial.Serial(self.port, self.baudrate, timeout=self.timeout)
@@ -71,7 +71,7 @@ class SutControl:
                 if self.session.in_waiting:
                     data = self.session.read(256).decode("utf-8")
                     data = self.cleanup_data(data)
-                    with open(self.log, 'a') as f:
+                    with open(var.get('serial_log'), 'a') as f:
                         f.write(data)
             except Exception as e:
                 logging.error(e)
@@ -84,7 +84,7 @@ class SutControl:
             return True
 
     def write_data2log(self, data):
-        with open(self.log, 'a') as f:
+        with open(var.get('serial_log'), 'a') as f:
             f.write(data)
 
     def cleanup_data(self, data):
@@ -94,7 +94,7 @@ class SutControl:
         dic = {pat1: "", pat2: "", pat3: ""}
         for k, v in dic.items():
             data = re.compile(k).sub(v, data)
-        with open(self.log, 'a') as f:
+        with open(var.get('serial_log'), 'a') as f:
             f.write(data)
 
         return data

@@ -18,11 +18,11 @@ unitool = Unitool.SshUnitool(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PA
 
 # Test scope for non-equipment build
 def TestScope():
-    biosTest.POST_Test(ser)
+    biosTest.post_test(ser)
     biosTest.PM()
     biosTest.usbTest()
     Cpu.cpu_mem_info()
-    biosTest.pressF2()
+    biosTest.press_f2()
     Cpu.static_turbo_default()
     Cpu.ufs_default_value()
     DefaultValueTest.rrqirq()

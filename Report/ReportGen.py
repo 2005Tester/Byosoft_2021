@@ -15,14 +15,8 @@ import glob
 import pyautogui
 import logging.config
 from Core.SutInit import Sut
+from Core import var
 from json2html import *
-
-
-# Global Variable to track test progress
-class Progress:
-    PASS = 0
-    FAIL = 0
-    SKIP = 0
 
 
 # tc: tuple of test case basic information, 0:id, 1:tittle, 2:description
@@ -38,10 +32,12 @@ class LogHeaderResult:
         self.msg_fail = '<TC{0}><Result>{1}:Fail'.format(tc[0], tc[1])
         self.msg_pass = '<TC{0}><Result>{1}:Pass'.format(tc[0], tc[1])
         self.msg_skip = '<TC{0}><Result>{1}:Skip'.format(tc[0], tc[1])
+        var.set('current_test', 'TC{0}'.format(tc[0]))
+        # write serial_log to global variable
+        var.set('serial_log', os.path.join(var.get('log_dir'), 'TC{0}.log'.format(tc[0])))
         if imgdir:
             if not os.path.isdir(imgdir):
                 os.makedirs(imgdir)
-
         if self.serial:
             self.msg_serial = '\n##### TC{0} {1} #####\n'.format(tc[0], tc[1])
             self.serial.write_data2log(self.msg_serial)
@@ -49,11 +45,11 @@ class LogHeaderResult:
         logging.info(self.msg_description)
 
     def log_progress(self):
-        logging.info("<Overall Status>:{0} Passed, {1} Failed, {2} Skiped".format(Progress.PASS, Progress.FAIL, Progress.SKIP))
+        logging.info("<Overall Status>:{0} Passed, {1} Failed, {2} Skiped".format(var.get('num_pass'), var.get('num_fail'), var.get('num_skip')))
 
     def log_pass(self):
         logging.info(self.msg_pass)
-        Progress.PASS += 1
+        var.increase('num_pass')
         self.log_progress()
         logging.info("-"*80)
         if self.serial:
@@ -64,7 +60,7 @@ class LogHeaderResult:
         if capture:
             self.capture_screen()
         logging.info(self.msg_fail)
-        Progress.FAIL += 1
+        var.increase('num_fail')
         self.log_progress()
         logging.info("-"*80)
         if self.serial:
@@ -73,7 +69,7 @@ class LogHeaderResult:
 
     def log_skip(self):
         logging.info(self.msg_skip)
-        Progress.SKIP += 1
+        var.increase('num_skip')
         self.log_progress()
         logging.info("-"*80)
         if self.serial:
