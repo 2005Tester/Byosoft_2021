@@ -515,15 +515,15 @@ def Testcase_BiosPasswordSecurity_009(serial, ssh, ssh_os):
             assert (SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
             SetUpLib.send_key(Key.ENTER)
             assert (SerialLib.is_msg_present(serial, pwd_info_1))
-            SerialLib.send_data(serial, pwd_list2[k])
+            SetUpLib.send_data(pwd_list2[k])
             logging.info("input default_pwd")
             SetUpLib.send_key(Key.ENTER)
             assert (SerialLib.is_msg_present(serial, pwd_info_2))
-            SerialLib.send_data(serial, pwd_list2[m])
+            SetUpLib.send_data(pwd_list2[m])
             logging.info("input new_pwd")
             SetUpLib.send_key(Key.ENTER)
             assert (SerialLib.is_msg_present(serial, pwd_info_3))
-            SerialLib.send_data(serial, pwd_list2[m])
+            SetUpLib.send_data(pwd_list2[m])
             logging.info("confirm new_pwd")
             SetUpLib.send_key(Key.ENTER)
             # 满足密码测试用例规则
@@ -582,7 +582,7 @@ def Testcase_BiosPasswordSecurity_011_012_014(serial):
         assert (SerialLib.is_msg_present(serial, SutConfig.press_f2, 60))
         for list_error in pwd_error:
             try:
-                SerialLib.send_data(serial, list_error)
+                SetUpLib.send_data(list_error)
                 SetUpLib.send_key(Key.ENTER)
                 logging.info("Send  password...")
                 if list_error != pwd_error[-1]:
@@ -617,7 +617,7 @@ def Testcase_BiosPasswordSecurity_013(serial, ssh, ssh_os):
 #            assert (SerialLib.is_msg_present(serial, SutConfig.press_f2, 10))
         for list_error in pwd_error:
             try:
-                SerialLib.send_data(serial, list_error)
+                SetUpLib.send_data(list_error)
                 logging.info("Send password...")
                 SetUpLib.send_key(Key.ENTER)
                 if list_error != pwd_error[-1]:
@@ -653,7 +653,7 @@ def Testcase_BiosPasswordSecurity_014_015(serial, ssh):
         assert (SerialLib.is_msg_present(serial, SutConfig.press_f2))
         for list_error in pwd_error:
             try:
-                SerialLib.send_data(serial, list_error)
+                SetUpLib.send_data(list_error)
                 SetUpLib.send_key(Key.ENTER)
                 logging.info("Send  password...")
                 if list_error != pwd_error[-1]:
@@ -687,7 +687,7 @@ def Testcase_BiosPasswordSecurity_016_017(serial):
         SetUpLib.send_key(Key.DEL)
         logging.info("Hot Key sent")
         assert (SerialLib.is_msg_present(serial, SutConfig.press_f2))
-        SerialLib.send_data(serial, SutConfig.BIOS_PW_DEFAULT)
+        SetUpLib.send_data(SutConfig.BIOS_PW_DEFAULT)
         time.sleep(1)
         try:
             result.capture_screen()
@@ -812,7 +812,7 @@ def Testcase_BiosPasswordSecurity_028(serial, ssh, ssh_os):
         SetUpLib.send_keys([Key.F5,Key.F10, Key.Y])
         logging.info("set Power on Password Enable")
         assert (SerialLib.is_msg_present(serial, 'Enter Current Password:'))
-        SerialLib.send_data(serial, SutConfig.BIOS_PASSWORD)
+        SetUpLib.send_data(serial, SutConfig.BIOS_PASSWORD)
         SetUpLib.send_key(Key.ENTER)
         logging.info("reboot ,input BIOS_PASSWORD ")
         time.sleep(30)
@@ -870,6 +870,9 @@ def pwd_auth_mgt_08_10(serial, ssh, ssh_os):
           '管理员登录密码大于16位字符无法输入,普通用户登录密码大于16位无法输入;修改管理员密码界面需要先输入旧密码，再输入两次新密码')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     pwd_error = ['Admin@3456', 'Pw@99', '666666']
+    admin_pwd_17 = 'Admin@6789byosoft'
+    admin_pwd_16 = 'Admin@6789byosof'
+    user_pwd = 'Inter@4567'
     try:
         assert (BmcLib.force_reset())
         logging.info("Booting to setup")
@@ -880,7 +883,7 @@ def pwd_auth_mgt_08_10(serial, ssh, ssh_os):
         logging.info("input 3 times error pwd,System Locked")
         for list_error in pwd_error:
             try:
-                SerialLib.send_data(serial, list_error)
+                SetUpLib.send_data(list_error)
                 SetUpLib.send_key(Key.ENTER)
                 logging.info("Send  password...")
                 if list_error != pwd_error[-1]:
@@ -902,9 +905,9 @@ def pwd_auth_mgt_08_10(serial, ssh, ssh_os):
         # set 3
         logging.info("change administrator login password more than 16 digits")
         assert (SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
-        assert (change_password(SutConfig.BIOS_PASSWORD, 'Admin@6789byosoft'))
+        assert (change_password(SutConfig.BIOS_PASSWORD, admin_pwd_17))
         SetUpLib.send_keys([Key.F10, Key.Y])
-        assert (checkPWD(serial, 'Admin@6789byosof', 'Am@23'))
+        assert (checkPWD(serial, admin_pwd_16, 'Am@23'))
         # set 4 前置条件
         logging.info("Set step 4 preconditions")
         assert (icx2pAPI.toBIOSConf(serial))
@@ -912,22 +915,21 @@ def pwd_auth_mgt_08_10(serial, ssh, ssh_os):
         assert (SetUpLib.locate_option(Key.DOWN, ["Manage User Password"], 5))
         SetUpLib.send_key(Key.ENTER)
         assert (SerialLib.is_msg_present(serial, pwd_info_2))
-        SerialLib.send_data(serial, 'Inter@4567')
+        SetUpLib.send_data(user_pwd)
         SetUpLib.send_key(Key.ENTER)
         assert (SerialLib.is_msg_present(serial, pwd_info_3))
-        SerialLib.send_data(serial, 'Inter@4567')
+        SetUpLib.send_data(user_pwd)
         SetUpLib.send_key(Key.ENTER)
         assert (SerialLib.is_msg_present(serial, pwd_info_4))
         SetUpLib.send_key(Key.ENTER)
         SetUpLib.send_keys([Key.F10, Key.Y])
         # set 4
         logging.info("Enter the correct login password for ordinary users and log in to the setup menu")
-        SetUpLib.send_key(Key.CTRL_ALT_DELETE)
         assert (SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
         SetUpLib.send_key(Key.DEL)
         logging.info("Hot Key sent")
-        assert (SerialLib.is_msg_present(serial, SutConfig.press_f2, 10))
-        SerialLib.send_data(serial, 'Inter@4567')
+        assert (SerialLib.is_msg_present(serial, Msg.PW_PROMPT, 60))
+        SetUpLib.send_data(user_pwd)
         SetUpLib.send_key(Key.ENTER)
         assert (SerialLib.is_msg_present(serial, SutConfig.pwd_info))
         SetUpLib.send_key(Key.ENTER)
@@ -936,10 +938,10 @@ def pwd_auth_mgt_08_10(serial, ssh, ssh_os):
         SetUpLib.send_keys([Key.RIGHT, Key.ENTER])
         SetUpLib.send_keys(SutConfig.key2pwd)
         SetUpLib.send_key(Key.ENTER)
-        assert (SerialLib.is_msg_present(serial, "Enter New Password:"))
-        SerialLib.send_data(serial, 'Inter@4567byosoft')
-        logging.info('input User_Password ')
+        assert (SerialLib.is_msg_present(serial, "Please type in your password"))
+        SetUpLib.send_data('Inter@4567byosoft')
         SetUpLib.send_key(Key.ENTER)
+        logging.info('input User_Password invalid ')
         assert (SerialLib.is_msg_present(serial, invalid_info))
         SetUpLib.send_key(Key.ENTER)
         assert (reset_password_by_unipwd(serial, ssh, ssh_os))
