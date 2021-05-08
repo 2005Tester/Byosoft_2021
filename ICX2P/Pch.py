@@ -29,7 +29,7 @@ def post_gpio_error_check():
         assert BmcLib.debug_message(enable=True), "debug message enable fail"
         assert BmcLib.force_power_cycle(), "force_power_cycle fail"
         assert SerialLib.is_msg_present(Sut.BIOS_COM, msg=Msg.BIOS_BOOT_COMPLETE, delay=600), "boot up fail"
-        assert os.path.isfile(SutConfig.SERIAL_LOG), "Invalid serial log"
+        assert os.path.isfile(var.get('serial_log')), "Invalid serial log"
         with open(var.get('serial_log'), 'r') as ser_log:
             ser_data = ser_log.read()
         assert (Msg.GPIO_ERR not in ser_data), "Found GPIO Error, test failed"
@@ -59,8 +59,8 @@ def usb_default_enable_check():
         if SetUpLib.verify_info([rear_usb, buildin_usb], 10):
             result.log_pass()  # return pass if verify_info match
             return True
-        assert os.path.isfile(SutConfig.SERIAL_LOG), "Invalid serial log"
-        logging.info(f"Check local serial log: {SutConfig.SERIAL_LOG}")
+        assert os.path.isfile(var.get('serial_log')), "Invalid serial log"
+        logging.info(f"Check local serial log: {var.get('serial_log')}")
         with open(var.get('serial_log'), 'r') as ser_log:  # check serial log in case of no enough temporary read buffer
             ser_data = ser_log.read()
         assert re.search(key_words, ser_data), "USB strings not match, test fail"
