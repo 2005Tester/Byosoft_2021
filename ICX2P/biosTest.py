@@ -362,6 +362,7 @@ def Testcase_SerialPrint_002():
     try:
         assert BmcLib.force_reset()
         ser_log = SerialLib.cut_log(Sut.BIOS_COM, "BIOS Log @", Msg.BIOS_BOOT_COMPLETE, 120, 120, 3)
+        assert ser_log, "Invalid cut_log"
         for line in ser_log.split("\n"):
             for err in error_msg:
                 if not re.search(err, line, re.I):  # 检查错误信息， 忽略大小写

@@ -1,6 +1,7 @@
 import os
 import re
 import logging
+from Core import var
 from Core.SutInit import Sut
 from Report import ReportGen
 from ICX2P.Config import SutConfig
@@ -29,7 +30,7 @@ def post_gpio_error_check():
         assert BmcLib.force_power_cycle(), "force_power_cycle fail"
         assert SerialLib.is_msg_present(Sut.BIOS_COM, msg=Msg.BIOS_BOOT_COMPLETE, delay=600), "boot up fail"
         assert os.path.isfile(SutConfig.SERIAL_LOG), "Invalid serial log"
-        with open(SutConfig.SERIAL_LOG) as ser_log:
+        with open(var.get('serial_log'), 'r') as ser_log:
             ser_data = ser_log.read()
         assert (Msg.GPIO_ERR not in ser_data), "Found GPIO Error, test failed"
         logging.info(f"No '{Msg.GPIO_ERR}' found in serial log, test pass")
@@ -60,7 +61,7 @@ def usb_default_enable_check():
             return True
         assert os.path.isfile(SutConfig.SERIAL_LOG), "Invalid serial log"
         logging.info(f"Check local serial log: {SutConfig.SERIAL_LOG}")
-        with open(SutConfig.SERIAL_LOG) as ser_log:  # check serial log in case of no enough temporary read buffer
+        with open(var.get('serial_log'), 'r') as ser_log:  # check serial log in case of no enough temporary read buffer
             ser_data = ser_log.read()
         assert re.search(key_words, ser_data), "USB strings not match, test fail"
         logging.info("USB key words found in local serial log, test pass")

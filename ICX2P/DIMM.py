@@ -256,14 +256,14 @@ def Testcase_MemMargin_001():
         # BIOS load default
         BmcLib.debug_message(enable=False)
         BmcLib.clear_cmos()
-        BmcLib.force_power_cycle()
+        BmcLib.force_reset()
         SerialLib.is_msg_present(Sut.BIOS_COM, Msg.HOTKEY_PROMPT_DEL)
         result.log_pass()
     except AssertionError as e:
         logging.error(e)
         BmcLib.debug_message(enable=False)
         BmcLib.clear_cmos()
-        BmcLib.force_power_cycle()
+        BmcLib.force_reset()
         SerialLib.is_msg_present(Sut.BIOS_COM, Msg.HOTKEY_PROMPT_DEL)
         result.log_fail()
 
