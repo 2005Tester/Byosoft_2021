@@ -312,55 +312,41 @@ def Simple_password_save_enable(serial, ssh, ssh_os):
 
 
 def Simple_password_save_disable(serial, ssh, ssh_os):
-    tc = ('035', 'PasswordSecurity_05', '简易密码开关打开，设置简易密码后不保存退出')
+    tc = ('035', '[TC035]PasswordSecurity_05', '简易密码开关打开，设置简易密码后不保存退出')
     result = ReportGen.LogHeaderResult(tc)
-    if not locate_option_simplepw():
-        result.log_fail()
-        return
-
-    logging.info("**Enable Simple Password.")
-    SetUpLib.send_keys([Key.F5, Key.ENTER])
-    # 以上，为前置条件-简易密码开关打开#
-    if not SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20):
-        result.log_fail()
-        return
-    if not change_password(SutConfig.BIOS_PASSWORD, '66666666'):
-        result.log_fail()
-        return
-    SetUpLib.send_key(Key.CTRL_ALT_DELETE)
-    if not SetUpLib.continue_to_pw_prompt(Key.DEL):
-        return
-    SetUpLib.send_keys("")
-    SetUpLib.send_key(Key.ENTER)
-    if not SerialLib.is_msg_present(serial, invalid_info):
-        return
-    SetUpLib.send_key(Key.ENTER)
-    SetUpLib.send_data('Admin@9001Admin@')
-    SetUpLib.send_key(Key.ENTER)
-    if not SerialLib.is_msg_present(serial, invalid_info):
-        return
-    SetUpLib.send_key(Key.ENTER)
-    SetUpLib.send_data('333333')
-    SetUpLib.send_key(Key.ENTER)
-    if not SerialLib.is_msg_present(serial, invalid_info):
-        return
-    SetUpLib.send_key(Key.ENTER)
-    SetUpLib.send_key(Key.CTRL_ALT_DELETE)
-    if not SetUpLib.continue_to_pw_prompt(Key.DEL):
-        return
-    SetUpLib.send_data('11111111')
-    SetUpLib.send_key(Key.ENTER)
-    if not SerialLib.is_msg_present(serial, invalid_info):
-        return
-    SetUpLib.send_key(Key.ENTER)
-    if not icx2pAPI.toBIOS(serial, ssh):
-        result.log_fail()
-        return
-    if not reset_password_by_unipwd(serial, ssh, ssh_os):
-        restore_env(serial, ssh, log_dir)
-        return
-    result.log_pass()
-    return True
+    try:
+        assert locate_option_simplepw()
+        logging.info("**Enable Simple Password.")
+        SetUpLib.send_keys([Key.F5, Key.ENTER])
+        # 以上，为前置条件-简易密码开关打开#
+        assert SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20)
+        assert change_password(SutConfig.BIOS_PASSWORD, '66666666')
+        SetUpLib.send_key(Key.CTRL_ALT_DELETE)
+        assert SetUpLib.continue_to_pw_prompt(Key.DEL)
+        SetUpLib.send_keys("")
+        SetUpLib.send_key(Key.ENTER)
+        assert SerialLib.is_msg_present(serial, invalid_info)
+        SetUpLib.send_key(Key.ENTER)
+        SetUpLib.send_data('Admin@9001Admin@')
+        SetUpLib.send_key(Key.ENTER)
+        assert SerialLib.is_msg_present(serial, invalid_info)
+        SetUpLib.send_key(Key.ENTER)
+        SetUpLib.send_data('333333')
+        SetUpLib.send_key(Key.ENTER)
+        assert SerialLib.is_msg_present(serial, invalid_info)
+        SetUpLib.send_key(Key.ENTER)
+        SetUpLib.send_key(Key.CTRL_ALT_DELETE)
+        assert SetUpLib.continue_to_pw_prompt(Key.DEL)
+        SetUpLib.send_data('11111111')
+        SetUpLib.send_key(Key.ENTER)
+        assert SerialLib.is_msg_present(serial, invalid_info)
+        assert SetUpLib.boot_to_bios_config()       
+        result.log_pass()
+        reset_password_by_unipwd(serial, ssh, ssh_os)
+        return True
+    except AssertionError:
+        result.log_fail
+        reset_password_by_unipwd(serial, ssh, ssh_os)
 
 
 # Bios_Password_Security
