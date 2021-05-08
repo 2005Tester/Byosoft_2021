@@ -35,6 +35,7 @@ def TestScope():
     Cpu.cpu_cores_active_enable_middle(ssh_os)
     Cpu.cpu_cores_active_enable_max(ssh_os)
     Cpu.cpu_cores_disable_sys_normally(ssh_os)
+    Cpu.cores_customized_by_unitool(ssh_os)
     if Os.boot_to_suse():
         Smbios.smbios_test_all(ssh_os)
         Release.equip_mode_flag_check(unitool)

@@ -13,6 +13,91 @@ from Report import ReportGen
 #              CPU Test Cases            #
 ##########################################
 
+
+# function Module : 使用unitool修改Cpu_core
+def set_cpu_by_unitool(ssh_os, cmd_set):
+    SshLib.execute_command(ssh_os, r'cd {0};insmod ufudev.ko'.format(SutConfig.UNI_PATH))
+    res = SshLib.execute_command(ssh_os, cmd_set)
+    logging.info(res)
+    if len(res) == 0:
+        logging.info('blank, maybe the ko module failed')
+        return False
+    elif 'error' in res:
+        logging.info("Modify BIOS_Setting :Fail")
+        return False
+    else:
+        logging.info('Rebooting the SUT...')
+        SshLib.execute_command(ssh_os, 'reboot')
+    logging.info("Modify BIOS_Setting :Pass")
+    return True
+
+
+# function Module : 还原设Cpu_core
+def reset_cpu_setting(ssh_os):
+    cmd = r'cd {0};./unitool -w ActiveCpuCores:0'.format(SutConfig.UNI_PATH)
+    logging.info("Modify cpu setting to default setting by unipwd tool")
+    if not BmcLib.force_reset():
+        logging.info('power off-on fail')
+        return False
+    if not icx2pAPI.ping_sut():
+        logging.info('boot linux-suse fail')
+        return False
+    if not set_cpu_by_unitool(ssh_os, cmd):
+        logging.info('set_cpu_by_unitool fail')
+        return False
+    return True
+
+
+#  function Module, TC205,TC206,TC207 调用
+def cpu_cores_active_enable(ssh_os, num, set_n):
+    ACT_CPU_CORES = ['Active Processor Cores', '<All>']
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.ACT_CPU_CORES)
+        assert SetUpLib.locate_option(Key.DOWN, ACT_CPU_CORES, 20)
+        SetUpLib.send_keys([Key.F6]*set_n)
+        logging.info("**Active Processor Cores**")
+        SetUpLib.send_keys([Key.F10, Key.Y], 5)
+        logging.info("**reboot**")
+        assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
+        # assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        SetUpLib.send_keys(Key.ENTER)
+        assert SetUpLib.enter_menu(Key.DOWN, [Msg.MEMORY_TOP], 20, 'DIMM000')
+        logging.info("**Verify Memory Information**")
+        assert SetUpLib.verify_info(SutConfig.DIMM_info, 20)
+        # boot suse #
+        assert SetUpLib.boot_with_hotkey(Key.F11, "Boot Manager Menu", 300)
+        assert SetUpLib.enter_menu(Key.DOWN, ["SUSE Linux Enterprise\(LUN0\)"], 20, "Welcome to GRUB")
+        assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE, 170)
+        logging.info("Suse_OS Boot Successful")
+        ### 每个CPU下只有num个core。
+        res1 = SshLib.execute_command(ssh_os, r'lscpu | grep " per socket" ').replace('\n', '').split(':')[-1].strip()
+        if int(res1) == num:
+            logging.info("**Core Enable pass**")
+        else:
+            logging.info("**Core Enable eorro**")
+            return False
+        # 在smbios4中检查：Core数量为总数，Core Enable为num，线程数为Enabled核数的两倍 #
+        smbios4_Core_Count = SshLib.execute_command(ssh_os, r'dmidecode -t 4 | grep "Core Count" ').replace('\n', '').split(':')[-1].strip()
+        logging.info("**Core_Count = {}**".format(smbios4_Core_Count))
+        smbios4_Core_Enabled = SshLib.execute_command(ssh_os, r'dmidecode -t 4 | grep "Core Enabled" ').replace('\n', '').split(':')[-1].strip()
+        logging.info("**Core_Enabled = {}**".format(smbios4_Core_Enabled))
+        smbios4_Thread_Count = SshLib.execute_command(ssh_os, r'dmidecode -t 4 | grep "Thread Count" ').replace('\n', '').split(':')[-1].strip()
+        logging.info("**Thread_Count = {}**".format(smbios4_Thread_Count))
+        if smbios4_Core_Count == '28' and smbios4_Core_Enabled == str(num) and smbios4_Thread_Count == str(num*2):
+            logging.info("**Core_Count pass, Core_Enabled pass,Thread_Count pass")
+        else:
+            logging.info("**Core eorro**")
+            return False
+        # 使用 unitool 还原 'Active Processor Cores', '<All>' #
+        logging.info("正常还原")
+        assert reset_cpu_setting(ssh_os)
+        return True
+    except AssertionError:
+        logging.info("异常还原")
+        reset_cpu_setting(ssh_os)
+        return False
+
 # Testcase_CPU_COMPA_015, 016 - TBD
 # Precondition: NA
 # OnStart: NA
@@ -139,70 +224,6 @@ def cpu_cores_active():
 # Precondition: unitool
 # OnStart: NA
 # OnComplete: suse Page
-
-#  function Module
-def cpu_cores_active_enable(ssh_os, num, set_n):
-    ACT_CPU_CORES = ['Active Processor Cores', '<All>']
-    try:
-        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
-        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.ACT_CPU_CORES)
-        assert SetUpLib.locate_option(Key.DOWN, ACT_CPU_CORES, 20)
-        SetUpLib.send_keys([Key.F6]*set_n)
-        logging.info("**Active Processor Cores**")
-        SetUpLib.send_keys([Key.F10, Key.Y], 5)
-        logging.info("**reboot**")
-        assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
-        # assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
-        SetUpLib.send_keys(Key.ENTER)
-        assert SetUpLib.enter_menu(Key.DOWN, [Msg.MEMORY_TOP], 20, 'DIMM000')
-        logging.info("**Verify Memory Information**")
-        assert SetUpLib.verify_info(SutConfig.DIMM_info, 20)
-        ### boot suse
-        assert SetUpLib.boot_with_hotkey(Key.F11, "Boot Manager Menu", 300)
-        assert SetUpLib.enter_menu(Key.DOWN, ["SUSE Linux Enterprise\(LUN0\)"], 20, "Welcome to GRUB")
-        assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE, 170)
-        logging.info("Suse_OS Boot Successful")
-        ### 每个CPU下只有num个core。
-        res1 = SshLib.execute_command(ssh_os, r'lscpu | grep " per socket" ').replace('\n', '').split(':')[-1].strip()
-        print("res1 = ", res1)
-        if int(res1) == num:
-            logging.info("**Core Enable pass**")
-        else:
-            logging.info("**Core Enable eorro**")
-            return False
-        ### 在smbios4中检查：Core数量为总数，Core Enable为num，线程数为Enabled核数的两倍
-        smbios4_Core_Count = SshLib.execute_command(ssh_os, r'dmidecode -t 4 | grep "Core Count" ').replace('\n', '').split(':')[-1].strip()
-        logging.info("**Core_Count = {}**".format(smbios4_Core_Count))
-        smbios4_Core_Enabled = SshLib.execute_command(ssh_os, r'dmidecode -t 4 | grep "Core Enabled" ').replace('\n', '').split(':')[-1].strip()
-        logging.info("**Core_Enabled = {}**".format(smbios4_Core_Enabled))
-        smbios4_Thread_Count = SshLib.execute_command(ssh_os, r'dmidecode -t 4 | grep "Thread Count" ').replace('\n', '').split(':')[-1].strip()
-        logging.info("**Thread_Count = {}**".format(smbios4_Thread_Count))
-        if smbios4_Core_Count == '28' and smbios4_Core_Enabled == str(num) and smbios4_Thread_Count == str(num*2):
-            logging.info("**Core_Count pass, Core_Enabled pass,Thread_Count pass")
-        else:
-            logging.info("**Core eorro**")
-            return False
-        ###使用 unitool 还原 'Active Processor Cores', '<All>'
-        logging.info("**restore parameters**")
-        SshLib.execute_command(ssh_os, r'cd {0};insmod ufudev.ko'.format(SutConfig.UNI_PATH))
-        res = SshLib.execute_command(ssh_os,
-                                     r'cd {0};./unitool -w ActiveCpuCores:0'.format(SutConfig.UNI_PATH))
-        logging.info(res)
-        if len(res) == 0:
-            logging.info('blank, maybe the ko module failed')
-            return
-        elif 'error' in res:
-            logging.info("Modify BIOS PWD:Fail")
-            return
-        return True
-    except AssertionError:
-        logging.info("Test failed, restore parameters")
-        SshLib.execute_command(ssh_os, r'cd {0};insmod ufudev.ko'.format(SutConfig.UNI_PATH))
-        SshLib.execute_command(ssh_os,
-                                     r'cd {0};./unitool -w ActiveCpuCores:0'.format(SutConfig.UNI_PATH))
-        return False
-
-
 def cpu_cores_active_enable_1(ssh_os):
     tc = ('205', '[205]Testcase_CoreDisable_002', 'Enable 1 CPU core test')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
@@ -256,8 +277,8 @@ def cpu_cores_disable_sys_normally(ssh_os):
         logging.info("**Active Processor Cores**")
         SetUpLib.send_keys([Key.F10, Key.Y], 5)
         logging.info("**reboot**")
-        while n < 5:  #系统反复重启，暂定5次
-            ### boot suse
+        while n < 5:  #系统反复复位，暂定4次
+            # boot suse #
             assert SetUpLib.continue_to_bootmanager()
             assert SetUpLib.enter_menu(Key.DOWN, ["SUSE Linux Enterprise\(LUN0\)"], 20, "Welcome to GRUB")
             assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE, 200)
@@ -268,28 +289,51 @@ def cpu_cores_disable_sys_normally(ssh_os):
             n = n+1
         # 还原系统设置
         logging.info("正常还原")
-        BmcLib.clear_cmos()
-        logging.info("Modify bios to default setting by unipwd tool")
-        assert BmcLib.force_reset()
-        assert icx2pAPI.ping_sut()
-        SshLib.execute_command(ssh_os, r'cd {0};insmod ufudev.ko'.format(SutConfig.UNI_PATH))
-        res = SshLib.execute_command(ssh_os, r'cd {0};./unitool -w ActiveCpuCores:0'.format(SutConfig.UNI_PATH))
-        logging.info(res)
-        if len(res) == 0:
-            logging.info('blank, maybe the ko module failed')
-            return
-        elif 'error' in res:
-            logging.info("Modify BIOS default setting :Fail")
-            return
-        else:
-            logging.info('Rebooting the SUT...')
-            SshLib.execute_command(ssh_os, 'reboot')
-        logging.info("Modify BIOS default setting :Pass")
+        assert reset_cpu_setting(ssh_os)
         result.log_pass()
     except AssertionError:
         logging.info("异常还原")
+        reset_cpu_setting(ssh_os)
+        result.log_fail(capture=True)
+
+
+# Unitool to modify the number of CPU cores,in bios and OS Verify CPU Cores
+# Precondition: Unitool
+# OnStart: NA
+# OnComplete: suse Page
+def cores_customized_by_unitool(ssh_os):
+    tc = ('209', '[TC209] CoreDisable_007', 'Unitool to modify the number of CPU cores,in bios and OS Verify CPU Cores')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    ACT_CPU_CORES = ['Active Processor Cores', '<20>']
+    cmd_set_20 = r'cd {0};./unitool -w ActiveCpuCores:20'.format(SutConfig.UNI_PATH)
+    cmd_checkin = r'lscpu | grep " per socket" '
+    try:
+        assert SetUpLib.boot_with_hotkey(Key.F11, "Boot Manager Menu", 300)
+        assert SetUpLib.enter_menu(Key.DOWN, ["SUSE Linux Enterprise\(LUN0\)"], 20, "Welcome to GRUB")
+        assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE, 170)
+        logging.info("Suse_OS Boot Successful")
+        assert set_cpu_by_unitool(ssh_os, cmd_set_20)
+        # 进入Bios ，验证 unitool修改是否成功
+        assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.ACT_CPU_CORES)
+        assert SetUpLib.verify_info(ACT_CPU_CORES, 20)
+        logging.info("bios setting checkin")
+        # 进入 OS，验证 unitool修改是否成功
+        assert BmcLib.force_reset()
         assert icx2pAPI.ping_sut()
-        BmcLib.clear_cmos()
         SshLib.execute_command(ssh_os, r'cd {0};insmod ufudev.ko'.format(SutConfig.UNI_PATH))
-        SshLib.execute_command(ssh_os, r'cd {0};./unitool -w ActiveCpuCores:0'.format(SutConfig.UNI_PATH))
+        res = SshLib.execute_command(ssh_os, cmd_checkin).replace('\n', '').split(':')[-1].strip()
+        logging.info(res)
+        if int(res) == 20:
+            logging.info('checkin cpu_core - pass')
+        else:
+            logging.info('checkin cpu_core - fail')
+            return
+        # 还原系统设置
+        logging.info("正常还原")
+        assert reset_cpu_setting(ssh_os)
+        result.log_pass()
+    except AssertionError:
+        logging.info("异常还原")
+        reset_cpu_setting(ssh_os)
         result.log_fail(capture=True)
