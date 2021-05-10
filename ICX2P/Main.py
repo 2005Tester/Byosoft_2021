@@ -39,7 +39,7 @@ def TestScope():
     if Os.boot_to_suse():
         Smbios.smbios_test_all(ssh_os)
         Release.equip_mode_flag_check(unitool)
-    Pwd.Pwd_test(ser, ssh_bmc, ssh_os)
+    Pwd.Pwd_test(ser)
     DIMM.DPM.dimm_power_mgt_01()
     DIMM.DPM.dimm_power_mgt_02()
     DIMM.DPM.dimm_power_mgt_04()

@@ -156,7 +156,8 @@ def restore_env(log_dir):
 
 
 # 用于新密码机制，外部unipwd工具修改为Admin@909密码
-def reset_password_by_unipwd(ssh_os):
+def reset_password_by_unipwd():
+    logging.info("Restoring enviroment...")
     BmcLib.clear_cmos()
     logging.info("Modify PWD to SutConfig.BIOS_PW by unipwd tool")
     if not BmcLib.force_reset():
@@ -165,8 +166,8 @@ def reset_password_by_unipwd(ssh_os):
     if not icx2pAPI.ping_sut():
         logging.info("Ping SUT fail.")
         return restore_env(log_dir)
-    SshLib.execute_command(ssh_os, r'cd {0};insmod ufudev.ko'.format(SutConfig.UNI_PATH))
-    res = SshLib.execute_command(ssh_os,
+    SshLib.execute_command(Sut.OS_SSH, r'cd {0};insmod ufudev.ko'.format(SutConfig.UNI_PATH))
+    res = SshLib.execute_command(Sut.OS_SSH,
                                  r'cd {0};./unipwd -set {1}'.format(SutConfig.UNI_PATH, SutConfig.BIOS_PASSWORD))
     logging.info(res)
     if len(res) == 0:
@@ -177,15 +178,15 @@ def reset_password_by_unipwd(ssh_os):
         return restore_env(log_dir)
     else:
         logging.info('Rebooting the SUT...')
-        SshLib.execute_command(ssh_os, 'reboot')
+        SshLib.execute_command(Sut.OS_SSH, 'reboot')
     if not SetUpLib.wait_message(Msg.BIOS_BOOT_COMPLETE):
         return
     logging.info("Modify BIOS PWD:Pass")
     return True
 
 
-def simplePWDTest(ssh_os):
-    tc = ('031', 'PasswordSecurity_01', ' 简易密码开关默认值测试，密码开关为初始状态')
+def simplePWDTest():
+    tc = ('031', '[TC031]PasswordSecurity_01', ' 简易密码开关默认值测试，密码开关为初始状态')
     result = ReportGen.LogHeaderResult(tc)
     if not locate_option_simplepw():
         result.log_fail()
@@ -205,15 +206,15 @@ def simplePWDTest(ssh_os):
     if not checkPWD('Admin@9001Admin@', '11111111'):
         result.log_fail()
         return
-    if not reset_password_by_unipwd(ssh_os):
+    if not reset_password_by_unipwd():
         restore_env(log_dir)
         return
     result.log_pass()
     return True
 
 
-def Simple_password_validity(ssh_os):
-    tc = ('032', 'PasswordSecurity_02', '简易密码开关打开,修改密码为简易密码,简易密码有效性测试')
+def Simple_password_validity():
+    tc = ('032', '[TC032]PasswordSecurity_02', '简易密码开关打开,修改密码为简易密码,简易密码有效性测试')
     result = ReportGen.LogHeaderResult(tc)
     if not locate_option_simplepw():
         result.log_fail()
@@ -235,14 +236,14 @@ def Simple_password_validity(ssh_os):
     if not checkPWD('22222222', '333333'):
         result.log_fail()
         return
-    if not reset_password_by_unipwd(ssh_os):
+    if not reset_password_by_unipwd():
         restore_env(log_dir)
         return
     result.log_pass()
     return True
 
 
-def Simple_password_disenable(ssh_os):  # 异常待处理
+def Simple_password_disenable():  # 异常待处理
     tc = ('033', '[TC033]PasswordSecurity_03', '设置简易密码并保存后，再次关闭简易密码开关测试')
     result = ReportGen.LogHeaderResult(tc)
     try:
@@ -268,14 +269,13 @@ def Simple_password_disenable(ssh_os):  # 异常待处理
         SetUpLib.send_keys(Key.SAVE_RESET)
         assert checkPWD('Admin@9002', '555555')
         result.log_pass()
-        reset_password_by_unipwd(ssh_os)
-        return True
     except AssertionError:
         result.log_fail()
-        reset_password_by_unipwd(ssh_os)
+    finally:
+        reset_password_by_unipwd()
 
 
-def Simple_password_save_enable(ssh_os):
+def Simple_password_save_enable():
     tc = ('034', 'PasswordSecurity_04', '简易密码开关打开，设置简易密码后保存生效测试')
     result = ReportGen.LogHeaderResult(tc)
     if not locate_option_simplepw():
@@ -303,14 +303,14 @@ def Simple_password_save_enable(ssh_os):
     if not checkPWD('55555555', 'Admin@9002'):
         result.log_fail()
         return
-    if not reset_password_by_unipwd(ssh_os):
+    if not reset_password_by_unipwd():
         restore_env(log_dir)
         return
     result.log_pass()
     return True
 
 
-def Simple_password_save_disable(ssh_os):
+def Simple_password_save_disable():
     tc = ('035', '[TC035]PasswordSecurity_05', '简易密码开关打开，设置简易密码后不保存退出')
     result = ReportGen.LogHeaderResult(tc)
     try:
@@ -341,15 +341,14 @@ def Simple_password_save_disable(ssh_os):
         assert SetUpLib.wait_message(invalid_info)
         assert SetUpLib.boot_to_bios_config()
         result.log_pass()
-        reset_password_by_unipwd(ssh_os)
-        return True
     except AssertionError:
         result.log_fail()
-        reset_password_by_unipwd(ssh_os)
+    finally:
+        reset_password_by_unipwd()
 
 
 # Bios_Password_Security
-def Testcase_BiosPasswordSecurity_002(ssh_os):
+def Testcase_BiosPasswordSecurity_002():
     tc = ('036', '[TC036]Testcase_BiosPasswordSecurity_002', '设置密码长度测试_密码长度小于最少字符数，修改失败测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
@@ -362,13 +361,12 @@ def Testcase_BiosPasswordSecurity_002(ssh_os):
     except AssertionError:
         result.log_fail(capture=True)
     finally:
-        logging.info("Restore enviroment.")
-        reset_password_by_unipwd(ssh_os)
+        reset_password_by_unipwd()
 
 
-def Testcase_BiosPasswordSecurity_003(ssh_os):
+def Testcase_BiosPasswordSecurity_003():
     tc = ('037', 'Testcase_BiosPasswordSecurity_003', '设置密码长度度测试_密码长度等于最少字符数，修改成功测试')
-    result = ReportGen.LogHeaderResult(tc)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_SECURITY)
         assert (SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
@@ -376,17 +374,16 @@ def Testcase_BiosPasswordSecurity_003(ssh_os):
         SetUpLib.send_keys([Key.F10, Key.Y])
         logging.info("Changes have been saved after press")
         assert (checkPWD('Admin@9!', '11111111'))
-        assert (reset_password_by_unipwd(ssh_os))
+        result.log_pass()
     except AssertionError:
-        reset_password_by_unipwd(ssh_os)
         result.log_fail(capture=True)
-        return False
-    result.log_pass()
+    finally:
+        reset_password_by_unipwd()
 
 
-def Testcase_BiosPasswordSecurity_004(ssh_os):
+def Testcase_BiosPasswordSecurity_004():
     tc = ('038', 'Testcase_BiosPasswordSecurity_004', '设置密码长度测试_密码长度大于最少字符数，小于最大字符数，修改成功测试')
-    result = ReportGen.LogHeaderResult(tc)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_SECURITY)
         assert (SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
@@ -394,15 +391,14 @@ def Testcase_BiosPasswordSecurity_004(ssh_os):
         SetUpLib.send_keys([Key.F10, Key.Y])
         logging.info("Changes have been saved after press")
         assert (checkPWD('Admin@9003', '11111111'))
-        assert (reset_password_by_unipwd(ssh_os))
+        result.log_pass()
     except AssertionError:
-        reset_password_by_unipwd(ssh_os)
         result.log_fail(capture=True)
-        return False
-    result.log_pass()
+    finally:
+        reset_password_by_unipwd()
 
 
-def Testcase_BiosPasswordSecurity_005_019_021(ssh_os):
+def Testcase_BiosPasswordSecurity_005_019_021():
     tc = (
         '039', 'Testcase_BiosPasswordSecurity_005_019_021',
         '设置密码长度度测试_密码长度最大字符数，修改成功测试；密码修改时要验证旧密码测试；新密码需要再次输入确认测试')
@@ -414,15 +410,14 @@ def Testcase_BiosPasswordSecurity_005_019_021(ssh_os):
         SetUpLib.send_keys([Key.F10, Key.Y])
         logging.info("Changes have been saved after press")
         assert (checkPWD('Admin@9001Admin@', '11111111'))
-        assert (reset_password_by_unipwd(ssh_os))
+        result.log_pass()
     except AssertionError:
-        reset_password_by_unipwd(ssh_os)
         result.log_fail(capture=True)
-        return False
-    result.log_pass()
+    finally:
+        reset_password_by_unipwd()
 
 
-def Testcase_BiosPasswordSecurity_006(ssh_os):
+def Testcase_BiosPasswordSecurity_006():
     tc = ('040', 'Testcase_BiosPasswordSecurity_006', '设置密码长度测试_密码长度超出最大字符数,修改失败测试')
     result = ReportGen.LogHeaderResult(tc)
     try:
@@ -440,12 +435,11 @@ def Testcase_BiosPasswordSecurity_006(ssh_os):
         SetUpLib.send_keys([Key.F10, Key.Y])
         logging.info("Changes have been saved after press")
         assert (checkPWD('Inter@8000Byosof', 'Byosoft@5000soft'))
-        assert (reset_password_by_unipwd(ssh_os))
+        result.log_pass()
     except AssertionError:
-        reset_password_by_unipwd(ssh_os)
         result.log_fail(capture=True)
-        return False
-    result.log_pass()
+    finally:
+        reset_password_by_unipwd()
 
 
 def Testcase_BiosPasswordSecurity_007():
@@ -484,11 +478,11 @@ def Testcase_BiosPasswordSecurity_008():
     result.log_pass()
 
 
-def Testcase_BiosPasswordSecurity_009(serial, ssh, ssh_os):
+def Testcase_BiosPasswordSecurity_009(serial):
     tc = ('043', 'Testcase_BiosPasswordSecurity_009', '设置密码字符类型测试_3种字符类型密码测试')
     result = ReportGen.LogHeaderResult(tc)
     try:
-        assert (icx2pAPI.toBIOS(serial, ssh))
+        assert SetUpLib.boot_to_setup()
         k = 0
         while k < len(pwd_list2) - 1:
             m = k + 1
@@ -524,15 +518,14 @@ def Testcase_BiosPasswordSecurity_009(serial, ssh, ssh_os):
                 SetUpLib.send_key(Key.CTRL_ALT_DELETE)
                 assert (checkPWD(pwd_list2[k], pwd_list2[m]))
             k = k + 1
-        assert (reset_password_by_unipwd(ssh_os))
+        result.log_pass()
     except AssertionError:
-        reset_password_by_unipwd(ssh_os)
         result.log_fail(capture=True)
-        return False
-    result.log_pass()
+    finally:
+        reset_password_by_unipwd()
 
 
-def Testcase_BiosPasswordSecurity_010(ssh_os):
+def Testcase_BiosPasswordSecurity_010():
     tc = ('044', 'Testcase_BiosPasswordSecurity_010', '设置密码字符类型测试_4种字符类型密码')
     result = ReportGen.LogHeaderResult(tc)
     try:
@@ -542,12 +535,11 @@ def Testcase_BiosPasswordSecurity_010(ssh_os):
         SetUpLib.send_keys([Key.F10, Key.Y])
         logging.info("Changes have been saved after press")
         assert (checkPWD('Admin@6789', 'Admin6789admin'))
-        assert (reset_password_by_unipwd(ssh_os))
+        result.log_pass()
     except AssertionError:
-        reset_password_by_unipwd(ssh_os)
         result.log_fail(capture=True)
-        return False
-    result.log_pass()
+    finally:
+        reset_password_by_unipwd()
 
 
 def Testcase_BiosPasswordSecurity_011_012_014():
@@ -580,7 +572,7 @@ def Testcase_BiosPasswordSecurity_011_012_014():
     result.log_pass()
 
 
-def Testcase_BiosPasswordSecurity_013(ssh_os):
+def Testcase_BiosPasswordSecurity_013():
     tc = ('046', '[TC046]BiosPasswordSecurity_013', '输入错误密码次数测试_阈值内连续输入错误密码后输入正确密码测试')
     result = ReportGen.LogHeaderResult(tc)
     pwd_error = ['Admin@9876', 'Da@89', SutConfig.BIOS_PASSWORD]
@@ -605,13 +597,13 @@ def Testcase_BiosPasswordSecurity_013(ssh_os):
                 logging.info("eorro password :", format(list_error))
                 return
     except AssertionError:
-        reset_password_by_unipwd(ssh_os)
+        reset_password_by_unipwd()
         result.log_fail(capture=True)
         return False
     result.log_pass()
 
 
-def Testcase_BiosPasswordSecurity_014_015(serial, ssh):
+def Testcase_BiosPasswordSecurity_014_015():
     tc = ('047', '[TC047]BiosPasswordSecurity_014_015', '输入错误密码次数测试_超出阈值锁定输入界面，提示报错、并提示复位；超出阈值重启后不影响下一次登录')
     result = ReportGen.LogHeaderResult(tc)
     pwd_error = ['Admin@3456', 'Qa@12', '222222']
@@ -623,14 +615,14 @@ def Testcase_BiosPasswordSecurity_014_015(serial, ssh):
                 SetUpLib.send_key(Key.ENTER)
                 logging.info("Send  password...")
                 if list_error != pwd_error[-1]:
-                    assert (SerialLib.is_msg_present(serial, invalid_info))
+                    assert SetUpLib.wait_message(invalid_info)
                     time.sleep(1)
                     SetUpLib.send_key(Key.ENTER)
-                    assert (SerialLib.is_msg_present(serial, 'Enter Current Password'))
+                    assert SetUpLib.wait_message('Enter Current Password')
                     logging.info("input password again")
                 else:
                     SetUpLib.send_key(Key.ENTER)
-                    assert (SerialLib.is_msg_present(serial, error_info))
+                    assert SetUpLib.wait_message(error_info)
                     logging.info("Enter incorrect password 3 times,System Locked")
             except:
                 logging.info("eorro password :", format(list_error))
@@ -642,7 +634,7 @@ def Testcase_BiosPasswordSecurity_014_015(serial, ssh):
         result.log_fail(capture=True)
 
 
-def Testcase_BiosPasswordSecurity_016_017(serial):
+def Testcase_BiosPasswordSecurity_016_017():
     tc = ('048', '[TC048]BiosPasswordSecurity_016', '密码不能明文显示_不显示或用*代替字符测试;任意密码不显示或用*代替字符测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
@@ -660,18 +652,18 @@ def Testcase_BiosPasswordSecurity_016_017(serial):
     result.log_pass()
 
 
-def Testcase_BiosPasswordSecurity_020(serial):
+def Testcase_BiosPasswordSecurity_020():
     tc = ('049', '[TC049]BiosPasswordSecurity_020', '密码修改验证旧密码测试_输入错误旧密码，不能修改密码')
     result = ReportGen.LogHeaderResult(tc)
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_SECURITY)
         assert (SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
         SetUpLib.send_key(Key.ENTER)
-        assert (SerialLib.is_msg_present(serial, pwd_info_1))
+        assert (SetUpLib.wait_message(pwd_info_1))
         SetUpLib.send_key('Inter#9999')
         logging.info("input error password")
         SetUpLib.send_key(Key.ENTER)
-        assert (SerialLib.is_msg_present(serial, invalid_info))
+        assert (SetUpLib.wait_message(invalid_info))
         logging.info("show invalid_password")
         SetUpLib.send_key(Key.ENTER)
     except AssertionError:
@@ -680,41 +672,40 @@ def Testcase_BiosPasswordSecurity_020(serial):
     result.log_pass()
 
 
-def Testcase_BiosPasswordSecurity_022(serial, ssh_os):
+def Testcase_BiosPasswordSecurity_022():
     tc = ('050', '[TC050]BiosPasswordSecurity_022', '密码修改验证新密码测试_新密码确认时，输入错误新密码，修改失败测试')
     result = ReportGen.LogHeaderResult(tc)
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_SECURITY)
         assert (SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
         SetUpLib.send_key(Key.ENTER)
-        assert (SerialLib.is_msg_present(serial, pwd_info_1))
+        assert (SetUpLib.wait_message(pwd_info_1))
         SetUpLib.send_key(SutConfig.BIOS_PASSWORD)
         logging.info("input default_pwd")
         SetUpLib.send_key(Key.ENTER)
-        assert (SerialLib.is_msg_present(serial, pwd_info_2))
+        assert (SetUpLib.wait_message(pwd_info_2))
         SetUpLib.send_key("Admin@9999")
         logging.info("input new_pwd")
         SetUpLib.send_key(Key.ENTER)
-        assert (SerialLib.is_msg_present(serial, pwd_info_3))
+        assert (SetUpLib.wait_message(pwd_info_3))
         SetUpLib.send_key("Admin@9998")
         logging.info("input error confirm new_pwd")
         SetUpLib.send_key(Key.ENTER)
-        assert (SerialLib.is_msg_present(serial, 'Passwords are not the same'))
+        assert (SetUpLib.wait_message('Passwords are not the same'))
         assert SetUpLib.boot_to_setup()
-        assert (reset_password_by_unipwd(ssh_os))
+        result.log_pass()
     except AssertionError:
-        reset_password_by_unipwd(ssh_os)
         result.log_fail(capture=True)
-        return False
-    result.log_pass()
+    finally:
+        reset_password_by_unipwd()
 
 
-def Testcase_BiosPasswordSecurity_025(serial, ssh, ssh_os):
+def Testcase_BiosPasswordSecurity_025(serial):
     tc = ('051', '[TC051]BiosPasswordSecurity_025', '历史密码5次范围内重复修改无效,超过5次后可以修改为5次前的密码测试')
     result = ReportGen.LogHeaderResult(tc)
     times_pwd = ['Admin@9009', 'Admin@9010', 'Admin@9012', 'Admin@9013', 'Admin@9014', 'Admin@9009', 'Admin@9015']
     try:
-        assert (icx2pAPI.toBIOS(serial, ssh))
+        assert SetUpLib.boot_to_setup()
         k = 0
         while k < len(times_pwd) - 2:
             m = k + 1
@@ -722,27 +713,27 @@ def Testcase_BiosPasswordSecurity_025(serial, ssh, ssh_os):
             SetUpLib.send_keys(SutConfig.key2pwd)
             assert (SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
             SetUpLib.send_key(Key.ENTER)
-            assert (SerialLib.is_msg_present(serial, pwd_info_1))
+            assert (SetUpLib.wait_message(pwd_info_1))
             SetUpLib.send_data(times_pwd[k])
             logging.info("input default_pwd")
             SetUpLib.send_key(Key.ENTER)
-            assert (SerialLib.is_msg_present(serial, pwd_info_2))
+            assert (SetUpLib.wait_message(pwd_info_2))
             SetUpLib.send_data(times_pwd[m])
             logging.info("input new_pwd")
             SetUpLib.send_key(Key.ENTER)
-            assert (SerialLib.is_msg_present(serial, pwd_info_3))
+            assert (SetUpLib.wait_message(pwd_info_3))
             SetUpLib.send_data(times_pwd[m])
             logging.info("confirm new_pwd")
             SetUpLib.send_key(Key.ENTER)
             if times_pwd[m] != "Admin@9009":
                 logging.info("Password changed successfully")
-                assert (SerialLib.is_msg_present(serial, pwd_info_4))
+                assert (SetUpLib.wait_message(pwd_info_4))
                 SetUpLib.send_key(Key.ENTER)
                 SetUpLib.send_keys([Key.F10, Key.Y])
                 assert (checkPWD(times_pwd[m], times_pwd[k]))
             else:
                 logging.info("Password changed Failed")
-                assert (SerialLib.is_msg_present(serial, invalid_info))
+                assert (SetUpLib.wait_message(invalid_info))
                 logging.info("use old pwd,invalid.")
                 SetUpLib.send_key(Key.ENTER)
                 SetUpLib.send_key(Key.CTRL_ALT_DELETE)
@@ -754,15 +745,14 @@ def Testcase_BiosPasswordSecurity_025(serial, ssh, ssh_os):
         assert (change_password(times_pwd[4], times_pwd[6]))
         SetUpLib.send_keys([Key.F10, Key.Y])
         assert (checkPWD(times_pwd[6], times_pwd[4]))
-        assert (reset_password_by_unipwd(ssh_os))
+        result.log_pass()
     except AssertionError:
-        reset_password_by_unipwd(ssh_os)
         result.log_fail(capture=True)
-        return False
-    result.log_pass()
+    finally:
+        reset_password_by_unipwd()
 
 
-def Testcase_BiosPasswordSecurity_028(ssh_os):
+def Testcase_BiosPasswordSecurity_028():
     tc = ('052', '[TC052]BiosPasswordSecurity_028', '开启OS引导时,弹出密码输入框,需要输入管理员密码测试')
     result = ReportGen.LogHeaderResult(tc)
     try:
@@ -782,7 +772,7 @@ def Testcase_BiosPasswordSecurity_028(ssh_os):
         logging.info("异常恢复")
         result.log_fail()
     finally:
-        reset_password_by_unipwd(ssh_os)
+        reset_password_by_unipwd()
 
 
 def pwd_auth_mgt_01():
@@ -819,7 +809,7 @@ def pwd_auth_mgt_07():
         result.log_fail(capture=True)
 
 
-def pwd_auth_mgt_08_10(serial, ssh_os):
+def pwd_auth_mgt_08_10(serial):
     tc = ('055', '[TC055]AuthenticationManagement_008_010',
           '管理员登录密码大于16位字符无法输入,普通用户登录密码大于16位无法输入;修改管理员密码界面需要先输入旧密码，再输入两次新密码')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
@@ -836,14 +826,14 @@ def pwd_auth_mgt_08_10(serial, ssh_os):
                 SetUpLib.send_key(Key.ENTER)
                 logging.info("Send  password...")
                 if list_error != pwd_error[-1]:
-                    assert (SerialLib.is_msg_present(serial, invalid_info))
+                    assert SetUpLib.wait_message(invalid_info)
                     time.sleep(2)
                     SetUpLib.send_key(Key.ENTER)
-                    assert (SerialLib.is_msg_present(serial, 'Enter Current Password'))
+                    assert SetUpLib.wait_message('Enter Current Password')
                     logging.info("input password again")
                 else:
                     SetUpLib.send_key(Key.ENTER)
-                    assert (SerialLib.is_msg_present(serial, error_info))
+                    assert SetUpLib.wait_message(error_info)
                     logging.info("Enter incorrect password 3 times,System Locked")
             except:
                 logging.info("error password :", format(list_error))
@@ -863,31 +853,31 @@ def pwd_auth_mgt_08_10(serial, ssh_os):
         SetUpLib.send_keys(SutConfig.key2pwd)
         assert (SetUpLib.locate_option(Key.DOWN, ["Manage User Password"], 5))
         SetUpLib.send_key(Key.ENTER)
-        assert (SerialLib.is_msg_present(serial, pwd_info_2))
+        assert SetUpLib.wait_message(pwd_info_2)
         SetUpLib.send_data(user_pwd)
         SetUpLib.send_key(Key.ENTER)
-        assert (SerialLib.is_msg_present(serial, pwd_info_3))
+        assert SetUpLib.wait_message(pwd_info_3)
         SetUpLib.send_data(user_pwd)
         SetUpLib.send_key(Key.ENTER)
-        assert (SerialLib.is_msg_present(serial, pwd_info_4))
+        assert SetUpLib.wait_message(pwd_info_4)
         SetUpLib.send_key(Key.ENTER)
         SetUpLib.send_keys([Key.F10, Key.Y])
         # set 4
         logging.info("Enter the correct login password for ordinary users and log in to the setup menu")
-        assert (SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL))
+        assert SetUpLib.wait_message(Msg.HOTKEY_PROMPT_DEL)
         SetUpLib.send_key(Key.DEL)
         logging.info("Hot Key sent")
-        assert (SerialLib.is_msg_present(serial, Msg.PW_PROMPT, 60))
+        assert SetUpLib.wait_message( Msg.PW_PROMPT, 60)
         SetUpLib.send_data(user_pwd)
         SetUpLib.send_key(Key.ENTER)
-        assert (SerialLib.is_msg_present(serial, SutConfig.pwd_info))
+        assert SetUpLib.wait_message(SutConfig.pwd_info)
         SetUpLib.send_key(Key.ENTER)
         # set 5
         logging.info("Modify the login password of ordinary users with more than 16 digits")
         SetUpLib.send_keys([Key.RIGHT, Key.ENTER])
         SetUpLib.send_keys(SutConfig.key2pwd)
         SetUpLib.send_key(Key.ENTER)
-        assert (SerialLib.is_msg_present(serial, "Enter New Password"))
+        assert SetUpLib.wait_message("Enter New Password")
         SetUpLib.send_data('Inter@4567byosoft')
         SetUpLib.send_key(Key.ENTER)
         logging.info('input User_Password invalid ')
@@ -896,8 +886,7 @@ def pwd_auth_mgt_08_10(serial, ssh_os):
     except AssertionError:
         result.log_fail(capture=True)
     finally:
-        logging.info("Restore enviroment.")
-        reset_password_by_unipwd(ssh_os)
+        reset_password_by_unipwd()
 
 
 def pwd_auth_mgt_09():
@@ -916,29 +905,29 @@ def pwd_auth_mgt_09():
 
 
 # Main function
-def Pwd_test(ser, ssh_bmc, ssh_os):
-    simplePWDTest(ssh_os)
-    Simple_password_validity(ssh_os)
-    Simple_password_disenable(ssh_os)
-    Simple_password_save_enable(ssh_os)
-    Simple_password_save_disable(ssh_os)
-    Testcase_BiosPasswordSecurity_002(ssh_os)
-    Testcase_BiosPasswordSecurity_003(ssh_os)
-    Testcase_BiosPasswordSecurity_004(ssh_os)
-    Testcase_BiosPasswordSecurity_005_019_021(ssh_os)
-    Testcase_BiosPasswordSecurity_006(ssh_os)
+def Pwd_test(ser):
+    simplePWDTest()
+    Simple_password_validity()
+    Simple_password_disenable()
+    Simple_password_save_enable()
+    Simple_password_save_disable()
+    Testcase_BiosPasswordSecurity_002()
+    Testcase_BiosPasswordSecurity_003()
+    Testcase_BiosPasswordSecurity_004()
+    Testcase_BiosPasswordSecurity_005_019_021()
+    Testcase_BiosPasswordSecurity_006()
     Testcase_BiosPasswordSecurity_007()
     Testcase_BiosPasswordSecurity_008()
-    Testcase_BiosPasswordSecurity_009(ser, ssh_bmc, ssh_os)
-    Testcase_BiosPasswordSecurity_010(ssh_os)
+    Testcase_BiosPasswordSecurity_009(ser)
+    Testcase_BiosPasswordSecurity_010()
     Testcase_BiosPasswordSecurity_011_012_014()
-    Testcase_BiosPasswordSecurity_013(ssh_os)
-    Testcase_BiosPasswordSecurity_014_015(ssh_bmc)
-    Testcase_BiosPasswordSecurity_016_017(ser)
-    Testcase_BiosPasswordSecurity_020(ser)
-    Testcase_BiosPasswordSecurity_022(ser, ssh_os)
-    Testcase_BiosPasswordSecurity_025(ser, ssh_bmc, ssh_os)
+    Testcase_BiosPasswordSecurity_013()
+    Testcase_BiosPasswordSecurity_014_015()
+    Testcase_BiosPasswordSecurity_016_017()
+    Testcase_BiosPasswordSecurity_020()
+    Testcase_BiosPasswordSecurity_022()
+    Testcase_BiosPasswordSecurity_025(ser)
     pwd_auth_mgt_01()
     pwd_auth_mgt_07()
-    pwd_auth_mgt_08_10(ser, ssh_os)
+    pwd_auth_mgt_08_10(ser)
     pwd_auth_mgt_09()

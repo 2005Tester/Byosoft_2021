@@ -88,7 +88,7 @@ def force_power_cycle():
 
 # clear CMOS by BMC command
 def clear_cmos():
-    logging.info("Clear CMOS")
+    logging.info("Clear CMOS to restore enviroment.")
     cmd_clearcoms = 'ipmcset -d clearcmos\n'
     ret_clearcmos = 'Do you want to continue'
     cmd_confirm = 'Y\n'
