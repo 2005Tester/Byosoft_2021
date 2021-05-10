@@ -25,16 +25,13 @@ class dimm_memPower(unittest.TestCase):
     # go to memory frequency page
     def navigate_to_mem_fre(self):
         self.assertTrue(SetUpLib.locate_option(Key.RIGHT, [Msg.PAGE_ADVANCED], 6))
-        self.assertTrue(SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG], 12, Msg.PROCESSOR_CONFIG))
-        self.assertTrue(SetUpLib.enter_menu(Key.DOWN, [Msg.MEMORY_CONFIG], 12, Msg.MEM_FRE))
+        self.assertTrue(SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, Msg.MEMORY_CONFIG], 12, Msg.MEM_FRE))
 
     # go to cke power down page
     def navigate_to_cke(self):
         self.assertTrue(SetUpLib.locate_option(Key.RIGHT, [Msg.PAGE_ADVANCED], 6))
-        self.assertTrue(SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG], 12, Msg.PROCESSOR_CONFIG))
-        self.assertTrue(SetUpLib.enter_menu(Key.DOWN, [Msg.ADV_POWER_MGF_CONFIG], 12, Msg.PFM_PRO))
-        self.assertTrue(SetUpLib.enter_menu(Key.DOWN, [Msg.MEM_POWER_THER_CONFIG], 12, Msg.DRAM_RAPL_CONFIG))
-        self.assertTrue(SetUpLib.enter_menu(Key.DOWN, [Msg.MEM_POWER_ADV], 12, Msg.CKE))
+        self.assertTrue(SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, Msg.ADV_POWER_MGF_CONFIG,
+                                                       Msg.MEM_POWER_THER_CONFIG, Msg.MEM_POWER_ADV], 12, Msg.CKE))
 
     def dimm_power_mgt_01(self):
         tc = ('700', 'Testcase_MemPower_001', 'BIOS默认关闭DDR4内存的LP-ASR模式测试')
@@ -62,10 +59,8 @@ class dimm_memPower(unittest.TestCase):
             self.assertTrue(SetUpLib.boot_to_page(Msg.PAGE_INFO))
             dimm_memPower.navigate_to_mem_fre(self)
             SetUpLib.send_key(Key.ESC)
-            self.assertTrue(SetUpLib.enter_menu(Key.DOWN, [Msg.ADV_POWER_MGF_CONFIG], 12, Msg.PFM_PRO))
-            self.assertTrue(
-                SetUpLib.enter_menu(Key.DOWN, [Msg.MEM_POWER_THER_CONFIG], 12, Msg.DRAM_RAPL_CONFIG))
-            self.assertTrue(SetUpLib.enter_menu(Key.DOWN, [Msg.MEM_POWER_ADV], 12, Msg.CKE))
+            self.assertTrue(SetUpLib.enter_menu(Key.DOWN, [Msg.ADV_POWER_MGF_CONFIG, Msg.MEM_POWER_THER_CONFIG,
+                                                           Msg.MEM_POWER_ADV], 12, Msg.CKE))
             self.assertTrue(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
         except AssertionError as err:
             result.log_fail(capture=True)
