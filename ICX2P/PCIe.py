@@ -79,3 +79,27 @@ def Testcase_PCIeResource_002():
     except Exception as e:
         logging.info(e)
         result.log_fail()
+
+
+# BIOS提供MMIOH资源调整选项测试
+# Precondition: BIOS默认密码
+# OnStart: NA
+# OnComplete: NA
+def Testcase_PCIeResource_003():
+    tc = ('632', '[TC632] Testcase_PCIeResource_003', 'BIOS提供MMIOH资源调整选项测试')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    base_default = "13T"
+    size_default = "64G"
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, "Common RefCode Configuration"], 10, "MMIO High Base")
+        base_value = SetUpLib.get_option_value(["MMIO High Base", "<.+>"], Key.DOWN, 8)
+        size_value = SetUpLib.get_option_value(["MMIO High Granularity Size", "<.+>"], Key.DOWN, 8)
+        logging.info(f"Get MMIOH Base = {base_value}")
+        logging.info(f"Get MMIOH Size = {size_value}")
+        assert base_value == base_default, f'Expected MMIOH Base default is "{base_default}", actually is "{base_value}"'
+        assert size_value == size_default, f'Expected MMIOH Size default is "{size_default}", actually is "{size_value}"'
+        result.log_pass()
+    except Exception as e:
+        logging.info(e)
+        result.log_fail()

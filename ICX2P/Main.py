@@ -55,6 +55,7 @@ def TestScope():
     biosTest.Testcase_SerialPrint_003()
     PCIe.Testcase_PCIeResource_001()
     PCIe.Testcase_PCIeResource_002()
+    PCIe.Testcase_PCIeResource_003()
     biosTest.Testcase_PowerEfficiency_001(unitool)
     if Legacy.enable_legacy_boot():
         Legacy.disable_legacy_boot()
