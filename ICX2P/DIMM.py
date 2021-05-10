@@ -253,19 +253,13 @@ def Testcase_MemMargin_001():
         assert BmcLib.debug_message(enable=True), "bmc_debug_message >> fail"
         SetUpLib.send_keys(Key.SAVE_RESET)
         assert SetUpLib.wait_strings(SERIAL_RMT_FLAG, 600), "waitStrings >> fail"
-        # BIOS load default
-        BmcLib.debug_message(enable=False)
-        BmcLib.clear_cmos()
-        BmcLib.force_reset()
-        SerialLib.is_msg_present(Sut.BIOS_COM, Msg.HOTKEY_PROMPT_DEL)
         result.log_pass()
     except AssertionError as e:
         logging.error(e)
+        result.log_fail()
+    finally:
         BmcLib.debug_message(enable=False)
         BmcLib.clear_cmos()
-        BmcLib.force_reset()
-        SerialLib.is_msg_present(Sut.BIOS_COM, Msg.HOTKEY_PROMPT_DEL)
-        result.log_fail()
 
 
 # 01 内存初始化测试

@@ -322,17 +322,17 @@ def Testcase_SerialPrint_001():
         assert BmcLib.force_reset()
         # CPU Resource Allocation
         cpu_log = SerialLib.cut_log(Sut.BIOS_COM, "CPU Resource Allocation", "START_SOCKET_0_DIMMINFO_TABLE", 100, timeout, 5)
-        logging.debug(cpu_log)
+        # logging.debug(cpu_log)
         assert re.search(cpu_resource, cpu_log), "CPU Resource Allocation not found"
         logging.info("CPU Resource Allocation check pass")
         # BIOS Revision
         ver_log = SerialLib.cut_log(Sut.BIOS_COM, "BootType :", "BIOS Date :", 100, timeout, 3)
-        logging.debug(ver_log)
+        # logging.debug(ver_log)
         assert re.search(bios_ver, ver_log), "BIOS Revision not found"
         logging.info("BIOS Revision check pass")
         # PCIE LINK STATUS
         pcie_log = SerialLib.cut_log(Sut.BIOS_COM, "EFI1711", "Press Del go to Setup Utility", 100, timeout, 3)
-        logging.debug(pcie_log)
+        # logging.debug(pcie_log)
         assert re.search(pcie_lnk, pcie_log), "PCIE LINK STATUS not found"
         logging.info("PCIE LINK STATUS check pass")
         return True
@@ -348,13 +348,16 @@ def Testcase_SerialPrint_001():
     except AssertionError as e:
         logging.info(e)
         result.log_fail()
+    finally:
+        BmcLib.debug_message(enable=False)
+        BmcLib.clear_cmos()
 
 
 # 检查串口log打印没有任何错误信息：由于DebugMessage有太多干扰项，系统发生故障时默认打印级别就会打印，因此直接默认模式检查
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: NA
-def Testcase_SerialPrint_002():
+def Testcase_SerialPrint_003():
     tc = ('027', '[TC027]Testcase_SerialPrint_003', 'BIOS启动阶段串口报错检查')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     error_msg = ["error", "fail", "assert", "exception"]

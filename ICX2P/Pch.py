@@ -34,13 +34,13 @@ def post_gpio_error_check():
             ser_data = ser_log.read()
         assert (Msg.GPIO_ERR not in ser_data), "Found GPIO Error, test failed"
         logging.info(f"No '{Msg.GPIO_ERR}' found in serial log, test pass")
-        assert BmcLib.debug_message(enable=False), "debug message disable fail"
-        assert BmcLib.force_power_cycle(), "force_power_cycle fail"
-        assert SerialLib.is_msg_present(Sut.BIOS_COM, msg=Msg.BIOS_BOOT_COMPLETE), "boot up fail"
         result.log_pass()
     except AssertionError as e:
         logging.info(e)
         result.log_fail()
+    finally:
+        BmcLib.debug_message(enable=False)
+        BmcLib.clear_cmos()
 
 
 # 检查确认USB每个分组下面的Port默认为Enable
