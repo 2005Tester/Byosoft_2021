@@ -58,17 +58,18 @@ class Type128Test:
         # return {addr: value}
         cmd = f'cd {SutConfig.RW_PATH} &&./rw mmr {hex(base)} {hex(size)}'
         origin_data = SshLib.execute_command(ssh_os, cmd)
-        logging.debug(f"read data from mem:\n{origin_data}")
         pat = "([0-9a-f]{8}):((?:\s[0-9a-f]{4}){8})"
         patten = re.compile(pat)
-        mem_data_list = patten.findall(origin_data)
-        rmt_mem = dict(mem_data_list)
+        rmt_mem = dict(patten.findall(origin_data))
+        data_valid = {}
         for i, rm in rmt_mem.items():
-            rmt_mem[i] = list(map(lambda x: int(x, 16), rm.split()))
+            row_data = list(map(lambda x: int(x, 16), rm.split()))
+            if sum(row_data):  # read data not 0
+                data_valid[i] = row_data
         for k, v in rmt_mem.items():
             next_row = hex(int(k, 16) + 0x10)[2:]
-            if (int(k, 16) >> 4) % 2 != 0 and rmt_mem.get(next_row):
-                self.rmt_mem_dic[k] = rmt_mem[k] + rmt_mem[next_row]
+            if (int(k, 16) >> 4) % 2 != 0 and data_valid.get(next_row):
+                self.rmt_mem_dic[k] = data_valid[k] + data_valid[next_row]
         return self.rmt_mem_dic
 
     def read_rmt_serial(self):
@@ -171,7 +172,7 @@ def smbios_type128(unitool):
         assert unitool.set_config(BiosCfg.MFG_RMT), "Change setup by unitool failed."
         logging.info("Reboot SUT to Linux")
         assert BmcLib.force_reset()
-        ser_rmt_data = SerialLib.cut_log(Sut.BIOS_COM, "START_BSSA_RMT", "STOP_BSSA_RMT", duration=15, timeout=600)
+        ser_rmt_data = SerialLib.cut_log(Sut.BIOS_COM, "START_BSSA_RMT", "Lane Margin", duration=15, timeout=600, step=5)
         assert ser_rmt_data, "Invalid RMT data"
         logging.debug(ser_rmt_data)
         assert icx2pAPI.ping_sut()
