@@ -344,7 +344,7 @@ def Simple_password_save_disable(ssh_os):
         reset_password_by_unipwd(ssh_os)
         return True
     except AssertionError:
-        result.log_fail
+        result.log_fail()
         reset_password_by_unipwd(ssh_os)
 
 
