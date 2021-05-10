@@ -27,6 +27,7 @@ class Key:
     LEFT = [chr(0x1b), chr(0x5b), chr(0x44)]
     RIGHT = [chr(0x1b), chr(0x5b), chr(0x43)]
     Y = [chr(0x59)]
+    DISCARD_CHANGES = ['N']
     RESET_DEFAULT = [F9, Y, F10, Y]
     SAVE_RESET = [F10, Y]
 

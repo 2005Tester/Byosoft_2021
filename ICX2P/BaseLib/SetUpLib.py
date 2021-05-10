@@ -358,9 +358,25 @@ def reset_default():
 
 # Match a specific patten from serial port, return true if match found, otherwise return None
 def wait_message(msg, timeout=150):
-    SerialLib.is_msg_present(Sut.BIOS_COM, msg, timeout)
+    return SerialLib.is_msg_present(Sut.BIOS_COM, msg, timeout)
 
 
 # Match a list of strings from serial port
 def wait_strings(msg_list, delay=10):
     return SerialLib.is_msg_list_present(Sut.BIOS_COM, msg_list, delay)
+
+
+# used to navigate to setup top page,
+def back_to_setup_toppage(msg='Exit now'):
+    try:
+        while True:
+            logging.info('Navigating to top page,')
+            send_key(Key.ESC)
+            if wait_message(msg, timeout=6):
+                send_key(Key.DISCARD_CHANGES)
+                break
+            time.sleep(1)
+        logging.info("Current is top page,")
+        return True
+    except Exception as err:
+        logging.debug(err)
