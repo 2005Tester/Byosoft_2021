@@ -15,7 +15,7 @@ def _init():
 
 
 def set(key, value):
-    logging.debug("Setting global variable")
+    logging.debug("Setting \"{0}\" to \"{1}\"".format(key, value))
     if key in _global_var:
         _global_var[key] = value
         return True

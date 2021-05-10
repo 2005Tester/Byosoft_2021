@@ -1,7 +1,7 @@
 import logging
 import time
 from Core.SutInit import Sut
-
+from Core import SshLib
 
 
 # update by arthur,
@@ -123,3 +123,22 @@ def debug_message(enable=True):
         return Sut.BMC_SSH.interaction([cmd1], [rtn2])
     logging.info("[Serial Debug Message] -> Enabled")
     return Sut.BMC_SSH.interaction([cmd1, cmd2], [rtn1, rtn2])
+
+
+# Program BIOS flash by BMC command
+def program_flash():
+    # Program flash procedure: power off->maint mode->attach upgrade ->load bin
+    logging.info("Programing flash...")
+    cmd_shutdown = 'ipmcset -d powerstate -v 2\n'
+    ret_shutdown = 'Do you want to continue'
+    cmd_maint_mode = 'maint_debug_cli\n'
+    ret_maint_mode = 'Debug Shell'
+    cmd_confirm = 'Y\n'
+    ret_confirm = 'Control fru0 forced power off successfully'
+    cmd_upgrade_mode = 'attach upgrade\n'
+    ret_upgrade_mode = 'Success'
+    cmd_load = 'load_bios_bin /tmp/rp001.bin\n'
+    ret_load = 'load bios succefully'
+    cmds = [cmd_shutdown, cmd_confirm, cmd_maint_mode, cmd_upgrade_mode, cmd_load]
+    rets = [ret_shutdown, ret_confirm, ret_maint_mode, ret_upgrade_mode, ret_load]
+    return SshLib.interaction(Sut.BMC_SSH, cmds, rets)

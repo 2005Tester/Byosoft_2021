@@ -113,38 +113,20 @@ def poweron_sut():
     rets = [ret_power_on, ret_confirm, ret_fan_manual_mode, ret_fan_40]
 
     if sshconn.login():
-        return sshconn.interaction(cmds, rets)   
+        return sshconn.interaction(cmds, rets)
 
 
-def program_flash(ssh):
-    # Program flash procedure: power off->maint mode->attach upgrade ->load bin
-    logging.info("Programing flash...")
-    cmd_shutdown = 'ipmcset -d powerstate -v 2\n'
-    ret_shutdown = 'Do you want to continue'
-    cmd_maint_mode = 'maint_debug_cli\n'
-    ret_maint_mode = 'Debug Shell'
-    cmd_confirm = 'Y\n'
-    ret_confirm = 'Control fru0 forced power off successfully'
-    cmd_upgrade_mode = 'attach upgrade\n'
-    ret_upgrade_mode = 'Success'
-    cmd_load = 'load_bios_bin /tmp/rp001.bin\n'
-    ret_load = 'load bios succefully'
-    cmds = [cmd_shutdown, cmd_confirm, cmd_maint_mode, cmd_upgrade_mode, cmd_load]
-    rets = [ret_shutdown, ret_confirm, ret_maint_mode, ret_upgrade_mode, ret_load]
-    return SshLib.interaction(ssh, cmds, rets)
-
-
-def update_specific_img(bios, serial, ssh_bmc):
+def update_specific_img(bios):
     if not upload_bios(bios):
         logging.info("Upload BIOS image failed")
         return
-    if not program_flash(ssh_bmc):
+    if not BmcLib.program_flash():
         logging.info("Program flash failed")
         return
     if not poweron_sut():
         logging.error("power on sut fail")
         return
-    if not serial.is_boot_success():
+    if not SetUpLib.wait_message(Msg.BIOS_BOOT_COMPLETE):
         return
     if not SetUpLib.update_default_password():
         return
@@ -152,13 +134,13 @@ def update_specific_img(bios, serial, ssh_bmc):
     return True
 
 
-def update_bios(serial, ssh_bmc, sftp_bmc, bios_img):
+def update_bios(serial, sftp_bmc, bios_img):
     target_bin = "rp001.bin"
     logging.info("Remove existing BIOS image from BMC")
     SshLib.sftp_remove_file(sftp_bmc, target_bin)
     if not SshLib.sftp_upload_file(sftp_bmc, bios_img, target_bin, '67108864'):
         return
-    if not program_flash(ssh_bmc):
+    if not BmcLib.program_flash():
         return
     if not BmcLib.power_on():
         return

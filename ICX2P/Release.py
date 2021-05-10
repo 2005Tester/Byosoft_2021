@@ -73,7 +73,7 @@ def hpm_upgrade_test(serial, ssh_bmc, sftp_bmc, unitool):
     new_hpm = glob.glob(os.path.join(new_path, "*.hpm"))
 
     try:
-        assert Update.update_bios(serial, ssh_bmc, sftp_bmc, old_bin[0])
+        assert Update.update_bios(serial, sftp_bmc, old_bin[0])
         assert icx2pAPI.ping_sut()
         assert unitool.write(**SutConfig.BiosCfg.HPM_KEEP)
         assert Update.flash_local_hpm(serial, ssh_bmc, sftp_bmc, new_hpm[0])
@@ -96,7 +96,7 @@ def hpm_downgrade_test(serial, ssh_bmc, sftp_bmc, unitool):
     old_hpm = glob.glob(os.path.join(old_path, "*.hpm"))
 
     try:
-        assert Update.update_bios(serial, ssh_bmc, sftp_bmc, new_bin[0])
+        assert Update.update_bios(serial, sftp_bmc, new_bin[0])
         assert icx2pAPI.ping_sut()
         assert unitool.write(**SutConfig.BiosCfg.HPM_KEEP)
         assert Update.flash_local_hpm(serial, ssh_bmc, sftp_bmc, old_hpm[0])
