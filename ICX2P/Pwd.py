@@ -887,7 +887,7 @@ def pwd_auth_mgt_08_10(serial, ssh_os):
         SetUpLib.send_keys([Key.RIGHT, Key.ENTER])
         SetUpLib.send_keys(SutConfig.key2pwd)
         SetUpLib.send_key(Key.ENTER)
-        assert (SerialLib.is_msg_present(serial, "Please type in your password"))
+        assert (SerialLib.is_msg_present(serial, "Enter New Password"))
         SetUpLib.send_data('Inter@4567byosoft')
         SetUpLib.send_key(Key.ENTER)
         logging.info('input User_Password invalid ')
