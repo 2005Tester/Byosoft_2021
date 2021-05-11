@@ -638,7 +638,7 @@ def Testcase_BiosPasswordSecurity_016_017():
     tc = ('048', '[TC048]BiosPasswordSecurity_016', '密码不能明文显示_不显示或用*代替字符测试;任意密码不显示或用*代替字符测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
-        assert SetUpLib.boot_to_pw_prompt()
+        assert SetUpLib.boot_to_pw_prompt(Key.DEL)
         SetUpLib.send_data(SutConfig.BIOS_PW_DEFAULT)
         time.sleep(1)
         try:
@@ -818,7 +818,7 @@ def pwd_auth_mgt_08_10(serial):
     admin_pwd_16 = 'Admin@6789byosof'
     user_pwd = 'Inter@4567'
     try:
-        assert SetUpLib.boot_to_pw_prompt()
+        assert SetUpLib.boot_to_pw_prompt(Key.DEL)
         logging.info("input 3 times error pwd,System Locked")
         for list_error in pwd_error:
             try:
