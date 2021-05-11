@@ -72,21 +72,21 @@ def EquipScope():
 
 # Define test scope for daily test
 def DailyTest():
-    UpdateBIOS.update_bios(ser, sftp_bmc, 'master')
+    UpdateBIOS.update_bios('master')
     TestScope()
-    if UpdateBIOS.update_bios_mfg(ser, sftp_bmc, 'master'):
+    if UpdateBIOS.update_bios_mfg('master'):
         EquipScope()
 
 
 def ReleaseTest():
-    UpdateBIOS.update_bios(ser, sftp_bmc, '2288V6_010')
+    UpdateBIOS.update_bios('2288V6_011')
     TestScope()
-    if UpdateBIOS.update_bios_mfg(ser, sftp_bmc, '2288V6_010'):
+    if UpdateBIOS.update_bios_mfg('2288V6_011'):
         EquipScope()
 
 
 def Debug():
-    UpdateBIOS.update_bios(ser, sftp_bmc, 'master')
+    UpdateBIOS.update_bios('master')
     Cpu.cpu_mem_info()
     DIMM.Testcase_MemoryCompa_001()
     DIMM.Testcase_MemoryCompa_006(ser, ssh_os)
