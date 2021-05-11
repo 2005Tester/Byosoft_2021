@@ -11,6 +11,7 @@ import time
 import logging
 import os
 import re
+from Core.SutInit import Sut
 from Core import SshLib, SerialLib
 from Common import ssh, GitLab
 from ICX2P.Config import SutConfig
@@ -134,17 +135,17 @@ def update_specific_img(bios):
     return True
 
 
-def update_bios(serial, sftp_bmc, bios_img):
+def update_bios(bios_img):
     target_bin = "rp001.bin"
     logging.info("Remove existing BIOS image from BMC")
-    SshLib.sftp_remove_file(sftp_bmc, target_bin)
-    if not SshLib.sftp_upload_file(sftp_bmc, bios_img, target_bin, '67108864'):
+    SshLib.sftp_remove_file(Sut.BMC_SFTP, target_bin)
+    if not SshLib.sftp_upload_file(Sut.BMC_SFTP, bios_img, target_bin, '67108864'):
         return
     if not BmcLib.program_flash():
         return
     if not BmcLib.power_on():
         return
-    if not SerialLib.is_msg_present(serial, Msg.BIOS_BOOT_COMPLETE):
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE):
         return
     logging.info("BIOS update successfully.")
     logging.info("BIOS Imgae: {0}".format(bios_img))

@@ -10,8 +10,6 @@ import datetime
 import logging
 import subprocess
 import time
-from Core import SerialLib
-from Core.SutInit import Sut
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg
 from ICX2P.BaseLib import BmcLib, SetUpLib
@@ -24,7 +22,7 @@ def dump_smbios(ssh, cmd='dmidecode'):
 
 
 def ping_sut():
-    logging.info("Test the connection...")
+    logging.info("Test network connection...")
     ping_cmd = 'ping {0}'.format(SutConfig.OS_IP)
     start_time = time.time()
     while True:
@@ -33,10 +31,10 @@ def ping_sut():
         now = time.time()
         time_spent = (now - start_time)
         if 'TTL=' in stdoutput.decode('gbk'):
-            print("SUT is online now")
+            logging.info("SUT is online.")
             return True
         if time_spent > 600:
-            print("Lost SUT for %s seconds, check the ip connection" % time_spent)
+            logging.error("Lost SUT for %s seconds, check the ip connection" % time_spent)
             return False
             # try:
             #     updatebios.update_specific_img(config.BIOS, serial)
@@ -44,7 +42,6 @@ def ping_sut():
             #     start_time = time.time()
             # except Exception as e:
             #     print(e)
-
 
 
 # OS - capture time,

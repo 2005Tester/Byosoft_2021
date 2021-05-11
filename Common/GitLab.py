@@ -96,7 +96,7 @@ class Gitlab:
             logging.info("Found: {0}".format(file))
             if re.search(img_name, file):
                 file_path = os.path.join(dst, file.replace("/", "\\"))
-                print(file_path)
+                logging.debug("Unzip to: {0}".format(file_path))
                 if os.path.exists(file_path):
                     logging.info("Delete old file")
                     os.remove(file_path)
