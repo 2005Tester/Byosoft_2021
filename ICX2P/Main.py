@@ -56,6 +56,7 @@ def TestScope():
     PCIe.Testcase_PCIeResource_001()
     PCIe.Testcase_PCIeResource_002()
     PCIe.Testcase_PCIeResource_003()
+    PCIe.Testcase_PCIeResource_005()
     biosTest.Testcase_PowerEfficiency_001(unitool)
     if Legacy.enable_legacy_boot():
         Legacy.disable_legacy_boot()
@@ -92,8 +93,3 @@ def Debug():
     Hotkey.Testcase_SystemInfo_001(ser)
     Hotkey.Testcase_SystemInfo_002(ser)
     Hotkey.Testcase_SystemInfo_003(ser)
-    Smbios.smbios_type128(unitool)
-    DIMM.Testcase_MemoryCompa_009(unitool)
-    biosTest.Testcase_SerialPrint_001()
-    biosTest.Testcase_SerialPrint_003()
-    biosTest.Testcase_PowerEfficiency_001(unitool)

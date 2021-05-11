@@ -103,3 +103,49 @@ def Testcase_PCIeResource_003():
     except Exception as e:
         logging.info(e)
         result.log_fail()
+
+
+# BIOS提供PCIe 64bit decode选项测试
+# Precondition: BIOS默认密码
+# OnStart: NA
+# OnComplete: NA
+def Testcase_PCIeResource_005():
+    tc = ('633', '[TC633] Testcase_PCIeResource_005', 'BIOS提供PCIe 64bit decode选项测试')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    try:
+        # Set Config
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_IIO_CONFIG, 10, "CPU 1 Configuration")
+        assert SetUpLib.locate_option(Key.DOWN, ["PCI 64-Bit Resource Allocation", "<Enabled>"], 16
+                                      ), "Check default value failed"
+        logging.info('Check "PCI 64-Bit Resource Allocation" default = <Enabled> pass')
+        SetUpLib.send_key(Key.F6)
+        assert SetUpLib.verify_options(Key.DOWN, [["PCI 64-Bit Resource Allocation", "<Disabled>"]], 16)
+        SetUpLib.send_keys(Key.SAVE_RESET)
+        # Check Config
+        re_allocate = SerialLib.cut_log(Sut.BIOS_COM,
+                                        "Resource allocation Failed. Enabling 64bit MMIO allocation and resetting the system",
+                                        "START_SOCKET_0_DIMMINFO_TABLE", 10, 120, 5)
+        # 未触发资源不足正常 Disable
+        if not re_allocate:
+            assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
+            assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_IIO_CONFIG, 10, "CPU 1 Configuration")
+            assert SetUpLib.verify_options(Key.DOWN, [["PCI 64-Bit Resource Allocation", "<Disabled>"]], 16)
+            logging.info('Check "PCI 64-Bit Resource Allocation" change to <Disabled> pass')
+            result.log_pass()
+            return True
+        # 触发资源不足会强制分配4G以上，且选项强制 Enable
+        assert re.search(r"CPU0[\S\s]+?(Stk00[\S\s]+?)(Stk01.+)", re_allocate), "Enabling 64bit MMIO allocation Failed"
+        logging.info("Resource allocation Failed. Enabling 64bit MMIO allocation and resetting the system.")
+        assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_IIO_CONFIG, 10, "CPU 1 Configuration")
+        assert SetUpLib.verify_options(Key.DOWN, [["PCI 64-Bit Resource Allocation", "<Enabled>"]], 16)
+        logging.info('Check "PCI 64-Bit Resource Allocation" force restore to <Enabled> pass')
+        result.log_pass()
+        return True
+    except Exception as e:
+        logging.info(e)
+        result.log_fail()
+    finally:
+        BmcLib.clear_cmos()
+
