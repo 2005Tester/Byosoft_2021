@@ -190,8 +190,7 @@ class dimm_memPower(unittest.TestCase):
             self.assertTrue(SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
             self.assertTrue(SetUpLib.verify_options(Key.DOWN, [['CKE Idle Timer', '\[20\]']], 7))
             SetUpLib.send_key(Key.ENTER)  # Send Enter
-            SetUpLib.send_data('255')  # set 255
-            SetUpLib.send_key(Key.ENTER)  # Send Enter
+            SetUpLib.send_data_enter('255')  # set 255
             SetUpLib.send_keys(Key.SAVE_RESET)
             self.assertTrue(icx2pAPI.toBIOSnp(serial))
             self.assertTrue(icx2pAPI.toBIOSConf(serial))

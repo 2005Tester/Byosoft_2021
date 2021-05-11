@@ -23,6 +23,13 @@ def send_data(data):
     time.sleep(1)
 
 
+# send a string and enter to BIOS serial port
+def send_data_enter(data):
+    SerialLib.send_data(Sut.BIOS_COM, data)
+    time.sleep(1)
+    send_key(Key.ENTER)
+
+
 # verify information like CPU, memory in one setup page, option name is highlighted
 # infos: list e.g. ['BIOS Revision\s+5.[0-9]{2}']
 def verify_info(info_list, trycounts):
