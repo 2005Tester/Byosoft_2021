@@ -95,10 +95,12 @@ class dimm_memPower(unittest.TestCase):
             self.assertTrue(SetUpLib.boot_to_bootmanager())
             self.assertTrue(SetUpLib.enter_menu(Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
             self.assertTrue(icx2pAPI.ping_sut())
+            SetUpLib.reset_default()
+            result.log_pass()
         except AssertionError as err:
             result.log_fail(capture=True)
+            SetUpLib.reset_default()
             return False
-        result.log_pass()
 
     def dimm_power_mgt_07(self):
         tc = ('704', '[TC704]Testcase_MemPower_007', '内存省电模式选项互斥测试')
