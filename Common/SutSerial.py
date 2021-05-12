@@ -200,7 +200,7 @@ class SutControl:
                     if rev == '':
                         break
                     buffer += rev
-                time.sleep(0.1)
+                time.sleep(0.01)
 
                 if not regex:
                     if msg in buffer:
@@ -210,7 +210,7 @@ class SutControl:
                     if re.search(msg, buffer, re.M):
                         logging.debug("Find string:{0}".format(msg))
                         return True
-                time.sleep(0.1)
+                time.sleep(0.01)
             except EOFError:
                 break
             now = time.time()
@@ -243,13 +243,14 @@ class SutControl:
                     if rev == '':
                         break
                     buffer += rev
-                time.sleep(0.1)
+                time.sleep(0.01)
+
                 for i in msg_list:
                     if i in buffer:
                         res.append(i)
                     else:
                         tmp.append(i)
-                time.sleep(0.1)
+                time.sleep(0.01)
             except EOFError:
                 break
 
