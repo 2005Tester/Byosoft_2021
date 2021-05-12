@@ -314,7 +314,7 @@ def vtd():
 def Testcase_SerialPrint_001():
     tc = ('026', '[TC026]Testcase_SerialPrint_001', '启动关键信息打印测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
-    cpu_resource = r"[\s\S]*".join([rf"CPU{n}[\s\S]*Stk07" for n in range(SysCfg.CPU_CNT)])
+    cpu_resource = r"[\s\S]*".join([rf"CPU{n}[\s\S]*Ubox.+" for n in range(SysCfg.CPU_CNT)])
     bios_ver = r"BIOS Revision :\s+\d.\d+"
     pcie_lnk = r"PCIE LINK STATUS:"
 
@@ -370,9 +370,9 @@ def Testcase_SerialPrint_003():
             for err in error_msg:
                 if not re.search(err, line, re.I):  # 检查错误信息， 忽略大小写
                     continue
-                logging.debug(line)
                 for ig in ignore_list:
-                    assert re.search(ig, line), line  # 排除例外
+                    assert re.search(ig, line), f"[Assert]: {line}"  # 排除例外
+                    logging.debug(f"[Ignore]: {line}")
         result.log_pass()
         return True
     except AssertionError as e:
