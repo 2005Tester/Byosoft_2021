@@ -179,7 +179,7 @@ class SutControl:
                 logging.debug("is_msg_not_present: timeout")
                 break
 
-    # workaround: fix the captured string printed twice, (updated by arthur)
+    # Find 1 string, waitString
     def waitString(self, msg, timeout=10, regex=False):
         """
         Read data from Console Redirection port, and wait specified string
@@ -189,27 +189,30 @@ class SutControl:
                  False, script has not capture specified string after timeout
         """
         t_start = time.time()
-        self.buffer = ""
+        buffer = ''
         logging.info("Waiting for string:\"{0}\"".format(msg))
         logging.debug("wait_for_msg: receiving data from serial port...")
         while True:
             try:
                 count = self.session.inWaiting()  # Serial port buffer data
                 if count != 0:
-                    rev = self.session.read(count).decode('utf-8')
-                    self.buffer += rev
-                    rev = self.cleanup_data(self.buffer)
-                    if not regex:
-                        if msg in rev:
-                            logging.info("Find string:{0}".format(msg))
-                            return True
-                    else:
-                        if re.search(msg, rev, re.M):
-                            logging.debug("Find string:{0}".format(msg))
-                            return True
+                    rev = self.session.read_until(b'\r\n', size=count).decode()
+                    if rev == '':
+                        break
+                    buffer += rev
                 time.sleep(0.1)
-            except Exception as e:
-                logging.error("Error:{0}".format(e))
+
+                if not regex:
+                    if msg in buffer:
+                        logging.info("Find string:{0}".format(msg))
+                        return True
+                else:
+                    if re.search(msg, buffer, re.M):
+                        logging.debug("Find string:{0}".format(msg))
+                        return True
+                time.sleep(0.1)
+            except EOFError:
+                break
             now = time.time()
             spent_time = (now - t_start)
             if spent_time > timeout:
@@ -228,34 +231,36 @@ class SutControl:
         if msg_list is None:
             msg_list = []
         t_start = time.time()
+        res = []
         tmp = []
-        var = ''
-        self.buffer = ""
+        buffer = ''
+        logging.info("Waiting for strings:\"{0}\"".format(msg_list))
         while True:
             try:
                 count = self.session.inWaiting()  # Serial port buffer data
                 if count != 0:
-                    rev = self.session.read(count).decode()
-                    self.buffer += rev
-                    rev = self.cleanup_data(self.buffer)
-                    for i in range(len(msg_list)):
-                        if msg_list[i] not in rev:
-                            var = msg_list[i]
-                        else:
-                            tmp.append(msg_list[i])
-
+                    rev = self.session.read_until(b'\r\n', size=count).decode()
+                    if rev == '':
+                        break
+                    buffer += rev
                 time.sleep(0.1)
-            except Exception as e:
-                logging.error("Error:{0}".format(e))
+                for i in msg_list:
+                    if i in buffer:
+                        res.append(i)
+                    else:
+                        tmp.append(i)
+                time.sleep(0.1)
+            except EOFError:
+                break
 
-            if tmp == msg_list:
-                logging.info('Find strings:{0}'.format(tmp))
+            if set(res) == set(msg_list):
+                logging.info('Find strings:{0}'.format(list(set(res))))
                 return True
 
             now = time.time()
             spent_time = (now - t_start)
             if spent_time > timeout:
-                logging.info("Can not find strings(timeout):{0}".format(var))
+                logging.info("Can not find strings(timeout):{0}".format(list(set(tmp))))
                 return False
 
     # boot with hotkey pressed, and check whether boot is successful
