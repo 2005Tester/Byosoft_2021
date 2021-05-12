@@ -109,6 +109,7 @@ class SshConnection:
         logging.debug("Sending: {0}".format(command))
         stdin, stdout, stderr = self.ssh_client.exec_command(command)
         res = stdout.read().decode()
+        self.close_session()
         return res
 
     # dumm information to a log file
@@ -157,8 +158,7 @@ class SshConnection:
         #    logging.info('Command successful.')
         op.close()
         self.ssh_client.close()
-        status = True
-        return status
+        return True
 
     def is_command_success(self, cmd, expected_result):
         op = self.ssh_client.invoke_shell()
