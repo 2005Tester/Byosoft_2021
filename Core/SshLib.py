@@ -87,6 +87,14 @@ def sftp_upload_file(sftp, src_file, dst_file, ret_msg=None):
         logging.info("SFTP login fail.")
 
 
+# download a file from sftp to local, ret_msg is used to verify result, can use file size
+def sftp_download_file(sftp, src_file, dst_file):
+    if sftp.login():
+        logging.info("Downloading: {0}".format(src_file))
+        return sftp.download_file(src_file, dst_file)
+    else:
+        logging.info("SFTP login fail.")
+
 # list files and directories from a sftp directory
 def sftp_lsdir(sftp, dir='.'):
     if sftp.login():

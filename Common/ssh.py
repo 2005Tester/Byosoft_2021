@@ -32,7 +32,7 @@ class sftp:
             self.transport.banner_timeout = 120
             self.transport.connect(username=self.username, password=self.password)
             self.sftp = paramiko.SFTPClient.from_transport(self.transport)
-        except:
+        except Exception as e:
             logging.error("sftp_login: {0}".format(e))
             return
         logging.info("SFTP login successfully")
@@ -66,6 +66,16 @@ class sftp:
             logging.info(res)
         self.close_session()
         return status
+
+    # download a file from sftp to local
+    def download_file(self, src_file, dst_file):
+        try:
+            logging.debug(f"Download {src_file} to local")
+            self.sftp.get(src_file, dst_file)
+            return True
+        except Exception as e:
+            logging.info(f"Failed to download file: {e}")
+        self.close_session()
 
     def close_session(self):
         self.sftp.close()

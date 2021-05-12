@@ -1,4 +1,6 @@
+import os
 import logging
+import tarfile
 import time
 from Core.SutInit import Sut
 from Core import SshLib
@@ -143,3 +145,34 @@ def program_flash():
     cmds = [cmd_shutdown, cmd_confirm, cmd_maint_mode, cmd_upgrade_mode, cmd_load]
     rets = [ret_shutdown, ret_confirm, ret_maint_mode, ret_upgrade_mode, ret_load]
     return SshLib.interaction(Sut.BMC_SSH, cmds, rets)
+
+
+# BMC一键收集
+# uncom=True: uncompress the file, return path="path/name" | uncom=False: return file="path/name.tar.gz"
+def bmc_dumpinfo(path, name="dump", uncom=False):
+    cmd_diag = "ipmcget -d diaginfo"
+    if not Sut.BMC_SSH.login():
+        return False
+    SshLib.sftp_remove_file(Sut.BMC_SFTP, ".bin")
+    logging.info("Start BMC dump, Please wait...")
+    res = SshLib.execute_command(Sut.BMC_SSH, cmd_diag)
+    if "successful" not in res:
+        logging.info("BMC Dump get error")
+        logging.debug(res)
+        return
+    logging.info(f"Dump finished, Copy to folder: {path}")
+    tar_file = os.path.join(path, f"{name}.tar.gz")
+    if not SshLib.sftp_download_file(Sut.BMC_SFTP, "/tmp/dump_info.tar.gz", tar_file):
+        return
+    logging.info("BMC dumpinfo successfully")
+    if not uncom:
+        return tar_file
+    logging.info(f"Uncompress file: {tar_file}")
+    try:
+        uncom_path = os.path.join(path, name)
+        tar = tarfile.open(tar_file)
+        tar.extractall(path=uncom_path)
+        return uncom_path
+    except Exception:
+        logging.info("Exception: uncompress the dumpinfo fail")
+        return False
