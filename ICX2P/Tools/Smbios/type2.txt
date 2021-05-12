@@ -9,8 +9,8 @@ Base Board Information
 	Manufacturer: Huawei
 	Product Name: BC13MBSC
 	Version: V100R009
-	Serial Number: Huawei
-	Asset Tag: Huawei
+	Serial Number: To be filled by O.E.M.
+	Asset Tag: To be filled by O.E.M.
 	Features:
 		Board is a hosting board
 		Board is replaceable

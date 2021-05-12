@@ -7,9 +7,9 @@ SMBIOS 3.3.0 present.
 Handle 0x0001, DMI type 1, 27 bytes
 System Information
 	Manufacturer: Huawei
-	Product Name: 2288 V6
+	Product Name: 2288H V6
 	Version: Whitley
-	Serial Number: Huawei
+	Serial Number: To be filled by O.E.M.
 	UUID: e1c5d866-0018-bef6-b211-d21dc804ea22
 	Wake-up Type: Power Switch
 	SKU Number: Whitley

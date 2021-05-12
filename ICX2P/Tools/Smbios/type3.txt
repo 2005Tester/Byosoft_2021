@@ -9,9 +9,9 @@ Chassis Information
 	Manufacturer: Huawei
 	Type: Main Server Chassis
 	Lock: Not Present
-	Version: Huawei
-	Serial Number: Huawei
-	Asset Tag: Huawei
+	Version: To be filled by O.E.M.
+	Serial Number: To be filled by O.E.M.
+	Asset Tag: To be filled by O.E.M.
 	Boot-up State: Safe
 	Power Supply State: Safe
 	Thermal State: Safe
