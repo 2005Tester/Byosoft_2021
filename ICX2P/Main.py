@@ -8,9 +8,7 @@ from ICX2P.Config import SutConfig
 # init SUT
 SutInit.SutInit("ICX2P")
 ser = Sut.BIOS_COM
-ssh_bmc = Sut.BMC_SSH
 ssh_os = Sut.OS_SSH
-sftp_bmc = Sut.BMC_SFTP
 
 # init unitool
 unitool = Unitool.SshUnitool(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASSWORD, SutConfig.UNI_PATH)

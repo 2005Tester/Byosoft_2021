@@ -21,7 +21,7 @@ def is_power_off():
 
 # power on SUT by BMC command
 def power_on():
-    logging.info("Power on system.")
+    logging.info("[BmcLib.power_on]Power on system.")
     cmd_reset = 'ipmcset -d powerstate -v 1\n'
     ret_reset = 'Do you want to continue'
     cmd_confirm = 'Y\n'
@@ -37,7 +37,7 @@ def power_on():
 
 # power off sut by BMC command
 def power_off():
-    logging.info("Power off system - force")
+    logging.info("[BmcLib.power_off]Power off system - force")
     cmd_reset = 'ipmcset -d powerstate -v 2\n'
     ret_reset = 'Do you want to continue'
     cmd_confirm = 'Y\n'
@@ -72,7 +72,7 @@ def force_reset():
 
 # Force power cycle by BMC command
 def force_power_cycle():
-    logging.info("Force power cycle.")
+    logging.info("[BmcLib.force_power_cycle]Force power cycle.")
     cmd_powercycle = 'ipmcset -d frucontrol -v 2\n'
     ret_powercycle = 'Do you want to continue'
     cmd_confirm = 'Y\n'
@@ -111,6 +111,7 @@ def clear_cmos():
 
 # open/close debug message with bmc cmd
 def debug_message(enable=True):
+    logging.info("[BmcLib.debug_message]Turn full log on off.")
     value = 1 if enable else 2
     cmd1 = f"ipmcset -t maintenance -d biosprint -v {value}\n"
     rtn1 = 'Do you want to continue'
@@ -128,7 +129,7 @@ def debug_message(enable=True):
 # Program BIOS flash by BMC command
 def program_flash():
     # Program flash procedure: power off->maint mode->attach upgrade ->load bin
-    logging.info("Programing flash...")
+    logging.info("[BmcLib.program_flash]Programing flash...")
     cmd_shutdown = 'ipmcset -d powerstate -v 2\n'
     ret_shutdown = 'Do you want to continue'
     cmd_maint_mode = 'maint_debug_cli\n'

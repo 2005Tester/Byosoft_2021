@@ -332,6 +332,7 @@ def get_option_value(option_patten, key, try_counts):
 # set value of a setup option
 # Usage Example: option="Performance Profile", from_value="Custom", to_value="Performance", set_key=Key.F5, set_cnt=3
 def set_option_value(option, from_value, to_value, set_key, set_cnt, loc_cnt=15):
+    logging.info(f'Set [{option}]: {from_value} => {to_value} Start')
     from_option = [option, f"<{from_value}>"]
     to_option = [option, f"<{to_value}>"]
     key_pressd = [set_key] * set_cnt
@@ -346,7 +347,7 @@ def set_option_value(option, from_value, to_value, set_key, set_cnt, loc_cnt=15)
     if not verify_options(Key.DOWN, [to_option], loc_cnt):
         logging.info('Set option value -> fail')
         return
-    logging.info(f'Set [{option}]: <{from_value}> => <{to_value}> successfully')
+    logging.info(f'Set [{option}]: {from_value} => {to_value} successfully')
     return True
 
 
