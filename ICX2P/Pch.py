@@ -70,3 +70,28 @@ def usb_default_enable_check():
     except AssertionError as e:
         logging.info(e)
         result.log_fail()
+
+
+# Testcase_SATA_Hot_Plug_001 检查SATA与sSATA的所有Port中的Hot Plug选项都为Enable
+# Precondition:
+# OnStart:
+# OnComplete: SetUp
+def hot_plug_sata():
+    tc = ('602', 'Verify SATA/sSATA Information', 'Verify Hot Plug Enable')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    PATH_SATA_CFG = ['PCH Configuration', 'PCH Configuration']
+    PATH_sSATA_CFG = ['PCH Configuration', 'PCH sSATA Configuration']
+    Hot_Plug_Info = ['<Disabled>\s+Hot Plug']
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, PATH_SATA_CFG, 20, 'PCH SATA Configuration')
+        logging.info("**Verify SATA Hot Plug Information**")
+        assert not SetUpLib.verify_info(Hot_Plug_Info, 20)
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, PATH_sSATA_CFG, 20, 'PCH SATA Configuration')
+        logging.info("**Verify sSATA Hot Plug Information**")
+        assert not SetUpLib.verify_info(Hot_Plug_Info, 20)
+        result.log_pass()
+        return True
+    except AssertionError:
+        result.log_fail(capture=True)
