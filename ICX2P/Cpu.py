@@ -66,10 +66,12 @@ def cpu_cores_active_enable(ssh_os, num, set_n):
         logging.info("**Verify Memory Information**")
         assert SetUpLib.verify_info(SutConfig.DIMM_info, 20)
         # boot suse #
-        assert SetUpLib.boot_with_hotkey(Key.F11, "Boot Manager Menu", 300)
-        assert SetUpLib.enter_menu(Key.DOWN, ["SUSE Linux Enterprise\(LUN0\)"], 20, "Welcome to GRUB")
-        assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE, 170)
-        logging.info("Suse_OS Boot Successful")
+        assert BmcLib.force_reset()
+        assert icx2pAPI.ping_sut()
+        # assert SetUpLib.boot_with_hotkey(Key.F11, "Boot Manager Menu", 300)
+        # assert SetUpLib.enter_menu(Key.DOWN, ["SUSE Linux Enterprise\(LUN0\)"], 20, "Welcome to GRUB")
+        # assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE, 170)
+        # logging.info("Suse_OS Boot Successful")
         ### 每个CPU下只有num个core。
         res1 = SshLib.execute_command(ssh_os, r'lscpu | grep " per socket" ').replace('\n', '').split(':')[-1].strip()
         if int(res1) == num:
@@ -91,12 +93,11 @@ def cpu_cores_active_enable(ssh_os, num, set_n):
             return False
         # 使用 unitool 还原 'Active Processor Cores', '<All>' #
         logging.info("正常还原")
-        assert reset_cpu_setting(ssh_os)
         return True
     except AssertionError:
         logging.info("异常还原")
+    finally:
         reset_cpu_setting(ssh_os)
-        return False
 
 # Testcase_CPU_COMPA_015, 016 - TBD
 # Precondition: NA
@@ -279,22 +280,23 @@ def cpu_cores_disable_sys_normally(ssh_os):
         logging.info("**reboot**")
         while n < 5:  #系统反复复位，暂定4次
             # boot suse #
-            assert SetUpLib.continue_to_bootmanager()
-            assert SetUpLib.enter_menu(Key.DOWN, ["SUSE Linux Enterprise\(LUN0\)"], 20, "Welcome to GRUB")
-            assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE, 200)
-            logging.info("Suse_OS Boot Successful")
+            assert icx2pAPI.ping_sut()
+            # assert SetUpLib.continue_to_bootmanager()
+            # assert SetUpLib.enter_menu(Key.DOWN, ["SUSE Linux Enterprise\(LUN0\)"], 20, "Welcome to GRUB")
+            # assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE, 200)
+            # logging.info("Suse_OS Boot Successful")
             res = SshLib.execute_command(ssh_os, r'date')
             logging.info("system reboot pass, system-Time is : {} ".format(res))
             assert BmcLib.force_reset()
             n = n+1
         # 还原系统设置
         logging.info("正常还原")
-        assert reset_cpu_setting(ssh_os)
         result.log_pass()
     except AssertionError:
         logging.info("异常还原")
-        reset_cpu_setting(ssh_os)
         result.log_fail(capture=True)
+    finally:
+        reset_cpu_setting(ssh_os)
 
 
 # Unitool to modify the number of CPU cores,in bios and OS Verify CPU Cores
@@ -331,9 +333,9 @@ def cores_customized_by_unitool(ssh_os):
             return
         # 还原系统设置
         logging.info("正常还原")
-        assert reset_cpu_setting(ssh_os)
         result.log_pass()
     except AssertionError:
         logging.info("异常还原")
-        reset_cpu_setting(ssh_os)
         result.log_fail(capture=True)
+    finally:
+        reset_cpu_setting(ssh_os)
