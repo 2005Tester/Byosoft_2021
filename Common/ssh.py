@@ -133,6 +133,7 @@ class SshConnection:
         res = stdout.read().decode()
         with open(log, 'w') as f:
             f.write(res)
+#        self.close_session()
         return log
 
     def execute_command_interaction(self, cmd):
