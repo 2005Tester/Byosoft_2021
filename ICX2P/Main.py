@@ -11,7 +11,7 @@ ser = Sut.BIOS_COM
 ssh_os = Sut.OS_SSH
 
 # init unitool
-unitool = Unitool.SshUnitool(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASSWORD, SutConfig.UNI_PATH)
+unitool = Unitool.SshUnitool(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASSWORD, SutConfig.UNI_PATH, True)
 
 
 # Test scope for non-equipment build
@@ -91,3 +91,4 @@ def Debug():
     Hotkey.Testcase_SystemInfo_001(ser)
     Hotkey.Testcase_SystemInfo_002(ser)
     Hotkey.Testcase_SystemInfo_003(ser)
+    biosTest.Testcase_PowerEfficiency_001(unitool)
