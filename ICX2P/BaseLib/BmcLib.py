@@ -27,7 +27,7 @@ def power_on():
     cmd_reset = 'ipmcset -d powerstate -v 1\n'
     ret_reset = 'Do you want to continue'
     cmd_confirm = 'Y\n'
-    ret_confirm = 'successfully'
+    ret_confirm = ''
     cmds = [cmd_reset, cmd_confirm]
     rets = [ret_reset, ret_confirm]
     if Sut.BMC_SSH.login():
@@ -43,7 +43,7 @@ def power_off():
     cmd_reset = 'ipmcset -d powerstate -v 2\n'
     ret_reset = 'Do you want to continue'
     cmd_confirm = 'Y\n'
-    ret_confirm = 'successfully'
+    ret_confirm = ''
     cmds = [cmd_reset, cmd_confirm]
     rets = [ret_reset, ret_confirm]
     if Sut.BMC_SSH.login():
@@ -62,7 +62,7 @@ def force_reset():
         cmd_reset = 'ipmcset -d frucontrol -v 0\n'
         ret_reset = 'Do you want to continue'
         cmd_confirm = 'Y\n'
-        ret_confirm = 'successfully'
+        ret_confirm = ''
         cmds = [cmd_reset, cmd_confirm]
         rets = [ret_reset, ret_confirm]
         if Sut.BMC_SSH.login():
@@ -78,7 +78,7 @@ def force_power_cycle():
     cmd_powercycle = 'ipmcset -d frucontrol -v 2\n'
     ret_powercycle = 'Do you want to continue'
     cmd_confirm = 'Y\n'
-    ret_confirm = 'successfully'
+    ret_confirm = ''
     cmds = [cmd_powercycle, cmd_confirm]
     rets = [ret_powercycle, ret_confirm]
     if Sut.BMC_SSH.login():
