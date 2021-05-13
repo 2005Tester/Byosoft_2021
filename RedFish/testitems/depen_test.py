@@ -58,6 +58,7 @@ class DepenTest(RedFish):
         self.map_from_pd = pd.DataFrame()
         self.depens = self.Dependencies()
         self.mapto_link = self.mapto_info()
+        self.registry_dump(dump_name="Registry.json")
 
     def attributes_info(self, dump: bool = False):
         """ 以AttributeName为索引返回 DataFrame，可选择生成Excel文件用于手动检查 """
@@ -305,8 +306,7 @@ class DepenTest(RedFish):
         self.map_from_pd["Summary"] = self.map_from_pd.apply(
             lambda x:
             "Pass" if (
-                              x.CheckStatus == "pass" and x.PatchStatus == "pass" and x.CheckMapTo == "pass") or (
-                              x.IsMapped == "yes" and x.PatchStatus == "pass") else
+                              x.CheckStatus == "pass" and x.PatchStatus == "pass" and x.CheckMapTo == "pass")  else
             ("Fail" if (
                     x.CheckStatus == "fail" or x.PatchStatus == "fail" or x.CheckMapTo == "fail") else
              None), axis=1)

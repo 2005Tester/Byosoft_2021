@@ -30,7 +30,7 @@ from RedFish.testitems.power_efficiency import app_test
 
 requests.packages.urllib3.disable_warnings()
 bmc = ssh.SshConnection(config.bmc_ip, config.bmc_user, config.bmc_pw)
-ser = SutControl(config.COM, 115200, 0.5, config.SERIAL_LOG)
+ser = SutControl(config.COM, 115200, 0.5)
 
 
 def load_test_status(testcase_file):
