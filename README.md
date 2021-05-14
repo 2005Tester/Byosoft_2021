@@ -8,6 +8,12 @@
 or Run pip install -r requirements.txt  
 
 
+## Coding Style
+* 类名: 驼峰式, 如ClassName()  
+* 模块名: 驼峰式, 如ModuleName.py()  
+* 方法名：全小写加下划线, 如methot_name()  
+
+
 ## Test Case Development Rules
 1. 自动测试入口脚本：Test[projectname].py, 所有调通的case, 添加到runtest()里面   
    可选参数: **不跟任何参数** - runtest() 里面包含的所有case执行一遍  
