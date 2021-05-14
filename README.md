@@ -9,8 +9,9 @@ or Run pip install -r requirements.txt
 
 
 ## Coding Style
-* 类名: 驼峰式, 如ClassName()  
+* 类名: 驼峰式, 如ClassName  
 * 模块名: 驼峰式, 如ModuleName.py()  
+* 包名: 驼峰式, 如PakcageName  
 * 方法名：全小写加下划线, 如methot_name()  
 
 
