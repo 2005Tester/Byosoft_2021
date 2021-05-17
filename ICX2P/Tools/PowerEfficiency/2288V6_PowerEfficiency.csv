@@ -34,7 +34,6 @@ C6Enable,0,1,0,1,0,0,0,0,0,0,1,1,0
 ProcessorHWPMEnable,0,0,2,0,0,0,0,2,2,0,0,0,0
 PackageCState,0xff,0xff,0,0xff,0xff,0,0xff,0,0,0xff,0,2,0
 TStateEnable,1,0,0,0,0,1,1,1,1,1,1,1,1
-EnableXe,1,1,1,1,0,1,1,1,1,1,1,1,1
 CurrentUnderReport,0,0,0,0,0,3,0,0,0,0,0,0,0
 SystemErrorEn,1,1,1,1,1,1,1,1,1,1,1,1,1
 FDMSupport,1,1,1,1,1,1,1,1,1,1,1,1,1

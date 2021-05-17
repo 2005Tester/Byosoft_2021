@@ -397,7 +397,7 @@ def Testcase_PowerEfficiency_001(unitool):
     # list order must follow the bios menu sequence
     value_list = ["Custom", "Efficiency", "Performance", "Load Balance", "High RAS", "HPC", "General Computing",
                   "Low Latency", "Server Side Java", "Memory Throughput", "I/O Throughput", "Energy Saving", "NFV"]
-    test_res = True
+    failed_items = {}
     try:
         for col_index, to_mode in enumerate(data[0][1:]):
             # Set power efficiency mode
@@ -412,27 +412,43 @@ def Testcase_PowerEfficiency_001(unitool):
             SetUpLib.send_keys([Key.F10, Key.Y])
             assert icx2pAPI.ping_sut()
             # Check each Attribute's value
+            name_list = [row_data[0] for row_data in data[1:]]
+            read_res = unitool.read(*name_list)
             for row_index, attr_name in enumerate(data[1:]):
                 key = attr_name[0]
                 value = attr_name[data[0].index(f"{to_mode}_check")-1]
                 value = str(int(value, 16)) if ("0x" in value) else value
-                read_res = unitool.read(key)
                 read_val = read_res.get(key) if read_res else None
                 if read_val != value:
+                    if failed_items.get(to_mode):
+                        failed_items[to_mode][key] = read_val
+                    else:
+                        failed_items[to_mode] = {key: read_val}
                     data[row_index + 1].insert(result_index, read_val)
-                    test_res = test_res & False
                     continue
                 data[row_index + 1].insert(result_index, "pass")
-        # Show detail test report in test log：
-        logging.info("Show the test result table")
-        for line in data:
-            logging.info(list(map(lambda x: "{:36}".format(x), line)))
-        logging.info(f"Test result: {test_res}")
+        # Gen test report csv file
+        report_path = os.path.join(SutConfig.LOG_DIR, f"TC{tc[0]}")
+        if not os.path.exists(report_path):
+            os.makedirs(report_path)
+        report_file = os.path.join(report_path, "power_efficiency_test_report.csv")
+        logging.info(f"Detail test report saved at {report_file}")
+        with open(report_file, "w", newline="") as report:
+            report_writer = csv.writer(report)
+            report_writer.writerows(data)
+        # show test result in test log
+        test_result = False if failed_items else True
+        logging.info(f"Test result: {test_result}")
+        for mode, attr_kv in failed_items.items():
+            for att_k, att_v in attr_kv.items():
+                logging.info(f"{mode}={att_k}, Read Value={att_v} failed")
         # Result summary
-        if test_res:
+        if not failed_items:
             result.log_pass()
             return True
         result.log_fail()
-    except AssertionError as e:
+    except Exception as e:
         logging.info(e)
         result.log_fail()
+    finally:
+        BmcLib.clear_cmos()

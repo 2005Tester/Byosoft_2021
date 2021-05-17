@@ -23,7 +23,7 @@ class SshUnitool(SshConnection):
         os_pw:      ssh 登录密码
         uni_path:   unitool放在OS下的路径，需要将unitool文件和 ufudev.ko放在同一个文件夹
         log_debug:  False: print的方式打印关键信息
-                    True： logging.debug的方式打印关键信息
+                    True： logging的方式打印关键信息
     """
 
     def __init__(self, os_ip, os_usr, os_pw, uni_path, loginfo=False):
@@ -81,7 +81,7 @@ class SshUnitool(SshConnection):
             time.sleep(0.1)
         while self.shell.recv_ready():
             all_data.append(self.shell.recv(buffer).decode("utf-8"))
-            time.sleep(0.1)
+            time.sleep(0.5)
             if time.time() - start_time > timeout:
                 cprint("ssh receive data timeout", self.loginfo)
                 break
@@ -95,7 +95,7 @@ class SshUnitool(SshConnection):
             if not cmd.endswith("\n"):  # except handle
                 cmd = f"{cmd}\n"
             self.shell.sendall(cmd)
-            time.sleep(0.1)
+            time.sleep(0.5)
             data = self.recv_data(buffer=1024, timeout=timeout)
             try:
                 if feedback and (feedback[index] in data):
