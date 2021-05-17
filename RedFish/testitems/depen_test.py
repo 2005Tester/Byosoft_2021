@@ -15,7 +15,7 @@ import pandas as pd
 
 from copy import deepcopy
 from RedFish.commlibs.commtools import to_excel, reboot_to_setup
-from RedFish.commlibs.redfishlibs import RedFish
+from Common.RedfishLib import Redfish
 from RedFish.config import bmc_ip, bmc_user, bmc_pw
 
 """
@@ -49,7 +49,7 @@ from RedFish.config import bmc_ip, bmc_user, bmc_pw
 """
 
 
-class DepenTest(RedFish):
+class DepenTest(Redfish):
     def __init__(self, ssh_bmc, serial):
         super(DepenTest, self).__init__(bmc_ip, bmc_user, bmc_pw)
         self.ssh = ssh_bmc
@@ -58,7 +58,7 @@ class DepenTest(RedFish):
         self.map_from_pd = pd.DataFrame()
         self.depens = self.Dependencies()
         self.mapto_link = self.mapto_info()
-        self.registry_dump(dump_name="Registry.json")
+        self.registry_dump(dump_json=True)
 
     def attributes_info(self, dump: bool = False):
         """ 以AttributeName为索引返回 DataFrame，可选择生成Excel文件用于手动检查 """
@@ -397,7 +397,7 @@ class DepenTest(RedFish):
 
                 # Force to UEFI if 'BootType' is set to 'LegacyBoot' (this attribute can't be load default with post)
                 if ('BootType', 'LegacyBoot') in key_value.items():
-                    assert self.write(BootType='UEFIBoot')["result"]
+                    assert self.write(BootType='UEFIBoot').result
                     assert reboot_to_setup(self.ssh, self.serial)
 
             except Exception as e:

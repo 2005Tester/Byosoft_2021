@@ -9,7 +9,7 @@ import time
 sys.path.append(os.path.abspath(r"../../"))
 from Common.ssh import SshConnection
 from RedFish import config
-from RedFish.commlibs.redfishlibs import RedFish
+from Common.RedfishLib import Redfish
 from RedFish.commlibs.commtools import reboot_to_setup
 
 
@@ -44,8 +44,8 @@ def app_test(bmc, serial):
 
     os_ssh = SshConnection(config.os_ip, config.os_user, config.os_pw)
     pd = pandas.read_excel(config.AppExcel, sheet_name=0, index_col="AttributeName")
-    rfish = RedFish(config.bmc_ip, config.bmc_user, config.bmc_pw)
-    rfish.registry_dump("registry.json")  # 获取registry数据
+    rfish = Redfish(config.bmc_ip, config.bmc_user, config.bmc_pw)
+    rfish.registry_dump(True, path=config.REPORT_DIR, name="registry.json")  # 获取registry数据
     names = rfish.AttributeName_list()
     app_name = "".join([app for app in app_name_list if app in names])
 
@@ -55,7 +55,7 @@ def app_test(bmc, serial):
         pd[ap + "_Check"] = ""
 
         # PATCH AppProfile选项
-        if not rfish.write(**{app_name: ap})["result"]:
+        if not rfish.write(**{app_name: ap}).result:
             logging.info('Error: {} = {} PATCH Fail!'.format(app_name, repr(ap)))
             continue
         logging.info('{} = {} PATCH Pass!'.format(app_name, repr(ap)))
@@ -66,7 +66,7 @@ def app_test(bmc, serial):
             logging.info('Current AppValue is "{}"'.format(rfish.read(app_name)))
             logging.info('Redfish Check: {} = {}  Fail'.format(app_name, repr(ap)))
             continue
-        rfish.current_dump("{}.json".format(ap.replace("/", "")))
+        rfish.current_dump(True, path=config.REPORT_DIR, name="{}.json".format(ap.replace("/", "")))
         logging.info('Redfish Check: {} = {}  Pass!'.format(app_name, repr(ap)))
 
         # 进入OS，unitool检查子选项的值

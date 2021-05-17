@@ -8,17 +8,15 @@ import time
 
 import redfish
 
-import RedFish.config as config
 
-
-class RedFish(object):
+class Redfish(object):
     CURRENT_PATH = r"/redfish/v1/Systems/1/Bios"
     REGISTRY_PATH = r"/redfish/v1/RegistryStore/AttributeRegistries/en/BiosAttributeRegistry.v{}_{}_{}.json"
     PATCH_PATH = r"/redfish/v1/Systems/1/Bios/Settings"
     POST_PATH = r"/redfish/v1/Systems/1/Bios/Actions/Bios.ResetBios"
 
-    def __init__(self, ip=config.bmc_ip, user=config.bmc_user, pw=config.bmc_pw):
-        self.ip = ip
+    def __init__(self, bmc_ip, user, pw):
+        self.ip = bmc_ip
         self.user = user
         self.pw = pw
         self.session = None
@@ -61,7 +59,7 @@ class RedFish(object):
     # 获取attribute的当前值,同时更新self.current
     def read(self, *args):
         """
-        Input:  [key1, key2]
+        Input:  *[key1, key2] or "key1", "key2"
         Output: {key1: value1, key2: value2}
         """
         data = self.session.get(self.CURRENT_PATH)
@@ -75,24 +73,36 @@ class RedFish(object):
     # 输入选项和取值，PATCH后LOG打印结果
     def write(self, **kwargs):
         """
-        Input:  {key1: value1, key2: value2}
-        Output: {   "status":   patch status code: int,
-                    "body":     Pass       ->   Attributes: {}
+        Input:  **{"key1": value1, "key2": value2} or key1=value1, key2=value2
+        Output: {   status:     patch status code: int,
+                    body:       Pass       ->   Attributes: {}
                                 Fail       ->   Message: str
-                    "result":   True / False}
+                    result:     True / False
+                }
         """
+        class PatchStatus:
+            status = None
+            body = None
+            result = None
+
         body = {"Attributes": kwargs}
         patch = self.session.patch(path=self.PATCH_PATH, body=body, headers=self.get_etag())
         time.sleep(0.5)
         result = True if (patch.status == 200) else False
-        msg = re.findall(r'("Attributes":\s*\{.+?\}),', patch.text) if result else re.findall(r'"Message":\s*"(.+?)",',
-                                                                                              patch.text)
-        return {"status": patch.status, "body": "".join(msg), "result": result}
+        if patch.status == 200:
+            msg = re.findall(r'("Attributes":\s*\{.+?\}),', patch.text)
+        else:
+            msg = re.findall(r'"Message":\s*"(.+?)",', patch.text)
+        PatchStatus.status = patch.status
+        PatchStatus.body = "".join(msg)
+        PatchStatus.result = result
+
+        return PatchStatus
 
     # 检查选项key的值是否为value,同时更新self.current
     def check(self, **kwargs):
         """
-        Input:  {key1: value1, key2: value2}
+        Input:  **{key1: value1, key2: value2} or key1=value1, key2=value2
         Output: True / False
         """
         data = self.session.get(self.CURRENT_PATH)
@@ -112,30 +122,32 @@ class RedFish(object):
             logging.info("BIOS load default successful!")
             return True
 
-    # Dump CurrentValue, 变量保存到self.current, 可选择是否保存到本地 .json文件, 默认路径为config.TEST_RESULT_DIR
-    def current_dump(self, dump_name=None):
+    # Dump CurrentValue, 变量保存到self.current, dump=True则将 currentvalue 保存为本地json文件
+    def current_dump(self, dump_json=False, path=".", name="Registry.json"):
         data = self.session.get(self.CURRENT_PATH)
         if data.status == 200:
             self.current = data.dict.get("Attributes")
-            if dump_name:
-                self.current_json = os.path.join(config.TEST_RESULT_DIR, dump_name)
-                with open(self.current_json, "w") as f:
+            if dump_json:
+                json_file = os.path.join(os.path.abspath(path), name)
+                with open(json_file, "w") as f:
                     json.dump(self.current, f, indent=4)
-                    logging.info("{}/{} dump pass".format(config.TEST_RESULT_DIR, dump_name))
+                    self.current_json = json_file
+                    logging.info("{} dump pass".format(json_file))
             return self.current
         logging.info("Error: response code: {}".format(data.status))
 
-    # Dump Registry, 变量保存到self.registry, 可选择是否保存到本地 .json文件, 默认路径为config.TEST_RESULT_DIR
-    def registry_dump(self, dump_name=None):
+    # Dump Registry, 变量保存到self.registry, dump=True则将 registry 保存为本地json文件
+    def registry_dump(self, dump_json=False, path=".", name="CurrentValue.json"):
         data = self.session.get(self.REGISTRY_PATH)
         if data.status == 200:
             self.registry = {k: v for k, v in data.dict.items() if
                              k in ["Language", "RegistryVersion", "RegistryEntries"]}
-            if dump_name:
-                self.registry_json = os.path.join(config.TEST_RESULT_DIR, dump_name)
-                with open(self.registry_json, "w") as f:
+            if dump_json:
+                json_file = os.path.join(os.path.abspath(path), name)
+                with open(json_file, "w") as f:
                     json.dump(self.registry, f, indent=4)
-                    logging.info("{}/{} dump pass".format(config.TEST_RESULT_DIR, dump_name))
+                    self.registry_json = json_file
+                    logging.info("{} dump pass".format(dump_json))
             return self.registry
         logging.info("Error: response code: {}".format(data.status))
 

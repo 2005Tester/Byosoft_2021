@@ -13,7 +13,8 @@ from sys import argv
 
 sys.path.append(os.path.abspath(r"../"))
 from Common import SutSerial
-from Common import RedFish
+from RedFish.commlibs import RedFishTools
+
 sys.path.append('RedFish')
 from RedFish import config
 # from HY5 import Hy5TcLib
@@ -73,7 +74,7 @@ def registry_file_value_test():
                 payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": %d \r\n    }\r\n}" % (key, value)
             else:
                 payload = "{\r\n    \"Attributes\": {\r\n     \"%s\": \"%s\" \r\n    }\r\n}" % (key, value)
-            res = RedFish.patch_single_payload(payload, config.PATCH_URL).decode('utf-8')
+            res = RedFishTools.patch_single_payload(payload, config.PATCH_URL).decode('utf-8')
             res = json.loads(res)
             if 'error' in res:
                 errors.append(payload)
@@ -184,11 +185,11 @@ def compare_one(payload, result):
 
 def run_test(test_case_file):
     # Precheck: 比较test case 和 当前值, 打印改变的选项.
-    current_value = json.loads(RedFish.get(config.GET_URL))
+    current_value = json.loads(RedFishTools.get(config.GET_URL))
     compare(test_case_file, current_value)
     os.system('pause')
     # patch request 设置 test case中的值
-    res = RedFish.patch_tc_file(test_case_file, config.PATCH_URL).decode('utf-8')
+    res = RedFishTools.patch_tc_file(test_case_file, config.PATCH_URL).decode('utf-8')
     res = json.loads(res)
     if 'error' in res:
         print(res['error'])
@@ -196,13 +197,13 @@ def run_test(test_case_file):
         print("Patch Successfully")
 
         reboot_to_setup(bmc, ser)
-        result = RedFish.get(config.GET_URL)
+        result = RedFishTools.get(config.GET_URL)
         result = json.loads(result)
         compare(test_case_file, result)
 
 
 def run_test_one_by_one(payload):
-    current_all = json.loads(RedFish.get(config.GET_URL))
+    current_all = json.loads(RedFishTools.get(config.GET_URL))
     try:
         test_item = json.loads(payload)
     except json.decoder.JSONDecodeError:
@@ -221,7 +222,7 @@ def run_test_one_by_one(payload):
         tc_result = "Error"
         return tc_result
 
-    res = RedFish.patch_single_payload(payload, config.PATCH_URL).decode('utf-8')
+    res = RedFishTools.patch_single_payload(payload, config.PATCH_URL).decode('utf-8')
     res = json.loads(res)
     if 'error' in res:
         # logging.info(res['error'])
@@ -233,7 +234,7 @@ def run_test_one_by_one(payload):
         logging.info("Rebooting sut...")
         reboot_to_setup(bmc, ser)
         try:
-            result = json.loads(RedFish.get(config.GET_URL))
+            result = json.loads(RedFishTools.get(config.GET_URL))
             tc_result = compare_one(payload, result)
         except Exception as e:
             logging.error(e)
