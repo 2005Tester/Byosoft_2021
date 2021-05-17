@@ -384,7 +384,6 @@ def Testcase_MemRefresh_002(serial, ssh_os):
 def Testcase_MemoryCompa_009(unitool):
     tc = ('713', '[TC713]Testcase_MemoryCompa_009', '装备模式内存Margin功能测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
-    logging.info("Change setup option to enable RMT")
     try:
         assert BmcLib.force_reset()
         assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE)

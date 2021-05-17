@@ -7,6 +7,7 @@ from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg, BiosCfg
 from ICX2P.BaseLib import BmcLib, SetUpLib, Update, icx2pAPI
 from Report import ReportGen
+from Common.RedfishLib import Redfish
 
 
 # Test case ID: 9xx
@@ -177,3 +178,31 @@ def check_bmc_warning():
     logging.info("No any Event found in bmc web")
     result.log_pass()
     return True
+
+# Author: WangQingshan
+# 检查新旧版本BIOS的Registry.json文件是否一致
+# Precondition: BMC正常登录
+# OnStart: NA
+# OnComplete: NA
+def registry_check(new_branch, old_branch):
+    tc = ('908', 'Compare registry.json file with previous version', "Compare registry.json file with previous version")
+    result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
+
+    rfish = Redfish(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)
+    try:
+        # old branch bios image registry dump
+        old_img = Update.get_test_image(SutConfig.LOG_DIR, old_branch, 'debug-build')
+        assert Update.update_bios(old_img)
+        logging.info("dump old registry")
+        old_registry = rfish.registry_dump()
+        # new branch bios image registry dump
+        new_img = Update.get_test_image(SutConfig.LOG_DIR, new_branch, 'debug-build')
+        assert Update.update_bios(new_img)
+        logging.info("dump new registry")
+        new_registry = rfish.registry_dump()
+        assert old_registry == new_registry, "Check old registry is different from new registry"
+        logging.info("Check old registry is same with new registry")
+        result.log_pass()
+    except Exception as e:
+        logging.error(e)
+        result.log_fail()

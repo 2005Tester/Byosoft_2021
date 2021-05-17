@@ -123,7 +123,7 @@ class Redfish(object):
             return True
 
     # Dump CurrentValue, 变量保存到self.current, dump=True则将 currentvalue 保存为本地json文件
-    def current_dump(self, dump_json=False, path=".", name="Registry.json"):
+    def current_dump(self, dump_json=False, path=".", name="CurrentValue.json"):
         data = self.session.get(self.CURRENT_PATH)
         if data.status == 200:
             self.current = data.dict.get("Attributes")
@@ -137,7 +137,7 @@ class Redfish(object):
         logging.info("Error: response code: {}".format(data.status))
 
     # Dump Registry, 变量保存到self.registry, dump=True则将 registry 保存为本地json文件
-    def registry_dump(self, dump_json=False, path=".", name="CurrentValue.json"):
+    def registry_dump(self, dump_json=False, path=".", name="Registry.json"):
         data = self.session.get(self.REGISTRY_PATH)
         if data.status == 200:
             self.registry = {k: v for k, v in data.dict.items() if
@@ -147,7 +147,7 @@ class Redfish(object):
                 with open(json_file, "w") as f:
                     json.dump(self.registry, f, indent=4)
                     self.registry_json = json_file
-                    logging.info("{} dump pass".format(dump_json))
+                    logging.info("{} dump pass".format(json_file))
             return self.registry
         logging.info("Error: response code: {}".format(data.status))
 
