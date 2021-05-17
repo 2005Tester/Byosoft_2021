@@ -1,7 +1,6 @@
 # this script just for dimm related test func
 
 import logging
-import unittest
 import numpy, re
 from Core.SutInit import Sut
 from Report import ReportGen
@@ -21,21 +20,30 @@ from ICX2P import Os
 
 # go to memory frequency page
 def navigate_to_mem_fre():
-    assert(SetUpLib.locate_option(Key.RIGHT, [Msg.PAGE_ADVANCED], 6))
-    assert(SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, Msg.MEMORY_CONFIG], 12, Msg.MEM_FRE))
+    try:
+        assert SetUpLib.locate_option(Key.RIGHT, [Msg.PAGE_ADVANCED], 6)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_CONFIG, 12, Msg.MEM_FRE)
+        return True
+    except AssertionError:
+        logging.info("navigate_to_mem_fre: Fail")
+
 
 # go to cke power down page
 def navigate_to_cke():
-    assert(SetUpLib.locate_option(Key.RIGHT, [Msg.PAGE_ADVANCED], 6))
-    assert(SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, Msg.ADV_POWER_MGF_CONFIG,
-                                                   Msg.MEM_POWER_THER_CONFIG, Msg.MEM_POWER_ADV], 12, Msg.CKE))
+    try:
+        assert SetUpLib.locate_option(Key.RIGHT, [Msg.PAGE_ADVANCED], 6)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.CKE)
+        return True
+    except AssertionError:
+        logging.info("navigate_to_cke: Fail")
+
 
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: BIOS Setup
 # 03 支持内存电源管理配置
 def dimm_power_mgt_01():
-    tc = ('700', 'Testcase_MemPower_001', 'BIOS默认关闭DDR4内存的LP-ASR模式测试')
+    tc = ('700', '[TC700]Testcase_MemPower_001', 'BIOS默认关闭DDR4内存的LP-ASR模式测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         assert(SetUpLib.boot_to_page(Msg.PAGE_INFO))
@@ -49,15 +57,16 @@ def dimm_power_mgt_01():
             logging.info('Unsupported CPU Number...')
             raise AssertionError
         result.log_pass()
-    except AssertionError as err:
+        return True
+    except AssertionError:
         result.log_fail(capture=True)
-        return False
+
 
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: BIOS Setup
 def dimm_power_mgt_02():
-    tc = ('701', 'Testcase_MemPower_002&3', 'BIOS默认关闭CKE Power Down&Setup菜单提供内存自刷新和CKE Power Down选项测试')
+    tc = ('701', '[TC701]Testcase_MemPower_002&3', 'BIOS默认关闭CKE Power Down&Setup菜单提供内存自刷新和CKE Power Down选项测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         assert(SetUpLib.boot_to_page(Msg.PAGE_INFO))
@@ -67,15 +76,16 @@ def dimm_power_mgt_02():
                                                        Msg.MEM_POWER_ADV], 12, Msg.CKE))
         assert(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
         result.log_pass()
-    except AssertionError as err:
+        return True
+    except AssertionError:
         result.log_fail(capture=True)
-        return False
+
 
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: SUSE OS
 def dimm_power_mgt_04():
-    tc = ('702', 'Testcase_MemPower_004', '打开DDR4内存的LP-ASR模式功能测试')
+    tc = ('702', '[TC702]Testcase_MemPower_004', '打开DDR4内存的LP-ASR模式功能测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         assert(SetUpLib.boot_to_page(Msg.PAGE_INFO))
@@ -84,15 +94,16 @@ def dimm_power_mgt_04():
         assert(SetUpLib.boot_to_bootmanager())
         assert(SetUpLib.enter_menu(Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
         result.log_pass()
-    except AssertionError as err:
+        return True
+    except AssertionError:
         result.log_fail(capture=True)
-        return False
+
 
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: SUSE OS
 def dimm_power_mgt_05():
-    tc = ('703', 'Testcase_MemPower_005', '打开CKE Power down功能测试')
+    tc = ('703', '[TC703]Testcase_MemPower_005', '打开CKE Power down功能测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         assert(SetUpLib.boot_to_page(Msg.PAGE_INFO))
@@ -105,12 +116,12 @@ def dimm_power_mgt_05():
         assert(SetUpLib.boot_to_bootmanager())
         assert(SetUpLib.enter_menu(Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
         assert(icx2pAPI.ping_sut())
-        SetUpLib.reset_default()
         result.log_pass()
-    except AssertionError as err:
+    except AssertionError:
         result.log_fail(capture=True)
+    finally:
         SetUpLib.reset_default()
-        return False
+
 
 # Precondition: BIOS默认密码
 # OnStart: NA
@@ -129,50 +140,47 @@ def dimm_power_mgt_07():
         SetUpLib.send_key(Key.F5)
         assert(SetUpLib.verify_options(Key.DOWN, [['APD', '<Enabled>']], 3))
         assertFalse(SetUpLib.verify_options(Key.DOWN, [['PPD', '<Enabled>']], 3))
-    except AssertionError as err:
+        result.log_pass()
+    except AssertionError:
         result.log_fail(capture=True)
+    finally:
         SetUpLib.reset_default()
-        return False
-    SetUpLib.reset_default()
-    result.log_pass()
+
 
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: SUSE OS
-def dimm_power_mgt_010(serial, ssh_os, ssh_bmc):
-    tc = ('705', 'Testcase_MemPower_010', '内存省电模式使能PPD时寄存器状态测试')
+def dimm_power_mgt_010(ssh_os):
+    tc = ('705', '[TC705]Testcase_MemPower_010', '内存省电模式使能PPD时寄存器状态测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
-        assert(icx2pAPI.toBIOS(serial, ssh_bmc))
-        assert(icx2pAPI.toBIOSConf(serial))
-        assert navigate_to_cke(), 'navigate to mem cke power page -> fail'
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.MEM_POWER_ADV)
         assert(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
         SetUpLib.send_keys([Key.F5, Key.F10, Key.Y])
-        assert(icx2pAPI.toBIOSnp(serial))
-        assert(icx2pAPI.toBIOSConf(serial))
-        assert navigate_to_cke(), 'navigate to mem cke power page -> fail'
+        assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.MEM_POWER_ADV)
         assert(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
         assert(SetUpLib.boot_to_bootmanager())
         assert(SetUpLib.enter_menu(Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
         assert(icx2pAPI.ping_sut())
         assert(icx2pAPI.rw_everything(ssh_os, SutConfig.CKE_POWER_DOWN, ['c61218a0', 'fb9a18a4']))
-        SetUpLib.reset_default()
         result.log_pass()
-    except AssertionError as err:
+    except AssertionError:
         result.log_fail(capture=True)
+    finally:
         SetUpLib.reset_default()
-        return False
+
 
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: SUSE OS
-def dimm_power_mgt_011(serial, ssh_os, ssh_bmc):
-    tc = ('706', 'Testcase_MemPower_011', '内存省电模式使能APD时寄存器状态测试')
+def dimm_power_mgt_011(ssh_os):
+    tc = ('706', '[TC706]Testcase_MemPower_011', '内存省电模式使能APD时寄存器状态测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
-        assert(icx2pAPI.toBIOS(serial, ssh_bmc))
-        assert(icx2pAPI.toBIOSConf(serial))
-        assert navigate_to_cke(), 'navigate to mem cke power page -> fail'
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.MEM_POWER_ADV)
         assert(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
         SetUpLib.send_key(Key.F5)
         assert(SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
@@ -182,9 +190,8 @@ def dimm_power_mgt_011(serial, ssh_os, ssh_bmc):
         assert(SetUpLib.verify_options(Key.DOWN, [['APD', '<Enabled>']], 3))
         assertFalse(SetUpLib.verify_options(Key.DOWN, [['PPD', '<Enabled>']], 3))
         SetUpLib.send_keys(Key.SAVE_RESET)
-        assert(icx2pAPI.toBIOSnp(serial))
-        assert(icx2pAPI.toBIOSConf(serial))
-        assert navigate_to_cke(), 'navigate to mem cke power page -> fail'
+        assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.MEM_POWER_ADV)
         assert(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
         assert(SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
         assert(SetUpLib.verify_options(Key.DOWN, [['APD', '<Enabled>']], 3))
@@ -192,23 +199,22 @@ def dimm_power_mgt_011(serial, ssh_os, ssh_bmc):
         assert(SetUpLib.enter_menu(Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
         assert(icx2pAPI.ping_sut())
         assert(icx2pAPI.rw_everything(ssh_os, ['1100', '010f'], ['c61218a0']))
-        SetUpLib.reset_default()
         result.log_pass()
-    except AssertionError as err:
+    except AssertionError:
         result.log_fail(capture=True)
+    finally:
         SetUpLib.reset_default()
-        return False
+
 
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: SUSE OS
-def dimm_power_mgt_012(serial, ssh_os, ssh_bmc):
-    tc = ('707', 'Testcase_MemPower_012', '内存省电模式使能时更改定时器选项测试')
+def dimm_power_mgt_012(ssh_os):
+    tc = ('707', '[TC707]Testcase_MemPower_012', '内存省电模式使能时更改定时器选项测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
-        assert(icx2pAPI.toBIOS(serial, ssh_bmc))
-        assert(icx2pAPI.toBIOSConf(serial))
-        assert navigate_to_cke(), 'navigate to mem cke power page -> fail'
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.MEM_POWER_ADV)
         assert(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
         SetUpLib.send_key(Key.F5)
         assert(SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
@@ -216,9 +222,8 @@ def dimm_power_mgt_012(serial, ssh_os, ssh_bmc):
         SetUpLib.send_key(Key.ENTER)  # Send Enter
         SetUpLib.send_data_enter('255')  # set 255
         SetUpLib.send_keys(Key.SAVE_RESET)
-        assert(icx2pAPI.toBIOSnp(serial))
-        assert(icx2pAPI.toBIOSConf(serial))
-        assert navigate_to_cke(), 'navigate to mem cke power page -> fail'
+        assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.MEM_POWER_ADV)
         assert(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
         assert(SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
         assert(SetUpLib.verify_options(Key.DOWN, [['CKE Idle Timer', '\[255\]']], 7))
@@ -226,12 +231,12 @@ def dimm_power_mgt_012(serial, ssh_os, ssh_bmc):
         assert(SetUpLib.enter_menu(Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
         assert(icx2pAPI.ping_sut())
         assert(icx2pAPI.rw_everything(ssh_os, ['1100', '02bf'], ['c61218a0']))
-        SetUpLib.reset_default()
         result.log_pass()
-    except AssertionError as err:
+    except AssertionError:
         result.log_fail(capture=True)
+    finally:
         SetUpLib.reset_default()
-        return False
+
 
 # 检查并打开RMT菜单,重启查看串口是否正常打印RMT数据
 # Precondition: BIOS默认密码
