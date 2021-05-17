@@ -55,6 +55,7 @@ class Msg:
 
     # menus of CPU configuration
     CPU_CONFIG = 'CPU Configuration'
+    COMMON_REF_CONFIG = 'Common RefCode Configuration'
     PROCESSOR_CONFIG = 'Processor Configuration'
     UNCORE_CONFIG = 'Uncore Configuration'
     UNCORE_GENERAL = 'Uncore General Configuration'
@@ -76,6 +77,7 @@ class Msg:
     UNCORE_STATUS = 'Uncore Status'
     ACT_CPU_CORES = 'Active Processor Cores'
     IIO_CONFIG = "IIO Configuration"
+    NUMA = "NUMA"
 
     # menus of PCH configuration
     PCH_CONFIG = 'PCH Configuration'
@@ -98,6 +100,7 @@ class Msg:
     PATH_ADV_PM_CFG = [CPU_CONFIG, ADV_POWER_MGF_CONFIG]
     PATH_PER_CPU_INFO = [CPU_CONFIG, PROCESSOR_CONFIG, PER_CPU]
     PATH_PRO_CFG = [CPU_CONFIG, PROCESSOR_CONFIG]
+    PATH_PRO_COMM = [CPU_CONFIG, COMMON_REF_CONFIG]
     PATH_IIO_CONFIG = [CPU_CONFIG, IIO_CONFIG]
 
     # Menu in Boot page
