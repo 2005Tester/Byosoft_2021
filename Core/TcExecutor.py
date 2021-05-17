@@ -17,7 +17,7 @@ from Report.ReportGen import ReportGenerator
 class CliParse:
     def __init__(self):
         my_parser = argparse.ArgumentParser()
-        my_parser.add_argument("ProjectName", help="Supported projects: ICX2P, Pangea")
+        my_parser.add_argument("ProjectName", help="Supported projects: ICX2P, Pangea, Hygon")
         my_parser.add_argument("ExecutionType", help="Supported Execution Type: daily, release, debug, loop")
         my_parser.add_argument("-p", "--post", action="store_true", help="Opional: Post test resul to web portl")
         args = my_parser.parse_args()
