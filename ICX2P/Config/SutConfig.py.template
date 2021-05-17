@@ -80,7 +80,6 @@ class SysCfg:
 
 
 # defined the msg info
-press_f2 = 'Press F2'
 pwd_info = 'The current password is the default password.Please update password!'
 
 

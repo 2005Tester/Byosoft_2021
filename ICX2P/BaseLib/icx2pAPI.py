@@ -15,12 +15,6 @@ from ICX2P.Config.PlatConfig import Key, Msg
 from ICX2P.BaseLib import BmcLib, SetUpLib
 
 
-def dump_smbios(ssh, cmd='dmidecode'):
-    if ssh.login():
-        logging.info("Dumping smbios table...")
-        return ssh.dump_info(cmd, SutConfig.LOG_DIR)
-
-
 def ping_sut():
     logging.info("Test network connection...")
     ping_cmd = 'ping {0}'.format(SutConfig.OS_IP)
@@ -93,60 +87,6 @@ def toBIOSConf(serial):
     return True
 
 
-# to BIOS with power action, for restore test Env,
-def toBIOS(serial, ssh, pwd=SutConfig.BIOS_PASSWORD):
-    if not BmcLib.force_reset():
-        logging.info("Rebooting SUT Failed.")
-        return
-    logging.info("Booting to setup")
-    if not serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=600):
-        return
-    serial.send_keys(Key.DEL)
-    logging.info("Hot Key sent")
-    if not serial.waitString(SutConfig.press_f2, timeout=60):
-        return
-    serial.send_data(pwd)
-    time.sleep(0.2)
-    serial.send_data(chr(0x0D))  # Send Enter
-    logging.info("Send password...")
-    # if serial.waitString(SutConfig.pwd_info):
-    #     serial.send_data(chr(0x0D))  # Send Enter
-    # else:
-    #     # 新密码输入没有提示信息，无需按两次回车键
-    #     logging.info('The default pwd may be modified before, ignore it and try the new pwd next step')
-    #     serial.send_keys_with_delay([Key.RIGHT, Key.LEFT])
-    #     pass
-    if not serial.waitString('Continue', timeout=60):
-        return
-    logging.info("Booting to setup successfully")
-    return True
-
-
-# to BIOS without power action
-def toBIOSnp(serial, pwd=SutConfig.BIOS_PASSWORD):
-    logging.info("HaiYan5 Common Test Lib: boot to setup")
-    if not serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=600):  # set to 600 开启全打印，启动时间较长
-        return
-    serial.send_keys(Key.DEL)
-    logging.info("Hot Key sent")
-    if not serial.waitString(SutConfig.press_f2, timeout=60):  # 考虑全打印
-        return
-    serial.send_data(pwd)
-    serial.send_data(chr(0x0D))  # Send Enter
-    logging.info("Send password...")
-    # if serial.waitString(SutConfig.pwd_info):
-    #     serial.send_data(chr(0x0D))  # Send Enter
-    # else:
-    #     # 新密码输入没有提示信息，无需按两次回车键
-    #     logging.info('The default pwd may be modified before, ignore it and try the new pwd next step')
-    #     serial.send_keys_with_delay([Key.RIGHT, Key.LEFT])
-    #     pass
-    # if not serial.waitString('Continue', timeout=60):  # 考虑全打印，延长至1分钟
-    #     return
-    logging.info("Booting to setup successfully")
-    return True
-
-
 def dcCycle():
     if not SetUpLib.boot_to_setup():
         return
@@ -155,15 +95,4 @@ def dcCycle():
     logging.info("Booting to setup")
     if not SetUpLib.continue_to_setup():
         return
-
     return True
-
-
-def pressDelnp(serial):
-    if not serial.waitString(Msg.HOTKEY_PROMPT_DEL, timeout=300):
-        return
-    serial.send_keys(Key.DEL)
-    if not serial.waitString(SutConfig.press_f2, timeout=60):
-        return
-    return True
-
