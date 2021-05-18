@@ -138,10 +138,9 @@ def boot_to_pw_prompt(key):
     return continue_to_pw_prompt(key)
 
 
-# Boot to BIOS configuration information page
-def boot_to_bios_config():
-    if not boot_to_setup():
-        return
+# Move from Setup main to BIOS Configuration inforamtion page
+# OnStart: Setup main page, cursor on Continue icon
+def move_to_bios_config():
     logging.info("Move to \"BIOS Configuration\"")
     send_key(Key.DOWN)
     if SerialLib.is_msg_present(Sut.BIOS_COM, "Boot From File", delay=10):
@@ -158,23 +157,34 @@ def boot_to_bios_config():
     return True
 
 
+# Boot to BIOS configuration information page
+def boot_to_bios_config():
+    if not boot_to_setup():
+        return
+    if not move_to_bios_config():
+        return
+    return True
+
+
 # Continue Boot to BIOS configuration information page without a force reset
 def continue_to_bios_config():
     if not continue_to_setup():
         return
-    logging.info("Move to \"BIOS Configuration\"")
-    send_key(Key.DOWN)
-    if SerialLib.is_msg_present(Sut.BIOS_COM, "Boot From File", delay=10):
-        logging.info("UEFI boot mode detected.")
-        send_keys([Key.RIGHT, Key.RIGHT])
-    else:
-        logging.info("Legacy boot mode detected")
-        send_key(Key.RIGHT)
-    send_key(Key.ENTER)
-    if not SerialLib.is_msg_present(Sut.BIOS_COM, 'System Time'):
-        logging.info("SetUpLib: Boot to BIOS Configuration Failed")
+    if not move_to_bios_config():
         return
-    logging.info("SetUpLib: Boot to BIOS Configuration successfully")
+    return True
+
+
+# move to a specific page in bios configuration from setup main
+# OnStart: Setup main page, cursor on Continue icon
+def move_to_page(page_name):
+    if not move_to_bios_config():
+        return
+    logging.info("SetUpLib: Move to specified setup page")
+    if not Sut.BIOS_COM.locate_setup_option(Key.RIGHT, [page_name], 12):
+        logging.info("SetUpLib: Specified setup page not found.")
+        return
+    logging.info("SetUpLib: Specified setup page found.")
     return True
 
 
