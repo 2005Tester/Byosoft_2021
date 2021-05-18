@@ -17,7 +17,7 @@ unitool = Unitool.SshUnitool(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PA
 
 # Test scope for non-equipment build
 def TestScope():
-    biosTest.post_test(ser)
+    biosTest.post_test()
     biosTest.PM()
     biosTest.usbTest()
     CpuInit01.cpu_mem_info()
@@ -70,6 +70,34 @@ def EquipScope():
     MemInit02.Testcase_MemoryCompa_009(unitool)
 
 
+class ReleaseBasic:
+    def __init__(self, release_branch):
+        self.branch = release_branch
+
+    def normal_scope(self):  # Non-Equip BIOS Test Scope
+        if UpdateBIOS.update_bios(self.branch):
+            biosTest.post_test()
+            biosTest.PM()
+            Release.check_bmc_warning()
+            Release.me_version_status()
+            biosTest.pxeTest()
+            biosTest.loadDefault()
+            biosTest.securityBoot()
+            if Os.boot_to_suse():
+                Smbios09.smbios_test_all(ssh_os)
+            Release.registry_check(self.branch)
+            Release.compare_fdm_log(self.branch)
+            # Release.hpm_upgrade_test(unitool, self.branch)  # need get release hpm bios from huawei
+            Release.hpm_downgrade_test(unitool, self.branch)
+
+    def equip_scope(self):
+        if UpdateBIOS.update_bios_mfg(self.branch):
+            Release.equip_mode_version_check()
+            Smbios09.smbios_type128(unitool)
+            if Os.boot_to_suse():
+                Release.equip_mode_flag_check(unitool)
+
+
 # Define test scope for daily test
 def DailyTest():
     UpdateBIOS.update_bios('master')
@@ -79,10 +107,16 @@ def DailyTest():
 
 
 def ReleaseTest():
-    UpdateBIOS.update_bios('2288V6_011')
-    TestScope()
-    if UpdateBIOS.update_bios_mfg('2288V6_011'):
-        EquipScope()
+    # UpdateBIOS.update_bios('2288V6_011')
+    # TestScope()
+    # if UpdateBIOS.update_bios_mfg('2288V6_011'):
+    #     EquipScope()
+
+    """Release Basic Function Test"""
+    release_branch = "2288V6_011"
+    release_basic = ReleaseBasic(release_branch)
+    release_basic.normal_scope()
+    release_basic.equip_scope()
 
 
 def Debug():

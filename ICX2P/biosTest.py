@@ -24,14 +24,14 @@ P = LogAnalyzer(SutConfig.LOG_DIR)
 
 
 # POST, Boot, Setup, OS Installation, PM, Device, Chipsec Test and Source code cons.
-def post_test(serial):  # POST: POST Log(TBD) and Information Check
+def post_test():  # POST: POST Log(TBD) and Information Check
     tc = ('002', '[TC002]POST Information Test', 'POST Information Test')
     result = ReportGen.LogHeaderResult(tc)
     if not BmcLib.force_reset():
         result.log_fail()
         return
     msg_list = [Msg.HOTKEY_PROMPT_DEL, Msg.HOTKEY_PROMPT_F11, Msg.HOTKEY_PROMPT_F12, Msg.HOTKEY_PROMPT_F6]
-    if not serial.waitStrings(msg_list, timeout=300):  # 考虑到满载配置
+    if not Sut.BIOS_COM.waitStrings(msg_list, timeout=300):  # 考虑到满载配置
         result.log_fail()
         return
     result.log_pass()

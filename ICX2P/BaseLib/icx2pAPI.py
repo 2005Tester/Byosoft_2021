@@ -96,3 +96,10 @@ def dcCycle():
     if not SetUpLib.continue_to_setup():
         return
     return True
+
+
+def last_release(current_branch, step=1):
+    current_ver = int(current_branch[-3:])
+    last_ver = "{:03}".format(current_ver - step)
+    last_branch = Msg.RELEASE_BRANCH.format(last_ver)
+    return last_branch

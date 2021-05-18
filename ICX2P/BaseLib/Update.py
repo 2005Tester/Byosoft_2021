@@ -152,7 +152,7 @@ def update_bios(bios_img):
     return True
 
 
-def flash_local_hpm(serial, ssh_bmc, sftp_bmc, img_file):
+def flash_local_hpm(img_file):
     """
     Flash Local HPM BIOS Image
     :param serial:      Serial instance
@@ -161,20 +161,20 @@ def flash_local_hpm(serial, ssh_bmc, sftp_bmc, img_file):
     :param img_file:    bios hpm image directory
     :return: True / None
     """
-    SshLib.sftp_remove_file(sftp_bmc, ".bin", "/tmp")
-    SshLib.sftp_remove_file(sftp_bmc, ".hpm", "/tmp")
-    SshLib.sftp_remove_file(sftp_bmc, ".tar.gz", "/tmp")
+    SshLib.sftp_remove_file(Sut.BMC_SFTP, ".bin", "/tmp")
+    SshLib.sftp_remove_file(Sut.BMC_SFTP, ".hpm", "/tmp")
+    SshLib.sftp_remove_file(Sut.BMC_SFTP, ".tar.gz", "/tmp")
     if not os.path.isfile(img_file):
         logging.info("Invalid hpm file, please double check")
         return
     hpm_path, hpm_name = os.path.split(img_file)
-    if not SshLib.sftp_upload_file(sftp=sftp_bmc, src_file=img_file, dst_file=r"/tmp/"+hpm_name, ret_msg="rw"):
+    if not SshLib.sftp_upload_file(sftp=Sut.BMC_SFTP, src_file=img_file, dst_file=r"/tmp/"+hpm_name, ret_msg="rw"):
         return
-    if not hpm_update(ssh_bmc=ssh_bmc, hpm_name=hpm_name):
+    if not hpm_update(ssh_bmc=Sut.BMC_SSH, hpm_name=hpm_name):
         return
     if not BmcLib.power_on():
         return
-    if not SerialLib.is_msg_present(serial, Msg.HOTKEY_PROMPT_DEL, delay=600):
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.HOTKEY_PROMPT_DEL, delay=600):
         return
     logging.info("HPM BIOS update successfully.")
     logging.info("HPM image: {0}".format(img_file))

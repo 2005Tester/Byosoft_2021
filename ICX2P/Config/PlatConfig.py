@@ -129,6 +129,9 @@ class Msg:
     # POST GPIO ERROR Keywords print in serial log
     GPIO_ERR = "GPIO ERROR"
 
+    # Release Branch Name
+    RELEASE_BRANCH = "2288V6_{}"
+
 
 # BIOS configuration to be set by unitool
 class BiosCfg:

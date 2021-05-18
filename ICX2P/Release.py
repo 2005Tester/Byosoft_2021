@@ -65,62 +65,76 @@ def equip_mode_version_check():
     return True
 
 
-def hpm_upgrade_test(serial, ssh_bmc, sftp_bmc, unitool):
+def hpm_upgrade_test(unitool, new_branch):
     tc = ('904', 'HPM升级保持配置不变', "HPM升级BIOS后，原来设置的非默认BIOS设置不变")
     result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
 
-    bios_list = sorted(os.listdir(SutConfig.BIOS_PATH), reverse=True)
-    new_path = os.path.join(SutConfig.BIOS_PATH, bios_list[0])
-    old_path = os.path.join(SutConfig.BIOS_PATH, bios_list[1])
-    old_bin = glob.glob(os.path.join(old_path, "*.bin"))
-    new_hpm = glob.glob(os.path.join(new_path, "*.hpm"))
+    old_branch = icx2pAPI.last_release(new_branch)
+    old_bin_download = Update.get_test_image(SutConfig.LOG_DIR, old_branch, 'debug-build')
+    new_bin_download = Update.get_test_image(SutConfig.LOG_DIR, new_branch, 'debug-build')
+    new_path_local = os.path.join(SutConfig.BIOS_PATH, new_branch)
+    new_hpm_local = glob.glob(os.path.join(new_path_local, "*.hpm"))
+    flash_latest = False
 
     try:
-        assert Update.update_bios(old_bin[0])
+        assert Update.update_bios(old_bin_download[0])
+        flash_latest = False
         assert icx2pAPI.ping_sut()
         assert unitool.write(**BiosCfg.HPM_KEEP)
-        assert Update.flash_local_hpm(serial, ssh_bmc, sftp_bmc, new_hpm[0])
+        assert Update.flash_local_hpm(new_hpm_local[0])
+        flash_latest = True
         assert icx2pAPI.ping_sut()
         assert unitool.check(**BiosCfg.HPM_KEEP)
         result.log_pass()
         return True
     except AssertionError:
         result.log_fail()
+    finally:
+        if not flash_latest:
+            Update.update_bios(new_bin_download)
 
 
-def hpm_downgrade_test(serial, ssh_bmc, sftp_bmc, unitool):
+def hpm_downgrade_test(unitool, new_branch):
     tc = ('905', 'HPM降级保持配置不变', "HPM降级BIOS后，原来设置的非默认BIOS设置不变")
     result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
 
-    bios_list = sorted(os.listdir(SutConfig.BIOS_PATH), reverse=True)
-    new_path = os.path.join(SutConfig.BIOS_PATH, bios_list[0])
-    old_path = os.path.join(SutConfig.BIOS_PATH, bios_list[1])
-    new_bin = glob.glob(os.path.join(new_path, "*.bin"))
-    old_hpm = glob.glob(os.path.join(old_path, "*.hpm"))
+    new_bin_download = Update.get_test_image(SutConfig.LOG_DIR, new_branch, 'debug-build')
+    old_branch = icx2pAPI.last_release(new_branch)
+    old_path_local = os.path.join(SutConfig.BIOS_PATH, old_branch)
+    old_hpm_local = glob.glob(os.path.join(old_path_local, "*.hpm"))
+    flash_latest = False
 
     try:
-        assert Update.update_bios(new_bin[0])
+        assert Update.update_bios(new_bin_download)
+        flash_latest = True
         assert icx2pAPI.ping_sut()
         assert unitool.write(**BiosCfg.HPM_KEEP)
-        assert Update.flash_local_hpm(serial, ssh_bmc, sftp_bmc, old_hpm[0])
+        assert Update.flash_local_hpm(old_hpm_local[0])
+        flash_latest = False
         assert icx2pAPI.ping_sut()
         assert unitool.check(**BiosCfg.HPM_KEEP)
         result.log_pass()
         return True
-    except AssertionError:
+    except Exception as e:
+        logging.error(e)
         result.log_fail()
+    finally:
+        if not flash_latest:
+            Update.update_bios(new_bin_download)
 
 
 # 比较BIOS升降级时，是否会产生新的FDMlog错误记录
 # Precondition: BMC正常登录
 # OnStart: NA
 # OnComplete: NA
-def compare_fdm_log(new_branch, old_branch):
+def compare_fdm_log(new_branch):
     tc = ('906', 'Compare FDM Log Size', "Compare FDM Log size with previous BIOS version")
     result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
 
+    old_branch = icx2pAPI.last_release(new_branch)
     new_img = Update.get_test_image(SutConfig.LOG_DIR, new_branch, 'debug-build')
     old_img = Update.get_test_image(SutConfig.LOG_DIR, old_branch, 'debug-build')
+    flash_latest = False
 
     def read_fdm(bios_img, test_flag):
         try:
@@ -142,19 +156,25 @@ def compare_fdm_log(new_branch, old_branch):
         # Flash latest release img
         latest = read_fdm(new_img, "latest")
         assert latest != 0, "Exception: Read latest fdmlog"
+        flash_latest = True
         # Flash last release img
         downgrade = read_fdm(old_img, "downgrade")
         assert downgrade != 0, "Exception: Read downgrade fdmlog"
+        flash_latest = False
         assert latest == downgrade, "FDM LOG if different after BIOS downgrade"
         # Flash latest release img back again
         upgrade = read_fdm(new_img, "upgrade")
         assert upgrade != 0, "Exception: Read upgrade fdmlog"
+        flash_latest = True
         assert downgrade == upgrade, "FDM LOG if different after BIOS upgrade"
         result.log_pass()
         return True
     except Exception as e:
         logging.info(e)
         result.log_fail()
+    finally:
+        if not flash_latest:
+            Update.update_bios(new_img)
 
 
 # 检查BMC是否记录异常告警信息
@@ -179,25 +199,31 @@ def check_bmc_warning():
     result.log_pass()
     return True
 
+
 # Author: WangQingshan
 # 检查新旧版本BIOS的Registry.json文件是否一致
 # Precondition: BMC正常登录
 # OnStart: NA
 # OnComplete: NA
-def registry_check(new_branch, old_branch):
+def registry_check(new_branch):
     tc = ('908', 'Compare registry.json file with previous version', "Compare registry.json file with previous version")
     result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
 
+    old_branch = icx2pAPI.last_release(new_branch)
+    old_img = Update.get_test_image(SutConfig.LOG_DIR, old_branch, 'debug-build')
+    new_img = Update.get_test_image(SutConfig.LOG_DIR, new_branch, 'debug-build')
     rfish = Redfish(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)
+    flash_latest = False
+
     try:
         # old branch bios image registry dump
-        old_img = Update.get_test_image(SutConfig.LOG_DIR, old_branch, 'debug-build')
         assert Update.update_bios(old_img)
+        flash_latest = False
         logging.info("dump old registry")
         old_registry = rfish.registry_dump()
         # new branch bios image registry dump
-        new_img = Update.get_test_image(SutConfig.LOG_DIR, new_branch, 'debug-build')
         assert Update.update_bios(new_img)
+        flash_latest = True
         logging.info("dump new registry")
         new_registry = rfish.registry_dump()
         assert old_registry == new_registry, "Check old registry is different from new registry"
@@ -206,3 +232,6 @@ def registry_check(new_branch, old_branch):
     except Exception as e:
         logging.error(e)
         result.log_fail()
+    finally:
+        if not flash_latest:
+            Update.update_bios(new_img)
