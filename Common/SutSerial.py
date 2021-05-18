@@ -64,6 +64,10 @@ class SutControl:
             # logging.info("Check message in serial output time out.")
             return True
 
+    def write_data2log(self, data):
+        with open(var.get('serial_log'), 'a', encoding='utf-8', errors='ignore') as f:
+            f.write(data)
+
     def capture_data(self):
         logging.info("capture data from serial port")
         while True:
@@ -71,8 +75,8 @@ class SutControl:
                 if self.session.in_waiting:
                     data = self.session.read(256).decode("utf-8")
                     data = self.cleanup_data(data)
-                    with open(var.get('serial_log'), 'a') as f:
-                        f.write(data)
+                    self.write_data2log(data)
+
             except Exception as e:
                 logging.error(e)
                 break
@@ -83,10 +87,6 @@ class SutControl:
             logging.debug("Found: \"{0}\"".format(msg))
             return True
 
-    def write_data2log(self, data):
-        with open(var.get('serial_log'), 'a') as f:
-            f.write(data)
-
     def cleanup_data(self, data):
         pat1 = "\x1B[@-_][0-?]*[ -/]*[@-~]"
         pat2 = "[-\+^]{3,}"
@@ -94,9 +94,7 @@ class SutControl:
         dic = {pat1: "", pat2: "", pat3: ""}
         for k, v in dic.items():
             data = re.compile(k).sub(v, data)
-        with open(var.get('serial_log'), 'a') as f:
-            f.write(data)
-
+        self.write_data2log(data)
         return data
 
     def is_boot_success(self):
@@ -136,8 +134,8 @@ class SutControl:
                         else:
                             self.write_data2log(self.data)
                     except Exception as e:
-                        logging.debug(e)
-                        logging.debug("is_msg_present_general: error in reading serial data")         
+                        logging.error(e)
+                        logging.error("is_msg_present_general: error in reading serial data")         
                     if pw_prompt and self.find_msg(pw_prompt, self.data):
                         self.send_data(pw)
                         self.send_data(chr(0x0D))  # Send Enter
