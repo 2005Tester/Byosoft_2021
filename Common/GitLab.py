@@ -23,17 +23,34 @@ class Gitlab:
         self.access_token = access_token
         self.base_url = 'http://221.228.236.229:28090/api/v4/projects/'
         self.header = {'PRIVATE-TOKEN': self.access_token}
-        self.jobs_url = ''
+        self.jobs_url = self.base_url + str(self.projectid) + '/jobs'
 
-    # get latest job by specified branme and job name
+    def get_all_jobs(self):
+        url = self.base_url + '{0}/jobs'.format(self.projectid)
+        PARAMS = {'per_page': '1000', 'page': '1'}
+        logging.info("Requesting data from git lab")
+        r = requests.get(url, headers=self.header, params=PARAMS)
+        if r.status_code == 200:
+            per_page = r.headers['X-Per-Page']
+            page = r.headers['X-Total-Pages']
+        else:
+            logging.error(r.status_code)
+        all_jobs = []
+        for page_index in range(1, int(r.headers['X-Total-Pages']) + 1):
+            params = {'per_page': str(per_page), 'page': str(page_index)}
+            jobs = requests.get(url, headers=self.header, params=params)
+            if len(jobs.json()) > 0:
+                all_jobs = all_jobs + jobs.json()
+        return all_jobs
+
+    # get latest job by specified branch and job name
     # jobname can be none if pipline only have one job
     def get_latest_job(self, branch, jobname=None):
-        self.jobs_url = self.base_url + str(self.projectid) + '/jobs'
-        res = requests.get(self.jobs_url, headers=self.header)
-        job_list = json.loads(res.content)
+        job_list = self.get_all_jobs()
         if not job_list:
             logging.info("Job list is empty")
             return
+
         latest_job = []
         for i in range(len(job_list)):
             if jobname:
