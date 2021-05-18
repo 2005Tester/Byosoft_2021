@@ -130,19 +130,18 @@ class SutControl:
             while True:
                 if self.session.in_waiting:
                     try:
-                        self.data = self.session.read(1024).decode("utf-8")
+                        self.data = self.session.read(1024).decode("utf-8", errors='ignore')
                         if cleanup:
                             self.data = self.cleanup_data(self.data)
                         else:
                             self.write_data2log(self.data)
                     except Exception as e:
                         logging.debug(e)
-                        logging.debug("is_msg_present_general: error in reading serial data")
-                        self.data = ''              
+                        logging.debug("is_msg_present_general: error in reading serial data")         
                     if pw_prompt and self.find_msg(pw_prompt, self.data):
                         self.send_data(pw)
                         self.send_data(chr(0x0D))  # Send Enter
-                        logging.info("Send password...")               
+                        logging.info("Send password...")         
                     if self.find_msg(msg, self.data):
                         logging.debug("Message found.")
                         return True
@@ -151,7 +150,6 @@ class SutControl:
                     if delay > 5:
                         logging.info("is_msg_present_general: {0} not found after waiting {1} seconds".format(msg, delay))
                     break
-
 
     # verify specified message (msg1) should not appeare in serial log, but msg2 should be present
     def is_msg_not_present(self, msg1, msg2):
@@ -281,7 +279,7 @@ class SutControl:
         while True:
             try:
                 if self.session.in_waiting:
-                    data = self.session.read(256).decode("utf-8")
+                    data = self.session.read(256).decode("utf-8", errors='ignore')
                     data = self.cleanup_data(data)
                     if self.find_msg(hotkey_prompt, data):
                         self.send_keys(key)
@@ -372,7 +370,6 @@ class SutControl:
             return
         logging.info("Enter menu: {0} successfully".format(option_path[-1]))
         return True
-
 
     # run command from serial port until spefified message occur
     def run_command(self, cmd, msg):
