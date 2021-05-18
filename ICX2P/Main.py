@@ -57,6 +57,9 @@ def TestScope():
     PcieInit04.Testcase_PCIeResource_002()
     PcieInit04.Testcase_PCIeResource_003()
     PcieInit04.Testcase_PCIeResource_005()
+    PcieInit04.Testcase_PCIeResource_007()
+    PcieInit04.Testcase_PCIeResource_008()
+    PcieInit04.Testcase_PCIeResource_009()
     biosTest.Testcase_PowerEfficiency_001(unitool)
     if Legacy.enable_legacy_boot():
         Legacy.disable_legacy_boot()

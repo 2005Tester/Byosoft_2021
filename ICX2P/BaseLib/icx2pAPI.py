@@ -6,6 +6,9 @@
 #  stored in a retrieval system, or transmitted in any form or by any
 #  means without the express written consent of Byosoft Corporation.
 # -*- encoding=utf8 -*-
+import os
+import csv
+import re
 import datetime
 import logging
 import subprocess
@@ -13,6 +16,8 @@ import time
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg
 from ICX2P.BaseLib import BmcLib, SetUpLib
+from Core.SutInit import Sut
+from Core import SerialLib
 
 
 def ping_sut():
@@ -103,3 +108,25 @@ def last_release(current_branch, step=1):
     last_ver = "{:03}".format(current_ver - step)
     last_branch = Msg.RELEASE_BRANCH.format(last_ver)
     return last_branch
+
+
+# sub function for dump cpu resource allocation table
+def dump_cpu_resource():
+    if not BmcLib.force_reset():
+        return
+    resource = SerialLib.cut_log(Sut.BIOS_COM, "CPU Resource Allocation", "START_SOCKET_0_DIMMINFO_TABLE", 10, 120, 3)
+    if not resource:
+        return
+    data_search = r"[\s\S]*".join([rf"CPU{n}[\s\S]*Ubox.+" for n in range(SutConfig.SysCfg.CPU_CNT)])
+    rsc_table = re.search(data_search, resource)
+    if not rsc_table:
+        return
+    lines = rsc_table.group().split("\n")
+    result = []
+    for line in lines:
+        result.append(list(map(lambda x: x.strip(), line.split("|"))))
+    csv_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
+    with open(os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv"), "w", newline="") as rsc:
+        csv_writer = csv.writer(rsc)
+        csv_writer.writerows(result)
+    return csv_file

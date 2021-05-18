@@ -1,8 +1,10 @@
 import logging
 import re
+import os
+import csv
 from Core import SerialLib
 from Core.SutInit import Sut
-from ICX2P.BaseLib import SetUpLib, BmcLib
+from ICX2P.BaseLib import SetUpLib, BmcLib, icx2pAPI
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg
 from Report import ReportGen
@@ -14,6 +16,7 @@ from Report import ReportGen
 #           PCIe Test Cases              #
 ##########################################
 
+# Author: WangQingshan
 # MMIOL资源分配静态表测试
 # Precondition: BIOS默认密码
 # OnStart: NA
@@ -21,15 +24,15 @@ from Report import ReportGen
 def Testcase_PCIeResource_001():
     tc = ('630', '[TC630] Testcase_PCIeResource_001', 'MMIOL资源分配静态表测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
     try:
-        assert BmcLib.force_reset()
-        resource = SerialLib.cut_log(Sut.BIOS_COM, "CPU Resource Allocation", "START_SOCKET_0_DIMMINFO_TABLE", 10, 120, 3)
-        assert resource, "invalid CPU Resource Allocation Table"
-        cpu0_stk0 = r"CPU0[\S\s]+?(Stk00[\S\s]+?)(Stk01.+)"
-        data = re.search(cpu0_stk0, resource)
-        assert data, "Invalid Resource Data"
-        stk0 = data.group(1).split(" | ")[5].split(" - ")[0]
-        stk1 = data.group(2).split(" | ")[5].split(" - ")[0]
+        if not os.path.exists(cpu_rsc_file):
+            cpu_rsc_file = icx2pAPI.dump_cpu_resource()
+            assert cpu_rsc_file, "invalid CPU Resource Allocation Table"
+        with open(cpu_rsc_file, "r") as rsc_file:
+            rsc_data = list(csv.reader(rsc_file))
+        stk0 = rsc_data[1][5].split(" - ")[0]
+        stk1 = rsc_data[2][5].split(" - ")[0]
         assert stk0, "MMIOL Base not found"
         size_serial = hex(int(stk1, 16) - int(stk0, 16))
         assert size_serial, "MMIOL Size not found"
@@ -43,6 +46,7 @@ def Testcase_PCIeResource_001():
         result.log_fail()
 
 
+# Author: WangQingshan
 # MMIOH资源分配静态表测试
 # Precondition: BIOS默认密码
 # OnStart: NA
@@ -52,6 +56,7 @@ def Testcase_PCIeResource_002():
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     MMIOH = "MMIO High Base"
     MMIOH_size = "MMIO High Granularity Size"
+    cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, "Common RefCode Configuration"], 10, "MMIO High Base")
@@ -60,14 +65,13 @@ def Testcase_PCIeResource_002():
         base_scale = 40 if MMIOH_value[-1] == "T" else 30  # T / G
         base_setup = hex(int(MMIOH_value[:-1]) * (1 << base_scale))
         size_setup = hex(int(MMIOH_size[:-1]) * (1 << 30))  # G
-        assert BmcLib.force_reset()
-        resource = SerialLib.cut_log(Sut.BIOS_COM, "CPU Resource Allocation", "START_SOCKET_0_DIMMINFO_TABLE", 10, 120, 3)
-        assert resource, "invalid CPU Resource Allocation Table"
-        cpu0_stk0 = r"CPU0[\S\s]+?(Stk00[\S\s]+?)(Stk01.+)"
-        data = re.search(cpu0_stk0, resource)
-        assert data, "Invalid Resource Data"
-        stk0 = data.group(1).split(" | ")[6].split(" - ")[0].replace(" ", "")
-        stk1 = data.group(2).split(" | ")[6].split(" - ")[0].replace(" ", "")
+        if not os.path.exists(cpu_rsc_file):
+            cpu_rsc_file = icx2pAPI.dump_cpu_resource()
+            assert cpu_rsc_file, "invalid CPU Resource Allocation Table"
+        with open(cpu_rsc_file, "r") as rsc_file:
+            rsc_data = list(csv.reader(rsc_file))
+        stk0 = rsc_data[1][6].split(" - ")[0].replace(" ", "")
+        stk1 = rsc_data[2][6].split(" - ")[0].replace(" ", "")
         size_serial = hex(int(stk1, 16) - int(stk0, 16))
         logging.info(f"MMIOH_BASE: setup={base_setup} | serial print={stk0.lower()}")
         logging.info(f"MMIOH_SIZE: setup={size_setup} | serial print={size_serial}")
@@ -81,6 +85,7 @@ def Testcase_PCIeResource_002():
         result.log_fail()
 
 
+# Author: WangQingshan
 # BIOS提供MMIOH资源调整选项测试
 # Precondition: BIOS默认密码
 # OnStart: NA
@@ -105,6 +110,7 @@ def Testcase_PCIeResource_003():
         result.log_fail()
 
 
+# Author: WangQingshan
 # BIOS提供PCIe 64bit decode选项测试
 # Precondition: BIOS默认密码
 # OnStart: NA
@@ -149,3 +155,83 @@ def Testcase_PCIeResource_005():
     finally:
         BmcLib.clear_cmos()
 
+
+# Author: WangQingshan
+# BUS资源分配静态表测试
+# Precondition: BIOS默认密码
+# OnStart: NA
+# OnComplete: NA
+def Testcase_PCIeResource_007():
+    tc = ('634', '[TC634] Testcase_PCIeResource_007', 'BUS资源分配静态表测试')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
+    try:
+        if not os.path.exists(cpu_rsc_file):
+            cpu_rsc_file = icx2pAPI.dump_cpu_resource()
+            assert cpu_rsc_file, "invalid CPU Resource Allocation Table"
+        with open(cpu_rsc_file, "r") as rsc_file:
+            rsc_data = list(csv.reader(rsc_file))
+        for i in rsc_data:
+            if not i[0]:
+                continue
+            if i[0] != "Rsvd":
+                assert i[2], "Invalid PCI Bus Allocation Data"
+                logging.info(f"BUS Allocation: {i[0]:5} : {i[2]:5}")
+        result.log_pass()
+    except Exception as e:
+        logging.error(e)
+        result.log_fail()
+
+
+# Author: WangQingshan
+# Legacy IO资源分配静态表测试
+# Precondition: BIOS默认密码
+# OnStart: NA
+# OnComplete: NA
+def Testcase_PCIeResource_008():
+    tc = ('635', '[TC635] Testcase_PCIeResource_008', 'Legacy IO资源分配静态表测试')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
+    try:
+        if not os.path.exists(cpu_rsc_file):
+            cpu_rsc_file = icx2pAPI.dump_cpu_resource()
+            assert cpu_rsc_file, "invalid CPU Resource Allocation Table"
+        with open(cpu_rsc_file, "r") as rsc_file:
+            rsc_data = list(csv.reader(rsc_file))
+        for i in rsc_data:
+            if not i[0]:
+                continue
+            if i[0] != "Rsvd":
+                assert i[3], "Invalid Legacy IO Allocation Data"
+                logging.info(f"Legacy IO Allocation: {i[0]:5} : {i[3]:5}")
+        result.log_pass()
+    except Exception as e:
+        logging.error(e)
+        result.log_fail()
+
+
+# Author: WangQingshan
+# Legacy IO资源分配静态表测试
+# Precondition: BIOS默认密码
+# OnStart: NA
+# OnComplete: NA
+def Testcase_PCIeResource_009():
+    tc = ('636', '[TC636] Testcase_PCIeResource_009', 'IOApic资源分配静态表测试')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
+    try:
+        if not os.path.exists(cpu_rsc_file):
+            cpu_rsc_file = icx2pAPI.dump_cpu_resource()
+            assert cpu_rsc_file, "invalid CPU Resource Allocation Table"
+        with open(cpu_rsc_file, "r") as rsc_file:
+            rsc_data = list(csv.reader(rsc_file))
+        for i in rsc_data:
+            if not i[0]:
+                continue
+            if i[0] != "Rsvd":
+                assert i[4], "Invalid IOApic Allocation Data"
+                logging.info(f"IOApic Allocation: {i[0]:5} : {i[4]:5}")
+        result.log_pass()
+    except Exception as e:
+        logging.error(e)
+        result.log_fail()
