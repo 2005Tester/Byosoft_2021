@@ -139,8 +139,10 @@ def dimm_power_mgt_07():
         assert(SetUpLib.verify_options(Key.DOWN, [['APD', '<Disabled>']], 7))
         SetUpLib.send_key(Key.F5)
         assert(SetUpLib.verify_options(Key.DOWN, [['APD', '<Enabled>']], 3))
-        assertFalse(SetUpLib.verify_options(Key.DOWN, [['PPD', '<Enabled>']], 3))
-        result.log_pass()
+        if SetUpLib.verify_options(Key.DOWN, [['PPD', '<Enabled>']], 3):
+            raise AssertionError
+        else:
+            result.log_pass()  # the expected result here's that the option can not be found.
     except AssertionError:
         result.log_fail(capture=True)
     finally:
