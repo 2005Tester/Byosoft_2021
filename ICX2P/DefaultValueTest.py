@@ -69,3 +69,22 @@ def pcie_port_bandwidth_check():
     except AssertionError as e:
         logging.info(e)
         result.log_fail(capture=True)
+
+# Testcase_Boot_Fail_Policy_001, 检查Boot Fail Policy默认为Boot Retry,且选项值为Boot Retry/Cold Boot/None
+# Author: OuYang
+# Precondition:
+# OnStart:
+# OnComplete: SetUp
+def testcase_boot_fail_policy_001():
+    tc = ('103', 'Verify Boot Fail Policy Information', 'Verify Boot Fail Policy is Boot Retry')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    Boot_Fail_Policy_Retry = ['<Boot Retry>']
+    Boot_Fail_Policy_Value = 'Boot RetryCold BootNone'
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_BOOT)
+        assert SetUpLib.locate_option(Key.DOWN, Boot_Fail_Policy_Retry, 20)
+        assert SetUpLib.verify_supported_values(Boot_Fail_Policy_Value)
+        result.log_pass()
+        return True
+    except AssertionError:
+        result.log_fail()

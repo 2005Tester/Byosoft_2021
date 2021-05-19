@@ -95,3 +95,20 @@ def hot_plug_sata():
         return True
     except AssertionError:
         result.log_fail(capture=True)
+
+# Testcase_Spin_Up_001使用unitool确认SataSpinUp的默认值为Enable
+# Author: OuYang
+# Precondition:
+# OnStart:
+# OnComplete: Os
+def testcase_spin_up_001(unitool):
+    tc = ('603', 'Verify SataSpinUp GetVariable value is 1', 'Verify value is 1')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    try:
+        assert SetUpLib.boot_suse_from_bm()
+        assert icx2pAPI.ping_sut()
+        assert unitool.check(SataSpinUp=1)
+        result.log_pass()
+        return True
+    except AssertionError:
+        result.log_fail(capture=True)
