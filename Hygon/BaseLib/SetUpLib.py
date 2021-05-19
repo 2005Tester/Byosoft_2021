@@ -290,3 +290,23 @@ def back_to_setup_toppage(msg='Exit now'):
         return True
     except Exception as err:
         logging.debug(err)
+
+
+# select a boot option in boot manager
+# optionname: string, name of setup option
+def select_boot_option(key, optionname, try_counts, confirm_msg):
+    es = "(\x1B[@-_][0-?]*[ -/]*[@-~]){1,2}"
+    patten = es + optionname + es + r"\x1B\[44m"
+    while try_counts:
+        time.sleep(2)
+        if SerialLib.is_msg_present(Sut.BIOS_COM, patten, 2, cleanup=False):
+            logging.info("Boot option found: {0}".format(optionname))
+            send_key(Key.ENTER)
+            if not SerialLib.is_msg_present(Sut.BIOS_COM, confirm_msg):
+                logging.info("Boot to option: {0} Failed".format(optionname))
+                return
+            logging.info("Boot to option: {0} successfully".format(optionname))
+            return True
+        send_key(key)
+        try_counts -= 1
+    logging.info("Boot option NOT found: {0}".format(optionname))

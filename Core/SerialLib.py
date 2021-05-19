@@ -4,10 +4,9 @@ import logging
 
 
 # Monitor serial output and check whether specified message exists
-def is_msg_present(serial, msg, delay=150):
+def is_msg_present(serial, msg, delay=150, cleanup=True):
     pw_prompt = None
     pw = None
-    cleanup = True
     return serial.is_msg_present_general(msg, delay, pw_prompt, pw, cleanup)
 
 
