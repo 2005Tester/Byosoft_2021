@@ -39,7 +39,7 @@ def TestScope():
     if Os.boot_to_suse():
         Smbios09.smbios_test_all(ssh_os)
         Release.equip_mode_flag_check(unitool)
-    Security22.Pwd_test(ser)
+    Security22.Pwd_test()
     MemInit02.dimm_power_mgt_01()
     MemInit02.dimm_power_mgt_02()
     MemInit02.dimm_power_mgt_04()
@@ -107,11 +107,6 @@ def DailyTest():
 
 
 def ReleaseTest():
-    # UpdateBIOS.update_bios('2288V6_011')
-    # TestScope()
-    # if UpdateBIOS.update_bios_mfg('2288V6_011'):
-    #     EquipScope()
-
     """Release Basic Function Test"""
     release_branch = "2288V6_011"
     release_basic = ReleaseBasic(release_branch)

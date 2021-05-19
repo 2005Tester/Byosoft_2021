@@ -440,7 +440,7 @@ def Testcase_BiosPasswordSecurity_008():
     result.log_pass()
 
 
-def Testcase_BiosPasswordSecurity_009(serial):
+def Testcase_BiosPasswordSecurity_009():
     tc = ('043', '[TC043]BiosPasswordSecurity_009', '设置密码字符类型测试_3种字符类型密码测试')
     result = ReportGen.LogHeaderResult(tc)
     try:
@@ -448,30 +448,29 @@ def Testcase_BiosPasswordSecurity_009(serial):
         k = 0
         while k < len(pwd_list2) - 1:
             m = k + 1
-            assert (icx2pAPI.toBIOSConf(serial))
-            SetUpLib.send_keys(SutConfig.key2pwd)
-            assert (SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
+            assert SetUpLib.move_to_page(Msg.PAGE_SECURITY)
+            assert SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20)
             SetUpLib.send_key(Key.ENTER)
-            assert (SerialLib.is_msg_present(serial, pwd_info_1))
+            assert SetUpLib.wait_message(pwd_info_1)
             SetUpLib.send_data_enter(pwd_list2[k])
             logging.info("input default_pwd")
-            assert (SerialLib.is_msg_present(serial, pwd_info_2))
+            assert SetUpLib.wait_message(pwd_info_2)
             SetUpLib.send_data_enter(pwd_list2[m])
             logging.info("input new_pwd")
-            assert (SerialLib.is_msg_present(serial, pwd_info_3))
+            assert SetUpLib.wait_message(pwd_info_3)
             SetUpLib.send_data_enter(pwd_list2[m])
             logging.info("confirm new_pwd")
             # 满足密码测试用例规则
             if pwd_list2[m] != 'Administrator1':
                 logging.info("Meet the password test case rules")
-                assert (SerialLib.is_msg_present(serial, pwd_info_4))
+                assert SetUpLib.wait_message(pwd_info_4)
                 SetUpLib.send_key(Key.ENTER)
                 SetUpLib.send_keys([Key.F10, Key.Y])
                 assert (checkPWD(pwd_list2[m], pwd_list2[k]))
             # 不满足密码测试用例规则
             else:
                 logging.info("Does not meet the password test case rules")
-                assert (SerialLib.is_msg_present(serial, invalid_info))
+                assert SetUpLib.wait_message(invalid_info)
                 logging.info("show invalid_password")
                 SetUpLib.send_key(Key.ENTER)
                 SetUpLib.send_key(Key.CTRL_ALT_DELETE)
@@ -656,7 +655,7 @@ def Testcase_BiosPasswordSecurity_022():
         reset_password_by_unipwd()
 
 
-def Testcase_BiosPasswordSecurity_025(serial):
+def Testcase_BiosPasswordSecurity_025():
     tc = ('051', '[TC051]BiosPasswordSecurity_025', '历史密码5次范围内重复修改无效,超过5次后可以修改为5次前的密码测试')
     result = ReportGen.LogHeaderResult(tc)
     times_pwd = ['Admin@9009', 'Admin@9010', 'Admin@9012', 'Admin@9013', 'Admin@9014', 'Admin@9009', 'Admin@9015']
@@ -665,39 +664,37 @@ def Testcase_BiosPasswordSecurity_025(serial):
         k = 0
         while k < len(times_pwd) - 2:
             m = k + 1
-            assert (icx2pAPI.toBIOSConf(serial))
-            SetUpLib.send_keys(SutConfig.key2pwd)
-            assert (SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
+            assert SetUpLib.move_to_page(Msg.PAGE_SECURITY)
+            assert SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20)
             SetUpLib.send_key(Key.ENTER)
-            assert (SetUpLib.wait_message(pwd_info_1))
+            assert SetUpLib.wait_message(pwd_info_1)
             SetUpLib.send_data_enter(times_pwd[k])
             logging.info("input default_pwd")
-            assert (SetUpLib.wait_message(pwd_info_2))
+            assert SetUpLib.wait_message(pwd_info_2)
             SetUpLib.send_data_enter(times_pwd[m])
             logging.info("input new_pwd")
-            assert (SetUpLib.wait_message(pwd_info_3))
+            assert SetUpLib.wait_message(pwd_info_3)
             SetUpLib.send_data_enter(times_pwd[m])
             logging.info("confirm new_pwd")
             if times_pwd[m] != "Admin@9009":
                 logging.info("Password changed successfully")
-                assert (SetUpLib.wait_message(pwd_info_4))
+                assert SetUpLib.wait_message(pwd_info_4)
                 SetUpLib.send_key(Key.ENTER)
                 SetUpLib.send_keys([Key.F10, Key.Y])
-                assert (checkPWD(times_pwd[m], times_pwd[k]))
+                assert checkPWD(times_pwd[m], times_pwd[k])
             else:
                 logging.info("Password changed Failed")
-                assert (SetUpLib.wait_message(invalid_info))
+                assert SetUpLib.wait_message(invalid_info)
                 logging.info("use old pwd,invalid.")
                 SetUpLib.send_key(Key.ENTER)
                 SetUpLib.send_key(Key.CTRL_ALT_DELETE)
-                assert (checkPWD(times_pwd[k], times_pwd[m]))
+                assert checkPWD(times_pwd[k], times_pwd[m])
             k = k + 1
-        assert (icx2pAPI.toBIOSConf(serial))
-        SetUpLib.send_keys(SutConfig.key2pwd)
-        assert (SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
-        assert (change_password(times_pwd[4], times_pwd[6]))
+        assert SetUpLib.move_to_page(Msg.PAGE_SECURITY)
+        assert SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20)
+        assert change_password(times_pwd[4], times_pwd[6])
         SetUpLib.send_keys([Key.F10, Key.Y])
-        assert (checkPWD(times_pwd[6], times_pwd[4]))
+        assert checkPWD(times_pwd[6], times_pwd[4])
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
@@ -761,7 +758,7 @@ def pwd_auth_mgt_07():
         result.log_fail(capture=True)
 
 
-def pwd_auth_mgt_08_10(serial):
+def pwd_auth_mgt_08_10():
     tc = ('055', '[TC055]AuthenticationManagement_008_010',
           '管理员登录密码大于16位字符无法输入,普通用户登录密码大于16位无法输入;修改管理员密码界面需要先输入旧密码，再输入两次新密码')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
@@ -800,8 +797,7 @@ def pwd_auth_mgt_08_10(serial):
         assert (checkPWD(admin_pwd_16, 'Am@23'))
         # set 4 前置条件
         logging.info("Set step 4 preconditions")
-        assert (icx2pAPI.toBIOSConf(serial))
-        SetUpLib.send_keys(SutConfig.key2pwd)
+        assert SetUpLib.move_to_page(Msg.PAGE_SECURITY)
         assert (SetUpLib.locate_option(Key.DOWN, ["Manage User Password"], 5))
         SetUpLib.send_key(Key.ENTER)
         assert SetUpLib.wait_message(pwd_info_2)
@@ -828,7 +824,7 @@ def pwd_auth_mgt_08_10(serial):
         assert SetUpLib.wait_message("Enter New Password")
         SetUpLib.send_data_enter('Inter@4567byosoft')
         logging.info('input User_Password invalid ')
-        assert (SerialLib.is_msg_present(serial, invalid_info))
+        assert SetUpLib.wait_message(invalid_info)
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
@@ -852,7 +848,7 @@ def pwd_auth_mgt_09():
 
 
 # Main function
-def Pwd_test(ser):
+def Pwd_test():
     simplePWDTest()
     Simple_password_validity()
     Simple_password_disenable()
@@ -865,7 +861,7 @@ def Pwd_test(ser):
     Testcase_BiosPasswordSecurity_006()
     Testcase_BiosPasswordSecurity_007()
     Testcase_BiosPasswordSecurity_008()
-    Testcase_BiosPasswordSecurity_009(ser)
+    Testcase_BiosPasswordSecurity_009()
     Testcase_BiosPasswordSecurity_010()
     Testcase_BiosPasswordSecurity_011_012_014()
     Testcase_BiosPasswordSecurity_013()
@@ -873,8 +869,8 @@ def Pwd_test(ser):
     Testcase_BiosPasswordSecurity_016_017()
     Testcase_BiosPasswordSecurity_020()
     Testcase_BiosPasswordSecurity_022()
-    Testcase_BiosPasswordSecurity_025(ser)
+    Testcase_BiosPasswordSecurity_025()
     pwd_auth_mgt_01()
     pwd_auth_mgt_07()
-    pwd_auth_mgt_08_10(ser)
+    pwd_auth_mgt_08_10()
     pwd_auth_mgt_09()

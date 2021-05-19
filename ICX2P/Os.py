@@ -15,13 +15,12 @@ from Report import ReportGen
 
 # Boot to SUSE Linux from boot manager
 def boot_to_suse():
-    tc = ('300', 'Boot to UEFI SUSE Linux', 'Boot to UEFI SUSE Linux')
+    tc = ('300', '[TC300] Boot to UEFI SUSE Linux', 'Boot to UEFI SUSE Linux')
     result = ReportGen.LogHeaderResult(tc)
     if not SetUpLib.boot_to_bootmanager():
         result.log_fail()
         return
-    msg = "Welcome to GRUB"
-    if not SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 20, msg):
+    if not SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 20, Msg.SUSE_GRUB):
         result.log_fail()
         return
     if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE):
@@ -34,7 +33,7 @@ def boot_to_suse():
 
 # Boot to SUSE Linux from boot manager
 def boot_to_suse_mfg():
-    tc = ('301', '装备模式: Boot to UEFI SUSE Linux', 'Boot to UEFI SUSE Linux in Manufacture mode')
+    tc = ('301', '装备模式: [TC301] Boot to UEFI SUSE Linux', 'Boot to UEFI SUSE Linux in Manufacture mode')
     result = ReportGen.LogHeaderResult(tc)
     if not SetUpLib.boot_to_bootmanager():
         result.log_fail()
@@ -52,7 +51,7 @@ def boot_to_suse_mfg():
 
 
 def move_suse_to_first():
-    tc = ('302', 'Move UEFI SUSE Linux to first boot option', 'Move UEFI SUSE Linux to first boot option')
+    tc = ('302', '[TC302] Move UEFI SUSE Linux to first boot option', 'Move UEFI SUSE Linux to first boot option')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     if not SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_SUSE, 5):
         result.log_fail(capture=True)
