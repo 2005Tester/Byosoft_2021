@@ -72,26 +72,33 @@ def init_sut():
     try:
         if not is_power_on():
             logging.info("Chassis power is off.")
-            raise Exception
-        logging.info("Current power status is on, no power operation is required.")
+            raise AssertionError
+        logging.info("Current power status is on, a power cycle operation is required.")
+        assert power_cycle(), 'power cycle -> fail'
         return True
-    except Exception:
+    except AssertionError:
         return power_on()
 
 
 def power_reset():
-    logging.info("Starting to power on the SUT.")
-    ret_cmd = '{0} chassis power on'.format(SutConfig.IPMITOOL)
+    logging.info("Starting to power reset the SUT.")
+    ret_cmd = '{0} chassis power reset'.format(SutConfig.IPMITOOL)
     return interaction(ret_cmd, 'Chassis Power Control: Reset')
 
 
 def power_cycle():
-    logging.info("Starting to power on the SUT.")
-    ret_cmd = '{0} chassis power on'.format(SutConfig.IPMITOOL)
+    logging.info("Starting to power cycle the SUT.")
+    ret_cmd = '{0} chassis power cycle'.format(SutConfig.IPMITOOL)
     return interaction(ret_cmd, 'Chassis Power Control: Cycle')
 
 
 def set_language_to_eng():
     logging.info("Starting to set the default language to english.")
     ret_cmd = '{0} raw raw 0x3e 0xc3 0x01 0x0d 0 0x02 0x20 0x34 0x15 0x13 0x77 0x07 0x09 0x05 0 0x66'.format(SutConfig.IPMITOOL)
+    return interaction(ret_cmd, "")
+
+
+def enable_console_direction():
+    logging.info("Starting to enable console direction.")
+    ret_cmd = '{0} raw raw 0x3e 0xc3 0x01 0x0d 0 0x02 0x20 0x34 0x15 0x12 0x77 0x07 0x09 0x05 0 0x66'.format(SutConfig.IPMITOOL)
     return interaction(ret_cmd, "")

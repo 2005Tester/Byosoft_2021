@@ -2,11 +2,11 @@ from Core import SutInit
 from Core.SutInit import Sut
 
 from Hygon.BaseLib import BmcLib, SetUpLib
+from Hygon import Release
 
 # init SUT
-SutInit.SutInit("Nvwa")
+SutInit.SutInit("Hygon")
 ser = Sut.BIOS_COM
-ssh_os = Sut.OS_SSH
 
 
 # Define test scope for daily test
@@ -19,4 +19,4 @@ def ReleaseTest():
 
 
 def Debug():
-    SetUpLib.change_default_language()
+    Release.check_usb_info()

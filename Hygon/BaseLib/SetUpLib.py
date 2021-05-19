@@ -79,7 +79,7 @@ def boot_to_setup():
         logging.info("SetUpLib: Rebooting SUT Failed.")
         return
     logging.info("SetUpLib: Booting to setup")
-    if not Sut.BIOS_COM.boot_with_hotkey(Key.DEL, Msg.PAGE_MAIN, 300):
+    if not Sut.BIOS_COM.boot_with_hotkey(Key.DEL, Msg.PAGE_MAIN_CN, 300, Msg.HOTKEY_PROMPT_DEL_CN):
         logging.info("SetUpLib: Boot to setup failed.")
         return
     logging.info("SetUpLib: Boot to setup main page successfully")
@@ -96,29 +96,17 @@ def continue_to_setup():
     return True
 
 
-def boot_with_hotkey(key, msg, timeout):
+def boot_with_hotkey(key, msg, timeout, hotkey_prompt):
     if not BmcLib.init_sut():
         return
-    if not Sut.BIOS_COM.boot_with_hotkey(key, msg, timeout, Msg.HOTKEY_PROMPT_DEL):
+    if not Sut.BIOS_COM.boot_with_hotkey(key, msg, timeout, hotkey_prompt):
         return
     logging.info("Boot with hotkey successfully.")
     return True
 
 
-# Continue Boot to boot manager without a force reset
-def continue_to_bootmanager():
-    logging.info("SetUpLib: continue boot to bootmanager")
-    if not Sut.BIOS_COM.boot_with_hotkey(Key.F11, Msg.HOTKEY_PROMPT_F11, 300):
-        logging.info("SetUpLib: Continue boot to bootmanager failed.")
-        return
-    logging.info("SetUpLib: Boot to bootmanager successful")
-    return True
-
-
 # boot to a specific page in bios configuration
 def boot_to_page(page_name):
-    if not boot_to_setup():
-        return
     logging.info("SetUpLib: Move to specified setup page")
     if not Sut.BIOS_COM.locate_setup_option(Key.RIGHT, [page_name], 12):
         logging.info("SetUpLib: Specified setup page not found.")
@@ -143,7 +131,7 @@ def continue_to_page(page_name):
 # valuses: string, e.g: DisabledAutoLowMediumHighManual
 def verify_supported_values(values):
     send_key(Key.ENTER)
-    if not SerialLib.is_msg_present(Sut.BIOS_COM, values):
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, values, delay=7):
         logging.info("Supported values are not correct.")
         send_key(Key.ESC)
         return
@@ -152,75 +140,15 @@ def verify_supported_values(values):
     return True
 
 
-# Boot to boot manager with hotkey
-def boot_to_bootmanager():
-    key = Key.F11
-    msg = "Boot Manager Menu"
-    return boot_with_hotkey(key, msg, 300)
-
-
-# Switch to legacy mode
-def enable_legacy_boot():
-    logging.info("Switch to legacy boot mode")
-    if not boot_to_page(Msg.PAGE_BOOT):
-        return
-    if not locate_option(Key.DOWN, ["Boot Type", "<UEFIBoot>"], 25):
-        return
-    logging.info("Change boot type to legacy mode")
-    send_key(Key.F5)
-    if not locate_option(Key.DOWN, ["Boot Type", "<LegacyBoot>"], 25):
-        logging.info("Failed to change boot type.")
-        return
-    logging.info("Save and reboot")
-    send_keys([Key.F10, Key.Y], 5)
-    if not SerialLib.is_msg_present(Sut.BIOS_COM, 'Start of legacy boot'):
-        logging.info("Not in legacy mode")
-        return
-    logging.info("Boot in legacy mode")
-    return True
-
-
-# Switch to uefi boot mode
-def disable_legacy_boot():
-    logging.info("Switch to uefi boot mode")
-    if not boot_to_page(Msg.PAGE_BOOT):
-        return
-    if not locate_option(Key.DOWN, ["Boot Type", "<LegacyBoot>"], 25):
-        return
-    logging.info("Change boot type to UEFI mode")
-    send_key(Key.F6)
-    if not locate_option(Key.DOWN, ["Boot Type", "<UEFIBoot>"], 25):
-        logging.info("Failed to change boot type.")
-        return
-    logging.info("Save and reboot")
-    send_keys([Key.F10, Key.Y], 5)
-    if not SerialLib.is_msg_not_present(Sut.BIOS_COM, 'Start of legacy boot', 'BIOS boot completed.'):
-        logging.info("Not in UEFI mode")
-        return
-    logging.info("Boot in UEFI mode")
-    return True
-
-
-# Boot Suse from boot manager
+# Boot to kylin os from boot manager
 def boot_kylin_from_bm():
-    if not boot_to_bootmanager():
+    if not boot_with_hotkey(Key.F11, Msg.ENTER_SETUP_CN, 300, Msg.HOTKEY_PROMPT_F11_CN):
         return
-    if not enter_menu(Key.DOWN, Msg.Kylin_Os, 8, Msg.ENTER_SETUP):
+    if not select_boot_option(Key.DOWN, Msg.Kylin_Os, 8, 'Kylin'):
         return
     if not BmcLib.ping_sut():
         return
     logging.info("OS Boot Successful")
-    return True
-
-
-# Update default password, should be called after update bios
-def change_default_language():
-    logging.info("Change BIOS password to non-default.")
-    if not BmcLib.set_language_to_eng():
-        return
-    if not BmcLib.init_sut():
-        return
-    logging.info("Language changed to english successfully")
     return True
 
 
@@ -229,28 +157,6 @@ def change_default_language():
 def get_option_value(option_patten, key, try_counts):
     value_patten = "H<(\w+)>\x1B"
     return Sut.BIOS_COM.get_option_value(option_patten, value_patten, key, try_counts)
-
-
-# set value of a setup option
-# Usage Example: option="Performance Profile", from_value="Custom", to_value="Performance", set_key=Key.F5, set_cnt=3
-def set_option_value(option, from_value, to_value, set_key, set_cnt, loc_cnt=15):
-    logging.info(f'Set [{option}]: {from_value} => {to_value} Start')
-    from_option = [option, f"<{from_value}>"]
-    to_option = [option, f"<{to_value}>"]
-    key_pressd = [set_key] * set_cnt
-    if not locate_option(Key.DOWN, from_option, loc_cnt):
-        logging.info('local_option -> fail')
-        return
-    logging.info(f'Try to set [{option}] from <{from_value}> to <{to_value}>...')
-    send_keys(key_pressd)
-    logging.info('Value set done, start to check if set successfully...')
-    if key_pressd:  # avoid mis-locate if set_cnt=0 since verify_options find str first,then send key
-        send_keys(Key.UP)
-    if not verify_options(Key.DOWN, [to_option], loc_cnt):
-        logging.info('Set option value -> fail')
-        return
-    logging.info(f'Set [{option}]: {from_value} => {to_value} successfully')
-    return True
 
 
 # Boot to BIOS configuration reset default by F9
@@ -277,7 +183,7 @@ def wait_strings(msg_list, delay=10):
 
 
 # used to navigate to setup top page,
-def back_to_setup_toppage(msg='Exit now'):
+def back_to_setup_toppage(msg='确认退出'):
     try:
         while True:
             logging.info('Navigating to top page,')

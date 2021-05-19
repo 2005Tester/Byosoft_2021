@@ -67,4 +67,5 @@ class Msg:
     PXE_PORT1 = "UEFI Onboard: Port 0 - WangXun\(R\) PXE IPv4"
     PXE_PORT2 = "UEFI Onboard: Port 1 - WangXun\(R\) PXE IPv4"
     ENTER_SETUP = "Enter Setup"
-    Kylin_Os = ["Kylin Linux Advanced Server\(SATA2-0: INTEL SSDSCKKB960G8\)"]
+    ENTER_SETUP_CN = "设备启动菜单"
+    Kylin_Os = "Kylin Linux Advanced Server\(SATA2-0: INTEL SSDSCKKB960G8\)"
