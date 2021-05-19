@@ -165,6 +165,9 @@ def reset_default():
     if not boot_to_setup():
         return
     send_keys(Key.RESET_DEFAULT)
+    assert BmcLib.enable_console_direction(), 'console enabled -> fail'
+    logging.info('Enable console direction successfully,')
+    send_keys(Key.SAVE_RESET)
     if not BmcLib.ping_sut():
         logging.info("Reset dafault by F9:Fail")
         return
@@ -216,3 +219,27 @@ def select_boot_option(key, optionname, try_counts, confirm_msg):
         send_key(key)
         try_counts -= 1
     logging.info("Boot option NOT found: {0}".format(optionname))
+
+
+# select a value of setup option to change and save,
+def select_option_value(key_optionname, optionname, key_value, value, try_counts):
+    """
+    key_optionname: send key to locate option that waiting to be changed
+    optionname: ['name','value'] e.g. ["Boot Type", "<UEFI Boot Type>"]
+    key_value: send key to find the value ready to be written
+    value: the modified value of the option, e.g 'Enabled'
+    trycounts: the counts to send keys
+    """
+    es = "(\x1B[@-_][0-?]*[ -/]*[@-~]){1,2}"
+    patten = es + value + es + r"\x1B\[44m"
+    assert locate_option(key_optionname, optionname, try_counts), 'locate option -> fail'
+    send_key(Key.ENTER)
+    while try_counts:
+        time.sleep(2)
+        if SerialLib.is_msg_present(Sut.BIOS_COM, patten, 2, cleanup=False):
+            logging.info("value found: {0}".format(value))
+            send_key(Key.ENTER)
+            return True
+        send_key(key_value)
+        try_counts -= 1
+    logging.info("Value NOT found: {0}".format(value))

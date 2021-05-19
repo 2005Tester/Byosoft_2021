@@ -21,7 +21,7 @@ def interaction(cmd, exp, timeout=5):
         if time_spent > timeout:
             logging.error("Command run timeout - %s seconds, unable to find the expected result." % time_spent)
             return
-    print(stdoutput.decode('gbk'))
+    logging.debug(stdoutput.decode('gbk'))
     return True
 
 
