@@ -34,45 +34,37 @@ class Key:
 
 # Messages to identify a specific boot option, page, menu or system status
 class Msg:
-    HOTKEY_PROMPT_DEL = 'Press Del to enter SETUP'
-    HOTKEY_PROMPT_F11 = 'Press F11 to enter Boot Menu'
-    HOTKEY_PROMPT_F12 = 'Press F12 to enter PXE boot'
-    HOTKEY_PROMPT_F1 = ''
-    HOTKEY_PROMPT_F9 = ''
-    HOTKEY_PROMPT_F10 = ''
-    POST_INFO = 'Press Del to enter SETUP, and Press F11 to enter Boot Menu, and Press F12 to enter PXE boot.'
+    HOTKEY_PROMPT_DEL = 'Del to enter SETUP,'
+    HOTKEY_PROMPT_DEL_CN = '进入固件配置'
+    HOTKEY_PROMPT_F11 = 'Press F11 to enter Boot Menu,'
+    HOTKEY_PROMPT_F11_CN = '按 F11 进入启动菜单'
+    HOTKEY_PROMPT_F12 = 'Press F12 to enter PXE boot,'
+    HOTKEY_PROMPT_F12_CN = '按 F12 进入网络启动'
 
     # pages in bios configuration
     PAGE_MAIN = "Building Info"
+    PAGE_MAIN_CN = "编译信息"
     PAGE_ADVANCED = 'Console Redirection'
+    PAGE_ADVANCED_CN = '串口重定向'
     PAGE_SECURITY = 'Set Administrator Password'
+    PAGE_SECURITY_CN = '设置管理员密码'
     PAGE_BOOT = 'User Wait Time'
+    PAGE_BOOT_CN = '用户等待时间'
     PAGE_EXIT = 'Save and Exit'
+    PAGE_EXIT_CN = '保存并且退出'
 
-    # menus of CPU configuration
-    CPU_CONFIG = 'CPU Configuration'
+    # menus of main page
+    CPU_INFO_CN = '处理器信息'
 
-    # menus of PCH configuration
-    PCH_CONFIG = 'PCH Configuration'
-    NETWORK_CONFIG = 'Network Configuration'
-    USB_CONFIG = 'USB Configuration'
-
-    # Misc Configuration Menu
-    MISC_CONFIG = 'Miscellaneous Configuration'
-
-    # menus of Password configuration
-    MGT_SPV_PWD = 'Manage Supervisor Password'
-    SP_PWD = 'Simple Password'
+    # menus of USB configuration
+    USB_CONFIG_CN = 'USB配置'
+    USB_PORT_CONFIG_CN = 'USB端口配置'
 
     # path of setup menus
-    # PATH_UNCORE_GENERAL = [CPU_CONFIG, UNCORE_CONFIG]
+    PATH_USB_CFG_CN = [USB_CONFIG_CN, USB_PORT_CONFIG_CN]
 
-    # menus of Boot page
+    # menus of boot page
     PXE_PORT1 = "UEFI Onboard: Port 0 - WangXun\(R\) PXE IPv4"
     PXE_PORT2 = "UEFI Onboard: Port 1 - WangXun\(R\) PXE IPv4"
     ENTER_SETUP = "Enter Setup"
     Kylin_Os = ["Kylin Linux Advanced Server\(SATA2-0: INTEL SSDSCKKB960G8\)"]
-
-    # Firmware version info
-    ME_VERSION = '0F:4.4.4.53'
-    RC_VERSION = 'RC Version : 0.2.2.002D'
