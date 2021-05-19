@@ -276,11 +276,9 @@ def disable_legacy_boot():
 
 # Boot Suse from boot manager
 def boot_suse_from_bm():
-    suse_linux = ["SUSE Linux Enterprise\(LUN0\)"]
-    msg = "Welcome to GRUB"
     if not boot_to_bootmanager():
         return
-    if not enter_menu(Key.DOWN, suse_linux, 8, msg):
+    if not enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 8, Msg.SUSE_GRUB):
         return
     if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE):
         return

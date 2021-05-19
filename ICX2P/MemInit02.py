@@ -92,7 +92,7 @@ def dimm_power_mgt_04():
         assert navigate_to_cke(), 'navigate to mem cke power page -> fail'
         assert(SetUpLib.verify_options(Key.DOWN, [[Msg.LPASR_MODE, '<Auto SR>']], 7))
         assert(SetUpLib.boot_to_bootmanager())
-        assert(SetUpLib.enter_menu(Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
+        assert(SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 12, Msg.SUSE_GRUB))
         result.log_pass()
         return True
     except AssertionError:
@@ -114,7 +114,7 @@ def dimm_power_mgt_05():
         assert navigate_to_cke(), 'navigate to mem cke power page -> fail'
         assert(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
         assert(SetUpLib.boot_to_bootmanager())
-        assert(SetUpLib.enter_menu(Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
+        assert(SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 12, Msg.SUSE_GRUB))
         assert(icx2pAPI.ping_sut())
         result.log_pass()
     except AssertionError:
@@ -164,7 +164,7 @@ def dimm_power_mgt_010(ssh_os):
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.MEM_POWER_ADV)
         assert(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
         assert(SetUpLib.boot_to_bootmanager())
-        assert(SetUpLib.enter_menu(Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
+        assert(SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 12, Msg.SUSE_GRUB))
         assert(icx2pAPI.ping_sut())
         assert(icx2pAPI.rw_everything(ssh_os, SutConfig.CKE_POWER_DOWN, ['c61218a0', 'fb9a18a4']))
         result.log_pass()
@@ -198,7 +198,7 @@ def dimm_power_mgt_011(ssh_os):
         assert(SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
         assert(SetUpLib.verify_options(Key.DOWN, [['APD', '<Enabled>']], 3))
         assert(SetUpLib.boot_to_bootmanager())
-        assert(SetUpLib.enter_menu(Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
+        assert(SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 12, Msg.SUSE_GRUB))
         assert(icx2pAPI.ping_sut())
         assert(icx2pAPI.rw_everything(ssh_os, ['1100', '010f'], ['c61218a0']))
         result.log_pass()
@@ -230,7 +230,7 @@ def dimm_power_mgt_012(ssh_os):
         assert(SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
         assert(SetUpLib.verify_options(Key.DOWN, [['CKE Idle Timer', '\[255\]']], 7))
         assert(SetUpLib.boot_to_bootmanager())
-        assert(SetUpLib.enter_menu(Key.DOWN, Msg.suse_linux, 12, Msg.suse_linux_msg))
+        assert(SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 12, Msg.SUSE_GRUB))
         assert(icx2pAPI.ping_sut())
         assert(icx2pAPI.rw_everything(ssh_os, ['1100', '02bf'], ['c61218a0']))
         result.log_pass()

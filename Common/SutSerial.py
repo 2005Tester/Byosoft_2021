@@ -15,7 +15,7 @@ import logging
 from Core import var
 
 ENTER = [chr(0x0D)]
-ES = "(\x1B[@-_][0-?]*[ -/]*[@-~]){1,5}"
+ES = "(\x1B[@-_][0-?]*[ -/]*[@-~]){1,7}"
 
 
 class SutControl:

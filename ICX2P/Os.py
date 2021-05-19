@@ -20,9 +20,8 @@ def boot_to_suse():
     if not SetUpLib.boot_to_bootmanager():
         result.log_fail()
         return
-    suse_linux = ["SUSE Linux Enterprise\(LUN0\)"]
     msg = "Welcome to GRUB"
-    if not SetUpLib.enter_menu(Key.DOWN, suse_linux, 20, msg):
+    if not SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 20, msg):
         result.log_fail()
         return
     if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE):
@@ -40,9 +39,8 @@ def boot_to_suse_mfg():
     if not SetUpLib.boot_to_bootmanager():
         result.log_fail()
         return
-    suse_linux = ["SUSE Linux Enterprise\(LUN0\)"]
     msg = "Welcome to GRUB"
-    if not SetUpLib.enter_menu(Key.DOWN, suse_linux, 20, msg):
+    if not SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 20, msg):
         result.log_fail()
         return
     if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE):
