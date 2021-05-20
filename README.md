@@ -19,13 +19,19 @@ or Run pip install -r requirements.txt
 | Module | ID Range |
 | ------ | ------ |
 | CpuInit01 | 200-299 |
-|  |  |
-|  |  |
-|  |  |
-|  |  |
-|  |  |
-|  |  |
-|  |  |
+| biosTest | 002-029, 019 reserved |
+| UpdateBios | 001, 019 |
+| DefaultValue | 100-150 |
+| MemInit02 | 700-750 |
+| PchInit03 | 600-620 |
+| PcieInit04 | 630-650 |
+| Io05 | 800-850 |
+| BootDevice06 | 151-199 |
+| Os | 300-320 |
+| Legacy | 500-520 |
+| Release | 9xx |
+| Smbios09 | 400-440, 527 reserved |
+| Security22 | 030-070 |
 
 
 ### Hygon
