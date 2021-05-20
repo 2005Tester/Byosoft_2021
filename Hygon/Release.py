@@ -24,7 +24,6 @@ def check_usb_info():
         # assert SetUpLib.verify_supported_values('打开 关闭'), 'verify values -> fail'
         # assert SetUpLib.select_option_value(Key.UP, ['后置USB端口配置', '<打开>'], Key.DOWN, '关闭', 4)
         # SetUpLib.send_keys(Key.SAVE_RESET)
-        # assert BmcLib.ping_sut(), 'ping os -> fail'
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)

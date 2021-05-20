@@ -25,23 +25,6 @@ def interaction(cmd, exp, timeout=5):
     return True
 
 
-def ping_sut():
-    logging.info("Test network connection...")
-    ping_cmd = 'ping {0}'.format(SutConfig.OS_IP)
-    start_time = time.time()
-    while True:
-        p = subprocess.Popen(args=ping_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdoutput, erroutput) = p.communicate()
-        now = time.time()
-        time_spent = (now - start_time)
-        if 'TTL=' in stdoutput.decode('gbk'):
-            logging.info("SUT is online.")
-            return True
-        if time_spent > 600:
-            logging.error("Lost SUT for %s seconds, check the ip connection" % time_spent)
-            return False
-
-
 # updated by arthur,
 def is_power_on():
     logging.info("Check power status...")

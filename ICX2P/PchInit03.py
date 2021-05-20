@@ -7,8 +7,8 @@ from Report import ReportGen
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg
 from ICX2P.Config.SutConfig import SysCfg
-from ICX2P.BaseLib import SetUpLib, PlatMisc, BmcLib
-from Core import SerialLib
+from ICX2P.BaseLib import SetUpLib, BmcLib
+from Core import SerialLib, MiscLib
 
 
 # Test case ID: TC600-TC620
@@ -96,6 +96,7 @@ def hot_plug_sata():
     except AssertionError:
         result.log_fail(capture=True)
 
+
 # Testcase_Spin_Up_001使用unitool确认SataSpinUp的默认值为Enable
 # Author: OuYang
 # Precondition:
@@ -106,7 +107,7 @@ def testcase_spin_up_001(unitool):
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         assert SetUpLib.boot_suse_from_bm()
-        assert PlatMisc.ping_sut()
+        assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
         assert unitool.check(SataSpinUp=1)
         result.log_pass()
         return True

@@ -1,10 +1,11 @@
 import logging
 import time
-from Core import SerialLib
+from Core import SerialLib, MiscLib
 from Core.SutInit import Sut
 
 from Hygon.BaseLib import BmcLib
 from Hygon.Config.PlatConfig import Key, Msg
+from Hygon.Config import SutConfig
 
 
 # Send a single key, e.g. ENTER, DOWN, UP
@@ -146,7 +147,7 @@ def boot_kylin_from_bm():
         return
     if not select_boot_option(Key.DOWN, Msg.Kylin_Os, 8, 'Kylin'):
         return
-    if not BmcLib.ping_sut():
+    if not MiscLib.ping_sut(SutConfig.OS_IP, 300):
         return
     logging.info("OS Boot Successful")
     return True
@@ -168,7 +169,7 @@ def reset_default():
     assert BmcLib.enable_console_direction(), 'console enabled -> fail'
     logging.info('Enable console direction successfully,')
     send_keys(Key.SAVE_RESET)
-    if not BmcLib.ping_sut():
+    if not MiscLib.ping_sut(SutConfig.OS_IP, 300):
         logging.info("Reset dafault by F9:Fail")
         return
     logging.info("Reset dafault by F9:Pass")

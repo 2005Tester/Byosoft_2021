@@ -1,9 +1,9 @@
 import logging
-from Core import SerialLib, SshLib
+from Core import SerialLib, SshLib, MiscLib
 from Core.SutInit import Sut
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg
-from ICX2P.BaseLib import PlatMisc, SetUpLib, BmcLib
+from ICX2P.BaseLib import SetUpLib, BmcLib
 from Report import ReportGen
 
 
@@ -20,7 +20,7 @@ def reset_cpu_setting(unitool, cmd_var):
     if not BmcLib.force_reset():
         logging.info('power off-on fail')
         return False
-    if not PlatMisc.ping_sut():
+    if not MiscLib.ping_sut(SutConfig.OS_IP, 300):
         logging.info('boot linux-suse fail')
         return False
     if not unitool.write(**cmd):
@@ -54,9 +54,9 @@ def cpu_cores_active_enable(unitool, num, set_n):
         assert SetUpLib.verify_info(SutConfig.DIMM_info, 20)
         # boot suse #
         assert BmcLib.force_reset()
-        assert PlatMisc.ping_sut()
-        ### 每个CPU下只有num个core。
+        # 每个CPU下只有num个core。
         res1 = SshLib.execute_command(Sut.OS_SSH, r'lscpu | grep " per socket" ').replace('\n', '').split(':')[-1].strip()
+        assert res1
         if int(res1) == num:
             logging.info("**Core Enable pass**")
         else:
@@ -262,9 +262,9 @@ def cpu_cores_disable_sys_normally(unitool):
         logging.info("**Active Processor Cores**")
         SetUpLib.send_keys([Key.F10, Key.Y], 5)
         logging.info("**reboot**")
-        while n < 5:  #系统反复复位，暂定4次
+        while n < 5:  # 系统反复复位，暂定4次
             # boot suse #
-            assert PlatMisc.ping_sut()
+            assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
             res = SshLib.execute_command(Sut.OS_SSH, r'date')
             logging.info("system reboot pass, system-Time is : {} ".format(res))
             assert BmcLib.force_reset()
@@ -293,7 +293,7 @@ def cores_customized_by_unitool(unitool):
         assert SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 20, "Welcome to GRUB")
         assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE, 170)
         logging.info("Suse_OS Boot Successful")
-        PlatMisc.ping_sut()
+        MiscLib.ping_sut(SutConfig.OS_IP, 600)
         assert unitool.write(ActiveCpuCores=20)
         SshLib.execute_command(Sut.OS_SSH, r'reboot')
         # 进入Bios ，验证 unitool修改是否成功
@@ -303,8 +303,8 @@ def cores_customized_by_unitool(unitool):
         logging.info("bios setting checkin")
         # 进入 OS，验证 unitool修改是否成功
         assert BmcLib.force_reset()
-        assert PlatMisc.ping_sut()
         res = SshLib.execute_command(Sut.OS_SSH, r'lscpu | grep " per socket" ').replace('\n', '').split(':')[-1].strip()
+        assert res
         if int(res) == 20:
             logging.info('checkin cpu_core - pass')
         else:
@@ -334,7 +334,7 @@ def numa_disabled_verify(): # 进入 Numa page，设置 Numa 为 Disabled,到 su
     if not SetUpLib.locate_option(Key.DOWN, numa_bef, 20):
         return False
     SetUpLib.send_keys([Key.F6, Key.F10, Key.Y], 3)
-    if not PlatMisc.ping_sut():
+    if not MiscLib.ping_sut(SutConfig.OS_IP, 600):
         return False
     return True
 
@@ -347,7 +347,7 @@ def numa_enabled_verify(): # 进入 Numa page，设置 Numa 为 Enabled，到 su
     if not SetUpLib.locate_option(Key.DOWN, numa_aft, 20):
         return False
     SetUpLib.send_keys([Key.F5, Key.F10, Key.Y], 3)
-    if not PlatMisc.ping_sut():
+    if not MiscLib.ping_sut(SutConfig.OS_IP, 600):
         return False
     return True
 

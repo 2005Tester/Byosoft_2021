@@ -11,7 +11,7 @@ import re
 import time
 import os
 import csv
-from Core import SerialLib
+from Core import SerialLib, MiscLib
 from Core.SutInit import Sut
 from ICX2P.Config.SutConfig import SysCfg
 from ICX2P.Config.PlatConfig import Msg, Key
@@ -411,7 +411,7 @@ def Testcase_PowerEfficiency_001(unitool):
             time.sleep(6)
             assert SetUpLib.set_option_value(option, "Custom", to_mode, Key.F5, value_list.index(to_mode))
             SetUpLib.send_keys([Key.F10, Key.Y])
-            assert PlatMisc.ping_sut()
+            assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
             # Check each Attribute's value
             name_list = [row_data[0] for row_data in data[1:]]
             read_res = unitool.read(*name_list)

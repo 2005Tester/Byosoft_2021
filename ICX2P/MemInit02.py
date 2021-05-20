@@ -8,7 +8,7 @@ from ICX2P.Config import SutConfig
 from ICX2P.Config.SutConfig import SysCfg
 from ICX2P.Config.PlatConfig import Key, Msg, BiosCfg
 from ICX2P.BaseLib import SetUpLib, PlatMisc, BmcLib
-from Core import SerialLib, SshLib
+from Core import SerialLib, SshLib, MiscLib
 from ICX2P import Os
 
 
@@ -115,7 +115,7 @@ def dimm_power_mgt_05():
         assert(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
         assert(SetUpLib.boot_to_bootmanager())
         assert(SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 12, Msg.SUSE_GRUB))
-        assert(PlatMisc.ping_sut())
+        assert(MiscLib.ping_sut(SutConfig.OS_IP, 600))
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
@@ -165,7 +165,7 @@ def dimm_power_mgt_010(ssh_os):
         assert(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
         assert(SetUpLib.boot_to_bootmanager())
         assert(SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 12, Msg.SUSE_GRUB))
-        assert(PlatMisc.ping_sut())
+        assert(MiscLib.ping_sut(SutConfig.OS_IP, 600))
         assert(PlatMisc.rw_everything(ssh_os, SutConfig.CKE_POWER_DOWN, ['c61218a0', 'fb9a18a4']))
         result.log_pass()
     except AssertionError:
@@ -199,7 +199,7 @@ def dimm_power_mgt_011(ssh_os):
         assert(SetUpLib.verify_options(Key.DOWN, [['APD', '<Enabled>']], 3))
         assert(SetUpLib.boot_to_bootmanager())
         assert(SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 12, Msg.SUSE_GRUB))
-        assert(PlatMisc.ping_sut())
+        assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
         assert(PlatMisc.rw_everything(ssh_os, ['1100', '010f'], ['c61218a0']))
         result.log_pass()
     except AssertionError:
@@ -231,7 +231,7 @@ def dimm_power_mgt_012(ssh_os):
         assert(SetUpLib.verify_options(Key.DOWN, [['CKE Idle Timer', '\[255\]']], 7))
         assert(SetUpLib.boot_to_bootmanager())
         assert(SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 12, Msg.SUSE_GRUB))
-        assert(PlatMisc.ping_sut())
+        assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
         assert(PlatMisc.rw_everything(ssh_os, ['1100', '02bf'], ['c61218a0']))
         result.log_pass()
     except AssertionError:
@@ -312,7 +312,7 @@ def Testcase_MemoryCompa_006(serial, ssh_os, n=1):
             assert SetUpLib.boot_to_page('BIOS Revision'), "boot_to_page -> fail"
             assert SetUpLib.verify_info('Total Memory\s+65536 MB', 20), "dimm_size_verify -> fail"
             assert Os.boot_to_suse(serial), "boot_to_os -> fail"
-            assert PlatMisc.ping_sut(), "ping_os_ip-> fail"
+            assert MiscLib.ping_sut(SutConfig.OS_IP, 600), "ping_os_ip-> fail"
             res = SshLib.execute_command(ssh_os, 'dmesg | grep -i e820')
             for j in res.split('\n'):
                 if 'BIOS-e820' in j and 'ACPI' not in j:
@@ -348,7 +348,7 @@ def Testcase_MemRefresh_001(serial, ssh_os):
         assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM2X_REFRESH, '<Disabled>'], 10), "locate_option -> fail"
         SetUpLib.send_keys([Key.F5, Key.F10, Key.Y])
         assert Os.boot_to_suse(serial), "boot_to_os -> fail"
-        assert PlatMisc.ping_sut(), "ping_os_ip-> fail"
+        assert MiscLib.ping_sut(SutConfig.OS_IP, 600), "ping_os_ip-> fail"
         assert PlatMisc.rw_everything(ssh_os, ['005f', '5a55'], ['c99224e0', 'fb9224e0'])
         assert SetUpLib.reset_default()
         result.log_pass()
@@ -370,7 +370,7 @@ def Testcase_MemRefresh_002(serial, ssh_os):
         assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM2X_REFRESH, '<Disabled>'], 10), "locate_option -> fail"
         SetUpLib.send_keys([Key.F6 * 3, Key.F10, Key.Y])
         assert Os.boot_to_suse(serial), "boot_to_os -> fail"
-        assert PlatMisc.ping_sut(), "ping_os_ip-> fail"
+        assert MiscLib.ping_sut(SutConfig.OS_IP, 600), "ping_os_ip-> fail"
         assert PlatMisc.rw_everything(ssh_os, ['005f', '5a55'], ['c99224e0', 'fb9224e0'])
         assert SetUpLib.reset_default()
         result.log_pass()
@@ -389,7 +389,7 @@ def Testcase_MemoryCompa_009(unitool):
     try:
         assert BmcLib.force_reset()
         assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE)
-        assert PlatMisc.ping_sut()
+        assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
         assert unitool.set_config(BiosCfg.MFG_RMT), "Change setup by unitool failed."
         logging.info("Reboot SUT to Linux")
         assert BmcLib.force_reset()
@@ -414,7 +414,6 @@ def navegate_to_mem_fre_option(serial, n=1):  # used to set mem freq test
     assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM_FRE, 'Auto'], 10), "locate_option -> fail"
     SetUpLib.send_keys([Key.F6 * n, Key.F10, Key.Y])
     assert Os.boot_to_suse(serial), "boot_to_os -> fail"
-    assert PlatMisc.ping_sut(), "ping_os_ip-> fail"
     assert SetUpLib.reset_default()
 
 
@@ -453,8 +452,8 @@ def Testcase_MTRR_001(ssh_os):
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         # assert Os.boot_to_suse(serial, ssh_bmc), "boot_to_os -> fail"
-        assert PlatMisc.ping_sut(), "ping_os_ip-> fail"
         res = SshLib.execute_command(ssh_os, 'cat /proc/mtrr')
+        assert res
         mem_size = re.findall(r"\d+\.?\d*", res.split('=')[2])
         for i in mem_size:
             if int(i)/1024 == SysCfg.DIMM_SIZE * 2:
@@ -477,8 +476,8 @@ def Testcase_MTRR_002(serial, ssh_os):
         assert BmcLib.force_reset(), 'reset_system -> fail'
         assert not SetUpLib.wait_message('0xa0300', 60), 'find 0xa0300 string'
         assert Os.boot_to_suse(serial), "boot_to_os -> fail"
-        assert PlatMisc.ping_sut(), "ping_os_ip-> fail"
         res = SshLib.execute_command(ssh_os, 'dmesg | grep MTRR')
+        assert res
         if 'MTRR fixed ranges enabled' in res:
             logging.info('MTRR fixed ranges enabled')
         else:

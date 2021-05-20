@@ -15,23 +15,6 @@ from Pangea.BaseLib import PowerLib
 from Pangea.SutConfig import Key, Msg
 
 
-def ping_sut():
-    logging.info("Test the connection...")
-    ping_cmd = 'ping {0}'.format(SutConfig.OS_IP)
-    start_time = time.time()
-    while True:
-        p = subprocess.Popen(args=ping_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdoutput, erroutput) = p.communicate()
-        now = time.time()
-        time_spent = (now - start_time)
-        if 'TTL=' in stdoutput.decode('gbk'):
-            print("SUT is online now")
-            return True
-        if time_spent > 600:
-            print("Lost SUT for %s seconds, check the ip connection" % time_spent)
-            return False
-
-
 # to BIOS with power action,
 def toBIOS(serial, ssh):
     if not PowerLib.reboot_system(ssh):

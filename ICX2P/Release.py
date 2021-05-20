@@ -1,7 +1,7 @@
 import os
 import glob
 import logging
-from Core import SshLib
+from Core import SshLib, MiscLib
 from Core.SutInit import Sut
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg, BiosCfg
@@ -79,11 +79,11 @@ def hpm_upgrade_test(unitool, new_branch):
     try:
         assert Update.update_bios(old_bin_download[0])
         flash_latest = False
-        assert PlatMisc.ping_sut()
+        assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
         assert unitool.write(**BiosCfg.HPM_KEEP)
         assert Update.flash_local_hpm(new_hpm_local[0])
         flash_latest = True
-        assert PlatMisc.ping_sut()
+        assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
         assert unitool.check(**BiosCfg.HPM_KEEP)
         result.log_pass()
         return True
@@ -107,11 +107,11 @@ def hpm_downgrade_test(unitool, new_branch):
     try:
         assert Update.update_bios(new_bin_download)
         flash_latest = True
-        assert PlatMisc.ping_sut()
+        assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
         assert unitool.write(**BiosCfg.HPM_KEEP)
         assert Update.flash_local_hpm(old_hpm_local[0])
         flash_latest = False
-        assert PlatMisc.ping_sut()
+        assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
         assert unitool.check(**BiosCfg.HPM_KEEP)
         result.log_pass()
         return True
