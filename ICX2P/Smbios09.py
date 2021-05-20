@@ -9,7 +9,7 @@ from Core import SerialLib, SshLib
 from Common.LogAnalyzer import LogAnalyzer
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import BiosCfg, Msg
-from ICX2P.BaseLib import BmcLib, icx2pAPI
+from ICX2P.BaseLib import BmcLib, PlatMisc
 
 
 # Test case ID: 400-440, 527 reserved
@@ -168,14 +168,14 @@ def smbios_type128(unitool):
     try:
         assert BmcLib.force_reset()
         assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE)
-        assert icx2pAPI.ping_sut()
+        assert PlatMisc.ping_sut()
         assert unitool.set_config(BiosCfg.MFG_RMT), "Change setup by unitool failed."
         logging.info("Reboot SUT to Linux")
         assert BmcLib.force_reset()
         ser_rmt_data = SerialLib.cut_log(Sut.BIOS_COM, "START_BSSA_RMT", "Lane Margin", duration=15, timeout=600, step=5)
         assert ser_rmt_data, "Invalid RMT data"
         logging.debug(ser_rmt_data)
-        assert icx2pAPI.ping_sut()
+        assert PlatMisc.ping_sut()
         type128data = SshLib.execute_command(Sut.OS_SSH, "dmidecode -t 128")
         assert type128data, "Unable to read type128 data"
         logging.debug(type128data)

@@ -13,10 +13,10 @@ import os
 import csv
 from Core import SerialLib
 from Core.SutInit import Sut
-from ICX2P.Config.SutConfig import SUT_CONFIG, SysCfg
+from ICX2P.Config.SutConfig import SysCfg
 from ICX2P.Config.PlatConfig import Msg, Key
 from ICX2P.Config import SutConfig
-from ICX2P.BaseLib import BmcLib, icx2pAPI, SetUpLib
+from ICX2P.BaseLib import BmcLib, PlatMisc, SetUpLib
 from Report import ReportGen
 from Common.LogAnalyzer import LogAnalyzer
 
@@ -66,7 +66,7 @@ def power_cycling(n=5):
     for j in range(n):
         try:
             logging.info("DC reset cycle: {0}".format(j + 1))
-            if not icx2pAPI.dcCycle():
+            if not PlatMisc.dcCycle():
                 logging.info("DC cycle Test:Fail")
                 flag_dc = 2
                 res_lst.append(flag_dc)
@@ -411,7 +411,7 @@ def Testcase_PowerEfficiency_001(unitool):
             time.sleep(6)
             assert SetUpLib.set_option_value(option, "Custom", to_mode, Key.F5, value_list.index(to_mode))
             SetUpLib.send_keys([Key.F10, Key.Y])
-            assert icx2pAPI.ping_sut()
+            assert PlatMisc.ping_sut()
             # Check each Attribute's value
             name_list = [row_data[0] for row_data in data[1:]]
             read_res = unitool.read(*name_list)

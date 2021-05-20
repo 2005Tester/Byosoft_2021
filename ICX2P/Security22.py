@@ -16,7 +16,7 @@ from Core import SerialLib, SshLib
 from Report import ReportGen
 from ICX2P.Config.PlatConfig import Key, Msg
 from ICX2P.Config import SutConfig
-from ICX2P.BaseLib import icx2pAPI, SetUpLib, Update, BmcLib
+from ICX2P.BaseLib import PlatMisc, SetUpLib, Update, BmcLib
 
 # Test case ID: TC030-TC070
 
@@ -155,7 +155,7 @@ def reset_password_by_unipwd():
     if not BmcLib.force_reset():
         logging.info("Boot to boot manager fail.")
         return restore_env(log_dir)
-    if not icx2pAPI.ping_sut():
+    if not PlatMisc.ping_sut():
         logging.info("Ping SUT fail.")
         return restore_env(log_dir)
     SshLib.execute_command(Sut.OS_SSH, r'cd {0};insmod ufudev.ko'.format(SutConfig.UNI_PATH))
@@ -714,7 +714,7 @@ def Testcase_BiosPasswordSecurity_028():
         SetUpLib.send_data_enter(SutConfig.BIOS_PASSWORD)
         logging.info("reboot ,input BIOS_PASSWORD ")
         time.sleep(30)
-        assert icx2pAPI.ping_sut()
+        assert PlatMisc.ping_sut()
         logging.info("正常恢复")
         result.log_pass()
     except AssertionError:

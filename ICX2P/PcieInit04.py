@@ -4,7 +4,7 @@ import os
 import csv
 from Core import SerialLib
 from Core.SutInit import Sut
-from ICX2P.BaseLib import SetUpLib, BmcLib, icx2pAPI
+from ICX2P.BaseLib import SetUpLib, BmcLib, PlatMisc
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg
 from Report import ReportGen
@@ -27,7 +27,7 @@ def Testcase_PCIeResource_001():
     cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
     try:
         if not os.path.exists(cpu_rsc_file):
-            cpu_rsc_file = icx2pAPI.dump_cpu_resource()
+            cpu_rsc_file = PlatMisc.dump_cpu_resource()
             assert cpu_rsc_file, "invalid CPU Resource Allocation Table"
         with open(cpu_rsc_file, "r") as rsc_file:
             rsc_data = list(csv.reader(rsc_file))
@@ -66,7 +66,7 @@ def Testcase_PCIeResource_002():
         base_setup = hex(int(MMIOH_value[:-1]) * (1 << base_scale))
         size_setup = hex(int(MMIOH_size[:-1]) * (1 << 30))  # G
         if not os.path.exists(cpu_rsc_file):
-            cpu_rsc_file = icx2pAPI.dump_cpu_resource()
+            cpu_rsc_file = PlatMisc.dump_cpu_resource()
             assert cpu_rsc_file, "invalid CPU Resource Allocation Table"
         with open(cpu_rsc_file, "r") as rsc_file:
             rsc_data = list(csv.reader(rsc_file))
@@ -167,7 +167,7 @@ def Testcase_PCIeResource_007():
     cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
     try:
         if not os.path.exists(cpu_rsc_file):
-            cpu_rsc_file = icx2pAPI.dump_cpu_resource()
+            cpu_rsc_file = PlatMisc.dump_cpu_resource()
             assert cpu_rsc_file, "invalid CPU Resource Allocation Table"
         with open(cpu_rsc_file, "r") as rsc_file:
             rsc_data = list(csv.reader(rsc_file))
@@ -194,7 +194,7 @@ def Testcase_PCIeResource_008():
     cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
     try:
         if not os.path.exists(cpu_rsc_file):
-            cpu_rsc_file = icx2pAPI.dump_cpu_resource()
+            cpu_rsc_file = PlatMisc.dump_cpu_resource()
             assert cpu_rsc_file, "invalid CPU Resource Allocation Table"
         with open(cpu_rsc_file, "r") as rsc_file:
             rsc_data = list(csv.reader(rsc_file))
@@ -221,7 +221,7 @@ def Testcase_PCIeResource_009():
     cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
     try:
         if not os.path.exists(cpu_rsc_file):
-            cpu_rsc_file = icx2pAPI.dump_cpu_resource()
+            cpu_rsc_file = PlatMisc.dump_cpu_resource()
             assert cpu_rsc_file, "invalid CPU Resource Allocation Table"
         with open(cpu_rsc_file, "r") as rsc_file:
             rsc_data = list(csv.reader(rsc_file))

@@ -5,7 +5,7 @@ from Core import SshLib
 from Core.SutInit import Sut
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg, BiosCfg
-from ICX2P.BaseLib import BmcLib, SetUpLib, Update, icx2pAPI
+from ICX2P.BaseLib import BmcLib, SetUpLib, Update, PlatMisc
 from Report import ReportGen
 from Common.RedfishLib import Redfish
 
@@ -69,7 +69,7 @@ def hpm_upgrade_test(unitool, new_branch):
     tc = ('904', '[TC904] HPM升级保持配置不变', "HPM升级BIOS后，原来设置的非默认BIOS设置不变")
     result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
 
-    old_branch = icx2pAPI.last_release(new_branch)
+    old_branch = PlatMisc.last_release(new_branch)
     old_bin_download = Update.get_test_image(SutConfig.LOG_DIR, old_branch, 'debug-build')
     new_bin_download = Update.get_test_image(SutConfig.LOG_DIR, new_branch, 'debug-build')
     new_path_local = os.path.join(SutConfig.BIOS_PATH, new_branch)
@@ -79,11 +79,11 @@ def hpm_upgrade_test(unitool, new_branch):
     try:
         assert Update.update_bios(old_bin_download[0])
         flash_latest = False
-        assert icx2pAPI.ping_sut()
+        assert PlatMisc.ping_sut()
         assert unitool.write(**BiosCfg.HPM_KEEP)
         assert Update.flash_local_hpm(new_hpm_local[0])
         flash_latest = True
-        assert icx2pAPI.ping_sut()
+        assert PlatMisc.ping_sut()
         assert unitool.check(**BiosCfg.HPM_KEEP)
         result.log_pass()
         return True
@@ -99,7 +99,7 @@ def hpm_downgrade_test(unitool, new_branch):
     result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
 
     new_bin_download = Update.get_test_image(SutConfig.LOG_DIR, new_branch, 'debug-build')
-    old_branch = icx2pAPI.last_release(new_branch)
+    old_branch = PlatMisc.last_release(new_branch)
     old_path_local = os.path.join(SutConfig.BIOS_PATH, old_branch)
     old_hpm_local = glob.glob(os.path.join(old_path_local, "*.hpm"))
     flash_latest = False
@@ -107,11 +107,11 @@ def hpm_downgrade_test(unitool, new_branch):
     try:
         assert Update.update_bios(new_bin_download)
         flash_latest = True
-        assert icx2pAPI.ping_sut()
+        assert PlatMisc.ping_sut()
         assert unitool.write(**BiosCfg.HPM_KEEP)
         assert Update.flash_local_hpm(old_hpm_local[0])
         flash_latest = False
-        assert icx2pAPI.ping_sut()
+        assert PlatMisc.ping_sut()
         assert unitool.check(**BiosCfg.HPM_KEEP)
         result.log_pass()
         return True
@@ -131,7 +131,7 @@ def compare_fdm_log(new_branch):
     tc = ('906', '[TC906] Compare FDM Log Size', "Compare FDM Log size with previous BIOS version")
     result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
 
-    old_branch = icx2pAPI.last_release(new_branch)
+    old_branch = PlatMisc.last_release(new_branch)
     new_img = Update.get_test_image(SutConfig.LOG_DIR, new_branch, 'debug-build')
     old_img = Update.get_test_image(SutConfig.LOG_DIR, old_branch, 'debug-build')
     flash_latest = False
@@ -209,7 +209,7 @@ def registry_check(new_branch):
     tc = ('908', '[TC908] Compare registry.json file with previous version', "Compare registry.json file with previous version")
     result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
 
-    old_branch = icx2pAPI.last_release(new_branch)
+    old_branch = PlatMisc.last_release(new_branch)
     old_img = Update.get_test_image(SutConfig.LOG_DIR, old_branch, 'debug-build')
     new_img = Update.get_test_image(SutConfig.LOG_DIR, new_branch, 'debug-build')
     rfish = Redfish(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)

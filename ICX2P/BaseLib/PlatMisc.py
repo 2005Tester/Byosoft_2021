@@ -14,7 +14,7 @@ import logging
 import subprocess
 import time
 from ICX2P.Config import SutConfig
-from ICX2P.Config.PlatConfig import Key, Msg
+from ICX2P.Config.PlatConfig import Msg
 from ICX2P.BaseLib import BmcLib, SetUpLib
 from Core.SutInit import Sut
 from Core import SerialLib
