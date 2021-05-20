@@ -39,7 +39,7 @@ def post_test():  # POST: POST Log(TBD) and Information Check
 
 
 # PM: Warm reset n times, Cold reset n times and AC (TBD)
-def PM(n=5):
+def power_cycling(n=5):
     tc = ('003', '[TC003]Power Control Test', 'Power Control Test')
     result = ReportGen.LogHeaderResult(tc)
     res_lst = []
@@ -70,6 +70,7 @@ def PM(n=5):
                 logging.info("DC cycle Test:Fail")
                 flag_dc = 2
                 res_lst.append(flag_dc)
+                result.log_fail()
                 return
         except Exception as e:
             logging.error(e)
@@ -145,7 +146,7 @@ def press_f2():
 
 # Setup: Load default and setting saving - AT test cases below,
 def loadDefault():
-    tc = ('011', 'Load default and setting saving Test', 'BIOS Load default Test')
+    tc = ('011', '[TC011] Load default and setting saving Test', 'BIOS Load default Test')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     pxe_boot = ["PXE Boot Capability", "<UEFI:IPv4>"]
     boot_fail_policy = ["Boot Fail Policy", "<Boot Retry>"]
@@ -255,7 +256,7 @@ def cnd_default_enable():
 
 # Testcase_SecurityBoot_001
 def securityBoot():
-    tc = ('023', 'Secure Boot默认值', 'Secure Boot默认值')
+    tc = ('023', '[TC023] Secure Boot默认值', 'Secure Boot默认值')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     keys_secure_boot = [Key.RIGHT, Key.DOWN, Key.ENTER]
     secureboot_disable = ['Current Secure Boot State\s+Disabled']
@@ -275,7 +276,7 @@ def securityBoot():
 
 # Testcase_VTD_002
 def vtd():
-    tc = ('025', 'Testcase_VTD_002', '关闭VT-d功能启动测试')
+    tc = ('025', '[TC025] Testcase_VTD_002', '关闭VT-d功能启动测试')
     result = ReportGen.LogHeaderResult(tc)
     if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED):
         result.log_fail()

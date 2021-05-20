@@ -33,7 +33,7 @@ def boot_to_suse():
 
 # Boot to SUSE Linux from boot manager
 def boot_to_suse_mfg():
-    tc = ('301', '装备模式: [TC301] Boot to UEFI SUSE Linux', 'Boot to UEFI SUSE Linux in Manufacture mode')
+    tc = ('301', '[TC301] 装备模式:Boot to UEFI SUSE Linux', 'Boot to UEFI SUSE Linux in Manufacture mode')
     result = ReportGen.LogHeaderResult(tc)
     if not SetUpLib.boot_to_bootmanager():
         result.log_fail()

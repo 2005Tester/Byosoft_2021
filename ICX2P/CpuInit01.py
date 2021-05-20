@@ -209,7 +209,7 @@ def cpu_cores_active():
 # OnStart: NA
 # OnComplete: suse Page
 def cpu_cores_active_enable_1(unitool):
-    tc = ('205', '[205]Testcase_CoreDisable_002', 'Enable 1 CPU core test')
+    tc = ('205', '[TC205] Testcase_CoreDisable_002', 'Enable 1 CPU core test')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     num = 1
     set_n = 28
@@ -221,7 +221,7 @@ def cpu_cores_active_enable_1(unitool):
 
 
 def cpu_cores_active_enable_middle(unitool):
-    tc = ('206', '[206]Testcase_CoreDisable_003', 'Enable middle-num CPU core test')
+    tc = ('206', '[TC206] Testcase_CoreDisable_003', 'Enable middle-num CPU core test')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     num = 14
     set_n = 14
@@ -233,7 +233,7 @@ def cpu_cores_active_enable_middle(unitool):
 
 
 def cpu_cores_active_enable_max(unitool):
-    tc = ('207', '[207]Testcase_CoreDisable_004', 'Enable max-1 CPU core test')
+    tc = ('207', '[TC207] Testcase_CoreDisable_004', 'Enable max-1 CPU core test')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     num = 27
     set_n = 1

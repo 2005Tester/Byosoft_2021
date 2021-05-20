@@ -17,7 +17,7 @@ from Common.RedfishLib import Redfish
 ##########################################
 
 def me_version_status():
-    tc = ('901', 'ME_Check ME Version and status', 'ME version should be match within BIOS bin file, ME Status shoule be normal.')
+    tc = ('901', '[TC901] ME_Check ME Version and status', 'ME version should be match within BIOS bin file, ME Status shoule be normal.')
     result = ReportGen.LogHeaderResult(tc)
     if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED):
         result.log_fail()
@@ -38,7 +38,7 @@ def me_version_status():
 
 # 非装备模式BIOS设置装备模式flag, 预期设置不成功.
 def equip_mode_flag_check(unitool):
-    tc = ('902', 'Equipment mode flag check', '非装备模式BIOS设置装备模式flag, 预期设置不成功.')
+    tc = ('902', '[TC902] Equipment mode flag check', '非装备模式BIOS设置装备模式flag, 预期设置不成功.')
     result = ReportGen.LogHeaderResult(tc)
     res = unitool.set_config(BiosCfg.EQUIP_FLAG)
     if res:
@@ -51,7 +51,7 @@ def equip_mode_flag_check(unitool):
 
 # 装备模式BIOS version = 5.xx.
 def equip_mode_version_check():
-    tc = ('903', '装备模式: Equipment mode version check', '装备模式版本号为5.xx.')
+    tc = ('903', '[TC903] 装备模式: Equipment mode version check', '装备模式版本号为5.xx.')
     result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
     mfg_version = ['BIOS Revision\s+5.[0-9]{2}']
     if not SetUpLib.boot_to_bios_config():
@@ -66,7 +66,7 @@ def equip_mode_version_check():
 
 
 def hpm_upgrade_test(unitool, new_branch):
-    tc = ('904', 'HPM升级保持配置不变', "HPM升级BIOS后，原来设置的非默认BIOS设置不变")
+    tc = ('904', '[TC904] HPM升级保持配置不变', "HPM升级BIOS后，原来设置的非默认BIOS设置不变")
     result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
 
     old_branch = icx2pAPI.last_release(new_branch)
@@ -95,7 +95,7 @@ def hpm_upgrade_test(unitool, new_branch):
 
 
 def hpm_downgrade_test(unitool, new_branch):
-    tc = ('905', 'HPM降级保持配置不变', "HPM降级BIOS后，原来设置的非默认BIOS设置不变")
+    tc = ('905', '[TC905] HPM降级保持配置不变', "HPM降级BIOS后，原来设置的非默认BIOS设置不变")
     result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
 
     new_bin_download = Update.get_test_image(SutConfig.LOG_DIR, new_branch, 'debug-build')
@@ -128,7 +128,7 @@ def hpm_downgrade_test(unitool, new_branch):
 # OnStart: NA
 # OnComplete: NA
 def compare_fdm_log(new_branch):
-    tc = ('906', 'Compare FDM Log Size', "Compare FDM Log size with previous BIOS version")
+    tc = ('906', '[TC906] Compare FDM Log Size', "Compare FDM Log size with previous BIOS version")
     result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
 
     old_branch = icx2pAPI.last_release(new_branch)
@@ -182,7 +182,7 @@ def compare_fdm_log(new_branch):
 # OnStart: NA
 # OnComplete: NA
 def check_bmc_warning():
-    tc = ('907', 'iBMC warning info in web', "Check no any warning info")
+    tc = ('907', '[TC907] iBMC warning info in web', "Check no any warning info")
     result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
     cmd = "ipmcget -d healthevents"
     res = SshLib.execute_command(Sut.BMC_SSH, cmd)
@@ -206,7 +206,7 @@ def check_bmc_warning():
 # OnStart: NA
 # OnComplete: NA
 def registry_check(new_branch):
-    tc = ('908', 'Compare registry.json file with previous version', "Compare registry.json file with previous version")
+    tc = ('908', '[TC908] Compare registry.json file with previous version', "Compare registry.json file with previous version")
     result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
 
     old_branch = icx2pAPI.last_release(new_branch)

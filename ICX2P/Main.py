@@ -18,7 +18,7 @@ unitool = Unitool.SshUnitool(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PA
 # Test scope for non-equipment build
 def TestScope():
     biosTest.post_test()
-    biosTest.PM()
+    biosTest.power_cycling()
     biosTest.usbTest()
     CpuInit01.cpu_mem_info()
     biosTest.press_f2()
@@ -118,11 +118,5 @@ def ReleaseTest():
 
 
 def Debug():
-    UpdateBIOS.update_bios('master')
-    CpuInit01.cpu_mem_info()
-    MemInit02.Testcase_MemoryCompa_001()
-    MemInit02.Testcase_MemoryCompa_006(ser, ssh_os)
-    Io05.Testcase_SystemInfo_001(ser)
-    Io05.Testcase_SystemInfo_002(ser)
-    Io05.Testcase_SystemInfo_003(ser)
-    biosTest.Testcase_PowerEfficiency_001(unitool)
+    biosTest.power_cycling()
+

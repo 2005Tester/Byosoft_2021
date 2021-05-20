@@ -14,7 +14,7 @@ from Report import ReportGen
 
 # Testcase_RRQIRQ_001
 def rrqirq():
-    tc = ('101', 'Testcase_RRQIRQ_001', 'Setup菜单RRQ和IRQ选项默认值测试')
+    tc = ('101', '[TC101] Testcase_RRQIRQ_001', 'Setup菜单RRQ和IRQ选项默认值测试')
     result = ReportGen.LogHeaderResult(tc)
     if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED):
         result.log_fail()
