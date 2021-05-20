@@ -2,7 +2,7 @@ from Common import Unitool
 from Core import SutInit
 from Core.SutInit import Sut
 from ICX2P import UpdateBIOS, biosTest, DefaultValueTest, Os, Release, Legacy, CpuInit01, MemInit02, PchInit03, \
-    PcieInit04, Io05, Smbios09, Security22
+    PcieInit04, Io05, Smbios09, Security22, BootDevice06
 from ICX2P.Config import SutConfig
 
 
@@ -61,7 +61,10 @@ def TestScope():
     PcieInit04.Testcase_PCIeResource_008()
     PcieInit04.Testcase_PCIeResource_009()
     biosTest.Testcase_PowerEfficiency_001(unitool)
+    BootDevice06.boot_device_type_001()
+    BootDevice06.boot_order_001()
     if Legacy.enable_legacy_boot():
+        BootDevice06.boot_device_type_002()
         Legacy.disable_legacy_boot()
 
 
