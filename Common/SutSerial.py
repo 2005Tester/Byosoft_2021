@@ -201,7 +201,6 @@ class SutControl:
                     #     print(buffer_list)
                     if data != buffer:
                         f.write(data.decode())
-                        f.write('\n')
                         if not regex:
                             if msg in data.decode():
                                 logging.info("Find string:{0}".format(msg))
@@ -250,7 +249,6 @@ class SutControl:
 
                     if data != buffer:
                         f.write(data.decode())
-                        f.write('\n')
                         for i in msg_list:
                             if i in data.decode():
                                 tmp.append(i)
