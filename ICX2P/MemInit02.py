@@ -9,7 +9,6 @@ from ICX2P.Config.SutConfig import SysCfg
 from ICX2P.Config.PlatConfig import Key, Msg, BiosCfg
 from ICX2P.BaseLib import SetUpLib, PlatMisc, BmcLib
 from Core import SerialLib, SshLib, MiscLib
-from ICX2P import Os
 
 
 # Test case ID: TC700-750
@@ -303,7 +302,7 @@ def Testcase_MemoryCompa_001():
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: SUSE OS
-def Testcase_MemoryCompa_006(serial, ssh_os, n=1):
+def Testcase_MemoryCompa_006(n=1):
     tc = ('710', '[TC710] Testcase_MemoryCompa_006', '06 内存容量一致性测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     res_lst = []
@@ -311,9 +310,9 @@ def Testcase_MemoryCompa_006(serial, ssh_os, n=1):
         try:
             assert SetUpLib.boot_to_page('BIOS Revision'), "boot_to_page -> fail"
             assert SetUpLib.verify_info('Total Memory\s+65536 MB', 20), "dimm_size_verify -> fail"
-            assert Os.boot_to_suse(serial), "boot_to_os -> fail"
+            assert SetUpLib.boot_suse_from_bm(), "boot_to_os -> fail"
             assert MiscLib.ping_sut(SutConfig.OS_IP, 600), "ping_os_ip-> fail"
-            res = SshLib.execute_command(ssh_os, 'dmesg | grep -i e820')
+            res = SshLib.execute_command(Sut.OS_SSH, 'dmesg | grep -i e820')
             for j in res.split('\n'):
                 if 'BIOS-e820' in j and 'ACPI' not in j:
                     for k in j.split(' '):
@@ -340,14 +339,14 @@ def Testcase_MemoryCompa_006(serial, ssh_os, n=1):
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: SUSE OS
-def Testcase_MemRefresh_001(serial, ssh_os):
+def Testcase_MemRefresh_001(ssh_os):
     tc = ('711', '[TC711] Testcase_MemRefresh_001', '01 设置动态内存刷新模式功能测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         assert SetUpLib.boot_to_page(Msg.CPU_CONFIG), "boot_to_page -> fail"
         assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM2X_REFRESH, '<Disabled>'], 10), "locate_option -> fail"
         SetUpLib.send_keys([Key.F5, Key.F10, Key.Y])
-        assert Os.boot_to_suse(serial), "boot_to_os -> fail"
+        assert SetUpLib.boot_suse_from_bm(), "boot_to_os -> fail"
         assert MiscLib.ping_sut(SutConfig.OS_IP, 600), "ping_os_ip-> fail"
         assert PlatMisc.rw_everything(ssh_os, ['005f', '5a55'], ['c99224e0', 'fb9224e0'])
         assert SetUpLib.reset_default()
@@ -361,7 +360,7 @@ def Testcase_MemRefresh_001(serial, ssh_os):
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: SUSE OS
-def Testcase_MemRefresh_002(serial, ssh_os):
+def Testcase_MemRefresh_002(ssh_os):
     tc = ('712', '[TC712] Testcase_MemRefresh_001', '02 设置静态2X内存刷新模式功能测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
@@ -369,7 +368,7 @@ def Testcase_MemRefresh_002(serial, ssh_os):
         assert SetUpLib.enter_menu(Key.DOWN, Msg.MEMORY_CONFIG, 10, Msg.MEM_FRE), "enter_menu -> fail"
         assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM2X_REFRESH, '<Disabled>'], 10), "locate_option -> fail"
         SetUpLib.send_keys([Key.F6 * 3, Key.F10, Key.Y])
-        assert Os.boot_to_suse(serial), "boot_to_os -> fail"
+        assert SetUpLib.boot_suse_from_bm(), "boot_to_os -> fail"
         assert MiscLib.ping_sut(SutConfig.OS_IP, 600), "ping_os_ip-> fail"
         assert PlatMisc.rw_everything(ssh_os, ['005f', '5a55'], ['c99224e0', 'fb9224e0'])
         assert SetUpLib.reset_default()
@@ -408,33 +407,33 @@ def Testcase_MemoryCompa_009(unitool):
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: SUSE OS
-def navegate_to_mem_fre_option(serial, n=1):  # used to set mem freq test
+def navegate_to_mem_fre_option(n=1):  # used to set mem freq test
     assert SetUpLib.boot_to_page(Msg.CPU_CONFIG), "boot_to_page -> fail"
     assert SetUpLib.enter_menu(Key.DOWN, Msg.MEMORY_CONFIG, 10, Msg.MEM_FRE), "enter_menu -> fail"
     assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM_FRE, 'Auto'], 10), "locate_option -> fail"
     SetUpLib.send_keys([Key.F6 * n, Key.F10, Key.Y])
-    assert Os.boot_to_suse(serial), "boot_to_os -> fail"
+    assert SetUpLib.boot_suse_from_bm(), "boot_to_os -> fail"
     assert SetUpLib.reset_default()
 
 
-def Testcase_SetMemFreq_001_006(serial, n=1):
+def Testcase_SetMemFreq_001_006(n=1):
     tc = ('714', '[TC714] Testcase_SetMemFreq_001_006', '01-06 内存频率选项测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         assert SetUpLib.boot_to_page('BIOS Revision'), "boot_to_page -> fail"
         if SetUpLib.verify_info('System Memory Speed\s+2666 MT\/s', 20):
             logging.info('DIMM FRE is 2666 MT/s')
-            assert navegate_to_mem_fre_option(serial), '2666-dimm_2666_mem_freq_test -> fail'
+            assert navegate_to_mem_fre_option(), '2666-dimm_2666_mem_freq_test -> fail'
         elif SetUpLib.verify_info('System Memory Speed\s+2933 MT\/s', 20):
             logging.info('DIMM FRE is 2933 MT/s')
-            assert navegate_to_mem_fre_option(serial), '2933-dimm_2666_mem_freq_test -> fail'
-            assert navegate_to_mem_fre_option(serial, 2), '2933-dimm_2933_mem_freq_test -> fail'
+            assert navegate_to_mem_fre_option(), '2933-dimm_2666_mem_freq_test -> fail'
+            assert navegate_to_mem_fre_option(2), '2933-dimm_2933_mem_freq_test -> fail'
         elif SetUpLib.verify_info('System Memory Speed\s+3200 MT\/s', 20):
             logging.info('DIMM FRE is 3200 MT/s')
             for i in range(n):
-                assert navegate_to_mem_fre_option(serial), '3200-dimm_2666_mem_freq_test -> fail'
-                assert navegate_to_mem_fre_option(serial, 2), '3200-dimm_2933_mem_freq_test -> fail'
-                assert navegate_to_mem_fre_option(serial, 3), '3200-dimm_3200_mem_freq_test -> fail'
+                assert navegate_to_mem_fre_option(), '3200-dimm_2666_mem_freq_test -> fail'
+                assert navegate_to_mem_fre_option(2), '3200-dimm_2933_mem_freq_test -> fail'
+                assert navegate_to_mem_fre_option(3), '3200-dimm_3200_mem_freq_test -> fail'
         else:
             logging.info('Not supported this dimm type')
         result.log_pass()
@@ -468,14 +467,14 @@ def Testcase_MTRR_001(ssh_os):
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: SUSE OS
-def Testcase_MTRR_002(serial, ssh_os):
+def Testcase_MTRR_002(ssh_os):
     tc = ('716', '[TC716] Testcase_MTRR_002', '02 MTRR Fixed ranges测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     flag = []
     try:
         assert BmcLib.force_reset(), 'reset_system -> fail'
         assert not SetUpLib.wait_message('0xa0300', 60), 'find 0xa0300 string'
-        assert Os.boot_to_suse(serial), "boot_to_os -> fail"
+        assert SetUpLib.boot_suse_from_bm(), "boot_to_os -> fail"
         res = SshLib.execute_command(ssh_os, 'dmesg | grep MTRR')
         assert res
         if 'MTRR fixed ranges enabled' in res:
@@ -484,7 +483,7 @@ def Testcase_MTRR_002(serial, ssh_os):
             logging.info('MTRR fixed ranges not enabled')
             status = 1
             flag.append(status)
-        res_1 = SshLib.execute_command(ssh_os, 'dmesg | grep A0000')
+        res_1 = SshLib.execute_command(Sut.OS_SSH, 'dmesg | grep A0000')
         if 'A0000-FFFFF uncachable' in res_1:
             logging.info('MTRR fixed ranges enabled')
         else:

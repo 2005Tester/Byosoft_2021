@@ -18,7 +18,7 @@ from ICX2P.BaseLib import SetUpLib, BmcLib
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: OS (BIOS boot completed)
-def Testcase_SystemInfo_001(serial):
+def Testcase_SystemInfo_001():
     tc = ('800', '[TC800] Testcase_SystemInfo_003', '01 【UEFI模式】POST启动第一屏显示信息测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     check_list = [Msg.RC_VERSION, Msg.BIOS_REVISION, Msg.BIOS_DATE, Msg.iBMC_VERSION, Msg.iBMC_IP, Msg.CPU_TYPE,
@@ -27,8 +27,8 @@ def Testcase_SystemInfo_001(serial):
     try:
         assert BmcLib.force_reset(), 'force_reset -> fail'
         # bug: if check_list does not exist by designed, will effect verification of the check_list_msg
-        assert serial.waitStrings(check_list, timeout=120), 'info_verify -> fail'
-        assert serial.waitStrings(check_list_msg, timeout=120), 'hotkey_info_verify -> fail'
+        assert SetUpLib.wait_strings(check_list, timeout=120), 'info_verify -> fail'
+        assert SetUpLib.wait_strings(check_list_msg, timeout=120), 'hotkey_info_verify -> fail'
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
@@ -38,7 +38,7 @@ def Testcase_SystemInfo_001(serial):
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: OS (BIOS boot completed)
-def Testcase_SystemInfo_002(serial):
+def Testcase_SystemInfo_002():
     tc = ('801', '[TC801] Testcase_SystemInfo_003', '02 【Legacy模式】POST启动第一屏显示信息测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     check_list = [Msg.RC_VERSION, Msg.BIOS_REVISION, Msg.BIOS_DATE, Msg.iBMC_VERSION, Msg.iBMC_IP, Msg.CPU_TYPE,
@@ -47,8 +47,8 @@ def Testcase_SystemInfo_002(serial):
     try:
         assert SetUpLib.enable_legacy_boot(), 'enable_legacy_mode -> fail'
         # bug: if check_list does not exist by designed, will effect verification of the check_list_msg
-        assert serial.waitStrings(check_list, timeout=120), 'info_verify -> fail'
-        assert serial.waitStrings(check_list_msg, timeout=120), 'hotkey_info_verify -> fail'
+        assert SetUpLib.wait_strings(check_list, timeout=120), 'info_verify -> fail'
+        assert SetUpLib.wait_strings(check_list_msg, timeout=120), 'hotkey_info_verify -> fail'
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
@@ -58,17 +58,17 @@ def Testcase_SystemInfo_002(serial):
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: SP SETUP
-def Testcase_SystemInfo_003(serial):
+def Testcase_SystemInfo_003():
     tc = ('802', '[TC802] Testcase_SystemInfo_003', '03 按热键后屏幕底部显示提示信息测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         assert BmcLib.force_reset(), 'force_reset -> fail'
         assert SetUpLib.boot_with_hotkey(Key.DEL, Msg.HOTKEY_PROMPT_DEL, 300)
-        SerialLib.send_key(serial, Key.CTRL_ALT_DELETE)
+        SetUpLib.send_keys(Key.CTRL_ALT_DELETE)
         assert SetUpLib.boot_to_bootmanager()
-        SerialLib.send_key(serial, Key.CTRL_ALT_DELETE)
+        SetUpLib.send_keys(Key.CTRL_ALT_DELETE)
         assert SetUpLib.boot_with_hotkey(Key.F12, Msg.HOTKEY_PROMPT_F12, 300)
-        SerialLib.send_key(serial, Key.CTRL_ALT_DELETE)
+        SetUpLib.send_keys(Key.CTRL_ALT_DELETE)
         assert SetUpLib.boot_with_hotkey(Key.F6, Msg.HOTKEY_PROMPT_F6, 300)
         assert SetUpLib.disable_legacy_boot(), 'test_pass_switch_to_uefi_mode -> fail'
         result.log_pass()

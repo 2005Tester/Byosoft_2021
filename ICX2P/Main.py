@@ -83,7 +83,7 @@ class ReleaseBasic:
     def normal_scope(self):  # Non-Equip BIOS Test Scope
         if UpdateBIOS.update_bios(self.branch):
             biosTest.post_test()
-            biosTest.PM()
+            biosTest.power_cycling()
             Release.check_bmc_warning()
             Release.me_version_status()
             biosTest.pxeTest()
@@ -124,8 +124,8 @@ def Debug():
     UpdateBIOS.update_bios('master')
     CpuInit01.cpu_mem_info()
     MemInit02.Testcase_MemoryCompa_001()
-    MemInit02.Testcase_MemoryCompa_006(ser, ssh_os)
-    Io05.Testcase_SystemInfo_001(ser)
-    Io05.Testcase_SystemInfo_002(ser)
-    Io05.Testcase_SystemInfo_003(ser)
+    MemInit02.Testcase_MemoryCompa_006(ssh_os)
+    Io05.Testcase_SystemInfo_001()
+    Io05.Testcase_SystemInfo_002()
+    Io05.Testcase_SystemInfo_003()
     biosTest.Testcase_PowerEfficiency_001(unitool)
