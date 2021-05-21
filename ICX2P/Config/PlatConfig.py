@@ -116,11 +116,11 @@ class Msg:
 
     # Firmware version info
     ME_VERSION = '0F:4.4.4.56'
-    RC_VERSION = 'RC Version : 0.2.2.002D'
-    BIOS_REVISION = 'BIOS Revision : 0.10'
-    BIOS_DATE = 'BIOS Date : 04/15/2021'
-    iBMC_VERSION = 'iBMC Version : 3.01.15.01'
-    iBMC_IP = 'iBMC IP : 192.168.2.101'
+    RC_VERSION = 'RC Version : 0.2.2.0030'
+    BIOS_REVISION = 'BIOS Revision : 5.11'
+    BIOS_DATE = 'BIOS Date : 05/11/2021'
+    iBMC_VERSION = 'iBMC Version : 3.01.15.03'
+    iBMC_IP = 'iBMC IP : 192.168.2.102'
     CPU_TYPE = 'CPU type : Ice Lake'
     TOTAL_MEMORY = 'Total Memory : 65536MB'
 
