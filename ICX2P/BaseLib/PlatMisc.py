@@ -17,7 +17,7 @@ from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Msg
 from ICX2P.BaseLib import BmcLib, SetUpLib
 from Core.SutInit import Sut
-from Core import SerialLib
+from Core import SerialLib, SshLib
 
 
 # OS - capture time,
@@ -35,7 +35,7 @@ def osTime(ssh):
 
 
 # used for rw test
-def rw_everything(ssh, exp_res, mem_bar, cmd='mmr', str=' ', start=1, stop=3):
+def rw_everything(ssh, exp_res, mem_bar=None, cmd='mmr', str=' ', start=1, stop=3):
     """
     :str is split flag, default is ' ' - blank
     :start from list, default is 1
@@ -44,20 +44,26 @@ def rw_everything(ssh, exp_res, mem_bar, cmd='mmr', str=' ', start=1, stop=3):
     :param mem_bar should be printed in full debug message, e.g mem0_bar and mem1_bar address - list
     :param cmd is a parameter supported by rw tool, e.g mmr
     """
-    time.sleep(5)
+    if mem_bar is None:
+        mem_bar = []
+
     org_list = []
-    if ssh.login():
-        logging.info('Start to rw the address...')
-        for i in mem_bar:
-            res = ssh.execute_command(r'cd {0};./rw {1} {2} | grep {2}'.format(SutConfig.RW_PATH, cmd, i, i))
-            logging.debug(res)
+    logging.info('Starting to rw the address...')
+    for i in range(len(mem_bar)):
+        res = SshLib.execute_command(ssh, r'cd {0};./rw {1} {2} | grep {2}'.format(SutConfig.RW_PATH, cmd, mem_bar[i]))
+        logging.debug(res)
+        if len(res) == 0:
+            logging.info('RW tool can not be found')
+            break
+        else:
             for j in res.split(str)[start:stop]:
                 org_list.append(j)
-        time.sleep(1)
-    logging.debug(list(set(org_list)))
-    if exp_res != list(set(org_list)):
+
+    time.sleep(0.1)
+    logging.debug(org_list)
+    if exp_res != org_list:
         logging.info('Register verified - fail')
-        return False
+        return
     logging.info('Register verified - pass')
     return True
 
