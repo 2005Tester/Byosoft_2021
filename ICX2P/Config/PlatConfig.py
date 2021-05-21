@@ -115,7 +115,7 @@ class Msg:
     SUSE_GRUB = 'Welcome to GRUB'
 
     # Firmware version info
-    ME_VERSION = '0F:4.4.4.53'
+    ME_VERSION = '0F:4.4.4.56'
     RC_VERSION = 'RC Version : 0.2.2.002D'
     BIOS_REVISION = 'BIOS Revision : 0.10'
     BIOS_DATE = 'BIOS Date : 04/15/2021'
