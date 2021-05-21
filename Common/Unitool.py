@@ -115,21 +115,21 @@ class SshUnitool(SshConnection):
             cprint("OS shell can't be opened", self.loginfo)
             return
         self.install_driver()
-        result = True
+        fail_cnt = 0
         for key, value in kwargs.items():
             send_write = self.exec_cmds(["./unitool -w {}:{}\n".format(key, value)], ["success!"])
             if send_write:
                 try:
                     if not send_write[0][1]:
                         cprint("-- [Set] {}={} fail".format(key, value), self.loginfo)
-                        result = result & False
+                        fail_cnt += 1
                         continue
                     cprint("-- [Set] {}={}".format(key, value), self.loginfo)
-                    result = result & True
+                    fail_cnt += 1
                 except:
-                    result = False
+                    fail_cnt += 1
         self.close_shell()
-        return result
+        return fail_cnt == 0
 
     # 传入参数示例: *["AttributeName1", "AttributeName2"] 或者 "AttributeName1", "AttributeName2"
     # 返回当前值的字典: {"AttributeName1"：Value1, "AttributeName2"：Value2}
@@ -159,14 +159,14 @@ class SshUnitool(SshConnection):
     # 传入参数示例: **{"AttributeName1"：Value1, "AttributeName2"：Value2} 或者 AttributeName1=Value1,AttributeName2=Value2
     # 读到的值符合预期: 全部符合预期返回True; 任意一个不符合预期: 返回False
     def check(self, **kwargs):
-        result = True
+        fail_cnt = 0
         for key, value in kwargs.items():
             get_data = self.read(key)[key]
-            result = (result & True) if (str(get_data) == str(value)) else (result & False)
-        result_flag = "Match" if result else "Mismatch"
+            fail_cnt = fail_cnt+1 if (str(get_data) != str(value)) else fail_cnt
+        result_flag = "Match" if fail_cnt else "Mismatch"
         cprint('-- [Check] Config {}'.format(result_flag), self.loginfo)
         self.close_shell()
-        return result
+        return fail_cnt == 0
 
     # 先检查选项是否符合，不符合则修改选项，注意：重启后设置才能生效
     def set_config(self, cfg_dict):

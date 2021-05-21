@@ -96,7 +96,6 @@ class Redfish(object):
         PatchStatus.status = patch.status
         PatchStatus.body = "".join(msg)
         PatchStatus.result = result
-
         return PatchStatus
 
     # 检查选项key的值是否为value,同时更新self.current
@@ -106,13 +105,13 @@ class Redfish(object):
         Output: True / False
         """
         data = self.session.get(self.CURRENT_PATH)
-        result = True
+        fail_cnt = 0
         if data.status == 200:
             self.current = data.dict.get("Attributes")
             for key, value in kwargs.items():
                 if self.current.get(key) != value:
-                    result = result & False
-            return result
+                    fail_cnt += 1
+            return fail_cnt == 0
 
     # 通过POST请求恢复默认
     def load_default(self):

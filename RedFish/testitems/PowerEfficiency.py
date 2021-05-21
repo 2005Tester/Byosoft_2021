@@ -10,7 +10,7 @@ sys.path.append(os.path.abspath(r"../../"))
 from Common.ssh import SshConnection
 from RedFish import config
 from Common.RedfishLib import Redfish
-from RedFish.commlibs.commtools import reboot_to_setup
+from RedFish.commlibs.commtools import reboot_sut
 
 
 """
@@ -61,7 +61,7 @@ def app_test(bmc, serial):
         logging.info('{} = {} PATCH Pass!'.format(app_name, repr(ap)))
 
         # 重启后确认能效菜单是否为预期，并保存一份json文件
-        reboot_to_setup(bmc, serial)
+        reboot_sut(bmc, serial)
         if not rfish.check(**{app_name: ap}):
             logging.info('Current AppValue is "{}"'.format(rfish.read(app_name)))
             logging.info('Redfish Check: {} = {}  Fail'.format(app_name, repr(ap)))

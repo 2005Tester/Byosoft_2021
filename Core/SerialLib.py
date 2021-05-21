@@ -50,6 +50,11 @@ def read_buffer(serial):
     return serial.data
 
 
+# Clean serial output buffer
+def clean_buffer(serial):
+    serial.data = ""
+
+
 # capture the section of serial log from start_str to end_str
 def cut_log(serial, start_str, end_str, duration=20, timeout=120, step=30):
     logging.info(f"Capture serial output from: '{start_str}' to '{end_str}'")

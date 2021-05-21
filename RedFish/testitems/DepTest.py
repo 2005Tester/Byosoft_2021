@@ -14,7 +14,7 @@ import re
 import pandas as pd
 
 from copy import deepcopy
-from RedFish.commlibs.commtools import to_excel, reboot_to_setup
+from RedFish.commlibs.commtools import to_excel, reboot_sut
 from Common.RedfishLib import Redfish
 from RedFish.config import bmc_ip, bmc_user, bmc_pw
 
@@ -240,13 +240,13 @@ class DepenTest(Redfish):
                 continue
             # Hidden/ReadOnly map_key can't be changed
             patch_try = self.patch_radom(map_key)
-            if patch_try["result"] is None:
+            if patch_try.result is None:
                 continue
             if (map_property == "Hidden" or map_property == "ReadOnly") and map_value:
-                if patch_try["result"]:
+                if patch_try.result:
                     result = result & False  # Hidden/ReadOnly should patch fail
                     logging.info(rf"[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <fail>")
-                    logging.info(rf"Status: {patch_try['status']}")
+                    logging.info(rf"Status: {patch_try.status}")
                     continue
                 logging.info(rf"[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <pass>")
                 continue
@@ -254,25 +254,25 @@ class DepenTest(Redfish):
             if self.mapto_link.get(map_key):
                 for kmf, vmf in mf_info.items():
                     if vmf in self.mapto_link[map_key].get(kmf):
-                        if patch_try["result"]:
+                        if patch_try.result:
                             result = result & False
                             logging.info(rf"[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <fail>")
-                            logging.info(rf"Message: {patch_try['body']}")
+                            logging.info(rf"Message: {patch_try.body}")
                             continue
                         logging.info(rf"[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <pass>")
                     else:
-                        if not patch_try["result"]:
+                        if not patch_try.result:
                             result = result & False
                             logging.info(rf"[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <fail>")
-                            logging.info(rf"Message: {patch_try['body']}")
+                            logging.info(rf"Message: {patch_try.body}")
                             continue
                         logging.info(rf"[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <pass>")
                 continue
             # Others Patch pass
-            if not patch_try["result"]:
+            if not patch_try.result:
                 result = result & False
                 logging.info(rf"[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <fail>")
-                logging.info(rf"Message: {patch_try['body']}")
+                logging.info(rf"Message: {patch_try.body}")
                 continue
             logging.info(rf"[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <pass>")
         return result
@@ -335,7 +335,7 @@ class DepenTest(Redfish):
 
                 # Load Default and Reboot
                 self.load_default()
-                if not reboot_to_setup(ssh_bmc=self.ssh, serial=self.serial):
+                if not reboot_sut(ssh_bmc=self.ssh, serial=self.serial):
                     logging.info("Boot up failed")
                     continue
                 logging.info("Boot up successfully")
@@ -352,29 +352,29 @@ class DepenTest(Redfish):
                     key_value = self.gen_data_w_top(mf_item)
                     self.map_from_pd.loc[row, "PATCH"] = json.dumps(key_value, indent=4)
                     patch_result = self.write(**key_value)
-                    if not patch_result["result"]:
+                    if not patch_result.result:
                         logging.info(r"[PATCH] {} <fail>".format(key_value))
-                        logging.info(f"Status: {patch_result['status']}")
-                        logging.info(rf"Message: {patch_result['body']}")
+                        logging.info(f"Status: {patch_result.status}")
+                        logging.info(rf"Message: {patch_result.body}")
                         self.map_from_pd.loc[row, "PatchStatus"] = "fail"
                         continue
                     logging.info(r"[PATCH] {} <pass>".format(key_value))
-                    logging.info(rf"Status: {patch_result['status']}")
+                    logging.info(rf"Status: {patch_result.status}")
                     self.map_from_pd.loc[row, "PatchStatus"] = "pass"
                 else:
                     # Normal PATCH
                     self.map_from_pd.loc[row, "PATCH"] = json.dumps(key_value, indent=4)
                     patch_result = self.write(**key_value)
-                    if not patch_result["result"]:
+                    if not patch_result.result:
                         logging.info(r"[PATCH] {} <fail>".format(key_value))
-                        logging.info(rf"Error Message: {patch_result['body']}")
+                        logging.info(rf"Error Message: {patch_result.body}")
                         self.map_from_pd.loc[row, "PatchStatus"] = "fail"
                         continue
                     logging.info(r"[PATCH] {} <pass>".format(key_value))
                     self.map_from_pd.loc[row, "PatchStatus"] = "pass"
 
                 # REBOOT
-                if not reboot_to_setup(ssh_bmc=self.ssh, serial=self.serial):
+                if not reboot_sut(ssh_bmc=self.ssh, serial=self.serial):
                     logging.info("Boot up failed")
                     continue
                 logging.info("Boot up successfully")
@@ -398,7 +398,7 @@ class DepenTest(Redfish):
                 # Force to UEFI if 'BootType' is set to 'LegacyBoot' (this attribute can't be load default with post)
                 if ('BootType', 'LegacyBoot') in key_value.items():
                     assert self.write(BootType='UEFIBoot').result
-                    assert reboot_to_setup(self.ssh, self.serial)
+                    assert reboot_sut(self.ssh, self.serial)
 
             except Exception as e:
                 logging.info(e)

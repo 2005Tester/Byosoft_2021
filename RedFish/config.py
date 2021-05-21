@@ -10,10 +10,10 @@ import os
 import datetime
 
 # SSH Configuration
-bmc_ip = '192.168.2.100'
+bmc_ip = '192.168.2.102'
 port = '22'
 bmc_user = 'Administrator'
-bmc_pw = 'Admin@9000'
+bmc_pw = 'Admin@9001'
 
 COM = "COM7"
 
@@ -21,19 +21,6 @@ os_ip = '192.168.2.150'
 os_user = "root"
 os_pw = "root"
 os_timeout = 1200
-unitool_path = "/root/flashtool/unitool"
-
-AppExcel = r".\baseline\PowerEfficiency_Baseline.xls"
-
-REPORT_DIR = r".\report"
-
-EXELUDE_TEST = ['serialDebugMsgLvl', 'PowerOnPassword', 'MemChannelEnable[1]', 'MemChannelEnable[6]', 'PchUsbHsPort[8]']
-#EXELUDE_TEST = ['MemChannelEnable[1]']
-BIOS = r"C:\Binary\2288V6\5148.bin"
-BIOS_CODE = "D:\\Code\\HY5\\Intel\\WhitleyRpPkg001"
-REGISTRY_FILE = ".\\baseline\\registry.json"
-HIDDEN_LIST = ".\\baseline\\hidden.txt"
-CURR_SET_JSON = ".\\baseline\\currentvalue.json"
 
 # request settings to communicate with BMC
 GET_URL = "https://{}/redfish/v1/Systems/1/Bios/".format(bmc_ip)
@@ -46,23 +33,38 @@ headers = {
     'Content-Type': 'application/json'
     }
 
+unitool_path = "/root/flashtool/unitool"
+AppExcel = r".\baseline\PowerEfficiency_Baseline.xls"
 
 # log setting
 timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-TEST_RESULT_DIR = "C:\\redfishtest\\log"
+TEST_RESULT_DIR = "C:\\redfishtest\\{}".format(timestamp)
 if not os.path.exists(TEST_RESULT_DIR):
     os.makedirs(TEST_RESULT_DIR)
-LOG_FILE = "C:\\redfishtest\\redfishtest_%s.log" % (timestamp)
-SERIAL_LOG = "C:\\redfishtest\\log\\serial.log"
+LOG_FILE = "{}\\redfishtest.log".format(TEST_RESULT_DIR)
+SERIAL_LOG = "{}\\serial.log".format(TEST_RESULT_DIR)
+REPORT_DIR = "{}\\report".format(TEST_RESULT_DIR)
 INIT_STATUS = {"Completed": [], "Passed": [], "Error": [], "Failed": []}
+
+BIOS = r"C:\Binary\2288V6\5148.bin"
+BIOS_CODE = "D:\\Code\\HY5\\Intel\\WhitleyRpPkg001"
+REGISTRY_FILE = ".\\baseline\\registry.json"
+HIDDEN_LIST = ".\\baseline\\hidden.txt"
+CURR_SET_JSON = ".\\baseline\\currentvalue.json"
 
 help_msg = """
 Usage: 
 python redfish.py [xxx.json] --Patch and verify all the setup options defined in xxx.json
 python redfish.py [directoryname] --Find all the json files in specified directory, and run all the tests in those json files
 python redfish.py [checkregistry] --check whether registry.json and setup baseline is aligned
+python redfish.py [nondep]  -- 非联动菜单 测试
+python redfish.py [dep]  -- 联动菜单 测试
+python redfish.py [all]  -- 非联动菜单+联动菜单 测试
+python redfish.py [power]  --Redfish修改能效模式 测试
 python redfish.py [init]     --cleanup teststatus
 """
+
+EXELUDE_TEST = ['serialDebugMsgLvl', 'PowerOnPassword', 'MemChannelEnable[1]', 'MemChannelEnable[6]', 'PchUsbHsPort[8]']
 
 # list of options that is dependent by oters
 INCLUDE_LIST = {
@@ -80,11 +82,16 @@ INCLUDE_LIST = {
     "PwrPerfTuning":"BIOS Controls EPB"
 }
 
-DEP_EXCLUDE_LIST = [
 
-]
+class BootInvolved:
+    BootTime = ["serialDebugMsgLvl"]
+    Exclusive = ["BootTypeOrder0", "BootTypeOrder1", "BootTypeOrder2", "BootTypeOrder3"]
+    MemPop = ["MemChannelEnable[0]"]
+    BootOS = ["PciePortDisable[7]", "BootType"]
+    ReadOnly = ["OemSecureBoot"]
 
-class RfishPrompt:
-    wrong_value = "The value Enable for the property Attributes/{} is not in the list of acceptable values"
-    hidden_error = "The property Attributes/{} cannot be modified because the value for the property Attributes/{} is {Disabled}"
+
+class PatchPrompt:
+    wrong_value = "The value {} for the property Attributes/{} is not in the list of acceptable values"
+    hidden_error = "The property Attributes/{} cannot be modified because the value for the property Attributes/{} is {}"
 

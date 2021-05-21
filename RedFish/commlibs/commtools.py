@@ -4,6 +4,7 @@ import time
 import logging
 import subprocess
 import pandas
+from Core import SerialLib
 import RedFish.config as config
 
 
@@ -39,7 +40,7 @@ def reboot_to_os(ssh_bmc, timeout=600):
     return True if ping_sut(timeout=timeout) else False
 
 
-def reboot_to_setup(ssh_bmc, serial, msg="BIOS boot completed", timeout=300):
+def reboot_sut(ssh_bmc, serial, msg="BIOS boot completed", timeout=config.os_timeout):
     cmd_off = 'ipmcset -d powerstate -v 2\n'
     cmd_on = 'ipmcset -d powerstate -v 1\n'
     ret_ensure = 'Do you want to continue'
@@ -52,9 +53,10 @@ def reboot_to_setup(ssh_bmc, serial, msg="BIOS boot completed", timeout=300):
     if not ssh_bmc.interaction([cmd_off, cmd_confirm, cmd_on, cmd_confirm], [ret_ensure, ret_confirm, ret_ensure, ret_confirm]):
         logging.info("Reboot SUT Failed")
         return
-    logging.info("Reboot SUT successful, wait sut boot to setup...")
+    logging.info("Reboot SUT successful, wait sut boot completed...")
     ssh_bmc.close_session()
-    if serial.waitString(msg=msg, timeout=timeout):
+    if SerialLib.is_msg_present(serial, msg=msg, delay=timeout):
+        SerialLib.clean_buffer(serial)
         return True
 
 

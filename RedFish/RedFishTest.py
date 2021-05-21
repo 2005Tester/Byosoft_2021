@@ -24,10 +24,13 @@ from Common import LogConfig
 import logging.config
 from Common import ssh
 from Common.SutSerial import SutControl
-from RedFish.commlibs.commtools import reboot_to_setup
-from RedFish.testitems.depen_test import DepenTest
-from RedFish.testitems.power_efficiency import app_test
+from RedFish.commlibs.commtools import reboot_sut
+from RedFish.testitems.DepTest import DepenTest
+from RedFish.testitems.NonDepTest import NonDepTest
+from RedFish.testitems.PowerEfficiency import app_test
+from Core import var
 
+var.set("serial_log", os.path.join(config.SERIAL_LOG))
 
 requests.packages.urllib3.disable_warnings()
 bmc = ssh.SshConnection(config.bmc_ip, config.bmc_user, config.bmc_pw)
@@ -39,7 +42,7 @@ def load_test_status(testcase_file):
     if not os.path.exists(status_file):
         with open(status_file, 'w') as f:
             json.dump(config.INIT_STATUS, f, indent=1)
-        
+
     with open(status_file, 'r') as f:
         status = json.load(f)
     logging.info("Load test status from %s" % status_file)
@@ -47,7 +50,7 @@ def load_test_status(testcase_file):
     logging.info("Error: " + str(len(status["Error"])))
     logging.info("Passed: " + str(len(status["Passed"])))
     logging.info("Failed: " + str(len(status["Failed"])))
-    logging.info("-"*60)
+    logging.info("-" * 60)
     return status
 
 
@@ -58,10 +61,10 @@ def update_test_status(test_status, status_file):
 
 # 遍历所有选项支持的值, set但是不重启, 看有没有patch不成功的
 def registry_file_value_test():
-    logging.info("-"*60)
+    logging.info("-" * 60)
     logging.info("Testing all supported values for all options")
     errors = []
-    #payloads = testcase.gen_payload_list() # go through all values
+    # payloads = testcase.gen_payload_list() # go through all values
     payloads = testcase.gen_payload_list_random_value()  # randown value for each option
     dep_for = testcase.get_varnames_dep()[1]
     hidden_options = testcase.get_hidden_options()
@@ -78,11 +81,11 @@ def registry_file_value_test():
             res = json.loads(res)
             if 'error' in res:
                 errors.append(payload)
-                logging.info("_"*60)
+                logging.info("_" * 60)
                 # logging.info(payload)
-                logging.info('%s depends on: %s' % (key,testcase.get_dep_info(key)))
+                logging.info('%s depends on: %s' % (key, testcase.get_dep_info(key)))
                 logging.error(testcase.get_error_details(res))
-                logging.info("_"*60)
+                logging.info("_" * 60)
     logging.info("Errors: %d" % len(errors))
 
 
@@ -90,7 +93,7 @@ def gen_dep_tc():
     output_dir = os.path.join(config.TEST_RESULT_DIR, 'dep')
     if not os.path.isdir(output_dir):
         os.makedirs(output_dir)
-    logging.info("-"*60)
+    logging.info("-" * 60)
     logging.info("Generateing dependency test cases...")
     dependency_options = {}
     multi_dep = []
@@ -116,8 +119,8 @@ def gen_dep_tc():
         for opt in dependency_options[key]:
             if (opt in dependency_options) and (opt not in multi_dep):
                 multi_dep.append(opt)
-    
-    # 生成有依赖关系的test case, 导出到tc_dependency.json    
+
+    # 生成有依赖关系的test case, 导出到tc_dependency.json
     for key in dependency_options:
         tc_dep = dict()
         tc_dep["Attributes"] = {}
@@ -128,7 +131,7 @@ def gen_dep_tc():
             with open(file_name, 'w') as f:
                 json.dump(tc_dep, f, indent=1)
     logging.info(multi_dep)
-    logging.info("-"*60)
+    logging.info("-" * 60)
 
 
 def gen_testcase():
@@ -164,7 +167,7 @@ def compare(testcase_file, result):
             print(key + " : Pass")
             print(testcase.get_setup_path(key))
             passed.append(key)
-    print('-'*60)
+    print('-' * 60)
     print("Passed Setup options: %d" % (len(passed)))
     print("Failed Setup options: %d" % (len(failures)))
     print(failures)
@@ -179,7 +182,7 @@ def compare_one(payload, result):
         else:
             logging.info(key + " : Pass")
             tc_result = "Passed"
-    logging.info('-'*60)
+    logging.info('-' * 60)
     return tc_result
 
 
@@ -196,7 +199,7 @@ def run_test(test_case_file):
     else:
         print("Patch Successfully")
 
-        reboot_to_setup(bmc, ser)
+        reboot_sut(bmc, ser)
         result = RedFishTools.get(config.GET_URL)
         result = json.loads(result)
         compare(test_case_file, result)
@@ -208,7 +211,7 @@ def run_test_one_by_one(payload):
         test_item = json.loads(payload)
     except json.decoder.JSONDecodeError:
         logging.error("Payload decode error")
-        logging.error("-"*60)
+        logging.error("-" * 60)
         tc_result = "Error"
         return tc_result
     
@@ -218,7 +221,7 @@ def run_test_one_by_one(payload):
             logging.info("Path: " + testcase.get_setup_path(key))
     except Exception as e:
         logging.error(e)
-        logging.error("-"*60)
+        logging.error("-" * 60)
         tc_result = "Error"
         return tc_result
 
@@ -228,11 +231,11 @@ def run_test_one_by_one(payload):
         # logging.info(res['error'])
         logging.error(testcase.get_error_details(res))
         tc_result = "Error"
-        logging.info('-'*60)
+        logging.info('-' * 60)
     else:
         logging.info("Patch Successfully")
         logging.info("Rebooting sut...")
-        reboot_to_setup(bmc, ser)
+        reboot_sut(bmc, ser)
         try:
             result = json.loads(RedFishTools.get(config.GET_URL))
             tc_result = compare_one(payload, result)
@@ -244,13 +247,13 @@ def run_test_one_by_one(payload):
 
 def auto_test(testcase_file):
     tc_executed = 0
-    logging.info("*"*60)
+    logging.info("*" * 60)
     logging.info("Start test with %s" % testcase_file)
-    logging.info("*"*60)
+    logging.info("*" * 60)
     test_status = load_test_status(testcase_file)
 
     payloads = testcase.load(testcase_file)
- 
+
     for key in payloads:
         if (key not in test_status["Completed"]) and (key not in config.EXELUDE_TEST):
             if isinstance(payloads[key], int):
@@ -268,7 +271,7 @@ def auto_test(testcase_file):
                 test_status["Failed"].append(key)
             update_test_status(test_status, (testcase_file + '.status'))
             tc_executed += 1
-            reboot_to_setup(bmc, ser, timeout=config.os_timeout)
+            reboot_sut(bmc, ser, timeout=config.os_timeout)
     if tc_executed == 0:
         logging.info("Test for %s is already done." % testcase_file)
         return True
@@ -281,7 +284,7 @@ def auto_test_dir(tc_dir):
             try:
                 iscomplete = auto_test(os.path.join(tc_dir, tc_file))
                 logging.info("Test completed for %s" % tc_file)
-                logging.info("#"*60)
+                logging.info("#" * 60)
             except Exception as e:
                 logging.info(e)
                 iscomplete = True
@@ -312,7 +315,7 @@ def test_menu_path():
             for menu in categories:
                 result[key].append(menu)
         # if key in hidden_list:
-            # print(key)
+        # print(key)
     result_file = os.path.join(config.TEST_RESULT_DIR, "menupath_result.json")
     with open(result_file, "w") as f:
         json.dump(result, f, indent=1)
@@ -380,7 +383,7 @@ if __name__ == "__main__":
 
         elif argv[1] == "gendeptc":
             logging.info("generating dependency test case")
-            gen_dep_tc()   # 把最新dump的registry.json放入baseline目录, 运行会生成tc_dep 前缀的json文件和dep_overview.json.
+            gen_dep_tc()  # 把最新dump的registry.json放入baseline目录, 运行会生成tc_dep 前缀的json文件和dep_overview.json.
 
         elif argv[1] == "genalltc":
             logging.info("generating test case with all the supported setup options.")
@@ -398,10 +401,25 @@ if __name__ == "__main__":
             test_registry_file(".\\RedFish\\baseline\\baseline_830.txt")
 
         # 联动菜单测试
-        elif argv[1] == "depmain":
-            logging.info("Testing dependency main option")
-            test = DepenTest(bmc, ser)
-            test.run_test()
+        elif argv[1] == "dep":
+            logging.info("Start dependency option test")
+            deptest = DepenTest(bmc, ser)
+            deptest.run_test()
+
+        #非联动菜单测试
+        elif argv[1] == "nondep":
+            logging.info("Start non dependency option test")
+            deptest = NonDepTest(bmc, ser)
+            deptest.run_test()
+
+        #联动 + 非联动 菜单测试
+        elif argv[1] == "all":
+            logging.info("Start dependency option test")
+            dep_test = DepenTest(bmc, ser)
+            dep_test.run_test()
+            logging.info("Start non dependency option test")
+            nondep_test = NonDepTest(bmc, ser)
+            nondep_test.run_test()
 
         # 能效菜单测试
         elif argv[1] == "power":
