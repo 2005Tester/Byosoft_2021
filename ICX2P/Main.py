@@ -121,5 +121,11 @@ def ReleaseTest():
 
 
 def Debug():
-    biosTest.power_cycling()
-
+    UpdateBIOS.update_bios('master')
+    CpuInit01.cpu_mem_info()
+    MemInit02.Testcase_MemoryCompa_001()
+    MemInit02.Testcase_MemoryCompa_006(ser, ssh_os)
+    Io05.Testcase_SystemInfo_001(ser)
+    Io05.Testcase_SystemInfo_002(ser)
+    Io05.Testcase_SystemInfo_003(ser)
+    biosTest.Testcase_PowerEfficiency_001(unitool)
