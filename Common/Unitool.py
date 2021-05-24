@@ -125,7 +125,6 @@ class SshUnitool(SshConnection):
                         fail_cnt += 1
                         continue
                     cprint("-- [Set] {}={}".format(key, value), self.loginfo)
-                    fail_cnt += 1
                 except:
                     fail_cnt += 1
         self.close_shell()
