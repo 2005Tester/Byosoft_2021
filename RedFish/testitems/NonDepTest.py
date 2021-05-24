@@ -44,7 +44,7 @@ class NonDepTest(Redfish):
             values.remove(default_value)
             return int(choice(values))
 
-    def non_default_key_value(self):
+    def gen_patch_key_value(self):
         self.patch_key_value = {}
         for att in self.att_pd.index:
             value = self.get_non_default_value(att)
@@ -127,6 +127,8 @@ class NonDepTest(Redfish):
         all_keys = list(self.test_fail_key_value.keys())
         for index in range(len(all_keys)//10+1):
             logging.info("================================================")
+            self.load_default()
+            reboot_sut(self.bmc, self.ser)
             test_keys = all_keys[0:10] if len(all_keys)>10 else all_keys
             test_kv = {k: self.test_fail_key_value[k] for k in test_keys}
             patch = self.write(**test_kv)
@@ -156,38 +158,58 @@ class NonDepTest(Redfish):
             boot_order_values.remove(choose_value)
         return order_key_value
 
-    def patch_excluded_items(self):
-        logging.info(f"{len(self.been_mapto)} items excluded, try test one by one...")
+    def exclude_items_key_value(self):
+        exclude_kv = {}
+        for boot_os in config.BootInvolved.BootOS:
+            exclude_kv[boot_os] = self.get_non_default_value(boot_os)
+        return exclude_kv
+
+    def single_patch_test(self):
         self.been_mapto.update(self.test_fail_key_value)  # fail的选项单独测试一遍
+        self.been_mapto.update(self.exclude_items_key_value())  #排除的选项放在最后测试
+        logging.info(f"{len(self.been_mapto)} items excluded, try test one by one...")
         excluded_items = deepcopy(self.been_mapto)
         for key, value in excluded_items.items():
             if key not in self.been_mapto:
                 continue
             logging.info("============================================================")
-            logging.info(f"Testing: {key} -> {value}")
-            index_option = re.findall("(\w+)\[(\d+)\]", key)
+            index_option = re.findall(r"(\w+)\[(\d+)]", key)
             patch_kv = {key: value}
-            if index_option:
+            if index_option:  # 带索引的选项统一修改，减少重启次数
                 index_name = index_option[0][0]
-                for ikey in self.been_mapto.keys():
-                    if re.findall(f"{index_name}\[(\d+)\]", ikey):
+                if key in self.been_mapto.keys():
+                    ifound = re.findall(rf"({index_name})\[(\d+)]", "".join(self.been_mapto.keys()))
+                    for ikv in ifound:
+                        ikey = f"{ikv[0]}[{ikv[1]}]"
                         patch_kv[ikey] = value
                         self.been_mapto.pop(ikey)
+                else:
+                    continue
+            boot_order = re.findall(f"BootTypeOrder", key)
+            if boot_order:  # BootOrder需要4个选项一起修改
+                if key in self.been_mapto.keys():
+                    patch_kv = self.boot_order_key_value()
+                    for jkv in patch_kv:
+                        self.been_mapto.pop(jkv)
+                else:
+                    continue
+            logging.info(f"Testing: {patch_kv}")
             self.result.loc[key, "default_value"] = self.att_pd.loc[key, "DefaultValue"]
             self.load_default()
             reboot_sut(self.bmc, self.ser)
             patch = self.write(**patch_kv)
             if patch.result:
-                logging.info(f"[PATCH] {key}: {value} successfully")
+                logging.info(f"[PATCH] {patch.body} successfully")
                 self.result.loc[key, "patch_status"] = "pass"
                 reboot_sut(self.bmc, self.ser)
-                check_value = self.read(key).get(key)
-                if check_value == value:
-                    self.result.loc[key, "check_status"] = "pass"
-                    logging.info(f"[Check] {key} = {value} <pass>")
-                else:
-                    logging.info(f"[Check] {key} != {value} -> {check_value}")
-                    self.result.loc[key, "check_status"] = check_value
+                check_value = self.read(*patch_kv.keys())
+                for check_name in patch_kv.keys():
+                    if check_value.get(check_name) == value:
+                        self.result.loc[check_name, "check_status"] = "pass"
+                        logging.info(f"[Check] {check_name} = {value} <pass>")
+                    else:
+                        logging.info(f"[Check] {check_name} = {value} <fail> -> {check_value.get(check_name)}")
+                        self.result.loc[check_name, "check_status"] = "fail"
                 continue
             logging.info(f"PATCH Status: {patch.status}")
             logging.info(f"PATCH Message: {patch.body}")
@@ -205,8 +227,10 @@ class NonDepTest(Redfish):
         to_excel(self.result, name)
 
     def run_test(self):
+        self.load_default()  # 测试前先恢复默认
+        reboot_sut(self.bmc, self.ser)
         self.attributes_data()  # 获取所有变量信息
-        self.non_default_key_value()  # 生成非默认值数据表
+        self.gen_patch_key_value()  # 生成非默认值数据表
         self.drop_been_mapped()  # 去掉默认情况就存在联动关系的选项
         self.try_patch_all()  # 先尝试批量修改
         reboot_sut(self.bmc, self.ser)
@@ -222,7 +246,7 @@ class NonDepTest(Redfish):
         self.gen_report("非联动测试结果批量修改")  # 批量修改结果生成报告
         self.boot_type_load_default()  # 恢复 BootType为UEFI（因为POST无法恢复）
         self.narrow_down_fail_items()  # 测试Fail的10个1组，尝试PATCH，并更新测试结果数据表
-        self.patch_excluded_items()  # 剩下的Fail选项 + 非默认情况下有联动关系的单独测试， 每次PATCH一项并重启，更新测试结果数据表
+        self.single_patch_test()  # 剩下的Fail选项 + 非默认情况下有联动关系的单独测试， 每次PATCH一项并重启，更新测试结果数据表
         # 测完恢复默认
         self.load_default()
         reboot_sut(self.bmc, self.ser)

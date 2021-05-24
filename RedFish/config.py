@@ -84,10 +84,9 @@ INCLUDE_LIST = {
 
 
 class BootInvolved:
-    BootTime = ["serialDebugMsgLvl"]
     Exclusive = ["BootTypeOrder0", "BootTypeOrder1", "BootTypeOrder2", "BootTypeOrder3"]
     MemPop = ["MemChannelEnable[0]"]
-    BootOS = ["PciePortDisable[7]", "BootType"]
+    BootOS = ["PciePortDisable[7]", "BootType", "PowerOnPassword"]
     ReadOnly = ["OemSecureBoot"]
 
 

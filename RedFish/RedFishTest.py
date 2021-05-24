@@ -414,12 +414,12 @@ if __name__ == "__main__":
 
         #联动 + 非联动 菜单测试
         elif argv[1] == "all":
-            logging.info("Start dependency option test")
-            dep_test = DepenTest(bmc, ser)
-            dep_test.run_test()
             logging.info("Start non dependency option test")
             nondep_test = NonDepTest(bmc, ser)
             nondep_test.run_test()
+            logging.info("Start dependency option test")
+            dep_test = DepenTest(bmc, ser)
+            dep_test.run_test()
 
         # 能效菜单测试
         elif argv[1] == "power":
