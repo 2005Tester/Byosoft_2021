@@ -10,7 +10,6 @@ from ICX2P.Config.PlatConfig import Key, Msg, BiosCfg
 from ICX2P.BaseLib import SetUpLib, PlatMisc, BmcLib
 from Core import SerialLib, SshLib, MiscLib
 
-
 # Test case ID: TC700-750
 
 ##########################################
@@ -46,13 +45,14 @@ def navigate_to_cke():
 def navegate_to_mem_fre_option(n=1):
     try:
         assert SetUpLib.boot_to_page(Msg.CPU_CONFIG), "boot_to_page -> fail"
-        assert SetUpLib.enter_menu(Key.DOWN, Msg.MEMORY_CONFIG, 10, Msg.MEM_FRE), "enter_menu -> fail"
-        assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM_FRE, 'Auto'], 10), "locate_option -> fail"
+        assert SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, Msg.MEMORY_CONFIG], 10, Msg.MEM_FRE), "enter_menu -> fail"
+        assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM_FRE, '<Auto>'], 14), "locate_option -> fail"
         SetUpLib.send_keys([Key.F6 * n, Key.F10, Key.Y])
         assert SetUpLib.boot_suse_from_bm(), "boot_to_os -> fail"
         return True
     except AssertionError:
         return
+
 
 # Precondition: BIOS默认密码
 # OnStart: NA
@@ -62,13 +62,13 @@ def dimm_power_mgt_01():
     tc = ('700', '[TC700]Testcase_MemPower_001', 'BIOS默认关闭DDR4内存的LP-ASR模式测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
-        assert(SetUpLib.boot_to_page(Msg.PAGE_INFO))
+        assert (SetUpLib.boot_to_page(Msg.PAGE_INFO))
         if SetUpLib.verify_info(['CPU Number\s+2'], 7):
             assert navigate_to_mem_fre(), 'navigate to mem freq page -> fail'
-            assert(SetUpLib.verify_options(Key.DOWN, [[Msg.MEM2X_REFRESH, '<Disabled>']], 7))
+            assert (SetUpLib.verify_options(Key.DOWN, [[Msg.MEM2X_REFRESH, '<Disabled>']], 7))
         elif SetUpLib.verify_info(['CPU Number\s+4'], 7):
             assert navigate_to_mem_fre(), 'navigate to mem freq page -> fail'
-            assert(SetUpLib.verify_options(Key.DOWN, [[Msg.MEM2X_REFRESH, '<Extended>']], 7))
+            assert (SetUpLib.verify_options(Key.DOWN, [[Msg.MEM2X_REFRESH, '<Extended>']], 7))
         else:
             logging.info('Unsupported CPU Number...')
             raise AssertionError
@@ -85,12 +85,12 @@ def dimm_power_mgt_02():
     tc = ('701', '[TC701]Testcase_MemPower_002&3', 'BIOS默认关闭CKE Power Down&Setup菜单提供内存自刷新和CKE Power Down选项测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
-        assert(SetUpLib.boot_to_page(Msg.PAGE_INFO))
+        assert (SetUpLib.boot_to_page(Msg.PAGE_INFO))
         assert navigate_to_mem_fre(), 'navigate to mem freq page -> fail'
         SetUpLib.send_key(Key.ESC)
-        assert(SetUpLib.enter_menu(Key.DOWN, [Msg.ADV_POWER_MGF_CONFIG, Msg.MEM_POWER_THER_CONFIG,
-                                                       Msg.MEM_POWER_ADV], 12, Msg.CKE))
-        assert(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
+        assert (SetUpLib.enter_menu(Key.DOWN, [Msg.ADV_POWER_MGF_CONFIG, Msg.MEM_POWER_THER_CONFIG,
+                                               Msg.MEM_POWER_ADV], 12, Msg.CKE))
+        assert (SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
         result.log_pass()
         return True
     except AssertionError:
@@ -104,11 +104,11 @@ def dimm_power_mgt_04():
     tc = ('702', '[TC702]Testcase_MemPower_004', '打开DDR4内存的LP-ASR模式功能测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
-        assert(SetUpLib.boot_to_page(Msg.PAGE_INFO))
+        assert (SetUpLib.boot_to_page(Msg.PAGE_INFO))
         assert navigate_to_cke(), 'navigate to mem cke power page -> fail'
-        assert(SetUpLib.verify_options(Key.DOWN, [[Msg.LPASR_MODE, '<Auto SR>']], 7))
-        assert(SetUpLib.boot_to_bootmanager())
-        assert(SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 12, Msg.SUSE_GRUB))
+        assert (SetUpLib.verify_options(Key.DOWN, [[Msg.LPASR_MODE, '<Auto SR>']], 7))
+        assert (SetUpLib.boot_to_bootmanager())
+        assert (SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 12, Msg.SUSE_GRUB))
         result.log_pass()
         return True
     except AssertionError:
@@ -122,16 +122,16 @@ def dimm_power_mgt_05():
     tc = ('703', '[TC703]Testcase_MemPower_005', '打开CKE Power down功能测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
-        assert(SetUpLib.boot_to_page(Msg.PAGE_INFO))
+        assert (SetUpLib.boot_to_page(Msg.PAGE_INFO))
         assert navigate_to_cke(), 'navigate to mem cke power page -> fail'
-        assert(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
+        assert (SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
         SetUpLib.send_keys([Key.F5, Key.F10, Key.Y])
-        assert(SetUpLib.continue_to_page(Msg.PAGE_INFO))
+        assert (SetUpLib.continue_to_page(Msg.PAGE_INFO))
         assert navigate_to_cke(), 'navigate to mem cke power page -> fail'
-        assert(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
-        assert(SetUpLib.boot_to_bootmanager())
-        assert(SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 12, Msg.SUSE_GRUB))
-        assert(MiscLib.ping_sut(SutConfig.OS_IP, 600))
+        assert (SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
+        assert (SetUpLib.boot_to_bootmanager())
+        assert (SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 12, Msg.SUSE_GRUB))
+        assert (MiscLib.ping_sut(SutConfig.OS_IP, 600))
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
@@ -146,15 +146,15 @@ def dimm_power_mgt_07():
     tc = ('704', '[TC704]Testcase_MemPower_007', '内存省电模式选项互斥测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
-        assert(SetUpLib.boot_to_page(Msg.PAGE_INFO))
+        assert (SetUpLib.boot_to_page(Msg.PAGE_INFO))
         assert navigate_to_cke(), 'navigate to mem cke power page -> fail'
-        assert(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
+        assert (SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
         SetUpLib.send_key(Key.F5)
-        assert(SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
-        assert(SetUpLib.verify_options(Key.DOWN, [['APD', '<Disabled>'], ['PPD', '<Enabled>']], 7))
-        assert(SetUpLib.verify_options(Key.DOWN, [['APD', '<Disabled>']], 7))
+        assert (SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
+        assert (SetUpLib.verify_options(Key.DOWN, [['APD', '<Disabled>'], ['PPD', '<Enabled>']], 7))
+        assert (SetUpLib.verify_options(Key.DOWN, [['APD', '<Disabled>']], 7))
         SetUpLib.send_key(Key.F5)
-        assert(SetUpLib.verify_options(Key.DOWN, [['APD', '<Enabled>']], 3))
+        assert (SetUpLib.verify_options(Key.DOWN, [['APD', '<Enabled>']], 3))
         if SetUpLib.verify_options(Key.DOWN, [['PPD', '<Enabled>']], 3):
             raise AssertionError
         else:
@@ -174,14 +174,14 @@ def dimm_power_mgt_010(ssh_os):
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.MEM_POWER_ADV)
-        assert(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
+        assert (SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
         SetUpLib.send_keys([Key.F5, Key.F10, Key.Y])
         assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.MEM_POWER_ADV)
-        assert(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
-        assert(SetUpLib.boot_to_bootmanager())
-        assert(SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 12, Msg.SUSE_GRUB))
-        assert(PlatMisc.rw_everything(ssh_os, ['0080', '1000'], ['c62218a0']))
+        assert (SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
+        assert (SetUpLib.boot_to_bootmanager())
+        assert (SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 12, Msg.SUSE_GRUB))
+        assert (PlatMisc.rw_everything(ssh_os, ['0080', '1000'], ['c62218a0']))
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
@@ -198,13 +198,13 @@ def dimm_power_mgt_011(ssh_os):
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.MEM_POWER_ADV)
-        assert(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
+        assert (SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
         SetUpLib.send_key(Key.F5)
-        assert(SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
-        assert(SetUpLib.verify_options(Key.DOWN, [['APD', '<Disabled>'], ['PPD', '<Enabled>']], 7))
-        assert(SetUpLib.verify_options(Key.DOWN, [['APD', '<Disabled>']], 7))
+        assert (SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
+        assert (SetUpLib.verify_options(Key.DOWN, [['APD', '<Disabled>'], ['PPD', '<Enabled>']], 7))
+        assert (SetUpLib.verify_options(Key.DOWN, [['APD', '<Disabled>']], 7))
         SetUpLib.send_key(Key.F5)
-        assert(SetUpLib.verify_options(Key.DOWN, [['APD', '<Enabled>']], 3))
+        assert (SetUpLib.verify_options(Key.DOWN, [['APD', '<Enabled>']], 3))
         # the expected result here's that the option can not be found.
         if SetUpLib.verify_options(Key.DOWN, [['PPD', '<Enabled>']], 3):
             raise AssertionError
@@ -212,12 +212,12 @@ def dimm_power_mgt_011(ssh_os):
             SetUpLib.send_keys(Key.SAVE_RESET)
             assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
             assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.MEM_POWER_ADV)
-            assert(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
-            assert(SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
-            assert(SetUpLib.verify_options(Key.DOWN, [['APD', '<Enabled>']], 3))
-            assert(SetUpLib.boot_to_bootmanager())
-            assert(SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 12, Msg.SUSE_GRUB))
-            assert(PlatMisc.rw_everything(ssh_os, ['0080', '1000'], ['c62218a0']))
+            assert (SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
+            assert (SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
+            assert (SetUpLib.verify_options(Key.DOWN, [['APD', '<Enabled>']], 3))
+            assert (SetUpLib.boot_to_bootmanager())
+            assert (SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 12, Msg.SUSE_GRUB))
+            assert (PlatMisc.rw_everything(ssh_os, ['0080', '1000'], ['c62218a0']))
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
@@ -234,21 +234,21 @@ def dimm_power_mgt_012(ssh_os):
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.MEM_POWER_ADV)
-        assert(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
+        assert (SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
         SetUpLib.send_key(Key.F5)
-        assert(SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
-        assert(SetUpLib.verify_options(Key.DOWN, [['CKE Idle Timer', '\[20\]']], 7))
+        assert (SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
+        assert (SetUpLib.verify_options(Key.DOWN, [['CKE Idle Timer', '\[20\]']], 7))
         SetUpLib.send_key(Key.ENTER)  # Send Enter
         SetUpLib.send_data_enter('255')  # set 255
         SetUpLib.send_keys(Key.SAVE_RESET)
         assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.MEM_POWER_ADV)
-        assert(SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
-        assert(SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
-        assert(SetUpLib.verify_options(Key.DOWN, [['CKE Idle Timer', '\[255\]']], 7))
-        assert(SetUpLib.boot_to_bootmanager())
-        assert(SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 12, Msg.SUSE_GRUB))
-        assert(PlatMisc.rw_everything(ssh_os, ['0080', '1000'], ['c62218a0']))
+        assert (SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
+        assert (SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
+        assert (SetUpLib.verify_options(Key.DOWN, [['CKE Idle Timer', '\[255\]']], 7))
+        assert (SetUpLib.boot_to_bootmanager())
+        assert (SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 12, Msg.SUSE_GRUB))
+        assert (PlatMisc.rw_everything(ssh_os, ['0080', '1000'], ['c62218a0']))
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
@@ -426,24 +426,42 @@ def rmt_equip_test(unitool):
 def set_mem_freq_001_006(n=1):
     tc = ('714', '[TC714] Testcase_SetMemFreq_001_006', '01-06 内存频率选项测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result_list = []
     try:
         assert SetUpLib.boot_to_page('BIOS Revision'), "boot_to_page -> fail"
-        if SetUpLib.verify_info(['System Memory Speed\s+2666 MT\/s'], 20):
+        if SetUpLib.verify_info(['System Memory Speed\s+2666 MT\/s'], 12):
             logging.info('DIMM FRE is 2666 MT/s')
             assert navegate_to_mem_fre_option(), '2666-dimm_2666_mem_freq_test -> fail'
-        elif SetUpLib.verify_info(['System Memory Speed\s+2933 MT\/s'], 20):
+        elif SetUpLib.verify_info(['System Memory Speed\s+2933 MT\/s'], 12):
             logging.info('DIMM FRE is 2933 MT/s')
-            assert navegate_to_mem_fre_option(), '2933-dimm_2666_mem_freq_test -> fail'
-            assert navegate_to_mem_fre_option(2), '2933-dimm_2933_mem_freq_test -> fail'
-        elif SetUpLib.verify_info(['System Memory Speed\s+3200 MT\/s'], 20):
+            # '2933-dimm_2666_mem_freq_test -> fail'
+            if not navegate_to_mem_fre_option():
+                result_list.append('1')
+            # '2933-dimm_2933_mem_freq_test -> fail'
+            if not navegate_to_mem_fre_option(2):
+                result_list.append('2')
+        elif SetUpLib.verify_info(['System Memory Speed\s+3200 MT\/s'], 12):
             logging.info('DIMM FRE is 3200 MT/s')
             for i in range(n):
-                assert navegate_to_mem_fre_option(), '3200-dimm_2666_mem_freq_test -> fail'
-                assert navegate_to_mem_fre_option(2), '3200-dimm_2933_mem_freq_test -> fail'
-                assert navegate_to_mem_fre_option(3), '3200-dimm_3200_mem_freq_test -> fail'
+                # '3200-dimm_2666_mem_freq_test -> fail'
+                if not navegate_to_mem_fre_option():
+                    result_list.append('3')
+                # '3200-dimm_2933_mem_freq_test -> fail'
+                if not navegate_to_mem_fre_option(2):
+                    result_list.append('4')
+                # '3200-dimm_3200_mem_freq_test -> fail'
+                if not navegate_to_mem_fre_option(3):
+                    result_list.append('5')
         else:
-            logging.info('Not supported this dimm type')
-        result.log_pass()
+            logging.info('Not supported this dimm type, break out')
+
+        logging.debug(result_list)
+        # check the result,
+        if len(result_list) == 0:
+            result.log_pass()
+            return True
+        else:
+            raise AssertionError
     except AssertionError:
         result.log_fail(capture=True)
     finally:
@@ -458,12 +476,12 @@ def mtrr_max_range(ssh_os):
     tc = ('715', '[TC715] Testcase_MTRR_002', '01 MTRR最大内存地址范围测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
-        # assert Os.boot_to_suse(serial, ssh_bmc), "boot_to_os -> fail"
+        assert SetUpLib.boot_suse_from_bm(), "boot_to_os -> fail"
         res = SshLib.execute_command(ssh_os, 'cat /proc/mtrr')
         assert res
         mem_size = re.findall(r"\d+\.?\d*", res.split('=')[2])
         for i in mem_size:
-            if int(i)/1024 == SysCfg.DIMM_SIZE * 2:
+            if int(i) / 1024 == SysCfg.DIMM_SIZE * 2:
                 logging.info('MTRR MAX DIMM SIZE Pass')
         result.log_pass()
     except AssertionError:
