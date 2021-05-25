@@ -146,7 +146,7 @@ class SshConnection:
         return ret
 
     # send commands one by one through ssh in interactive mode    
-    def interaction(self, cmds, strs):
+    def interaction(self, cmds, strs, timeout=300):
         op = self.ssh_client.invoke_shell()
         for i in range(0, len(cmds)):
             logging.debug('Sending: {0}'.format(cmds[i].strip("\n")))
@@ -163,7 +163,7 @@ class SshConnection:
                 if re.search(strs[i], res.decode('utf-8')):
                     # Will reach here if command returns result after a while
                     break
-                if (now - start_time) > 300:
+                if (now - start_time) > timeout:
                     logging.error("Run command: {0} timeout.".format(cmds[i].strip("\n")))
                     return
         #    logging.info('Command successful.')

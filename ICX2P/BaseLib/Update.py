@@ -89,12 +89,12 @@ def upload_bios(src):
             return
 
 
-def hpm_update(ssh_bmc, hpm_name="bios.hpm"):
-    cmd_hpmupdate = 'ipmcset -d upgrade -v /tmp/{}\n'.format(hpm_name)
-    rtn_flash_done = 'successfully'
+def hpm_update(hpm_name="bios.hpm"):
+    cmd = 'ipmcset -d upgrade -v /tmp/{}\n'.format(hpm_name)
+    rtn = 'successfully'
     BmcLib.power_off()
     logging.info('Start to flash hpm image')
-    if SshLib.interaction_time_limit(ssh=ssh_bmc, cmd_list=cmd_hpmupdate, rtn_list=rtn_flash_done, timeout=600):
+    if SshLib.interaction(Sut.BMC_SSH, [cmd], [rtn], timeout=600):
         logging.info("HPM BIOS flash successfully")
         return True
 
@@ -152,15 +152,8 @@ def update_bios(bios_img):
     return True
 
 
+# flash hpm bios from a specific directory
 def flash_local_hpm(img_file):
-    """
-    Flash Local HPM BIOS Image
-    :param serial:      Serial instance
-    :param ssh_bmc:     BMC ssh instance
-    :param sftp_bmc:    BMC Sftp instance
-    :param img_file:    bios hpm image directory
-    :return: True / None
-    """
     SshLib.sftp_remove_file(Sut.BMC_SFTP, ".bin", "/tmp")
     SshLib.sftp_remove_file(Sut.BMC_SFTP, ".hpm", "/tmp")
     SshLib.sftp_remove_file(Sut.BMC_SFTP, ".tar.gz", "/tmp")
@@ -170,7 +163,7 @@ def flash_local_hpm(img_file):
     hpm_path, hpm_name = os.path.split(img_file)
     if not SshLib.sftp_upload_file(sftp=Sut.BMC_SFTP, src_file=img_file, dst_file=r"/tmp/"+hpm_name, ret_msg="rw"):
         return
-    if not hpm_update(ssh_bmc=Sut.BMC_SSH, hpm_name=hpm_name):
+    if not hpm_update(hpm_name):
         return
     if not BmcLib.power_on():
         return
