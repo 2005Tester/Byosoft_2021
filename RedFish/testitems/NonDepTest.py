@@ -200,10 +200,10 @@ class NonDepTest(Redfish):
             patch = self.write(**patch_kv)
             if patch.result:
                 logging.info(f"[PATCH] {patch.body} successfully")
-                self.result.loc[key, "patch_status"] = "pass"
                 reboot_sut(self.bmc, self.ser)
                 check_value = self.read(*patch_kv.keys())
                 for check_name in patch_kv.keys():
+                    self.result.loc[check_name, "patch_status"] = "pass"
                     if check_value.get(check_name) == value:
                         self.result.loc[check_name, "check_status"] = "pass"
                         logging.info(f"[Check] {check_name} = {value} <pass>")
@@ -213,8 +213,9 @@ class NonDepTest(Redfish):
                 continue
             logging.info(f"PATCH Status: {patch.status}")
             logging.info(f"PATCH Message: {patch.body}")
-            self.result.loc[key, "patch_status"] = "fail"
-            self.result.loc[key, "message"] = patch.body
+            for pf_name in patch_kv.keys():
+                self.result.loc[pf_name, "patch_status"] = "fail"
+                self.result.loc[pf_name, "message"] = patch.body
 
     def gen_report(self, name):
         self.result["summary"] = self.result.apply(
