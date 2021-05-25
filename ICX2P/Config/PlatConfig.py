@@ -147,7 +147,7 @@ class BiosCfg:
     # HPM Upgrade/Downgrade keep BIOS Setting unchanged setting
     HPM_KEEP = {
         "UsbBoot": 0,
-        "WakeOnLanSupport": 1,
+        "WakeOnPME": 1,
         "AcpiApicPolicy": 0,
         "FDMSupport": 0,
         "SataPort": 0,
@@ -163,6 +163,6 @@ class BiosCfg:
         "IrqThreshold": 0,
         "EnableBiosSsaRMT": 1,
         "pprType": 0,
-        "SvrMngmntFrb2Enable": 1,
+        "BMCWDTEnable": 1,
     }
 
