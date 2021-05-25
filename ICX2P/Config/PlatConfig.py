@@ -116,13 +116,13 @@ class Msg:
 
     # Firmware version info
     ME_VERSION = '0F:4.4.4.56'
-    RC_VERSION = 'RC Version : 0.2.2.0030'
-    BIOS_REVISION = 'BIOS Revision : 5.11'
-    BIOS_DATE = 'BIOS Date : 05/11/2021'
-    iBMC_VERSION = 'iBMC Version : 3.01.15.03'
-    iBMC_IP = 'iBMC IP : 192.168.2.102'
-    CPU_TYPE = 'CPU type : Ice Lake'
-    TOTAL_MEMORY = 'Total Memory : 65536MB'
+    RC_VERSION = '0.2.2.0030'
+    BIOS_REVISION = '0.11'
+    BIOS_DATE = '05/11/2021'
+    iBMC_VERSION = '3.01.15.03'
+    iBMC_IP = '192.168.2.102'
+    CPU_TYPE = 'Ice Lake'
+    TOTAL_MEMORY = '65536MB'
 
     # POST GPIO ERROR Keywords print in serial log
     GPIO_ERR = "GPIO ERROR"

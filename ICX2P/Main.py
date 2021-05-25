@@ -45,6 +45,13 @@ def TestScope():
     MemInit02.dimm_power_mgt_04()
     MemInit02.dimm_power_mgt_05()
     MemInit02.dimm_power_mgt_07()
+    MemInit02.memory_compa_001()
+    MemInit02.memory_compa_006(ssh_os)
+    MemInit02.dimm_power_mgt_010(ssh_os)
+    MemInit02.dimm_power_mgt_011(ssh_os)
+    MemInit02.dimm_power_mgt_012(ssh_os)
+    Io05.system_info_001()
+    Io05.system_info_003()
     Release.me_version_status()
     biosTest.loadDefault()
     MemInit02.Testcase_MemMargin_001()
@@ -65,6 +72,8 @@ def TestScope():
     BootDevice06.boot_order_001()
     if Legacy.enable_legacy_boot():
         BootDevice06.boot_device_type_002()
+        Io05.system_info_002()
+        # Io05.system_info_004()
         Legacy.disable_legacy_boot()
 
 
@@ -123,9 +132,4 @@ def ReleaseTest():
 def Debug():
     UpdateBIOS.update_bios('master')
     CpuInit01.cpu_mem_info()
-    MemInit02.Testcase_MemoryCompa_001()
-    MemInit02.Testcase_MemoryCompa_006(ssh_os)
-    Io05.Testcase_SystemInfo_001()
-    Io05.Testcase_SystemInfo_002()
-    Io05.Testcase_SystemInfo_003()
     biosTest.Testcase_PowerEfficiency_001(unitool)

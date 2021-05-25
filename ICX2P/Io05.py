@@ -21,8 +21,8 @@ def check_info():
     try:
         assert BmcLib.force_reset(), 'force_reset -> fail'
         # bug: if check_list does not exist by designed, will effect verification of the check_list_msg
-        assert SetUpLib.wait_strings(check_list, timeout=120), 'info_verify -> fail'
-        assert SetUpLib.wait_strings(check_list_msg, timeout=120), 'hotkey_info_verify -> fail'
+        assert SetUpLib.wait_strings(check_list, timeout=60), 'info_verify -> fail'
+        assert SetUpLib.wait_strings(check_list_msg, timeout=60), 'hotkey_info_verify -> fail'
         return True
     except AssertionError:
         return

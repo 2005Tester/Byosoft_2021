@@ -2,7 +2,7 @@ import logging
 import re
 import os
 import csv
-from Core import SerialLib
+from Core import SerialLib, MiscLib, SshLib
 from Core.SutInit import Sut
 from ICX2P.BaseLib import SetUpLib, BmcLib, PlatMisc
 from ICX2P.Config import SutConfig
@@ -21,7 +21,7 @@ from Report import ReportGen
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: NA
-def Testcase_PCIeResource_001():
+def pci_resource_mmiol():
     tc = ('630', '[TC630] Testcase_PCIeResource_001', 'MMIOL资源分配静态表测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
@@ -51,7 +51,7 @@ def Testcase_PCIeResource_001():
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: NA
-def Testcase_PCIeResource_002():
+def pci_resource_mmioh():
     tc = ('631', '[TC631] Testcase_PCIeResource_002', 'MMIOH资源分配静态表测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     MMIOH = "MMIO High Base"
@@ -90,7 +90,7 @@ def Testcase_PCIeResource_002():
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: NA
-def Testcase_PCIeResource_003():
+def pci_resource_mmioh_menu():
     tc = ('632', '[TC632] Testcase_PCIeResource_003', 'BIOS提供MMIOH资源调整选项测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     base_default = "13T"
@@ -115,7 +115,7 @@ def Testcase_PCIeResource_003():
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: NA
-def Testcase_PCIeResource_005():
+def pci_resource_64b():
     tc = ('633', '[TC633] Testcase_PCIeResource_005', 'BIOS提供PCIe 64bit decode选项测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
@@ -161,7 +161,7 @@ def Testcase_PCIeResource_005():
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: NA
-def Testcase_PCIeResource_007():
+def pci_resource_bus():
     tc = ('634', '[TC634] Testcase_PCIeResource_007', 'BUS资源分配静态表测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
@@ -188,7 +188,7 @@ def Testcase_PCIeResource_007():
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: NA
-def Testcase_PCIeResource_008():
+def pci_resource_legacyio():
     tc = ('635', '[TC635] Testcase_PCIeResource_008', 'Legacy IO资源分配静态表测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
@@ -215,7 +215,7 @@ def Testcase_PCIeResource_008():
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: NA
-def Testcase_PCIeResource_009():
+def pci_resource_ioapic():
     tc = ('636', '[TC636] Testcase_PCIeResource_009', 'IOApic资源分配静态表测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
@@ -231,6 +231,49 @@ def Testcase_PCIeResource_009():
             if i[0] != "Rsvd":
                 assert i[4], "Invalid IOApic Allocation Data"
                 logging.info(f"IOApic Allocation: {i[0]:5} : {i[4]:5}")
+        result.log_pass()
+    except Exception as e:
+        logging.error(e)
+        result.log_fail()
+
+
+# Author: WangQingshan
+# 【UEFI模式】PCIe设备资源一致性测试
+# Precondition: Linux
+# OnStart: NA
+# OnComplete: NA
+def pci_resource_lspci_uefi():
+    tc = ('637', '[TC637] Testcase_PCIeResource_020', '【UEFI模式】PCIe设备资源一致性测试')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    pcie_bdf = r"PCIE LINK STATUS:\s+(.+):\s+Link up as"
+
+    def get_lspci_info():
+        try:
+            assert BmcLib.force_reset()
+            pcie_slot = SerialLib.cut_log(Sut.BIOS_COM, "PCIE LINK STATUS:", Msg.BIOS_BOOT_COMPLETE, 60, 200, 5)
+            assert pcie_slot, "Invalid PCIE LINK STATUS"
+            bdf_list = re.findall(pcie_bdf, pcie_slot)
+            assert bdf_list, "No PCIe Device Detected, test skipped"
+            logging.info(f"Found PCie Device: {bdf_list}")
+            assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
+            lspci_info = []
+            for bdf in bdf_list:
+                pcie_cmd = f"lspci -s {bdf} -vvv"
+                pci_info = SshLib.execute_command(Sut.OS_SSH, pcie_cmd)
+                lspci_info.append(pci_info)
+            return lspci_info
+        except Exception as e0:
+            logging.error(e0)
+    # main test process
+    try:
+        lspci_info = get_lspci_info()
+        reboot_cnt = 1
+        for cnt in range(9):
+            current_lspci = get_lspci_info()
+            reboot_cnt += 1
+            assert current_lspci == lspci_info, f"Reboot time {reboot_cnt}: lspci info compare fail\n" \
+                                                f"Last:{lspci_info}\nCurrent:\n{current_lspci}"
+            logging.info(f"Reboot time {reboot_cnt}: lspci info compare pass")
         result.log_pass()
     except Exception as e:
         logging.error(e)
