@@ -85,7 +85,7 @@ def power_cycling(n=5):
 
 
 # PXE Test
-def pxeTest(n=1):
+def pxe_test(n=1):
     tc = ('004', 'PXE Test', 'PXE Test')
     result = ReportGen.LogHeaderResult(tc)
     for i in range(n):
@@ -100,7 +100,7 @@ def pxeTest(n=1):
 # Precondition: No USB key installed
 # OnStart: NA
 # OnComplete: USB Configuration Page
-def usbTest():
+def usb_test():
     tc = ('006', '[TC006]USB Test', 'USB Test')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     msg_list = ['USB Mouse\s+1', 'USB Keyboard\s+1', 'USB Mass Storage\s+0']
@@ -145,7 +145,7 @@ def press_f2():
 
 
 # Setup: Load default and setting saving - AT test cases below,
-def loadDefault():
+def load_default():
     tc = ('011', '[TC011] Load default and setting saving Test', 'BIOS Load default Test')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     pxe_boot = ["PXE Boot Capability", "<UEFI:IPv4>"]
@@ -255,7 +255,7 @@ def cnd_default_enable():
 
 
 # Testcase_SecurityBoot_001
-def securityBoot():
+def security_boot():
     tc = ('023', '[TC023] Secure Boot默认值', 'Secure Boot默认值')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     keys_secure_boot = [Key.RIGHT, Key.DOWN, Key.ENTER]
@@ -312,7 +312,7 @@ def vtd():
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: NA
-def Testcase_SerialPrint_001():
+def serial_print_keywords():
     tc = ('026', '[TC026]Testcase_SerialPrint_001', '启动关键信息打印测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     cpu_resource = r"[\s\S]*".join([rf"CPU{n}[\s\S]*Ubox.+" for n in range(SysCfg.CPU_CNT)])
@@ -361,7 +361,7 @@ def Testcase_SerialPrint_001():
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: NA
-def Testcase_SerialPrint_003():
+def serial_print_error_check():
     tc = ('027', '[TC027]Testcase_SerialPrint_003', 'BIOS启动阶段串口报错检查')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     error_msg = ["error", "fail", "assert", "exception"]
@@ -388,7 +388,7 @@ def Testcase_SerialPrint_003():
 # Precondition: 配置好unitool
 # OnStart: Boot to linux
 # OnComplete: NA
-def Testcase_PowerEfficiency_001(unitool):
+def power_efficiency_mode_loop(unitool):
     tc = ('028', '[TC028]Testcase_PowerEfficiency_001', 'PowerEfficiency场景配置测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     baseline = os.path.join(os.path.dirname(__file__), r"Tools\PowerEfficiency\2288V6_PowerEfficiency.csv")

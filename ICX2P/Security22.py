@@ -848,7 +848,7 @@ def pwd_auth_mgt_09():
 
 
 # Main function
-def Pwd_test():
+def pwd_test_all():
     simplePWDTest()
     Simple_password_validity()
     Simple_password_disenable()

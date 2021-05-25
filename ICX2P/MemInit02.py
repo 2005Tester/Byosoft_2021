@@ -260,7 +260,7 @@ def dimm_power_mgt_012(ssh_os):
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: NA
-def Testcase_MemMargin_001():
+def rmt_menu_test():
     tc = ('708', '[TC708] Testcase_MemMargin_001', '01 内存margin测试菜单选项测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
 
@@ -398,7 +398,7 @@ def mem_refresh_002(ssh_os):
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: SUSE OS
-def Testcase_MemoryCompa_009(unitool):
+def rmt_equip_test(unitool):
     tc = ('713', '[TC713]Testcase_MemoryCompa_009', '装备模式内存Margin功能测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
@@ -454,7 +454,7 @@ def set_mem_freq_001_006(n=1):
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: SUSE OS
-def Testcase_MTRR_001(ssh_os):
+def mtrr_max_range(ssh_os):
     tc = ('715', '[TC715] Testcase_MTRR_002', '01 MTRR最大内存地址范围测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
@@ -475,7 +475,7 @@ def Testcase_MTRR_001(ssh_os):
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: SUSE OS
-def Testcase_MTRR_002(ssh_os):
+def mtrr_fixed_range(ssh_os):
     tc = ('716', '[TC716] Testcase_MTRR_002', '02 MTRR Fixed ranges测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     flag = []

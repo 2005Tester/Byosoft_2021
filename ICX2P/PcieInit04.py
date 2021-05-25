@@ -21,7 +21,7 @@ from Report import ReportGen
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: NA
-def pci_resource_mmiol():
+def pcie_resource_mmiol():
     tc = ('630', '[TC630] Testcase_PCIeResource_001', 'MMIOL资源分配静态表测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
@@ -51,7 +51,7 @@ def pci_resource_mmiol():
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: NA
-def pci_resource_mmioh():
+def pcie_resource_mmioh():
     tc = ('631', '[TC631] Testcase_PCIeResource_002', 'MMIOH资源分配静态表测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     MMIOH = "MMIO High Base"
@@ -90,7 +90,7 @@ def pci_resource_mmioh():
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: NA
-def pci_resource_mmioh_menu():
+def pcie_resource_mmioh_menu():
     tc = ('632', '[TC632] Testcase_PCIeResource_003', 'BIOS提供MMIOH资源调整选项测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     base_default = "13T"
@@ -115,7 +115,7 @@ def pci_resource_mmioh_menu():
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: NA
-def pci_resource_64b():
+def pcie_resource_64b():
     tc = ('633', '[TC633] Testcase_PCIeResource_005', 'BIOS提供PCIe 64bit decode选项测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
@@ -161,7 +161,7 @@ def pci_resource_64b():
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: NA
-def pci_resource_bus():
+def pcie_resource_bus():
     tc = ('634', '[TC634] Testcase_PCIeResource_007', 'BUS资源分配静态表测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
@@ -188,7 +188,7 @@ def pci_resource_bus():
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: NA
-def pci_resource_legacyio():
+def pcie_resource_legacyio():
     tc = ('635', '[TC635] Testcase_PCIeResource_008', 'Legacy IO资源分配静态表测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
@@ -215,7 +215,7 @@ def pci_resource_legacyio():
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: NA
-def pci_resource_ioapic():
+def pcie_resource_ioapic():
     tc = ('636', '[TC636] Testcase_PCIeResource_009', 'IOApic资源分配静态表测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
