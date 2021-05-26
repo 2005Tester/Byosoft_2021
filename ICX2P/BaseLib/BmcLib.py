@@ -30,9 +30,15 @@ def power_on():
     ret_confirm = ''
     cmds = [cmd_reset, cmd_confirm]
     rets = [ret_reset, ret_confirm]
-    if Sut.BMC_SSH.login():
-        return Sut.BMC_SSH.interaction(cmds, rets)
-    else:
+    try_count = 3
+    while is_power_off() and (try_count > 0):
+        if Sut.BMC_SSH.login():
+            Sut.BMC_SSH.interaction(cmds, rets)
+            time.sleep(3)
+        if not is_power_off():
+            return True
+        try_count -= 1
+    if try_count <= 0 and is_power_off():
         logging.error("Power on failed")
         return
 

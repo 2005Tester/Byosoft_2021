@@ -242,7 +242,7 @@ def pcie_resource_ioapic():
 # Precondition: Linux
 # OnStart: NA
 # OnComplete: NA
-def pci_resource_lspci_uefi():
+def pcie_resource_lspci_uefi():
     tc = ('637', '[TC637] Testcase_PCIeResource_020', '【UEFI模式】PCIe设备资源一致性测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     pcie_bdf = r"PCIE LINK STATUS:\s+(.+):\s+Link up as"
@@ -278,3 +278,49 @@ def pci_resource_lspci_uefi():
     except Exception as e:
         logging.error(e)
         result.log_fail()
+
+
+# Author: WangQingshan
+# 【Legacy模式】PCIe设备资源一致性测试
+# Precondition: Linux
+# OnStart: NA
+# OnComplete: NA
+def pcie_resource_lspci_legacy():
+    tc = ('638', '[TC638] Testcase_PCIeResource_021', '【Legacy模式】PCIe设备资源一致性测试')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    pcie_bdf = r"PCIE LINK STATUS:\s+(.+):\s+Link up as"
+
+    def get_lspci_info():
+        try:
+            assert BmcLib.force_reset()
+            pcie_slot = SerialLib.cut_log(Sut.BIOS_COM, "PCIE LINK STATUS:", Msg.BIOS_BOOT_COMPLETE, 90, 300)
+            assert pcie_slot, "Invalid PCIE LINK STATUS"
+            bdf_list = re.findall(pcie_bdf, pcie_slot)
+            assert bdf_list, "No PCIe Device Detected, test skipped"
+            logging.info(f"Found PCie Device: {bdf_list}")
+            assert MiscLib.ping_sut(SutConfig.OS_IP, 300)
+            lspci_info = []
+            for bdf in bdf_list:
+                pcie_cmd = f"lspci -s {bdf} -vvv"
+                pci_info = SshLib.execute_command(Sut.OS_SSH, pcie_cmd)
+                lspci_info.append(pci_info)
+            return lspci_info
+        except Exception as e0:
+            logging.error(e0)
+    # main test process
+    try:
+        assert SetUpLib.enable_legacy_boot()
+        lspci_info = get_lspci_info()
+        reboot_cnt = 1
+        for cnt in range(9):
+            current_lspci = get_lspci_info()
+            reboot_cnt += 1
+            assert current_lspci == lspci_info, f"Reboot time {reboot_cnt}: lspci info compare fail\n" \
+                                                f"Last:{lspci_info}\nCurrent:\n{current_lspci}"
+            logging.info(f"Reboot time {reboot_cnt}: lspci info compare pass")
+        result.log_pass()
+    except Exception as e:
+        logging.error(e)
+        result.log_fail()
+    finally:
+        SetUpLib.disable_legacy_boot()

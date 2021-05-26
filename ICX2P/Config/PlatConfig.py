@@ -163,7 +163,7 @@ class BiosCfg:
         "sSataPort": 0,
         "PerformanceTuningMode": 0,
         "VTdSupport": 0,
-        "DFXEnable": 1,
+        "ADDDCEn": 1,
         "ActiveCpuCores": 4,
         "ProcessorHyperThreadingDisable": 1,
         "UFSDisable": 1,

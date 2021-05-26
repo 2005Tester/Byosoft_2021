@@ -162,8 +162,8 @@ class SshUnitool(SshConnection):
         for key, value in kwargs.items():
             get_data = self.read(key)[key]
             fail_cnt = fail_cnt+1 if (str(get_data) != str(value)) else fail_cnt
-        result_flag = "Match" if fail_cnt else "Mismatch"
-        cprint('-- [Check] Config {}'.format(result_flag), self.loginfo)
+        result_flag = "mismatch" if fail_cnt else "match"
+        cprint('-- [Check] Current BIOS config {}'.format(result_flag), self.loginfo)
         self.close_shell()
         return fail_cnt == 0
 
