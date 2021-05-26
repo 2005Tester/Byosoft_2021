@@ -97,7 +97,7 @@ def last_release(current_branch, step=1):
 def dump_cpu_resource():
     if not BmcLib.force_reset():
         return
-    resource = SerialLib.cut_log(Sut.BIOS_COM, "CPU Resource Allocation", "START_SOCKET_0_DIMMINFO_TABLE", 10, 120, 3)
+    resource = SerialLib.cut_log(Sut.BIOS_COM, "CPU Resource Allocation", "START_SOCKET_0_DIMMINFO_TABLE", 10, 120)
     if not resource:
         return
     data_search = r"[\s\S]*".join([rf"CPU{n}[\s\S]*Ubox.+" for n in range(SutConfig.SysCfg.CPU_CNT)])

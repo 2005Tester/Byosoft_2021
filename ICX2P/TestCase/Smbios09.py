@@ -172,7 +172,7 @@ def smbios_type128(unitool):
         assert unitool.set_config(BiosCfg.MFG_RMT), "Change setup by unitool failed."
         logging.info("Reboot SUT to Linux")
         assert BmcLib.force_reset()
-        ser_rmt_data = SerialLib.cut_log(Sut.BIOS_COM, "START_BSSA_RMT", "Lane Margin", duration=15, timeout=600, step=5)
+        ser_rmt_data = SerialLib.cut_log(Sut.BIOS_COM, "START_BSSA_RMT", "Lane Margin", duration=15, timeout=600)
         assert ser_rmt_data, "Invalid RMT data"
         logging.debug(ser_rmt_data)
         type128data = SshLib.execute_command(Sut.OS_SSH, "dmidecode -t 128")

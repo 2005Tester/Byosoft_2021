@@ -131,7 +131,7 @@ def pcie_resource_64b():
         # Check Config
         re_allocate = SerialLib.cut_log(Sut.BIOS_COM,
                                         "Resource allocation Failed. Enabling 64bit MMIO allocation and resetting the system",
-                                        "START_SOCKET_0_DIMMINFO_TABLE", 10, 120, 5)
+                                        "START_SOCKET_0_DIMMINFO_TABLE", 10, 120)
         # 未触发资源不足正常 Disable
         if not re_allocate:
             assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
@@ -250,7 +250,7 @@ def pci_resource_lspci_uefi():
     def get_lspci_info():
         try:
             assert BmcLib.force_reset()
-            pcie_slot = SerialLib.cut_log(Sut.BIOS_COM, "PCIE LINK STATUS:", Msg.BIOS_BOOT_COMPLETE, 60, 200, 5)
+            pcie_slot = SerialLib.cut_log(Sut.BIOS_COM, "PCIE LINK STATUS:", Msg.BIOS_BOOT_COMPLETE, 60, 200)
             assert pcie_slot, "Invalid PCIE LINK STATUS"
             bdf_list = re.findall(pcie_bdf, pcie_slot)
             assert bdf_list, "No PCIe Device Detected, test skipped"

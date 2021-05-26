@@ -37,7 +37,7 @@ class SshUnitool(SshConnection):
         super(SshUnitool, self).__init__(self.ip, self.user, self.pw)
 
     def sut_online(self):
-        ping_try = subprocess.Popen(("ping -n 3 -w 10 {}".format(self.ip)), stdout=subprocess.PIPE)
+        ping_try = subprocess.Popen(("ping {}".format(self.ip)), stdout=subprocess.PIPE)
         result = ping_try.stdout.read().decode("gbk")
         if "TTL=" in result:
             return True
