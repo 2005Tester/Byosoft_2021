@@ -1,140 +1,18 @@
-from Common import Unitool
-from Core import SutInit
-from Core.SutInit import Sut
-from ICX2P import UpdateBIOS, BiosTest, DefaultValueTest, Os, Release, Legacy, CpuInit01, MemInit02, PchInit03, \
-    PcieInit04, Io05, Smbios09, Security22, BootDevice06
-from ICX2P.Config import SutConfig
-
-
-# init SUT
-SutInit.SutInit("ICX2P")
-ser = Sut.BIOS_COM
-ssh_os = Sut.OS_SSH
-
-# init unitool
-unitool = Unitool.SshUnitool(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASSWORD, SutConfig.UNI_PATH, True)
-
-
-# Test scope for non-equipment build
-def TestScope():
-    BiosTest.post_test()
-    BiosTest.power_cycling()
-    BiosTest.usb_test()
-    CpuInit01.cpu_mem_info()
-    BiosTest.press_f2()
-    CpuInit01.static_turbo_default()
-    CpuInit01.ufs_default_value()
-    DefaultValueTest.rrqirq()
-    BiosTest.dram_rapl_option_check()
-    BiosTest.security_boot()
-    BiosTest.vtd()
-    BiosTest.cnd_default_enable()
-    CpuInit01.upi_link_status()
-    CpuInit01.cpu_cores_active_enable_1(unitool)
-    CpuInit01.cpu_cores_active_enable_middle(unitool)
-    CpuInit01.cpu_cores_active_enable_max(unitool)
-    CpuInit01.cpu_cores_disable_sys_normally(unitool)
-    CpuInit01.cores_customized_by_unitool(unitool)
-    CpuInit01.numa_01(unitool)
-    if Os.boot_to_suse():
-        Smbios09.smbios_test_all(ssh_os)
-        Release.equip_mode_flag_check(unitool)
-    Security22.pwd_test_all()
-    MemInit02.dimm_power_mgt_01()
-    MemInit02.dimm_power_mgt_02()
-    MemInit02.dimm_power_mgt_04()
-    MemInit02.dimm_power_mgt_05()
-    MemInit02.dimm_power_mgt_07()
-    MemInit02.memory_compa_001()
-    MemInit02.memory_compa_006(ssh_os)
-    MemInit02.dimm_power_mgt_010(ssh_os)
-    MemInit02.dimm_power_mgt_011(ssh_os)
-    MemInit02.dimm_power_mgt_012(ssh_os)
-    MemInit02.mem_refresh_001(ssh_os)
-    MemInit02.mem_refresh_002(ssh_os)
-    MemInit02.set_mem_freq_001_006()
-    MemInit02.mtrr_max_range(ssh_os)
-    MemInit02.mtrr_fixed_range(ssh_os)
-    Io05.system_info_001()
-    Io05.system_info_003()
-    Release.me_version_status()
-    BiosTest.load_default()
-    MemInit02.rmt_menu_test()
-    PchInit03.usb_default_enable_check()
-    PchInit03.post_gpio_error_check()
-    DefaultValueTest.pcie_port_bandwidth_check()
-    BiosTest.serial_print_keywords()
-    BiosTest.serial_print_error_check()
-    PcieInit04.pcie_resource_mmiol()
-    PcieInit04.pcie_resource_mmioh()
-    PcieInit04.pcie_resource_mmioh_menu()
-    PcieInit04.pcie_resource_64b()
-    PcieInit04.pcie_resource_bus()
-    PcieInit04.pcie_resource_legacyio()
-    PcieInit04.pcie_resource_ioapic()
-    BiosTest.power_efficiency_mode_loop(unitool)
-    BootDevice06.boot_device_type_001()
-    BootDevice06.boot_order_001()
-    if Legacy.enable_legacy_boot():
-        BootDevice06.boot_device_type_002()
-        Io05.system_info_002()
-        # Io05.system_info_004()
-        Legacy.disable_legacy_boot()
-
-
-# Test scope for equipment mode image
-def EquipScope():
-    Release.equip_mode_version_check()
-    Os.boot_to_suse_mfg()
-    Smbios09.smbios_type128(unitool)
-    MemInit02.rmt_equip_test(unitool)
-
-
-class ReleaseBasic:
-    def __init__(self, release_branch):
-        self.branch = release_branch
-
-    def normal_scope(self):  # Non-Equip BIOS Test Scope
-        if UpdateBIOS.update_bios(self.branch):
-            BiosTest.post_test()
-            BiosTest.power_cycling()
-            Release.check_bmc_warning()
-            Release.me_version_status()
-            BiosTest.pxe_test()
-            BiosTest.load_default()
-            BiosTest.security_boot()
-            if Os.boot_to_suse():
-                Smbios09.smbios_test_all(ssh_os)
-            Release.registry_check(self.branch)
-            Release.compare_fdm_log(self.branch)
-            # Release.hpm_upgrade_test(unitool, self.branch)  # need get release hpm bios from huawei
-            Release.hpm_downgrade_test(unitool, self.branch)
-
-    def equip_scope(self):
-        if UpdateBIOS.update_bios_mfg(self.branch):
-            Release.equip_mode_version_check()
-            Smbios09.smbios_type128(unitool)
-            if Os.boot_to_suse():
-                Release.equip_mode_flag_check(unitool)
+import os
+if os.path.exists("ScopeLocal.py"):
+    from ICX2P import ScopeLocal as TestScope
+else:
+    from ICX2P import Scope as TestScope
 
 
 # Define test scope for daily test
 def DailyTest():
-    UpdateBIOS.update_bios('master')
-    TestScope()
-    if UpdateBIOS.update_bios_mfg('master'):
-        EquipScope()
+    TestScope.daily_scope()
 
 
 def ReleaseTest():
-    """Release Basic Function Test"""
-    release_branch = "2288V6_011"
-    release_basic = ReleaseBasic(release_branch)
-    release_basic.normal_scope()
-    release_basic.equip_scope()
+    TestScope.release_scope()
 
 
 def Debug():
-    UpdateBIOS.update_bios('master')
-    CpuInit01.cpu_mem_info()
-    BiosTest.power_efficiency_mode_loop(unitool)
+    TestScope.debug_scope()
