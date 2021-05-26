@@ -32,6 +32,15 @@ class Key:
     SAVE_RESET = [F10, Y]
 
 
+# OS Boot Option Keywords
+class BootOS:
+    SLES = ".*SUSE Linux Enterprise.*"
+    Ubuntu = ".*ubuntu.*"
+    CentOS = ".*CentOS Linux.*"
+    Windows = ".*Windows Boot Manager.*"
+    VMware = ".*VMware ESXi.*"
+
+
 # Messages to identify a specific boot option, page, menu or system status
 class Msg:
     HOTKEY_PROMPT_DEL = 'Press Del go to Setup Utility'
@@ -108,10 +117,10 @@ class Msg:
     # Menu in Boot page
     MENU_BOOT_ORDER = 'UEFI Boot'
     MENU_HDD_BOOT = 'HDD Device'
-    BOOT_OPTION_SUSE = ["SUSE Linux Enterprise\(LUN0\) RAID CARD"]
-    BOOT_OPTION_OS = ["SUSE Linux Enterprise\(LUN0\) RAID CARD"]
+    BOOT_OPTION_SUSE = [BootOS.SLES]
+    BOOT_OPTION_OS = [BootOS.SLES]
     PXE_OPT = 'UEFI HTTPSv4: Network - Port00 SLOT1'
-    UBUNTU = 'P0-ubuntu - HDD 0'
+    UBUNTU = BootOS.Ubuntu
     SUSE_GRUB = 'Welcome to GRUB'
 
     # Firmware version info
