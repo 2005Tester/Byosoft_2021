@@ -51,6 +51,14 @@ class NonDepTest(Redfish):
             if value is not None:
                 self.patch_key_value[att] = value
 
+    def report_init(self):
+        self.result = pd.DataFrame.from_dict(self.patch_key_value, orient="index")  # 整理报告格式
+        self.result.rename(columns={0: "patch_value"}, inplace=True)
+        pdlist = self.result.columns.tolist()
+        col_list = ["default_value", "patch_status", "check_status", "summary", "message"]
+        col_list = col_list[:1] + pdlist + col_list[1:]
+        self.result = self.result.reindex(columns=col_list)
+
     def drop_been_mapped(self):
         """ CurrentValue / Hidden=True / ReadOnly=True """
         dep_data = self.Dependencies()
@@ -82,13 +90,6 @@ class NonDepTest(Redfish):
         for i in except_list:
             self.patch_key_value.pop(i)
         self.patch_key_value.update(self.boot_order_key_value())  # Boot Order取值需要特殊处理
-
-        self.result = pd.DataFrame.from_dict(self.patch_key_value, orient="index")  # 整理报告格式
-        self.result.rename(columns={0: "patch_value"}, inplace=True)
-        pdlist = self.result.columns.tolist()
-        col_list = ["default_value", "patch_status", "check_status", "summary", "message"]
-        col_list = col_list[:1] + pdlist + col_list[1:]
-        self.result = self.result.reindex(columns=col_list)
 
         for k in self.att_pd.index:
             if k not in self.patch_key_value.keys():
@@ -232,6 +233,7 @@ class NonDepTest(Redfish):
         reboot_sut(self.bmc, self.ser)
         self.attributes_data()  # 获取所有变量信息
         self.gen_patch_key_value()  # 生成非默认值数据表
+        self.report_init()
         self.drop_been_mapped()  # 去掉默认情况就存在联动关系的选项
         self.try_patch_all()  # 先尝试批量修改
         reboot_sut(self.bmc, self.ser)
