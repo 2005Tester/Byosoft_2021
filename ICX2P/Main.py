@@ -1,5 +1,5 @@
 import os
-if os.path.exists("ScopeLocal.py"):
+if os.path.exists("ICX2P\ScopeLocal.py"):
     from ICX2P import ScopeLocal as TestScope
 else:
     from ICX2P import Scope as TestScope

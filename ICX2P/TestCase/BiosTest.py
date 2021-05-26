@@ -391,7 +391,11 @@ def serial_print_error_check():
 def power_efficiency_mode_loop(unitool):
     tc = ('028', '[TC028]Testcase_PowerEfficiency_001', 'PowerEfficiency场景配置测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
-    baseline = os.path.join(os.path.dirname(__file__), r"Tools\PowerEfficiency\2288V6_PowerEfficiency.csv")
+    baseline = os.path.join(os.path.dirname(__file__), r"..\Tools\PowerEfficiency\2288V6_PowerEfficiency.csv")
+    if not os.path.exists(baseline):
+        logging.error("Baseline file not found.")
+        result.log_skip()
+        return
     with open(baseline, "r", encoding="utf-8-sig") as file:
         data = list(csv.reader(file))
     option = "Performance Profile"
