@@ -87,4 +87,47 @@ def testcase_boot_fail_policy_001():
         result.log_pass()
         return True
     except AssertionError:
-        result.log_fail()
+        result.log_fail(capture=True)
+
+# Testcase_Com_Resource_001确认存在串口资源选项Select Base I/O Address且默认值为3F8
+# Author: OuYang
+# Precondition:
+# OnStart:
+# OnComplete: SetUp
+def testcase_com_resource_001():
+    tc = ('104', 'Verify COM Information', 'Verify Boot Fail Policy is Boot Retry')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    PATH_MISC_CFG = ['Miscellaneous Configuration']
+    Select_Base_IO = ['<3F8>\s+Select Base I/O Address']
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, PATH_MISC_CFG, 20, 'Select Base I/O Address')
+        logging.info("**Verify Select Base I/O Address default value is 3F8**")
+        assert SetUpLib.verify_info(Select_Base_IO, 20)
+        result.log_pass()
+        return True
+    except AssertionError:
+        result.log_fail(capture=True)
+
+# Testcase_NetworkMode_001检查网口模式选项存在Dedicated\Auto\shared-PCIE\Onboard OCP Shared四种模式，默认值为Dedicated
+# Author: OuYang
+# Precondition:
+# OnStart:
+# OnComplete: SetUp
+def testcase_NetworkMode_001():
+    tc = ('105', 'Verify iBMC Network Mode Information', 'Verify iBMC Network Mode ')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    PAGE_SERVER_MGMT = 'iBMC version'
+    PATH_IBMC_CFG = ['iBMC LAN Configuration']
+    iBMC_Network_Mode_Dedicate =['<Dedicated>']
+    iBMC_Network_Mode_Value = 'DedicatedAutoShared\-PCIEOnboard OCP Shared'
+    try:
+        assert SetUpLib.boot_to_page(PAGE_SERVER_MGMT)
+        assert SetUpLib.enter_menu(Key.DOWN, PATH_IBMC_CFG, 20, '<Dedicated>')
+        assert SetUpLib.locate_option(Key.DOWN, iBMC_Network_Mode_Dedicate, 20)
+        logging.info("**Verify iBMC Network Mode Address default value is Dedicated**")
+        assert SetUpLib.verify_supported_values(iBMC_Network_Mode_Value)
+        result.log_pass()
+        return True
+    except AssertionError:
+        result.log_fail(capture=True)
