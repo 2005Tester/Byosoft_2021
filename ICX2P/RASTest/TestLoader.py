@@ -12,6 +12,7 @@ from io import StringIO
 local_path = os.path.dirname(sys.argv[0])
 sys.path.append(os.path.abspath(os.path.join(local_path, "../..")))
 from ICX2P.RASTest.RasConfig import *
+import commlibs.mc.xnmmc.xnmAddressTranslator as Tran
 import Common.Unitool as Setup
 import Common.ssh as ssh
 
@@ -51,20 +52,51 @@ def excmd(cmd, echo=True, delay=0, _halt=True, _go=True):
         return int(result, 16)
 
 
+def dram_addr_trans(socket, mc, ch, dimm, rank, bank_group, bank, row, column, mem_type="ddr4"):
+    trans = Tran.TranslationInfo()
+    trans.mem_type = mem_type
+    trans.socket_id = socket
+    trans.mc = mc
+    trans.ch = ch
+    trans.phys_rank = rank
+    trans.chip_id = 0
+    trans.dimm = dimm
+    trans.bank_group = bank_group
+    trans.bank = bank
+    trans.row = row
+    trans.column = column
+    Tran.dram_address_to_core_address(trans, 2)
+    result_addr = trans.sub_addr_dict.get("FM").core_addr
+    if result_addr == -1:
+        logcustom("Dram Adddress Translate Error", "ired")
+        return
+    return result_addr
+
+
 #  Inject Mem CE/UCE, count为注错次数
-def inj_mem(count=1, dev=1, dev1msk=0, socket=Loc.msocket, channel=Loc.ch, dimm=Loc.dimm, rank=Loc.rank, bank_group=Loc.bg, bank=Loc.ba, errType="ce", addr=None, delay=Delay.mem):
+def inj_mem(count=1, dev=1, dev0msk=0x2, socket=Loc.msocket, channel=Loc.ch, dimm=Loc.dimm, rank=Loc.rank, bank_group=Loc.bg, bank=Loc.ba, errType="ce", addr=None, delay=Delay.mem):
+    dev1msk = 0
     if errType == "uce":
         delay = Delay.mem_uce  # 内存UCE注错后等待3分钟
         dev1msk = 0x4
-    excmd(Cmd.ei_dev.format(dev, 2, 3, dev1msk))
+    excmd(Cmd.ei_dev.format(repr(dev), repr(dev0msk), 3, repr(dev1msk)))
     if addr:
-        argvs = "addr={}, errType={}, showErrorRegs=True".format(hex(addr), repr(errType))
+        argvs = "addr={}, errType={}".format(hex(addr), repr(errType))
         for i in range(count):
             excmd(Cmd.inj_mem.format(argvs), delay=delay)
         return
     for i in range(count):
-        argvs = "socket={}, channel={}, dimm={}, rank={}, bank_group={}, bank={}, errType={}, showErrorRegs=True".format(socket, channel, dimm, rank, bank_group, bank, repr(errType))
+        argvs = "socket={}, channel={}, dimm={}, rank={}, bank_group={}, bank={}, errType={}".format(socket, channel, dimm, rank, bank_group, bank, repr(errType))
         excmd(Cmd.inj_mem.format(argvs), delay=delay)
+
+
+def inj_mem_rc(count=0, dev0=1, dev0msk=0x2, socket=Loc.msocket, channel=Loc.ch, dimm=Loc.dimm, rank=Loc.rank, bank_group=0, bank=0, row=0, column=0, delay=Delay.mem):
+    """inject mem error to specific row columns"""
+    mc = channel // len(Sys.CHs)
+    ch = channel % len(Sys.CHs)
+    addr_tran = dram_addr_trans(socket, mc, ch, dimm, rank, bank_group, bank, row, column)
+    excmd('ei.sa2da_table({}, {})'.format(hex(addr_tran), hex(addr_tran + 0x100)), echo=True)
+    inj_mem(count=count, dev=dev0, dev0msk=dev0msk, addr=addr_tran, errType="ce", delay=delay)
 
 
 #  Inject PCIE CE/UCE, count为注错次数
