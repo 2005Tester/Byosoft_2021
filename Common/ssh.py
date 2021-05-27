@@ -148,6 +148,7 @@ class SshConnection:
     # send commands one by one through ssh in interactive mode    
     def interaction(self, cmds, strs, timeout=300):
         op = self.ssh_client.invoke_shell()
+        res = ''
         for i in range(0, len(cmds)):
             logging.debug('Sending: {0}'.format(cmds[i].strip("\n")))
             op.send(cmds[i])
@@ -169,7 +170,7 @@ class SshConnection:
         #    logging.info('Command successful.')
         op.close()
         self.ssh_client.close()
-        return True
+        return True, res.decode('utf-8')
 
     def is_command_success(self, cmd, expected_result):
         op = self.ssh_client.invoke_shell()
