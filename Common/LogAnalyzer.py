@@ -85,29 +85,6 @@ class LogAnalyzer:
         logging.info("Core count is correct")
         return True
 
-
-    # Check difference of two log files.
-    # Return list of diffs,  return True if log_expected or log_actual not found
-    @staticmethod
-    def check_diff(log_expected, log_actual):
-        logging.info("Comparing {0} and {1}".format(log_expected, log_actual))
-        try:
-            with open(log_expected, 'r') as f:
-                content_expected = f.read().splitlines()
-            with open(log_actual, 'r') as f:
-                content_actual = f.read().splitlines()
-        except FileNotFoundError:
-            logging.error("Please check whether log file exists.")
-            return True
-        d = difflib.Differ()
-        diffs = list(d.compare(content_expected, content_actual))
-        res = []
-        for diff in diffs:
-            if not re.search("^\s", diff):
-                res.append(diff)
-        return res
-
-
     # Send a command via ssh, dump the result to current test log directory and diff with expected_log 
     # return Ture if no diff found
     def dump_and_verify(self, ssh, command, expected_log):

@@ -143,7 +143,7 @@ def smbios_test(ssh, type):
     tcid = str(400+type)
     tc = (tcid, '[TC{0}]SMBIOS Type {1}'.format(tcid, type), '检查SMBIOS Type {0}信息'.format(type))
     result = ReportGen.LogHeaderResult(tc)
-    expted_log = os.path.join(dirname(__file__), 'Tools\\Smbios\\type{0}.txt'.format(type))
+    expted_log = 'ICX2P\\Tools\\Smbios\\type{0}.txt'.format(type)
     if not P.dump_and_verify(ssh, 'dmidecode -t {0}'.format(type), expted_log):
         result.log_fail()
         return
