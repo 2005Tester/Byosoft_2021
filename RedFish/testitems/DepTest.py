@@ -205,6 +205,8 @@ class DepenTest(Redfish):
                 continue
             for mf in depen["Dependency"]["MapFrom"]:
                 key = mf["MapFromAttribute"]
+                if key in mf_dic.keys():  # 避免PATHC Value被覆盖修改
+                    continue
                 value = self.not_the_value(key, mapto_value, mapto_name)
                 kv = {key: value}
                 if mf["MapTerms"] == "OR":  # OR的只选择一个

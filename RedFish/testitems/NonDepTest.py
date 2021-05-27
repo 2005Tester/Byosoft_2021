@@ -50,6 +50,7 @@ class NonDepTest(Redfish):
             value = self.get_non_default_value(att)
             if value is not None:
                 self.patch_key_value[att] = value
+        self.patch_key_value.update(self.boot_order_key_value())  # Boot Order取值需要特殊处理
 
     def report_init(self):
         self.result = pd.DataFrame.from_dict(self.patch_key_value, orient="index")  # 整理报告格式
@@ -89,7 +90,6 @@ class NonDepTest(Redfish):
         except_list = config.BootInvolved.MemPop + config.BootInvolved.Exclusive + config.BootInvolved.ReadOnly
         for i in except_list:
             self.patch_key_value.pop(i)
-        self.patch_key_value.update(self.boot_order_key_value())  # Boot Order取值需要特殊处理
 
         for k in self.att_pd.index:
             if k not in self.patch_key_value.keys():
