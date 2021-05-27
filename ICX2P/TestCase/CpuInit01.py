@@ -351,6 +351,12 @@ def numa_enabled_verify(): # 进入 Numa page，设置 Numa 为 Enabled，到 su
         return False
     return True
 
+
+# Author: Fubaolin
+# 内存NUMA特性设置测试
+# Precondition: linux-OS
+# OnStart: NA
+# OnComplete: NA
 def numa_01(unitool):
     tc = ('210', '[TC210] Testcase_NUMA_001', '内存NUMA特性设置测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
@@ -363,14 +369,78 @@ def numa_01(unitool):
             logging.info('numa_disabled pass')
         else:
             logging.info('numa_disabled fail')
-            return False
+            return result.log_fail(capture=True)
         assert numa_enabled_verify()
         nodes_enab = SshLib.execute_command(Sut.OS_SSH, Num_cmd).split('nodes')[0].split(':')[1]
         if int(nodes_enab) == 2:
             logging.info('numa_enabled pass')
         else:
             logging.info('numa_enabled fail')
-            return False
+            return result.log_fail(capture=True)
+        logging.info("正常还原")
+        result.log_pass()
+    except AssertionError:
+        logging.info("异常还原")
+        result.log_fail(capture=True)
+    finally:
+        reset_cpu_setting(unitool, cmd_var)
+
+
+# Author: Fubaolin
+# NUMA Distance距离与硬件结构匹配测试
+# Precondition: linux-OS
+# OnStart: NA
+# OnComplete: NA
+def numa_02():
+    tc = ('211', '[TC211] Testcase_NUMA_002', 'NUMA Distance距离与硬件结构匹配测试')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    Num_cmd = r'numactl -H'
+    try:
+        assert SetUpLib.boot_with_hotkey(Key.F11, "Boot Manager Menu", 300)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 20, "Welcome to GRUB")
+        assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE, 170)
+        logging.info("Suse_OS Boot Successful")
+        numa_h = SshLib.execute_command(Sut.OS_SSH, Num_cmd)
+        numa_n =int(numa_h.split("nodes")[0].split(":")[1].replace(' ', '')) #获取CPU数量
+        i = 0
+        for i in range(numa_n):
+            numa_var = list(numa_h.split("node   0   1")[1].split(r'{}:'.format(i))[1].splitlines()[0].replace('  ', ' '). strip().split(' '))
+            # logging.info(numa_var)
+            if numa_var[i] == '10': #  CPU自己与自己距离为‘10’
+                logging.info("内部CPU距离正常")
+                numa_var.pop(i)
+                for j in range(numa_n-1):
+                    if numa_var[j] =='20': # CPU与其他cpu 距离为‘20’
+                        logging.info("外部CPU距离正常")
+                    else:
+                        logging.info('外部CPU距离-fail')
+                        return result.log_fail(capture=True)
+            else:
+                logging.info("内部CPU距离-fail")
+                return result.log_fail(capture=True)
+        result.log_pass()
+    except AssertionError:
+        result.log_fail()
+
+
+# Author: Fubaolin
+# 关闭NUMA内存条1DPC反复复位测试
+# Precondition: linux-OS,Unitool,
+# OnStart: NA
+# OnComplete: NA
+def numa_03(unitool):
+    tc = ('212', '[TC212] Testcase_NUMA_003', '关闭NUMA内存条1DPC反复复位测试')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    cmd_var = 'NumaEn:1'
+    n = 1
+    try:
+        assert numa_disabled_verify()
+        while n < 5:  # 系统反复复位，暂定4次
+            res = SshLib.execute_command(Sut.OS_SSH, r'date')
+            logging.info("system reboot pass, system-Time is : {} ".format(res))
+            assert BmcLib.force_reset()
+            n = n + 1
+        # 还原系统设置
         logging.info("正常还原")
         result.log_pass()
     except AssertionError:
