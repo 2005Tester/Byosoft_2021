@@ -37,7 +37,7 @@ class SshUnitool(SshConnection):
         super(SshUnitool, self).__init__(self.ip, self.user, self.pw)
 
     def sut_online(self):
-        ping_try = subprocess.Popen(("ping {}".format(self.ip)), stdout=subprocess.PIPE)
+        ping_try = subprocess.Popen(("ping -n 5 -w 2000 {}".format(self.ip)), stdout=subprocess.PIPE)
         result = ping_try.stdout.read().decode("gbk")
         if "TTL=" in result:
             return True
@@ -159,9 +159,13 @@ class SshUnitool(SshConnection):
     # 读到的值符合预期: 全部符合预期返回True; 任意一个不符合预期: 返回False
     def check(self, **kwargs):
         fail_cnt = 0
+        read_dic = self.read(*kwargs)
+        if not isinstance(read_dic, dict):
+            return
         for key, value in kwargs.items():
-            get_data = self.read(key)[key]
-            fail_cnt = fail_cnt+1 if (str(get_data) != str(value)) else fail_cnt
+            read_val = read_dic.get(key)
+            if str(read_val) != str(value):
+                fail_cnt += 1
         result_flag = "mismatch" if fail_cnt else "match"
         cprint('-- [Check] Current BIOS config {}'.format(result_flag), self.loginfo)
         self.close_shell()
