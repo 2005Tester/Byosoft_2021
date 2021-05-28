@@ -311,6 +311,7 @@ def pcie_resource_lspci_legacy():
     try:
         assert SetUpLib.enable_legacy_boot()
         lspci_info = get_lspci_info()
+        assert lspci_info, "Invalid lspci info data"
         reboot_cnt = 1
         for cnt in range(9):
             current_lspci = get_lspci_info()
@@ -324,3 +325,27 @@ def pcie_resource_lspci_legacy():
         result.log_fail()
     finally:
         SetUpLib.disable_legacy_boot()
+
+
+# Author: WangQingshan
+# Setup菜单提供ASPM选项测试
+# Precondition: Linux
+# OnStart: NA
+# OnComplete: NA
+def aspm_menu_default():
+    tc = ('639', '[TC639] Testcase_ASPM_001', 'Setup菜单提供ASPM选项测试')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+
+    aspm_global = r"PCIe ASPM Support \(Global\)"
+    aspm_values = ["Disabled", "Per individual port", "L1 Only"]
+    aspm_default = "Disabled"
+
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, [Msg.MISC_CONFIG], 15, "Network CDN")
+        assert SetUpLib.locate_option(Key.DOWN, [aspm_global, f"<{aspm_default}>"], 15)  # 验证默认值
+        assert SetUpLib.verify_supported_values("".join(aspm_values))  # 验证可选值
+        result.log_pass()
+    except Exception as e:
+        logging.error(e)
+        result.log_fail()
