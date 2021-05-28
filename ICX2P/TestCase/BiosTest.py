@@ -27,15 +27,17 @@ P = LogAnalyzer(SutConfig.LOG_DIR)
 def post_test():  # POST: POST Log(TBD) and Information Check
     tc = ('002', '[TC002]POST Information Test', 'POST Information Test')
     result = ReportGen.LogHeaderResult(tc)
-    if not BmcLib.force_reset():
-        result.log_fail()
-        return
     msg_list = [Msg.HOTKEY_PROMPT_DEL, Msg.HOTKEY_PROMPT_F11, Msg.HOTKEY_PROMPT_F12, Msg.HOTKEY_PROMPT_F6]
-    if not Sut.BIOS_COM.waitStrings(msg_list, timeout=300):  # 考虑到满载配置
+    capture_start = "STOP_DIMMINFO_SYSTEM_TABLE"
+    capture_end = "Press F6 go to SP boot"
+    try:
+        assert BmcLib.force_reset()
+        log_cut = SerialLib.cut_log(Sut.BIOS_COM, capture_start, capture_end, 60, 120)
+        assert MiscLib.verify_msgs_in_log(msg_list, log_cut)
+        result.log_pass()
+        return True
+    except AssertionError:
         result.log_fail()
-        return
-    result.log_pass()
-    return True
 
 
 # PM: Warm reset n times, Cold reset n times and AC (TBD)
