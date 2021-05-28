@@ -122,8 +122,8 @@ class ReportGenerator:
         tc_ids = []
         with open(self.log, 'r') as f:
             for line in f.readlines():
-                if re.search("<TC\d+><Tittle>.+:Start", line):
-                    tc_ids.append(re.findall("(TC\d+)", line))
+                if re.search(r"<TC\d+><Tittle>.+:Start", line):
+                    tc_ids.append(re.findall(r"(TC\d+)", line))
         return tc_ids
 
     # get test duration for a single test case by tese case if
@@ -131,13 +131,13 @@ class ReportGenerator:
         duration = 0
         for line in self.load_test_log():
             if re.search("<{0}><Tittle>.+:Start".format(id), line):
-                if re.findall("(.+)\sINFO.+:Start", line):
-                    start_time = re.findall("(.+)\sINFO.+:Start", line)[0]
+                if re.findall(r"(.+)\sINFO.+:Start", line):
+                    start_time = re.findall(r"(.+)\sINFO.+:Start", line)[0]
                 else:
                     start_time = "2000-01-01 00:00:01"
             if re.search("<{0}><Result>.+:.+".format(id), line):
-                if re.findall("(.+)\s(?:INFO|DEBUG|ERROR).+", line):
-                    end_time = re.findall("(.+)\sINFO.+", line)[0]
+                if re.findall(r"(.+)\s(?:INFO|DEBUG|ERROR).+", line):
+                    end_time = re.findall(r"(.+)\sINFO.+", line)[0]
                 else:
                     end_time = start_time
         try:
@@ -152,12 +152,12 @@ class ReportGenerator:
     # get start time and total time spent in a test cycle
     def get_total_time(self):
         testlog = self.load_test_log()
-        start_time = re.findall("(.+)\s(?:INFO|DEBUG|ERROR).+", testlog[0])[0]
-        end_time = re.findall("(.+)\s(?:INFO|DEBUG|ERROR):", testlog[-1])[0]
+        start_time = re.findall(r"(.+)\s(?:INFO|DEBUG|ERROR).+", testlog[0])[0]
+        end_time = re.findall(r"(.+)\s(?:INFO|DEBUG|ERROR):", testlog[-1])[0]
         total_time = self.convert_time(end_time) - self.convert_time(start_time)
         m, s = divmod(total_time, 60)
         h, m = divmod(m, 60)
-        total_time = "%02d:%02d:%02d" %(h, m, s)
+        total_time = "%02d:%02d:%02d" % (h, m, s)
         return start_time, total_time
 
     # get test result by test case id
@@ -174,6 +174,7 @@ class ReportGenerator:
         all_log = self.load_test_log()
         start_index = 0
         end_index = 0
+        err_index = 0
         # print(tcid)
         for line in all_log:
             if re.search("<{0}><Tittle>.+:Start".format(tcid), line):
@@ -182,12 +183,16 @@ class ReportGenerator:
             if re.search("<{0}><Result>.+:.+".format(tcid), line):
                 end_index = all_log.index(line)
                 # print("end:{0}".format(end_index))
+            if re.search("ERROR: Exception:", line):
+                err_index = all_log.index(line)
         if end_index == 0:
-            end_index = start_index + 10
+            end_index = err_index
+        else:
+            end_index = start_index + 1
 
-        try: 
+        try:
             for i in range(start_index, end_index+1):
-                log.append(all_log[i])  
+                log.append(all_log[i])
         except UnboundLocalError:
             logging.debug("get_tc_log: failed to get index, <{0}><Tittle>.+:Start or <{0}><Result>.+:.+ not found".format(tcid))
         return log
@@ -285,7 +290,6 @@ class ReportGenerator:
             with open(dst, 'w', encoding='utf-8') as new:
                 new.write(data)
 
-
     # collect and update test case result for email
     def collect_test_result_email_format(self):
         testReport = {}
@@ -328,11 +332,11 @@ class ReportGenerator:
     def get_upload_files(self):
         dir, fi = os.path.split(self.log)
         files = glob.glob(os.path.join(dir, '*.log'))    
-        html_report = os.path.join(dir,'report.html')
+        html_report = os.path.join(dir, 'report.html')
         files.append(html_report)
         files_for_upload = []
         for file in files:
-            files_for_upload.append("('upload', ('serial.log', " + "open(" + file+ ", 'rb')))")
+            files_for_upload.append("('upload', ('serial.log', " + "open(" + file + ", 'rb')))")
         return files_for_upload
 
     # post test result to web
@@ -341,7 +345,7 @@ class ReportGenerator:
 
         dir, fi = os.path.split(self.log)
         report_files = [
-#            ('upload', ('serial.log', open(os.path.join(dir, 'serial.log'), 'rb'))),
+            # ('upload', ('serial.log', open(os.path.join(dir, 'serial.log'), 'rb'))),
             ('upload', ('test.log', open(os.path.join(dir, 'test.log'), 'rb')))
         ]
 
