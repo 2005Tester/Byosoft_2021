@@ -51,7 +51,7 @@ def navegate_to_mem_fre_option(n=1):
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, Msg.MEMORY_CONFIG], 10, Msg.MEM_FRE), "enter_menu -> fail"
         assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM_FRE, '<Auto>'], 14), "locate_option -> fail"
         SetUpLib.send_keys([Key.F6 * n, Key.F10, Key.Y])
-        assert SetUpLib.boot_suse_from_bm(), "boot_to_os -> fail"
+        assert SetUpLib.continue_to_boot_suse_from_bm(), "boot_to_os -> fail"
         return True
     except AssertionError:
         return
@@ -370,7 +370,7 @@ def mem_refresh_001(ssh_os):
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, Msg.MEMORY_CONFIG], 10, Msg.MEM_FRE), "enter_menu -> fail"
         assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM2X_REFRESH, '<Disabled>'], 10), "locate_option -> fail"
         SetUpLib.send_keys([Key.F5, Key.F10, Key.Y])
-        assert SetUpLib.boot_suse_from_bm(), "boot_to_os -> fail"
+        assert SetUpLib.continue_to_boot_suse_from_bm(), "boot_to_os -> fail"
         assert (PlatMisc.cscripts_inband_register(ssh_os, cscripts_cmd_refresh, exp_list))
         result.log_pass()
     except AssertionError:
@@ -392,7 +392,7 @@ def mem_refresh_002(ssh_os):
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, Msg.MEMORY_CONFIG], 10, Msg.MEM_FRE), "enter_menu -> fail"
         assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM2X_REFRESH, '<Disabled>'], 10), "locate_option -> fail"
         SetUpLib.send_keys([Key.F6 * 3, Key.F10, Key.Y])
-        assert SetUpLib.boot_suse_from_bm(), "boot_to_os -> fail"
+        assert SetUpLib.continue_to_boot_suse_from_bm(), "boot_to_os -> fail"
         assert (PlatMisc.cscripts_inband_register(ssh_os, cscripts_cmd_refresh, exp_list))
         result.log_pass()
     except AssertionError:

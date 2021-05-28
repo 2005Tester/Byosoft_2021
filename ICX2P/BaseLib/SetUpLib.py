@@ -286,6 +286,18 @@ def boot_suse_from_bm():
     return True
 
 
+# Boot Suse from boot manager without any power action, e.g, used wth F10 + Y in Setup
+def continue_to_boot_suse_from_bm():
+    if not continue_to_bootmanager():
+        return
+    if not enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 8, Msg.SUSE_GRUB):
+        return
+    # if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE):
+    #     return
+    logging.info("OS Boot Successful")
+    return True
+
+
 # Move a specific boot option up
 def move_boot_option_up(boot_option, count):
     hdd_group = [Msg.MENU_BOOT_ORDER, Msg.MENU_HDD_BOOT]
