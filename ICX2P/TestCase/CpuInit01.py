@@ -448,3 +448,30 @@ def numa_03(unitool):
         result.log_fail(capture=True)
     finally:
         reset_cpu_setting(unitool, cmd_var)
+
+
+# Author: Fubaolin
+# CPU BIST自检结果测试
+# Precondition: linux-OS
+# OnStart: NA
+# OnComplete: NA
+def cpu_compa_02():
+    tc = ('213', '[TC213] Testcase_CPU_COMPA_002', 'CPU BIST自检結果测试')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    try:
+        assert SetUpLib.boot_with_hotkey(Key.F11, "Boot Manager Menu", 300)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 20, "Welcome to GRUB")
+        assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE, 170)
+        logging.info("Suse_OS Boot Successful")
+        fail_dir = SutConfig.LOG_DIR + r'\TC213.log'
+        with open(fail_dir, 'r+',  encoding='utf-8') as f:
+            line_text = f.readlines()
+            for str in line_text:
+                if 'bist' in str:
+                    logging.info('found "bist", fail')
+                    return result.log_fail(capture=True)
+                else:
+                    logging.info('not found "bist",pass ')
+        result.log_pass()
+    except AssertionError:
+        result.log_fail()
