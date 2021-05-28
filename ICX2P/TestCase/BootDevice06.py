@@ -70,7 +70,6 @@ def boot_order_001():
         assert SetUpLib.boot_to_page(Msg.PAGE_BOOT)
         assert SetUpLib.enter_menu(Key.DOWN, ['Boot Type Order'], 12, 'Hard Disk Drive')
         assert SetUpLib.verify_info(['DVD-ROM Drive', 'PXE', 'Others'], 7)
-        SetUpLib.send_key(Key.CTRL_ALT_DELETE)
         assert SetUpLib.boot_suse_from_bm()
         assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
         result.log_pass()
