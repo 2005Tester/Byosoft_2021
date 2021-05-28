@@ -49,6 +49,7 @@ OS_PASSWORD = '1'
 # Tool definition
 UNI_PATH = "/root/flashtool/unitool"
 RW_PATH = '/root/rw'
+CSCRIPTS_PATH = '/root/Cscripts'
 
 
 # BIOS Firmware Directory, Must manual copy image files to the directory before test
