@@ -83,7 +83,6 @@ class NonDepTest(Redfish):
         default = self.att_pd.loc[name, "DefaultValue"]
         logging.info(f"BootType load default to \"{default}\"")
         if self.write(**{name: default}).result:
-            reboot_sut(self.bmc, self.ser)
             logging.info("BootType load default successfully")
 
     def try_patch_all(self):
@@ -248,6 +247,8 @@ class NonDepTest(Redfish):
             self.result.loc[key, "check_status"] = "pass"
         self.gen_report("非联动测试结果批量修改")  # 批量修改结果生成报告
         self.boot_type_load_default()  # 恢复 BootType为UEFI（因为POST无法恢复）
+        self.load_default()
+        reboot_sut(self.bmc, self.ser)
         self.narrow_down_fail_items()  # 测试Fail的10个1组，尝试PATCH，并更新测试结果数据表
         self.single_patch_test()  # 剩下的Fail选项 + 非默认情况下有联动关系的单独测试， 每次PATCH一项并重启，更新测试结果数据表
         # 测完恢复默认

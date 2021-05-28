@@ -16,7 +16,7 @@ import pandas as pd
 from copy import deepcopy
 from RedFish.commlibs.commtools import to_excel, reboot_sut
 from Common.RedfishLib import Redfish
-from RedFish.config import bmc_ip, bmc_user, bmc_pw
+from RedFish.config import bmc_ip, bmc_user, bmc_pw, TEST_RESULT_DIR
 
 """
 【测试配置】
@@ -58,7 +58,7 @@ class DepenTest(Redfish):
         self.map_from_pd = pd.DataFrame()
         self.depens = self.Dependencies()
         self.mapto_link = self.mapto_info()
-        self.registry_dump(dump_json=True)
+        self.registry_dump(dump_json=True, path=TEST_RESULT_DIR)
 
     def attributes_info(self, dump: bool = False):
         """ 以AttributeName为索引返回 DataFrame，可选择生成Excel文件用于手动检查 """

@@ -20,7 +20,7 @@ COM = "COM7"
 os_ip = '192.168.2.150'
 os_user = "root"
 os_pw = "root"
-os_timeout = 1200
+os_timeout = 900
 
 # request settings to communicate with BMC
 GET_URL = "https://{}/redfish/v1/Systems/1/Bios/".format(bmc_ip)
@@ -86,7 +86,7 @@ INCLUDE_LIST = {
 class BootInvolved:
     Exclusive = ["BootTypeOrder0", "BootTypeOrder1", "BootTypeOrder2", "BootTypeOrder3"]
     MemPop = ["MemChannelEnable[0]"]
-    BootOS = ["PciePortDisable[7]", "BootType", "PowerOnPassword"]
+    BootOS = ["BootType", "PowerOnPassword"]
     ReadOnly = ["OemSecureBoot"]
 
 
