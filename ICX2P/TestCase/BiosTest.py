@@ -161,7 +161,7 @@ def load_default():
         return
 
     # change option boot fail policy from "Boot Retry" to "Cold Boot"
-    logging.info("change option boot fail policy from Boot Retry to Cold Boot")
+    logging.info("***change option boot fail policy from Boot Retry to Cold Boot")
     if not SetUpLib.locate_option(Key.DOWN, boot_fail_policy, 15):
         result.log_fail(capture=True)
         return
@@ -169,14 +169,14 @@ def load_default():
     result.capture_screen()
 
     # change pxe option from IPV4 to IPV6
-    logging.info("change pxe option from IPV4 to IPV6")
+    logging.info("***change pxe option from IPV4 to IPV6")
     if not SetUpLib.locate_option(Key.DOWN, pxe_boot, 15):
         result.log_fail(capture=True)
         return
     SetUpLib.send_key(Key.F5)
     result.capture_screen()
 
-    logging.info("Save and reset.")
+    logging.info("***Save and reset.")
     SetUpLib.send_keys([Key.F10, Key.Y])
     time.sleep(15)
 
@@ -188,22 +188,21 @@ def load_default():
     if not SetUpLib.verify_options(Key.DOWN, changed_options, 15):
         result.log_fail(capture=True)
         return
-    logging.info("Modified options are verified.")
+    logging.info("***Modified options are verified.")
 
-    logging.info("Reset defaul by hotkey")
+    logging.info("***Reset defaul by hotkey")
     SetUpLib.send_keys([Key.F9, Key.Y, Key.F10, Key.Y], delay=5)
     result.capture_screen()
     time.sleep(15)
 
     # Verify whether options are reset to default
-    if not SetUpLib.boot_to_page(Msg.PAGE_BOOT):
+    logging.info("***Verify whether options are reset to default")
+    if not SetUpLib.continue_to_page(Msg.PAGE_BOOT):
         result.log_fail(capture=True)
         return
-    result.capture_screen()
     if not SetUpLib.verify_options(Key.DOWN, default_options, 15):
         result.log_fail(capture=True)
         return
-    result.capture_screen()
 
     result.log_pass()
     return True

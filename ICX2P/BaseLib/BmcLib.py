@@ -65,6 +65,7 @@ def force_reset():
         if power_on():
             return True
     else:
+        logging.info("[BmcLib]Force reset")
         cmd_reset = 'ipmcset -d frucontrol -v 0\n'
         ret_reset = 'Do you want to continue'
         cmd_confirm = 'Y\n'

@@ -174,7 +174,6 @@ class ReportGenerator:
         all_log = self.load_test_log()
         start_index = 0
         end_index = 0
-        err_index = 0
         # print(tcid)
         for line in all_log:
             if re.search("<{0}><Tittle>.+:Start".format(tcid), line):
@@ -182,16 +181,12 @@ class ReportGenerator:
                 # print("start:{0}".format(start_index))
             if re.search("<{0}><Result>.+:.+".format(tcid), line):
                 end_index = all_log.index(line)
-                # print("end:{0}".format(end_index))
-            if re.search("ERROR: Exception:", line):
-                err_index = all_log.index(line)
+
         if end_index == 0:
-            end_index = err_index
-        else:
             end_index = start_index + 1
 
         try:
-            for i in range(start_index, end_index+1):
+            for i in range(start_index, end_index + 1):
                 log.append(all_log[i])
         except UnboundLocalError:
             logging.debug("get_tc_log: failed to get index, <{0}><Tittle>.+:Start or <{0}><Result>.+:.+ not found".format(tcid))
