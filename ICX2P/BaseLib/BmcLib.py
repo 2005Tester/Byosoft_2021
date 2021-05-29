@@ -38,9 +38,12 @@ def power_on():
         if not is_power_off():
             return True
         try_count -= 1
-    if try_count <= 0 and is_power_off():
+    if is_power_off():
         logging.error("Power on failed")
         return
+    else:
+        logging.info("Power status is already on.")
+        return True
 
 
 # power off sut by BMC command
@@ -64,6 +67,8 @@ def force_reset():
     if is_power_off():
         if power_on():
             return True
+        else:
+            logging.error("[BmcLib] power_on return false.")
     else:
         logging.info("[BmcLib]Force reset")
         cmd_reset = 'ipmcset -d frucontrol -v 0\n'

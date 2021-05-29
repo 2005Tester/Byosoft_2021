@@ -88,7 +88,7 @@ def power_cycling(n=5):
 
 # PXE Test
 def pxe_test(n=1):
-    tc = ('004', 'PXE Test', 'PXE Test')
+    tc = ('004', '[TC004] PXE Hotkey Test', 'PXE HotKey Test')
     result = ReportGen.LogHeaderResult(tc)
     for i in range(n):
         if not SetUpLib.boot_with_hotkey(Key.F12, 'NBP file downloaded successfully', 180):
