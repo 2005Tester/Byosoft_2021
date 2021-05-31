@@ -303,6 +303,8 @@ def pcie_resource_lspci_legacy():
             for bdf in bdf_list:
                 pcie_cmd = f"lspci -s {bdf} -vvv"
                 pci_info = SshLib.execute_command(Sut.OS_SSH, pcie_cmd)
+                if not pci_info:
+                    return
                 lspci_info.append(pci_info)
             return lspci_info
         except Exception as e0:
