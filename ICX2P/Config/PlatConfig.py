@@ -72,7 +72,7 @@ class Msg:
     MEMORY_TOP = 'Memory Topology'
     ADV_POWER_MGF_CONFIG = 'Advanced Power Mgmt. Configuration'
     MEM_FRE = 'Memory Frequency'
-    MEM2X_REFRESH = '2x Refresh Enable'
+    MEM2X_REFRESH = 'Refresh Options'
     PFM_PRO = 'Performance Profile'
     CPU_P_STATE = 'CPU P State Control'
     PER_CPU = 'Per-CPU Information'

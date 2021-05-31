@@ -68,10 +68,10 @@ def dimm_power_mgt_01():
         assert (SetUpLib.boot_to_page(Msg.PAGE_INFO))
         if SetUpLib.verify_info(['CPU Number\s+2'], 7):
             assert navigate_to_mem_fre(), 'navigate to mem freq page -> fail'
-            assert (SetUpLib.verify_options(Key.DOWN, [[Msg.MEM2X_REFRESH, '<Disabled>']], 7))
+            assert (SetUpLib.verify_options(Key.DOWN, [[Msg.MEM2X_REFRESH, '<Dynamic Mode>']], 7))
         elif SetUpLib.verify_info(['CPU Number\s+4'], 7):
             assert navigate_to_mem_fre(), 'navigate to mem freq page -> fail'
-            assert (SetUpLib.verify_options(Key.DOWN, [[Msg.MEM2X_REFRESH, '<Extended>']], 7))
+            assert (SetUpLib.verify_options(Key.DOWN, [[Msg.MEM2X_REFRESH, '<Static 2X Mode>']], 7))
         else:
             logging.info('Unsupported CPU Number...')
             raise AssertionError
@@ -174,7 +174,7 @@ def dimm_power_mgt_07():
 def dimm_power_mgt_010(ssh_os):
     tc = ('705', '[TC705]Testcase_MemPower_010', '内存省电模式使能PPD时寄存器状态测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
-    exp_list = ['0x00000001:ddrt_cke_en(24:24)', '0x00000001:ppd_en(09:09)', '0x00000000:apd_en(08:08)']
+    exp_list = ['0x00000001:ddrt_cke_en(24:24)', '0x00000001:ppd_en(09:09)', '0x00000000:apd_en(08:08)', '0x0000000d:cke_idle_timer(07:00)']
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.MEM_POWER_ADV)
@@ -185,7 +185,7 @@ def dimm_power_mgt_010(ssh_os):
         assert (SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
         assert (SetUpLib.boot_to_bootmanager())
         assert (SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 12, Msg.SUSE_GRUB))
-        assert (PlatMisc.cscripts_inband_register(ssh_os, cscripts_cmd_cke, exp_list, start=3, stop=6))
+        assert (PlatMisc.cscripts_inband_register(ssh_os, cscripts_cmd_cke, exp_list))
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
@@ -199,7 +199,7 @@ def dimm_power_mgt_010(ssh_os):
 def dimm_power_mgt_011(ssh_os):
     tc = ('706', '[TC706]Testcase_MemPower_011', '内存省电模式使能APD时寄存器状态测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
-    exp_list = ['0x00000001:ddrt_cke_en(24:24)', '0x00000000:ppd_en(09:09)', '0x00000001:apd_en(08:08)']
+    exp_list = ['0x00000001:ddrt_cke_en(24:24)', '0x00000000:ppd_en(09:09)', '0x00000001:apd_en(08:08)', '0x0000000d:cke_idle_timer(07:00)']
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.MEM_POWER_ADV)
@@ -222,7 +222,7 @@ def dimm_power_mgt_011(ssh_os):
             assert (SetUpLib.verify_options(Key.DOWN, [['APD', '<Enabled>']], 3))
             assert (SetUpLib.boot_to_bootmanager())
             assert (SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 12, Msg.SUSE_GRUB))
-            assert (PlatMisc.cscripts_inband_register(ssh_os, cscripts_cmd_cke, exp_list, start=3, stop=6))
+            assert (PlatMisc.cscripts_inband_register(ssh_os, cscripts_cmd_cke, exp_list))
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
@@ -253,7 +253,7 @@ def dimm_power_mgt_012(ssh_os):
         assert (SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
         assert (SetUpLib.verify_options(Key.DOWN, [['CKE Idle Timer', '\[255\]']], 7))
         assert (SetUpLib.boot_suse_from_bm())
-        assert (PlatMisc.cscripts_inband_register(ssh_os, cscripts_cmd_cke, exp_list, start=3))
+        assert (PlatMisc.cscripts_inband_register(ssh_os, cscripts_cmd_cke, exp_list))
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
@@ -371,15 +371,13 @@ def mem_refresh_001(ssh_os):
     try:
         assert SetUpLib.boot_to_page(Msg.CPU_CONFIG), "boot_to_page -> fail"
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, Msg.MEMORY_CONFIG], 10, Msg.MEM_FRE), "enter_menu -> fail"
-        assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM2X_REFRESH, '<Disabled>'], 10), "locate_option -> fail"
-        SetUpLib.send_keys([Key.F5, Key.F10, Key.Y])
-        assert SetUpLib.continue_to_boot_suse_from_bm(), "boot_to_os -> fail"
+        assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM2X_REFRESH, '<Dynamic Mode>'], 10), "locate_option -> fail"
+        # SetUpLib.send_keys([Key.F5, Key.F10, Key.Y])
+        assert SetUpLib.boot_suse_from_bm(), "boot_to_os -> fail"
         assert (PlatMisc.cscripts_inband_register(ssh_os, cscripts_cmd_refresh, exp_list))
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
-    finally:
-        assert SetUpLib.reset_default()
 
 
 # 02 设置静态2X内存刷新模式功能测试
@@ -393,8 +391,8 @@ def mem_refresh_002(ssh_os):
     try:
         assert SetUpLib.boot_to_page(Msg.CPU_CONFIG), "boot_to_page -> fail"
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, Msg.MEMORY_CONFIG], 10, Msg.MEM_FRE), "enter_menu -> fail"
-        assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM2X_REFRESH, '<Disabled>'], 10), "locate_option -> fail"
-        SetUpLib.send_keys([Key.F6 * 3, Key.F10, Key.Y])
+        assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM2X_REFRESH, '<Dynamic Mode>'], 10), "locate_option -> fail"
+        SetUpLib.send_keys([Key.F5, Key.F10, Key.Y])
         assert SetUpLib.continue_to_boot_suse_from_bm(), "boot_to_os -> fail"
         assert (PlatMisc.cscripts_inband_register(ssh_os, cscripts_cmd_refresh, exp_list))
         result.log_pass()
