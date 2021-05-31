@@ -298,7 +298,7 @@ def pcie_resource_lspci_legacy():
             bdf_list = re.findall(pcie_bdf, pcie_slot)
             assert bdf_list, "No PCIe Device Detected, test skipped"
             logging.info(f"Found PCie Device: {bdf_list}")
-            assert MiscLib.ping_sut(SutConfig.OS_IP, 300)
+            assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
             lspci_info = []
             for bdf in bdf_list:
                 pcie_cmd = f"lspci -s {bdf} -vvv"
