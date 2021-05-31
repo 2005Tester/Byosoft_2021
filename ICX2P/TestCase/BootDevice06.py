@@ -1,7 +1,7 @@
 from ICX2P.Config.PlatConfig import Key, Msg
-from ICX2P.BaseLib import SetUpLib
+from ICX2P.BaseLib import SetUpLib, BmcLib
 from Report import ReportGen
-from Core import MiscLib
+from Core import MiscLib, SshLib
 from ICX2P.Config import SutConfig
 
 
@@ -9,6 +9,9 @@ from ICX2P.Config import SutConfig
 '''
 function module, do not call (only be used below)
 '''
+
+restored_cmds = ['ipmcset -d bootdevice -v 0\n', 'ipmcget -d bootdevice\n']
+restored_rets = ['successfully', 'No override']
 
 
 def boot_device(boot='UEFI Boot', os="SUSE Linux Enterprise\(LUN0\) RAID CARD", pxe='UEFI HTTPSv4: Intel Network - Port00 SLOT1'):
@@ -75,3 +78,42 @@ def boot_order_001():
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
+
+
+# Testcase Num: Testcase_BootOrder_003
+# Precondition: 1、UEFI模式；2、Setup菜单启动顺序保持默认设置。
+# OnStart: NA
+# OnComplete: PXE
+def boot_order_003(ssh):
+    tc = ('154', '[TC154]03【UEFI模式】启动顺序优先级_Setup菜单和BMC设置', '支持启动顺序设置')
+    result = ReportGen.LogHeaderResult(tc)
+    cmds = ['ipmcget -d bootdevice\n', 'ipmcset -d bootdevice -v 1\n', 'ipmcget -d bootdevice\n']
+    rets = ['No override', 'successfully', 'Force PXE']
+    try:
+        assert SshLib.interaction(ssh, cmds, rets, timeout=15)
+        assert BmcLib.force_reset()
+        assert SetUpLib.wait_message('NBP file downloaded successfully')
+        result.log_pass()
+    except AssertionError:
+        result.log_fail(capture=True)
+    finally:
+        assert SshLib.interaction(ssh, restored_cmds, restored_rets, timeout=15)
+
+
+# Testcase Num: Testcase_BootOrder_004
+# Precondition: 1、UEFI模式；2、Setup菜单启动顺序保持默认设置。
+# OnStart: NA
+# OnComplete: PXE
+def boot_order_004(ssh):
+    tc = ('155', '[TC155]05【UEFI模式】启动顺序优先级_Setup菜单和BMC设置', '支持启动顺序设置')
+    result = ReportGen.LogHeaderResult(tc)
+    cmds = ['ipmcget -d bootdevice\n', 'ipmcset -d bootdevice -v 5\n', 'ipmcget -d bootdevice\n']
+    rets = ['No override', 'successfully', 'Force boot from default CD/DVD']
+    try:
+        assert SshLib.interaction(ssh, cmds, rets, timeout=15)
+        assert SetUpLib.boot_with_hotkey(Key.F12, 'NBP file downloaded successfully', 120)
+        result.log_pass()
+    except AssertionError:
+        result.log_fail(capture=True)
+    finally:
+        assert SshLib.interaction(ssh, restored_cmds, restored_rets, timeout=15)
