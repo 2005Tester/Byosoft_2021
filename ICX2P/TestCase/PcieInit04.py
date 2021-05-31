@@ -311,7 +311,7 @@ def pcie_resource_lspci_legacy():
             logging.error(e0)
     # main test process
     try:
-        assert SetUpLib.enable_legacy_boot()
+        # assert SetUpLib.enable_legacy_boot()
         lspci_info = get_lspci_info()
         assert lspci_info, "Invalid lspci info data"
         reboot_cnt = 1
@@ -319,14 +319,14 @@ def pcie_resource_lspci_legacy():
             current_lspci = get_lspci_info()
             reboot_cnt += 1
             assert current_lspci == lspci_info, f"Reboot time {reboot_cnt}: lspci info compare fail\n" \
-                                                f"Last:{lspci_info}\nCurrent:\n{current_lspci}"
+                                                f"Last lspci log:\n{lspci_info}\nCurrent lspci log:\n{current_lspci}"
             logging.info(f"Reboot time {reboot_cnt}: lspci info compare pass")
         result.log_pass()
     except Exception as e:
         logging.error(e)
         result.log_fail()
-    finally:
-        SetUpLib.disable_legacy_boot()
+    # finally:
+    #     SetUpLib.disable_legacy_boot()
 
 
 # Author: WangQingshan
