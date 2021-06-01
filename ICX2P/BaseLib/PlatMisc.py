@@ -145,3 +145,22 @@ def dump_cpu_resource():
         csv_writer = csv.writer(rsc)
         csv_writer.writerows(result)
     return csv_file
+
+
+# dynamic match all pcie root port of one page
+def match_pcie_root_port(key, patten="(Port (?:DMI|[0-4][A-D]))", try_cnt=10):
+    name_patten = re.compile(patten)
+    SerialLib.clean_buffer(Sut.BIOS_COM)
+    tmp_data = ""
+    for i in range(try_cnt):
+        SetUpLib.send_keys([key])
+        tmp_data += SerialLib.recv_data(Sut.BIOS_COM, 1024)
+    search_result = name_patten.findall(tmp_data)
+    if not search_result:
+        logging.info("No any pcie root port matched")
+        return
+    root_ports = list(set(search_result))
+    root_ports.sort(reverse=False)
+    for port in root_ports:
+        logging.info(f'Root port "{port}" matched"')
+    return root_ports

@@ -408,3 +408,15 @@ def back_to_setup_toppage(msg='Exit now'):
         return True
     except Exception as err:
         logging.debug(err)
+
+
+# back to front page from "BIOS Configuration", highlight: stay at the highlight button
+def back_to_front_page(highlight="Continue"):
+    if not back_to_setup_toppage():
+        return
+    send_keys([Key.ESC, Key.Y])
+    if locate_option(Key.RIGHT, [highlight], 3):
+        return True
+    send_key(Key.DOWN)
+    if locate_option(Key.RIGHT, [highlight], 3):
+        return True

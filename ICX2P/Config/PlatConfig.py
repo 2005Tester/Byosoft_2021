@@ -95,6 +95,7 @@ class Msg:
 
     # Misc Configuration Menu
     MISC_CONFIG = 'Miscellaneous Configuration'
+    ASPM_GLOBAL = r"PCIe ASPM Support \(Global\)"
 
     # menus of Password configuration
     MGT_SPV_PWD = 'Manage Supervisor Password'

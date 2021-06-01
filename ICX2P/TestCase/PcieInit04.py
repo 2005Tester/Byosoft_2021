@@ -338,15 +338,71 @@ def aspm_menu_default():
     tc = ('639', '[TC639] Testcase_ASPM_001', 'Setup菜单提供ASPM选项测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
 
-    aspm_global = r"PCIe ASPM Support \(Global\)"
     aspm_values = ["Disabled", "Per individual port", "L1 Only"]
     aspm_default = "Disabled"
 
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.MISC_CONFIG], 15, "Network CDN")
-        assert SetUpLib.locate_option(Key.DOWN, [aspm_global, f"<{aspm_default}>"], 15)  # 验证默认值
+        assert SetUpLib.locate_option(Key.DOWN, [Msg.ASPM_GLOBAL, f"<{aspm_default}>"], 15)  # 验证默认值
         assert SetUpLib.verify_supported_values("".join(aspm_values))  # 验证可选值
+        result.log_pass()
+    except Exception as e:
+        logging.error(e)
+        result.log_fail()
+
+
+# Author: WangQingshan
+# ASPM总开关测试
+# Precondition: Linux
+# OnStart: NA
+# OnComplete: NA
+def aspm_disable_l1only():
+    tc = ('640', '[TC640] Testcase_ASPM_002', 'ASPM总开关测试')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    iio_aspm = "PCIe ASPM Support"
+    aspm_values = ["Disabled", "Per individual port", "L1 Only"]
+    aspm_lnkcap_flag = {"Disabled": "not supported", "L1 Only": "L1"}
+
+    def aspm_status_check(status):
+        try:
+            assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+            assert SetUpLib.enter_menu(Key.DOWN, [Msg.MISC_CONFIG], 15, "Network CDN")
+            assert SetUpLib.locate_option(Key.UP, [Msg.ASPM_GLOBAL, "<.+>"], 10)
+            SetUpLib.send_keys([Key.F6]*len(aspm_values), delay=10)
+            assert SetUpLib.set_option_value(Msg.ASPM_GLOBAL, aspm_values[0], status, Key.F5, aspm_values.index(status))
+            assert SetUpLib.back_to_setup_toppage()
+            assert SetUpLib.enter_menu(Key.UP, Msg.PATH_IIO_CONFIG, 15, Msg.IIO_CONFIG)
+            for cpu in range(SutConfig.SysCfg.CPU_CNT):  # loop cpu
+                cpu_menu = f"CPU {cpu + 1} Configuration"
+                assert SetUpLib.enter_menu(Key.DOWN, [cpu_menu], 15, "PCIe Completion Timeout")
+                port_list = PlatMisc.match_pcie_root_port(key=Key.DOWN, try_cnt=10)
+                assert port_list
+                for port in port_list:
+                    assert SetUpLib.enter_menu(Key.DOWN, [port], 10, "Link Speed")
+                    assert not SetUpLib.locate_option(Key.UP, [iio_aspm, "<.+>"], 10), f'"{iio_aspm}" should be hidden'
+                    logging.info(f'Verify pass: "{iio_aspm}" is hidden')
+                    SetUpLib.send_keys(Key.ESC)
+                SetUpLib.send_keys(Key.ESC)
+            assert SetUpLib.back_to_front_page(highlight="Continue")
+            SetUpLib.send_key(Key.ENTER)
+            assert MiscLib.ping_sut(SutConfig.OS_IP, 300)
+            rtn_data = SshLib.execute_command(Sut.OS_SSH, 'lspci |grep -i "pci bridge"')
+            root_ports_bdf = re.findall("(\w{2}:\w{2}.\d)", rtn_data)
+            assert root_ports_bdf, "Failed to find root ports BDF"
+            for port_bdf in root_ports_bdf:
+                port_rtn = SshLib.execute_command(Sut.OS_SSH, f"lspci -s {port_bdf} -vvv |grep LnkCap")
+                assert port_rtn, f"Get invalid bdf： {port_bdf}"
+                assert re.search(f"ASPM.*{aspm_lnkcap_flag.get(status)}", port_rtn), f"{port_bdf} ASPM status fail:\n{port_rtn}"
+                logging.info(f"Verify pass: root port {port_bdf} ASPM = {status}")
+            return True
+        except Exception as e0:
+            logging.error(e0)
+
+    # main test process
+    try:
+        assert aspm_status_check("Disabled")
+        assert aspm_status_check("L1 Only")
         result.log_pass()
     except Exception as e:
         logging.error(e)

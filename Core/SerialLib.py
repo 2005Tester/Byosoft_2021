@@ -50,6 +50,11 @@ def read_buffer(serial):
     return serial.data
 
 
+# Receive data from serial port
+def recv_data(serial, size=1024):
+    return serial.receive_data(size)
+
+
 # Clean serial output buffer
 def clean_buffer(serial):
     serial.data = ""
