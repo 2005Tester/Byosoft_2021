@@ -77,13 +77,15 @@ def full_scope():
     PcieInit04.pcie_resource_lspci_uefi()
     BiosTest.power_efficiency_mode_loop(unitool)
     BootDevice06.boot_device_type_001()
-    BootDevice06.boot_order_001()
+    BootDevice06.boot_order_002()
+    BootDevice06.boot_order_004(Sut.BMC_SSH)
     if Legacy.enable_legacy_boot():
         BootDevice06.boot_device_type_002()
         Io05.system_info_002()
         # Io05.system_info_004()
         PcieInit04.pcie_resource_lspci_legacy()
         Legacy.disable_legacy_boot()
+        BootDevice06.boot_order_012(Sut.BMC_SSH)
 
 
 # Test scope for equipment mode image
@@ -142,3 +144,7 @@ def debug_scope():
     UpdateBIOS.update_bios('master')
     CpuInit01.cpu_mem_info()
     BiosTest.power_efficiency_mode_loop(unitool)
+    BootDevice06.boot_order_001()
+    BootDevice06.boot_order_003(Sut.BMC_SSH)
+    BootDevice06.boot_order_004(Sut.BMC_SSH)
+    BootDevice06.boot_order_005(Sut.BMC_SSH)
