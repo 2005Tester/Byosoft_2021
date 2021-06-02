@@ -19,6 +19,10 @@ elif cli.get_project() == "hygon":
     from Hygon.Config import SutConfig as cfg
     from Hygon import Main as script
 
+elif cli.get_project() == "tce":
+    from TCE.Config import SutConfig as cfg
+    from TCE import Main as script
+
 else:
     print("Invalid project name.")
     sys.exit()
