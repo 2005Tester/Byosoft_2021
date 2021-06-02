@@ -6,6 +6,9 @@ from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg
 from ICX2P.BaseLib import SetUpLib, BmcLib
 
+from Core import SerialLib, MiscLib
+from Core.SutInit import Sut
+
 
 # Test case ID: TC800-850
 
@@ -16,16 +19,16 @@ function module, do not call, only used below,
 
 def check_info():
     check_list = [Msg.RC_VERSION, Msg.BIOS_REVISION, Msg.BIOS_DATE, Msg.iBMC_VERSION, Msg.iBMC_IP, Msg.CPU_TYPE,
-                  Msg.TOTAL_MEMORY]
-    check_list_msg = [Msg.HOTKEY_PROMPT_DEL, Msg.HOTKEY_PROMPT_F6, Msg.HOTKEY_PROMPT_F11, Msg.HOTKEY_PROMPT_F12]
+                  Msg.TOTAL_MEMORY, Msg.HOTKEY_PROMPT_DEL, Msg.HOTKEY_PROMPT_F6, Msg.HOTKEY_PROMPT_F11, Msg.HOTKEY_PROMPT_F12]
+    capture_start = "STOP_DIMMINFO_SYSTEM_TABLE"
+    capture_end = "Press F6 go to SP boot"
     try:
-        assert BmcLib.force_reset(), 'force_reset -> fail'
-        # bug: if check_list does not exist by designed, will effect verification of the check_list_msg
-        assert SetUpLib.wait_strings(check_list, timeout=60), 'info_verify -> fail'
-        assert SetUpLib.wait_strings(check_list_msg, timeout=60), 'hotkey_info_verify -> fail'
+        assert BmcLib.force_reset()
+        log_cut = SerialLib.cut_log(Sut.BIOS_COM, capture_start, capture_end, 60, 120)
+        assert MiscLib.verify_msgs_in_log(check_list, log_cut)
         return True
     except AssertionError:
-        return
+        return False
 
 
 def hotkey_press():
