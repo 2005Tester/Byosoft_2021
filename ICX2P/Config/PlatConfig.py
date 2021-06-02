@@ -34,11 +34,12 @@ class Key:
 
 # OS Boot Option Keywords
 class BootOS:
-    SLES = ".*SUSE Linux Enterprise.*"
-    Ubuntu = ".*ubuntu.*"
-    CentOS = ".*CentOS Linux.*"
-    Windows = ".*Windows Boot Manager.*"
-    VMware = ".*VMware ESXi.*"
+    name_ruler = r"RAID CARD|HDD\s*\d+|NVME\s*\d+|SLOT\s*\d+"
+    SLES = f"SUSE Linux Enterprise.*?(?:{name_ruler})"
+    Ubuntu = f"ubuntu.*?(?:{name_ruler})"
+    CentOS = f"CentOS Linux.*?(?:{name_ruler})"
+    Windows = f"Windows Boot Manager.*?(?:{name_ruler})"
+    VMware = f"VMware ESXi.*?(?:{name_ruler})"
 
 
 # Messages to identify a specific boot option, page, menu or system status
