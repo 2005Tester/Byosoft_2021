@@ -188,3 +188,19 @@ def bmc_dumpinfo(path, name="dump", uncom=False):
     except Exception:
         logging.info("Exception: uncompress the dumpinfo fail")
         return False
+
+
+# 检查当前状态BMC web是否有告警
+def bmc_warning_check():
+    cmd = "ipmcget -d healthevents"
+    res = SshLib.execute_command(Sut.BMC_SSH, cmd)
+    if not res:
+        logging.error(f'Run cmd "{cmd}" error')
+        return
+    if "System in health state" not in res:
+        logging.info("[BMC Warning Check] Alarms/Events detected")
+        for line in res.split("\r\n"):
+            logging.info(line)
+        return False
+    logging.info("[BMC Warning Check] Current system in health state")
+    return True

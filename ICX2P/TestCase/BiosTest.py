@@ -404,6 +404,7 @@ def power_efficiency_mode_loop(unitool):
     value_list = ["Custom", "Efficiency", "Performance", "Load Balance", "High RAS", "HPC", "General Computing",
                   "Low Latency", "Server Side Java", "Memory Throughput", "I/O Throughput", "Energy Saving", "NFV"]
     failed_items = {}
+    healthy_state = {}
     try:
         for col_index, to_mode in enumerate(data[0][1:]):
             # Set power efficiency mode
@@ -417,6 +418,8 @@ def power_efficiency_mode_loop(unitool):
             assert SetUpLib.set_option_value(option, "Custom", to_mode, Key.F5, value_list.index(to_mode))
             SetUpLib.send_keys([Key.F10, Key.Y])
             assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
+            # Check each mode BMC warning info
+            healthy_state[to_mode] = BmcLib.bmc_warning_check()
             # Check each Attribute's value
             name_list = [row_data[0] for row_data in data[1:]]
             read_res = unitool.read(*name_list)
@@ -443,13 +446,16 @@ def power_efficiency_mode_loop(unitool):
             report_writer = csv.writer(report)
             report_writer.writerows(data)
         # show test result in test log
+        warning_mode = [mode for mode in healthy_state if not healthy_state.get(mode)]
         test_result = False if failed_items else True
         logging.info(f"Test result: {test_result}")
         for mode, attr_kv in failed_items.items():
             for att_k, att_v in attr_kv.items():
                 logging.info(f"{mode}={att_k}, Read Value={att_v} failed")
+        for warn_mode in warning_mode:
+            logging.info(f'[Warning] Power efficiency = {warn_mode}: BMC warning detected')
         # Result summary
-        if not failed_items:
+        if (not failed_items) and (not warning_mode):
             result.log_pass()
             return True
         result.log_fail()

@@ -192,18 +192,13 @@ def compare_fdm_log(new_branch):
 def check_bmc_warning():
     tc = ('907', '[TC907] iBMC warning info in web', "Check no any warning info")
     result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
-    cmd = "ipmcget -d healthevents"
-    res = SshLib.execute_command(Sut.BMC_SSH, cmd)
-    if not res:
-        logging.info(f"Run cmd {cmd} failed")
+    check_result = BmcLib.bmc_warning_check()
+    if check_result is None:
         result.log_skip()
-    if "System in health state" not in res:
-        logging.info("System Event found in bmc web")
-        for line in res.split("\r\n"):
-            logging.info(line)
+        return
+    if not check_result:
         result.log_fail()
-        return False
-    logging.info("No any Event found in bmc web")
+        return
     result.log_pass()
     return True
 
