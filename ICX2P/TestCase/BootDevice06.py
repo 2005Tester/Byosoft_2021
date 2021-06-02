@@ -129,7 +129,7 @@ def boot_order_001():
     except AssertionError:
         result.log_fail(capture=True)
     finally:
-        SetUpLib.reset_default()
+        BmcLib.clear_cmos()
 
 
 # Testcase Num: Testcase_BootOrder_002 008
@@ -170,7 +170,7 @@ def boot_order_002():
     except AssertionError:
         result.log_fail(capture=True)
     finally:
-        SetUpLib.reset_default()
+        BmcLib.clear_cmos()
 
 
 # Testcase Num: Testcase_BootOrder_003
@@ -190,7 +190,7 @@ def boot_order_003(ssh):
     except AssertionError:
         result.log_fail(capture=True)
     finally:
-        assert SshLib.interaction(ssh, restored_cmds, restored_rets, timeout=15)
+        SshLib.interaction(ssh, restored_cmds, restored_rets, timeout=15)
 
 
 # Testcase Num: Testcase_BootOrder_004
@@ -225,7 +225,7 @@ def boot_order_005(ssh):
     except AssertionError:
         result.log_fail(capture=True)
     finally:
-        assert SshLib.interaction(ssh, restored_cmds, restored_rets, timeout=15)
+        SshLib.interaction(ssh, restored_cmds, restored_rets, timeout=15)
 
 
 # Testcase Num: Testcase_BootOrder_007
@@ -241,7 +241,7 @@ def boot_order_007():
     except AssertionError:
         result.log_fail(capture=True)
     finally:
-        SetUpLib.reset_default()
+        BmcLib.clear_cmos()
 
 
 # Testcase Num: Testcase_BootOrder_012

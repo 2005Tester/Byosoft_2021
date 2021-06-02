@@ -139,7 +139,7 @@ def dimm_power_mgt_05():
     except AssertionError:
         result.log_fail(capture=True)
     finally:
-        SetUpLib.reset_default()
+        BmcLib.clear_cmos()
 
 
 # Precondition: BIOS默认密码
@@ -165,7 +165,7 @@ def dimm_power_mgt_07():
     except AssertionError:
         result.log_fail(capture=True)
     finally:
-        SetUpLib.reset_default()
+        BmcLib.clear_cmos()
 
 
 # Precondition: BIOS默认密码
@@ -190,7 +190,7 @@ def dimm_power_mgt_010(ssh_os):
     except AssertionError:
         result.log_fail(capture=True)
     finally:
-        SetUpLib.reset_default()
+        BmcLib.clear_cmos()
 
 
 # Precondition: BIOS默认密码
@@ -227,7 +227,7 @@ def dimm_power_mgt_011(ssh_os):
     except AssertionError:
         result.log_fail(capture=True)
     finally:
-        SetUpLib.reset_default()
+        BmcLib.clear_cmos()
 
 
 # Precondition: BIOS默认密码
@@ -258,7 +258,7 @@ def dimm_power_mgt_012(ssh_os):
     except AssertionError:
         result.log_fail(capture=True)
     finally:
-        SetUpLib.reset_default()
+        BmcLib.clear_cmos()
 
 
 # 检查并打开RMT菜单,重启查看串口是否正常打印RMT数据
@@ -372,7 +372,6 @@ def mem_refresh_001(ssh_os):
         assert SetUpLib.boot_to_page(Msg.CPU_CONFIG), "boot_to_page -> fail"
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, Msg.MEMORY_CONFIG], 10, Msg.MEM_FRE), "enter_menu -> fail"
         assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM2X_REFRESH, '<Dynamic Mode>'], 10), "locate_option -> fail"
-        # SetUpLib.send_keys([Key.F5, Key.F10, Key.Y])
         assert SetUpLib.boot_suse_from_bm(), "boot_to_os -> fail"
         assert (PlatMisc.cscripts_inband_register(ssh_os, cscripts_cmd_refresh, exp_list))
         result.log_pass()
@@ -387,7 +386,7 @@ def mem_refresh_001(ssh_os):
 def mem_refresh_002(ssh_os):
     tc = ('712', '[TC712] Testcase_MemRefresh_002', '02 设置静态2X内存刷新模式功能测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
-    exp_list = ['0x00000000:temp_thrt_hyst(26:24)', '0x00000064:temp_hi(23:16)', '0x0000005f:temp_mid(15:08)', '0x00000055:temp_lo(07:00)']
+    exp_list = ['0x00000000:temp_thrt_hyst(26:24)', '0x00000064:temp_hi(23:16)', '0x0000005f:temp_mid(15:08)', '0x00000000:temp_lo(07:00)']
     try:
         assert SetUpLib.boot_to_page(Msg.CPU_CONFIG), "boot_to_page -> fail"
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, Msg.MEMORY_CONFIG], 10, Msg.MEM_FRE), "enter_menu -> fail"
@@ -399,7 +398,7 @@ def mem_refresh_002(ssh_os):
     except AssertionError:
         result.log_fail(capture=True)
     finally:
-        assert SetUpLib.reset_default()
+        BmcLib.clear_cmos()
 
 
 # 装备模式下打开RMT并检查串口RMT数据是否正常打印
@@ -473,7 +472,7 @@ def set_mem_freq_001_006(n=1):
     except AssertionError:
         result.log_fail(capture=True)
     finally:
-        assert SetUpLib.reset_default()
+        BmcLib.clear_cmos()
 
 
 # 01 MTRR最大内存地址范围测试
