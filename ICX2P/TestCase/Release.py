@@ -79,6 +79,8 @@ def hpm_upgrade_test(unitool, new_branch):
     try:
         assert Update.update_bios(old_bin_download[0])
         flash_latest = False
+        SetUpLib.update_default_password()
+        SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5)
         assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
         assert unitool.write(**BiosCfg.HPM_KEEP)
         assert Update.flash_local_hpm(new_hpm_local[0])
@@ -92,6 +94,8 @@ def hpm_upgrade_test(unitool, new_branch):
     finally:
         if not flash_latest:
             Update.update_bios(new_bin_download)
+            SetUpLib.update_default_password()
+            SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5)
 
 
 def hpm_downgrade_test(unitool, new_branch):
@@ -107,6 +111,8 @@ def hpm_downgrade_test(unitool, new_branch):
     try:
         assert Update.update_bios(new_bin_download)
         flash_latest = True
+        assert SetUpLib.update_default_password()
+        assert SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5)
         assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
         assert unitool.write(**BiosCfg.HPM_KEEP)
         assert Update.flash_local_hpm(old_hpm_local[0])
@@ -121,6 +127,8 @@ def hpm_downgrade_test(unitool, new_branch):
     finally:
         if not flash_latest:
             Update.update_bios(new_bin_download)
+            SetUpLib.update_default_password()
+            SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5)
 
 
 # 比较BIOS升降级时，是否会产生新的FDMlog错误记录
