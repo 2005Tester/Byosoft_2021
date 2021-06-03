@@ -30,7 +30,7 @@ class Redfish(object):
     def login(self):
         try:
             self.session.login(auth="basic")
-            return True
+            logging.info("Redfish login successfully")
         except InvalidCredentialsError:
             logging.error("[InvalidCredentialsError]：login retry after 10s")
             time.sleep(10)
@@ -42,6 +42,7 @@ class Redfish(object):
         except Exception as e:
             logging.error(e)
             return
+        return True
 
     def logout(self):
         self.session.logout()
@@ -60,7 +61,10 @@ class Redfish(object):
     # 获取E-Tag
     def get_etag(self):
         e_tag = self.session.get(self.PATCH_PATH).getheader(name="ETag")
-        return {'If-Match': e_tag}
+        if not e_tag:
+            time.sleep(5)
+            self.get_etag()
+        return {"If-Match": e_tag}
 
     # 获取attribute的当前值,同时更新self.current
     def read(self, *args):

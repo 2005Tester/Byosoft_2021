@@ -10,7 +10,7 @@ sys.path.append(os.path.abspath(r"../../"))
 from Common.ssh import SshConnection
 from RedFish import config
 from Common.RedfishLib import Redfish
-from RedFish.commlibs.commtools import reboot_sut
+from RedFish.commlibs.commtools import reboot_sut, to_excel
 
 
 """
@@ -45,7 +45,7 @@ def app_test(bmc, serial):
     os_ssh = SshConnection(config.os_ip, config.os_user, config.os_pw)
     pd = pandas.read_excel(config.AppExcel, sheet_name=0, index_col="AttributeName")
     rfish = Redfish(config.bmc_ip, config.bmc_user, config.bmc_pw)
-    rfish.registry_dump(True, path=config.REPORT_DIR, name="registry.json")  # 获取registry数据
+    rfish.registry_dump(True, path=config.TEST_RESULT_DIR, name="registry.json")  # 获取registry数据
     names = rfish.AttributeName_list()
     app_name = "".join([app for app in app_name_list if app in names])
 
@@ -66,7 +66,7 @@ def app_test(bmc, serial):
             logging.info('Current AppValue is "{}"'.format(rfish.read(app_name)))
             logging.info('Redfish Check: {} = {}  Fail'.format(app_name, repr(ap)))
             continue
-        rfish.current_dump(True, path=config.REPORT_DIR, name="{}.json".format(ap.replace("/", "")))
+        rfish.current_dump(True, path=config.TEST_RESULT_DIR, name="{}.json".format(ap.replace("/", "")))
         logging.info('Redfish Check: {} = {}  Pass!'.format(app_name, repr(ap)))
 
         # 进入OS，unitool检查子选项的值
@@ -85,7 +85,7 @@ def app_test(bmc, serial):
             pd.loc[sub, ap + "_Check"] = "pass"
             logging.info("[Check] {} = {} | pass".format(sub, get_val))
         pd = pd.sort_index(axis=1)
-        pd.to_excel("{}_Test_Result.xlsx".format(app_name))
+    to_excel(pd, "{}_Redfish_Test.xlsx".format(app_name), config.REPORT_DIR)
 
 
 def unitool_check(ssh, option, value):
