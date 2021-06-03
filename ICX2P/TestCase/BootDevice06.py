@@ -69,7 +69,7 @@ def enabled_disable_options(PXE_OPTION='IPv4 PXE'):
 
 
 # only used to test boot_order 04 10
-def boot_to_dvd(ssh, DVD_OPTION = "UEFI Hitachi-LG Data Storage Inc Portable Super Multi Drive"):
+def boot_to_dvd(ssh, DVD_OPTION="UEFI Hitachi-LG Data Storage Inc Portable Super Multi Drive"):
     cmds = ['ipmcget -d bootdevice\n', 'ipmcset -d bootdevice -v 5\n', 'ipmcget -d bootdevice\n']
     rets = ['No override', 'successfully', 'Force boot from default CD/DVD']
     try:
@@ -258,3 +258,43 @@ def boot_order_012(ssh):
         result.log_fail(capture=True)
     finally:
         SshLib.interaction(ssh, restored_cmds, restored_rets, timeout=15)
+
+
+# 09 支持SP启动
+# Testcase Num: Testcase_SP_Boot_001
+# Precondition: 'SP开关为初始状态
+# OnStart: NA
+# OnComplete: SP
+def sp_boot_001():
+    tc = ('160', '[TC160]01 SP开关默认状态测试', '支持SP启动')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    try:
+        # assert SetUpLib.boot_to_page(Msg.PAGE_BOOT)
+        assert SetUpLib.verify_options(Key.DOWN, [['SP Boot', '<Enabled>']], 12)
+        SetUpLib.send_keys([Key.F6, Key.F9, Key.Y])
+        assert SetUpLib.verify_options(Key.DOWN, [['SP Boot', '<Enabled>']], 20)
+        result.log_pass()
+    except AssertionError:
+        result.log_fail(capture=True)
+
+
+# Testcase Num: Testcase_SP_Boot_002
+# Precondition: 'SP已部署；
+# OnStart: NA
+# OnComplete: SP
+def sp_boot_002():
+    tc = ('161', '[TC161]02 SP开关功能测试', '支持SP启动')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_BOOT)
+        assert SetUpLib.verify_options(Key.DOWN, [['SP Boot', '<Enabled>']], 12)
+        SetUpLib.send_keys([Key.F6, Key.F10, Key.Y])
+        assert SetUpLib.continue_boot_with_hotkey(Key.F6, Msg.SUSE_GRUB, 60)  # check can not boot to SP
+        assert SetUpLib.boot_to_page(Msg.PAGE_BOOT)
+        assert SetUpLib.verify_options(Key.DOWN, [['SP Boot', '<Disabled>']], 12)
+        SetUpLib.send_keys([Key.F5, Key.F10, Key.Y])
+        if SetUpLib.continue_boot_with_hotkey(Key.F6, Msg.SUSE_GRUB, 60):
+            raise AssertionError
+        result.log_pass()
+    except AssertionError:
+        result.log_fail(capture=True)

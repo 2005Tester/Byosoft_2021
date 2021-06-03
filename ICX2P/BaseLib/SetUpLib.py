@@ -108,6 +108,16 @@ def boot_with_hotkey(key, msg, timeout):
     return True
 
 
+def continue_boot_with_hotkey(key, msg, timeout):
+    hotkey_prompt = Msg.HOTKEY_PROMPT_DEL
+    pw_prompt = Msg.PW_PROMPT
+    password = SutConfig.BIOS_PASSWORD
+    if not Sut.BIOS_COM.boot_with_hotkey(key, msg, timeout, hotkey_prompt, pw_prompt, password):
+        return
+    logging.info("Boot with hotkey successfully.")
+    return True
+
+
 # Continue Boot to boot manager without a force reset
 def continue_to_bootmanager():
     logging.info("SetUpLib: continue boot to bootmanager")

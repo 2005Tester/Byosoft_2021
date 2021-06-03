@@ -39,10 +39,10 @@ def hotkey_press():
     if not SetUpLib.boot_to_bootmanager():
         result_list.append('2')
 
-    if not SetUpLib.boot_with_hotkey(Key.F12, 'NBP file downloaded successfully', 120):
+    if not SetUpLib.boot_with_hotkey(Key.F12, 'NBP file downloaded successfully', 60):
         result_list.append('3')
 
-    if not SetUpLib.boot_with_hotkey(Key.F6, 'SmmInstallProtocolInterface: 296EB418-C4C8-4E05-AB59-39E8AF56F00A 0', 120):
+    if SetUpLib.continue_boot_with_hotkey(Key.F6, Msg.SUSE_GRUB, 60):
         result_list.append('4')
 
     logging.debug(result_list)
