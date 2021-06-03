@@ -355,29 +355,38 @@ def update_default_password():
 # get value of a setupoption
 # option_patten: [name, patten of value] e.g. ["MMIO High Base", "<.+>"]
 def get_option_value(option_patten, key, try_counts):
-    value_patten = "H<(\w+)>\x1B"
+    value_patten = "H<([\w ]+)>\x1B"  # some value contains white space
     return Sut.BIOS_COM.get_option_value(option_patten, value_patten, key, try_counts)
 
 
 # set value of a setup option
-# Usage Example: option="Performance Profile", from_value="Custom", to_value="Performance", set_key=Key.F5, set_cnt=3
-def set_option_value(option, from_value, to_value, set_key, set_cnt, loc_cnt=15):
-    logging.info(f'Set [{option}]: {from_value} => {to_value} Start')
-    from_option = [option, f"<{from_value}>"]
+# Usage Example: option="USB Boot", to_value="Disabled", value_list=["Disabled", "Enabled"]
+# Attention: value_list must follow actually menu sequence, if value=[A,B,C], input [A,C,B] will not work
+def set_option_value(option, to_value, value_list, save=False, loc_cnt=20, delay=1):
+    shift_up = Key.F6
+    shift_down = Key.F5
+    current_value = get_option_value([option, "<.+>"], Key.DOWN, loc_cnt)  # will locate here
+    if not current_value:
+        return
+    if current_value == to_value:
+        logging.info(f'[{option}] current value = "{to_value}"')
+        return True
+    logging.info(f'Try to set [{option}]: from <{current_value}> to <{to_value}>')
+    offset = value_list.index(to_value) - value_list.index(current_value)
+    shift_key = shift_down if offset > 0 else shift_up
     to_option = [option, f"<{to_value}>"]
-    key_pressd = [set_key] * set_cnt
-    if not locate_option(Key.DOWN, from_option, loc_cnt):
-        logging.info('local_option -> fail')
-        return
-    logging.info(f'Try to set [{option}] from <{from_value}> to <{to_value}>...')
-    send_keys(key_pressd)
-    logging.info('Value set done, start to check if set successfully...')
+    key_pressd = [shift_key] * abs(offset)
     if key_pressd:  # avoid mis-locate if set_cnt=0 since verify_options find str first,then send key
-        send_keys(Key.UP)
+        send_keys(key_pressd, delay=delay)
     if not verify_options(Key.DOWN, [to_option], loc_cnt):
-        logging.info('Set option value -> fail')
+        logging.info(f'Set [{option}]: {current_value} => {to_value} failed')
         return
-    logging.info(f'Set [{option}]: {from_value} => {to_value} successfully')
+    if save:
+        send_keys(Key.SAVE_RESET)
+        if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE):
+            logging.info(f'Set [{option}]: {current_value} => {to_value} boot failed')
+            return
+    logging.info(f'Set [{option}]: {current_value} => {to_value} successfully')
     return True
 
 

@@ -88,6 +88,7 @@ class Msg:
     ACT_CPU_CORES = 'Active Processor Cores'
     IIO_CONFIG = "IIO Configuration"
     NUMA = "NUMA"
+    ASPM_ROOT_PORT = "PCIe ASPM Support"
 
     # menus of PCH configuration
     PCH_CONFIG = 'PCH Configuration'

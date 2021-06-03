@@ -413,10 +413,7 @@ def power_efficiency_mode_loop(unitool):
             assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
             assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_ADV_PM_CFG, 15, "Performance Profile")
             logging.info("Load Default...")
-            SetUpLib.send_keys([Key.F9, Key.Y])
-            time.sleep(6)
-            assert SetUpLib.set_option_value(option, "Custom", to_mode, Key.F5, value_list.index(to_mode))
-            SetUpLib.send_keys([Key.F10, Key.Y])
+            assert SetUpLib.set_option_value(option, to_mode, value_list, save=True)
             assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
             # Check each mode BMC warning info
             healthy_state[to_mode] = BmcLib.bmc_warning_check()
