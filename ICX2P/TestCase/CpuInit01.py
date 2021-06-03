@@ -475,3 +475,54 @@ def cpu_compa_02():
         result.log_pass()
     except AssertionError:
         result.log_fail()
+
+
+
+# Author: Fubaolin
+# CPU Hyper-Threading 特性测试
+# Precondition: linux-OS
+# OnStart: NA
+# OnComplete: NA
+def cpu_compa_03():
+    tc = ('214', '[TC214] Testcase_CPU_COMPA_003', 'CPU Hyper-Threading 特性测试')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    ht_bef = ["Hyper-Threading \[ALL\]", "<Enabled>"]
+    ht_aft = ["Hyper-Threading \[ALL\]", "<Disabled>"]
+    try:
+        assert BmcLib.force_reset()
+        # HT-enabled查看物理CPU中core数量
+        Core_Count = SshLib.execute_command(Sut.OS_SSH, r'cat /proc/cpuinfo| grep "cpu cores"| uniq').split(':')[1].replace(' ', '').strip('\n')
+        logging.info("**Core_Count = {}".format(Core_Count))
+        # 查看逻辑CPU的个数
+        Logical_CPU = SshLib.execute_command(Sut.OS_SSH, r'cat /proc/cpuinfo| grep "processor"| wc -l').strip('\n')
+        logging.info("**Core_Enabled = {}".format(Logical_CPU))
+        if Core_Count == '28' and Logical_CPU == '112':
+            logging.info("**Core_Count pass, Logical_CPU pass**")
+        else:
+            logging.info("**Core eorro**")
+            return False
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.PROCESSOR_CONFIG)
+        assert SetUpLib.verify_info(ht_bef, 2)
+        SetUpLib.send_keys([Key.F6, Key.F10, Key.Y], 3)
+        # HT-disabled 查看物理CPU中core数量
+        Core_Count = SshLib.execute_command(Sut.OS_SSH, r'cat /proc/cpuinfo| grep "cpu cores"| uniq').split(':')[1].replace(' ', '').strip('\n')
+        logging.info("**Core_Count = {}**".format(Core_Count))
+        # 查看逻辑CPU的个数
+        Logical_CPU = SshLib.execute_command(Sut.OS_SSH, r'cat /proc/cpuinfo| grep "processor"| wc -l').strip('\n')
+        logging.info("**Core_Enabled = {}**".format(Logical_CPU))
+        if Core_Count == '28' and Logical_CPU == '56':
+            logging.info("**Core_Count pass, Logical_CPU pass**")
+        else:
+            logging.info("**Core eorro**")
+            return False
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.PROCESSOR_CONFIG)
+        assert SetUpLib.verify_info(ht_aft, 2)
+        result.log_pass()
+        return True
+    except AssertionError:
+        logging.info("异常还原")
+        result.log_fail(capture=True)
+    finally:
+        BmcLib.clear_cmos()

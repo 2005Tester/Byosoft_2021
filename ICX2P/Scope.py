@@ -38,6 +38,7 @@ def full_scope():
     CpuInit01.numa_02()
     CpuInit01.numa_03(unitool)
     CpuInit01.cpu_compa_02()
+    CpuInit01.cpu_compa_03()
     if Os.boot_to_suse():
         Smbios09.smbios_test_all(ssh_os)
         Release.equip_mode_flag_check(unitool)
