@@ -526,3 +526,31 @@ def cpu_compa_03():
         result.log_fail(capture=True)
     finally:
         BmcLib.clear_cmos()
+
+
+# Author: Fubaolin
+# CPU微码测试
+# Precondition: linux-OS
+# OnStart: NA
+# OnComplete: NA
+def cpu_compa_05():
+    tc = ('216', '[TC216] Testcase_CPU_COMPA_005', 'CPU微码测试')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    mic_version = ['Microcode Revision\s+0D0002A0\s+|\s+0D0002A0']
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.UP, Msg.PATH_PER_CPU_INFO, 20, Msg.PER_CPU)
+        assert SetUpLib.verify_info(mic_version, 6)
+        assert BmcLib.force_reset()
+        # OS中 查看CPU微码
+        mic_ver = SshLib.execute_command(Sut.OS_SSH, r'cat /sys/devices/system/cpu/cpu0/microcode/version').strip('\n')
+        logging.info("**mic_ver = {}**".format(mic_ver))
+        if mic_ver == '0xd0002a0':
+            logging.info("The microcode-version in OS is the same as that in BIOS")
+        else:
+            logging.info("Different, please check")
+            return result.log_fail(capture=True)
+        result.log_pass()
+        return True
+    except AssertionError:
+        result.log_fail(capture=True)
