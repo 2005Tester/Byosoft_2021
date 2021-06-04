@@ -11,6 +11,7 @@ import csv
 import logging
 import logging.config
 import argparse
+import importlib
 from Common import LogConfig
 from Report.ReportGen import ReportGenerator
 
@@ -109,12 +110,21 @@ class TestScope:
         self.all_tc = []  # all the test cases loaded from csv file
         self.tc_to_run = []  # test cases pass check
         self.check_csv()
+        self.get_test_cases()
 
     def read_csv2dict(self):
         with open(self.csv_file, 'r') as f:
             tcs = csv.DictReader(f)
             for row in tcs:
                 self.all_tc.append(row)
+
+    def _check_case(self, file_name, func_name):
+        module_path = 'ICX2P\\TestCase\\' + file_name + '.py'
+        if file_name and os.path.exists(module_path):
+            # todo add test function check
+            return True
+        else:
+            logging.error("Check fail: {0}.{1}".format(file_name, func_name))
 
     # Check whether all the test cases are valid
     def check_csv(self):
@@ -127,27 +137,24 @@ class TestScope:
         for tc in self.all_tc:
             try:
                 module, case = tuple(tc['Name'].split('.'))
-                if module and os.path.exists('ICX2P\\TestCase\\' + module + '.py'):
-                    # to do: add check for function definition
+                if self._check_case(module, case):
                     self.tc_to_run.append(tc)
                 else:
                     logging.info("TC:{0},  Module: {1} doesn't exist".format(tc, module))
-            except Exception:
+            except Exception as e:
                 if tc['Name'] == '':
                     pass
                 else:
                     logging.error("Invalid test case: {0}".format(tc))
+                    logging.error(e)
         logging.info("checking csv file done.")
 
     # do do
     def check_duplicate():
         pass
 
-    # to do
-    def check_module_importd():
-        pass
-
     def get_test_cases(self):
+        logging.info("Get test cases to be executed.")
         for row in self.tc_to_run:
             if row[self.execution_type]:
                 if row['Dependency'] == 'os':
@@ -158,8 +165,28 @@ class TestScope:
                     self.equip.append(row['Name'])
                 else:
                     self.default.append(row['Name'])
-        print("Default:", len(self.default))
-        print("Equip:", len(self.equip))
-        print("Legacy:", len(self.legacy))
-        print("OS:", len(self.os))
-        print("Total Test case number: {0}".format(len(self.default) + len(self.legacy) + len(self.os) + len(self.equip)))
+        logging.info("Default: {0}".format(len(self.default)))
+        logging.info("Equip: {0}".format(len(self.equip)))
+        logging.info("Legacy: {0}".format(len(self.legacy)))
+        logging.info("OS: {0}".format(len(self.os)))
+        logging.info("Total Test cases: {0}".format(len(self.default) + len(self.legacy) + len(self.os) + len(self.equip)))
+
+    def run_test(self, category):
+        scope = {
+            'os': self.os,
+            'legacy': self.legacy,
+            'equip': self.equip,
+            'default': self.default
+        }
+        testcases = scope[category]
+        for tc in testcases:
+            module, case = tc.split('.')
+            casename, para = case.split('(')
+            para = para.replace(')', '')
+            try:
+                mde = importlib.import_module(name='.TestCase.{0}'.format(module), package='ICX2P')
+                func = getattr(mde, casename)
+                func(para)
+            except Exception as e:
+                logging.error("Faile to execute test case: {0}.{1}".format(module, case))
+                logging.error(e)
