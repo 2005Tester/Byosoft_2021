@@ -359,34 +359,6 @@ def get_option_value(option_patten, key, try_counts):
     return Sut.BIOS_COM.get_option_value(option_patten, value_patten, key, try_counts)
 
 
-# set value of a setup option
-# Usage Example: option="USB Boot", to_value="Disabled", value_list=["Disabled", "Enabled"]
-# Attention: value_list must follow actually menu sequence, if value=[A,B,C], input [A,C,B] will not work
-def set_option_value(option, to_value, value_list, save=False, loc_cnt=20, delay=1):
-    shift_up = Key.F6
-    shift_down = Key.F5
-    current_value = get_option_value([option, "<.+>"], Key.DOWN, loc_cnt)  # will locate here
-    if not current_value:
-        return
-    if current_value == to_value:
-        logging.info(f'[{option}] current value = "{to_value}"')
-        return True
-    logging.info(f'Try to set [{option}]: from <{current_value}> to <{to_value}>')
-    offset = value_list.index(to_value) - value_list.index(current_value)
-    shift_key = shift_down if offset > 0 else shift_up
-    to_option = [option, f"<{to_value}>"]
-    key_pressd = [shift_key] * abs(offset)
-    if key_pressd:  # avoid mis-locate if set_cnt=0 since verify_options find str first,then send key
-        send_keys(key_pressd, delay=delay)
-    if not verify_options(Key.DOWN, [to_option], loc_cnt):
-        logging.info(f'Set [{option}]: {current_value} => {to_value} failed')
-        return
-    if save:
-        send_keys(Key.SAVE_RESET)
-    logging.info(f'Set [{option}]: {current_value} => {to_value} successfully')
-    return True
-
-
 # Boot to BIOS configuration reset default by F9
 def reset_default():
     logging.info("Reset BIOS to dafault by F9")
@@ -436,3 +408,23 @@ def back_to_front_page(highlight="Continue"):
     send_key(Key.DOWN)
     if locate_option(Key.RIGHT, [highlight], 3):
         return True
+
+
+# auto locate to the option and change the value to target, need enter the menu page first
+def set_option_value(option, value, key=Key.DOWN, loc_cnt=15, save=False):
+    if not locate_option(key, [option, f"<.+>"], loc_cnt):
+        return
+    if Sut.BIOS_COM.locate_value(value):
+        send_keys(Key.ENTER)
+        if save:
+            send_keys(Key.SAVE_RESET)
+        return True
+
+
+# lcoate to the target option and get all support values
+def get_all_values(option, key=Key.DOWN, loc_cnt=15):
+    if not locate_option(key, [option, f"<.+>"], loc_cnt):
+        return
+    values = Sut.BIOS_COM.get_value_list()
+    if values:
+        return values

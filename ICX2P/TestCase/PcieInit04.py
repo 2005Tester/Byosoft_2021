@@ -345,7 +345,7 @@ def aspm_menu_default():
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.MISC_CONFIG], 15, "Network CDN")
         assert SetUpLib.locate_option(Key.DOWN, [Msg.ASPM_GLOBAL, f"<{aspm_default}>"], 15)  # 验证默认值
-        assert SetUpLib.verify_supported_values("".join(aspm_values))  # 验证可选值
+        assert SetUpLib.get_all_values(Msg.ASPM_GLOBAL, Key.UP, 10) == aspm_values # 验证可选值
         result.log_pass()
     except Exception as e:
         logging.error(e)
@@ -360,7 +360,6 @@ def aspm_menu_default():
 def aspm_global_disable_l1only():
     tc = ('640', '[TC640] Testcase_ASPM_002', 'ASPM总开关测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
-    aspm_values = ["Disabled", "Per individual port", "L1 Only"]
     aspm_lnkcap_flag = {"Disabled": "not supported", "L1 Only": "L1"}
     save_value = "Disabled"  # ASPM Global默认值
 
@@ -370,7 +369,7 @@ def aspm_global_disable_l1only():
             assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
             assert SetUpLib.enter_menu(Key.DOWN, [Msg.MISC_CONFIG], 15, "Network CDN")
             assert SetUpLib.get_option_value([Msg.ASPM_GLOBAL, "<.+>"], Key.UP, 10) == save_value  # 检查默认值
-            assert SetUpLib.set_option_value(Msg.ASPM_GLOBAL, status, aspm_values, delay=15)
+            assert SetUpLib.set_option_value(Msg.ASPM_GLOBAL, status, key=Key.UP)
             save_value = status
             assert SetUpLib.back_to_setup_toppage()
             assert SetUpLib.enter_menu(Key.UP, Msg.PATH_IIO_CONFIG, 15, Msg.IIO_CONFIG)
@@ -413,6 +412,11 @@ def aspm_global_disable_l1only():
         BmcLib.clear_cmos()
 
 
+# Author: WangQingshan
+# 遍历Root Port ASPM开关测试
+# Precondition: Linux
+# OnStart: NA
+# OnComplete: NA
 def aspm_per_port_loop():
     tc = ('641', '[TC641] Testcase_ASPM_003 / Testcase_ASPM_004', 'Root Port ASPM开关测试 / 遍历Root Port ASPM开关测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
@@ -433,8 +437,8 @@ def aspm_per_port_loop():
                 for port in root_ports:  # Root Port遍历
                     assert SetUpLib.enter_menu(Key.DOWN, [port], 10, "Link Speed")
                     assert SetUpLib.get_option_value([Msg.ASPM_ROOT_PORT, "<.+>"], Key.UP, 10) == save_value  # 默认值检查
-                    assert SetUpLib.verify_supported_values("".join(iio_aspm_values))
-                    assert SetUpLib.set_option_value(Msg.ASPM_ROOT_PORT, value, iio_aspm_values)
+                    assert SetUpLib.get_all_values(Msg.ASPM_ROOT_PORT, Key.UP, 10) == aspm_values
+                    assert SetUpLib.set_option_value(Msg.ASPM_ROOT_PORT, value, key=Key.UP, loc_cnt=8)
                     SetUpLib.send_keys(Key.ESC)
                 SetUpLib.send_keys(Key.ESC)
             SetUpLib.send_keys(Key.SAVE_RESET)  # per port 遍历修改完成，保存设置重启进OS检查状态
@@ -458,7 +462,7 @@ def aspm_per_port_loop():
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.MISC_CONFIG], 15, "Network CDN")
         assert SetUpLib.locate_option(Key.UP, [Msg.ASPM_GLOBAL, "<.+>"], 10)
-        assert SetUpLib.set_option_value(Msg.ASPM_GLOBAL, "Per individual port", aspm_values, delay=15, save=True)
+        assert SetUpLib.set_option_value(Msg.ASPM_GLOBAL, "Per individual port", key=Key.UP, save=True)
         for value in iio_aspm_values:
             assert iio_aspm_check(value)
         result.log_pass()
