@@ -71,6 +71,7 @@ def full_scope():
     PcieInit04.pcie_resource_lspci_uefi()
     PcieInit04.aspm_global_disable_l1only()
     PcieInit04.aspm_per_port_loop()
+    PcieInit04.sriov_global_menu()
     BiosTest.power_efficiency_mode_loop()
     BootDevice06.boot_device_type_001()
     BootDevice06.boot_order_002()
