@@ -87,22 +87,27 @@ class SshConnection:
         self.host_ip = host_ip
         self.username = usernmae
         self.password = password
+        self.login_try = 0
         self.ssh_client = paramiko.SSHClient()
 
     def login(self):
         logging.debug("SSH login: {0}".format(self.host_ip))
+        if self.login_try >= 5:
+            logging.error("Failed in SSH login, after try {0} times.".format(self.login_try))
+            return
         try:
+            self.login_try += 1
             self.ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             self.ssh_client.connect(self.host_ip, port=22, username=self.username, password=self.password)
         except AuthenticationException:
-            logging.error('Error in ssh connection: Incorrect Username or Password.')
+            logging.error('AuthenticationException, Incorrect Username or Password.')
             return
         except NoValidConnectionsError:
-            logging.error('Error: NoValidConnectionsError, retry after 60 seconds.')
+            logging.error('NoValidConnectionsError, retry after 60 seconds.')
             time.sleep(60)
             self.login()
         except TimeoutError:
-            logging.info("Timeout..., retry aftre 15 seconds.")
+            logging.info("TimeoutError, retry aftre 60 seconds.")
             time.sleep(60)
             self.login()
         except ConnectionAbortedError:
