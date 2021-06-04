@@ -473,3 +473,21 @@ def aspm_per_port_loop():
         BmcLib.clear_cmos()
 
 
+# Author: WangQingshan
+# Setup菜单提供SRIOV选项测试
+# Precondition: Linux
+# OnStart: NA
+# OnComplete: NA
+def sriov_global_menu():
+    tc = ('642', '[TC642] Testcase_SRIOV_001', 'Setup菜单提供SRIOV选项测试')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    sriov_vals = ["Disabled", "Enabled", "Per IIO Port"]
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.UP, [Msg.VIRTUAL_CFG], 5, Msg.VIRTUAL_CFG)
+        assert SetUpLib.get_option_value([Msg.SRIOV_GLOBAL, "<.+>"], Key.UP, 3) == "Enabled"  # 默认值检查
+        assert SetUpLib.get_all_values(Msg.SRIOV_GLOBAL, Key.DOWN, 5) == sriov_vals  # 可选值检查
+        result.log_pass()
+    except Exception as e:
+        result.log_fail()
+        result.log_fail()

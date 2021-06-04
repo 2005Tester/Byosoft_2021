@@ -126,6 +126,11 @@ class Msg:
     UBUNTU = BootOS.Ubuntu
     SUSE_GRUB = 'Welcome to GRUB'
 
+    # Menus of Virtualization Configuration page
+    VIRTUAL_CFG = "Virtualization Configuration"
+    SRIOV_GLOBAL = "PCIe SR-IOV"
+    SRIOV_IIO = r"CPU (\d) Port (DMI|[0-4][A-D]) SR-IOV Support"
+
     # Firmware version info
     ME_VERSION = '0F:4.4.4.56'
     RC_VERSION = '0.2.2.0030'
