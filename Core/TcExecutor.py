@@ -7,6 +7,7 @@
 #  means without the express written consent of Byosoft Corporation.
 
 import os
+import csv
 import logging
 import logging.config
 import argparse
@@ -85,3 +86,67 @@ class RunTest:
             except Exception as e:
                 logging.error("Exception: {0}".format(e))
         self.gen_report(logdir)
+
+
+class TestScope:
+    def __init__(self, csv_file, execution_type):
+        self.csv_file = csv_file
+        self.execution_type = execution_type
+        self.default = []
+        self.legacy = []
+        self.os = []
+        self.equip = []
+        self.all_tc = []  # all the test cases loaded from csv file
+        self.tc_to_run = []  # test cases pass check
+        self.read_csv2dict()
+        self.check_csv()
+
+    def read_csv2dict(self):
+        with open(self.csv_file, 'r') as f:
+            tcs = csv.DictReader(f)
+            for row in tcs:
+                self.all_tc.append(row)
+
+    # Check whether all the test cases are valid
+    def check_csv(self):
+        if self.all_tc is None:
+            logging.error("Error, read csv file failed")
+
+        for tc in self.all_tc:
+            try:
+                module, case = tuple(tc['Name'].split('.'))
+                if module and os.path.exists('ICX2P\\TestCase\\' + module + '.py'):
+                    # to do: add check for function definition
+                    self.tc_to_run.append(tc)
+                else:
+                    logging.info("TC:{0},  Module: {1} doesn't exist".format(tc, module))
+            except Exception:
+                if tc['Name'] == '':
+                    pass
+                else:
+                    logging.error("Invalid test case: {0}".format(tc))
+
+    # do do
+    def check_duplicate():
+        pass
+
+    # to do
+    def check_module_importd():
+        pass
+
+    def get_test_cases(self):
+        for row in self.tc_to_run:
+            if row[self.execution_type]:
+                if row['Dependency'] == 'os':
+                    self.os.append(row['Name'])
+                elif row['Dependency'] == 'legacy':
+                    self.legacy.append(row['Name'])
+                elif row['Dependency'] == 'equip':
+                    self.equip.append(row['Name'])
+                else:
+                    self.default.append(row['Name'])
+        print("Default:", len(self.default))
+        print("Equip:", len(self.equip))
+        print("Legacy:", len(self.legacy))
+        print("OS:", len(self.os))
+        print("Total Test case number: {0}".format(len(self.default) + len(self.legacy) + len(self.os) + len(self.equip)))
