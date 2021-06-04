@@ -186,7 +186,10 @@ class TestScope:
             try:
                 mde = importlib.import_module(name='.TestCase.{0}'.format(module), package='ICX2P')
                 func = getattr(mde, casename)
-                func(para)
+                if para == '':
+                    func()
+                else:
+                    pass
             except Exception as e:
                 logging.error("Faile to execute test case: {0}.{1}".format(module, case))
                 logging.error(e)

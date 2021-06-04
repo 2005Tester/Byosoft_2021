@@ -1,5 +1,4 @@
 # -*- encoding=utf8 -*-
-import os
 import re
 from os.path import dirname
 import logging
@@ -152,9 +151,9 @@ def smbios_test(ssh, type):
 
 
 # Test all types defined in list TYPES
-def smbios_test_all(ssh):
+def smbios_test_all():
     for typeid in TYPES:
-        smbios_test(ssh, typeid) 
+        smbios_test(Sut.OS_SSH, typeid)
 
 
 # 打开装备模式并开启RMT， 重启对比Smbios128和串口RMT数据是否匹配

@@ -7,8 +7,6 @@ from ICX2P.TestCase import UpdateBIOS, BiosTest, DefaultValueTest, Os, Release, 
 
 # init SUT
 SutInit.SutInit("ICX2P")
-ser = Sut.BIOS_COM
-ssh_os = Sut.OS_SSH
 
 # init unitool
 unitool = Unitool.SshUnitool(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASSWORD, SutConfig.UNI_PATH, True)
@@ -41,7 +39,7 @@ def full_scope():
     CpuInit01.cpu_compa_03()
     CpuInit01.cpu_compa_05()
     if Os.boot_to_suse():
-        Smbios09.smbios_test_all(ssh_os)
+        Smbios09.smbios_test_all()
         Release.equip_mode_flag_check(unitool)
     Security22.pwd_test_all()
     MemInit02.dimm_power_mgt_01()
@@ -50,15 +48,15 @@ def full_scope():
     MemInit02.dimm_power_mgt_05()
     MemInit02.dimm_power_mgt_07()
     MemInit02.memory_compa_001()
-    MemInit02.memory_compa_006(ssh_os)
-    MemInit02.dimm_power_mgt_010(ssh_os)
-    MemInit02.dimm_power_mgt_011(ssh_os)
-    MemInit02.dimm_power_mgt_012(ssh_os)
-    MemInit02.mem_refresh_001(ssh_os)
-    MemInit02.mem_refresh_002(ssh_os)
+    MemInit02.memory_compa_006()
+    MemInit02.dimm_power_mgt_010()
+    MemInit02.dimm_power_mgt_011()
+    MemInit02.dimm_power_mgt_012()
+    MemInit02.mem_refresh_001()
+    MemInit02.mem_refresh_002()
     MemInit02.set_mem_freq_001_006()
-    MemInit02.mtrr_max_range(ssh_os)
-    MemInit02.mtrr_fixed_range(ssh_os)
+    MemInit02.mtrr_max_range()
+    MemInit02.mtrr_fixed_range()
     Io05.system_info_001()
     Io05.system_info_003()
     Release.me_version_status()
@@ -88,8 +86,8 @@ def full_scope():
         Io05.system_info_002()
         # Io05.system_info_004()
         PcieInit04.pcie_resource_lspci_legacy()
-        Legacy.disable_legacy_boot()
         BootDevice06.boot_order_012(Sut.BMC_SSH)
+        Legacy.disable_legacy_boot()
 
 
 # Test scope for equipment mode image
@@ -114,7 +112,7 @@ class ReleaseBasic:
             BiosTest.load_default()
             BiosTest.security_boot()
             if Os.boot_to_suse():
-                Smbios09.smbios_test_all(ssh_os)
+                Smbios09.smbios_test_all()
             Release.registry_check(self.branch)
             Release.compare_fdm_log(self.branch)
             # Release.hpm_upgrade_test(unitool, self.branch)  # need get release hpm bios from huawei

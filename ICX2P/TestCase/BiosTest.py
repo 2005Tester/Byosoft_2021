@@ -105,7 +105,7 @@ def pxe_test(n=1):
 def usb_test():
     tc = ('006', '[TC006]USB Test', 'USB Test')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
-    msg_list = ['USB Mouse\s+1', 'USB Keyboard\s+1', 'USB Mass Storage\s+0']
+    msg_list = ['USB Mouse\s+1', 'USB Keyboard\s+1', 'USB Mass Storage\s+2']
     if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED):
         result.log_fail(capture=True)
         return

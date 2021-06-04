@@ -171,7 +171,7 @@ def dimm_power_mgt_07():
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: SUSE OS
-def dimm_power_mgt_010(ssh_os):
+def dimm_power_mgt_010():
     tc = ('705', '[TC705]Testcase_MemPower_010', '内存省电模式使能PPD时寄存器状态测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     exp_list = ['0x00000001:ddrt_cke_en(24:24)', '0x00000001:ppd_en(09:09)', '0x00000000:apd_en(08:08)', '0x0000000d:cke_idle_timer(07:00)']
@@ -185,7 +185,7 @@ def dimm_power_mgt_010(ssh_os):
         assert (SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
         assert (SetUpLib.boot_to_bootmanager())
         assert (SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 12, Msg.SUSE_GRUB))
-        assert (PlatMisc.cscripts_inband_register(ssh_os, cscripts_cmd_cke, exp_list))
+        assert (PlatMisc.cscripts_inband_register(cscripts_cmd_cke, exp_list))
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
@@ -196,7 +196,7 @@ def dimm_power_mgt_010(ssh_os):
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: SUSE OS
-def dimm_power_mgt_011(ssh_os):
+def dimm_power_mgt_011():
     tc = ('706', '[TC706]Testcase_MemPower_011', '内存省电模式使能APD时寄存器状态测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     exp_list = ['0x00000001:ddrt_cke_en(24:24)', '0x00000000:ppd_en(09:09)', '0x00000001:apd_en(08:08)', '0x0000000d:cke_idle_timer(07:00)']
@@ -222,7 +222,7 @@ def dimm_power_mgt_011(ssh_os):
             assert (SetUpLib.verify_options(Key.DOWN, [['APD', '<Enabled>']], 3))
             assert (SetUpLib.boot_to_bootmanager())
             assert (SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 12, Msg.SUSE_GRUB))
-            assert (PlatMisc.cscripts_inband_register(ssh_os, cscripts_cmd_cke, exp_list))
+            assert (PlatMisc.cscripts_inband_register(cscripts_cmd_cke, exp_list))
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
@@ -233,7 +233,7 @@ def dimm_power_mgt_011(ssh_os):
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: SUSE OS
-def dimm_power_mgt_012(ssh_os):
+def dimm_power_mgt_012():
     tc = ('707', '[TC707]Testcase_MemPower_012', '内存省电模式使能时更改定时器选项测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     exp_list = ['0x00000001:ddrt_cke_en(24:24)', '0x00000001:ppd_en(09:09)', '0x00000000:apd_en(08:08)', '0x000000ad:cke_idle_timer(07:00)']
@@ -253,7 +253,7 @@ def dimm_power_mgt_012(ssh_os):
         assert (SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
         assert (SetUpLib.verify_options(Key.DOWN, [['CKE Idle Timer', '\[255\]']], 7))
         assert (SetUpLib.boot_suse_from_bm())
-        assert (PlatMisc.cscripts_inband_register(ssh_os, cscripts_cmd_cke, exp_list))
+        assert (PlatMisc.cscripts_inband_register(cscripts_cmd_cke, exp_list))
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
@@ -327,7 +327,7 @@ def memory_compa_001():
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: SUSE OS
-def memory_compa_006(ssh_os, n=1):
+def memory_compa_006(n=1):
     tc = ('710', '[TC710] Testcase_MemoryCompa_006', '06 内存容量一致性测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     res_lst = []
@@ -336,7 +336,7 @@ def memory_compa_006(ssh_os, n=1):
             assert SetUpLib.boot_to_page('BIOS Revision'), "boot_to_page -> fail"
             assert SetUpLib.verify_info(['Total Memory\s+65536 MB'], 20), "dimm_size_verify -> fail"
             assert SetUpLib.boot_suse_from_bm(), "boot_to_os -> fail"
-            res = SshLib.execute_command(ssh_os, 'dmesg | grep -i e820')
+            res = SshLib.execute_command(Sut.OS_SSH, 'dmesg | grep -i e820')
             for j in res.split('\n'):
                 if 'BIOS-e820' in j and 'ACPI' not in j:
                     for k in j.split(' '):
@@ -364,7 +364,7 @@ def memory_compa_006(ssh_os, n=1):
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: SUSE OS
-def mem_refresh_001(ssh_os):
+def mem_refresh_001():
     tc = ('711', '[TC711] Testcase_MemRefresh_001', '01 设置动态内存刷新模式功能测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     exp_list = ['0x00000000:temp_thrt_hyst(26:24)', '0x00000064:temp_hi(23:16)', '0x0000005f:temp_mid(15:08)', '0x00000055:temp_lo(07:00)']
@@ -373,7 +373,7 @@ def mem_refresh_001(ssh_os):
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, Msg.MEMORY_CONFIG], 10, Msg.MEM_FRE), "enter_menu -> fail"
         assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM2X_REFRESH, '<Dynamic Mode>'], 10), "locate_option -> fail"
         assert SetUpLib.boot_suse_from_bm(), "boot_to_os -> fail"
-        assert (PlatMisc.cscripts_inband_register(ssh_os, cscripts_cmd_refresh, exp_list))
+        assert (PlatMisc.cscripts_inband_register(cscripts_cmd_refresh, exp_list))
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
@@ -383,7 +383,7 @@ def mem_refresh_001(ssh_os):
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: SUSE OS
-def mem_refresh_002(ssh_os):
+def mem_refresh_002():
     tc = ('712', '[TC712] Testcase_MemRefresh_002', '02 设置静态2X内存刷新模式功能测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     exp_list = ['0x00000000:temp_thrt_hyst(26:24)', '0x00000064:temp_hi(23:16)', '0x0000005f:temp_mid(15:08)', '0x00000000:temp_lo(07:00)']
@@ -393,7 +393,7 @@ def mem_refresh_002(ssh_os):
         assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM2X_REFRESH, '<Dynamic Mode>'], 10), "locate_option -> fail"
         SetUpLib.send_keys([Key.F5, Key.F10, Key.Y])
         assert SetUpLib.continue_to_boot_suse_from_bm(), "boot_to_os -> fail"
-        assert (PlatMisc.cscripts_inband_register(ssh_os, cscripts_cmd_refresh, exp_list))
+        assert (PlatMisc.cscripts_inband_register(cscripts_cmd_refresh, exp_list))
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
@@ -479,12 +479,12 @@ def set_mem_freq_001_006(n=1):
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: SUSE OS
-def mtrr_max_range(ssh_os):
+def mtrr_max_range():
     tc = ('715', '[TC715] Testcase_MTRR_002', '01 MTRR最大内存地址范围测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         assert SetUpLib.boot_suse_from_bm(), "boot_to_os -> fail"
-        res = SshLib.execute_command(ssh_os, 'cat /proc/mtrr')
+        res = SshLib.execute_command(Sut.OS_SSH, 'cat /proc/mtrr')
         assert res
         mem_size = re.findall(r"\d+\.?\d*", res.split('=')[2])
         for i in mem_size:
@@ -500,7 +500,7 @@ def mtrr_max_range(ssh_os):
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: SUSE OS
-def mtrr_fixed_range(ssh_os):
+def mtrr_fixed_range():
     tc = ('716', '[TC716] Testcase_MTRR_002', '02 MTRR Fixed ranges测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     flag = []
@@ -508,7 +508,7 @@ def mtrr_fixed_range(ssh_os):
         assert BmcLib.force_reset(), 'reset_system -> fail'
         assert not SetUpLib.wait_message('0xa0300', 60), 'find 0xa0300 string'
         assert SetUpLib.boot_suse_from_bm(), "boot_to_os -> fail"
-        res = SshLib.execute_command(ssh_os, 'dmesg | grep MTRR')
+        res = SshLib.execute_command(Sut.OS_SSH, 'dmesg | grep MTRR')
         assert res
         if 'MTRR fixed ranges enabled' in res:
             logging.info('MTRR fixed ranges enabled')

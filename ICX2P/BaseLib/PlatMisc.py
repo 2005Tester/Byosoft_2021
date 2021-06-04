@@ -70,7 +70,7 @@ def rw_everything(ssh, exp_res, mem_bar=None, cmd='mmr', str=' ', start=1, stop=
 
 # used for read register data, e,g cke power down and mem refresh mode
 # sv.socket0.uncore.memss.mc0.ch0.cke_ll0.show
-def cscripts_inband_register(ssh, cmd, exp_list, stop=-6):
+def cscripts_inband_register(cmd, exp_list, stop=-6):
     """
     :param cmd is a standard cscripts command,
             e.g sv.socket0.uncore.memss.mc0.ch0.cke_ll0.show()
@@ -83,7 +83,7 @@ def cscripts_inband_register(ssh, cmd, exp_list, stop=-6):
         res_list = []
         cmds = ['cd {0}\n'.format(SutConfig.CSCRIPTS_PATH), 'pwd\n', './openCscripts.sh\n', '{0}\n'.format(cmd)]
         rets = ['', '{0}'.format(SutConfig.CSCRIPTS_PATH), 'Socket 0', '{0}'.format((exp_list[-1].split(':', 1)[0]).strip())]
-        res = SshLib.interaction(ssh, cmds, rets, timeout=15)[1]
+        res = SshLib.interaction(Sut.OS_SSH, cmds, rets, timeout=15)[1]
         data = res.split('\r\n')[stop:]
         for i in range(len(data)):
             for j in data[i].split('--'):

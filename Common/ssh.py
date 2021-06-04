@@ -94,6 +94,7 @@ class SshConnection:
         logging.debug("SSH login: {0}".format(self.host_ip))
         if self.login_try >= 5:
             logging.error("Failed in SSH login, after try {0} times.".format(self.login_try))
+            self.login_try = 0
             return
         try:
             self.login_try += 1
@@ -117,6 +118,7 @@ class SshConnection:
         except:
             logging.error("Error in ssh connection:", sys.exc_info()[0])
             return
+        self.login_try = 0
         return True
 
     # execute command on SUT
