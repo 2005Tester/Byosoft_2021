@@ -427,7 +427,7 @@ class SutControl:
                 logging.info(f"Nothing found, timeout exit for {timeout}s")
                 return data_saved
 
-    # locate to the target option first, and get the
+    # locate to the target option first, and get the value list
     def get_value_list(self):
         all_patten = re.compile(f"{SEP}{VALR}")
         self.session.flushInput()
