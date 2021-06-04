@@ -19,7 +19,7 @@ class CliParse:
     def __init__(self):
         my_parser = argparse.ArgumentParser()
         my_parser.add_argument("ProjectName", help="Supported projects: ICX2P, Pangea, Hygon, TCE")
-        my_parser.add_argument("ExecutionType", help="Supported Execution Type: daily, release, debug, loop")
+        my_parser.add_argument("ExecutionType", help="Supported Execution Type: daily, release, weekly, debug, checkcsv")
         my_parser.add_argument("-p", "--post", action="store_true", help="Opional: Post test resul to web portl")
         args = my_parser.parse_args()
         self.project = args.ProjectName
@@ -66,13 +66,23 @@ class RunTest:
             report.post_result()
 
     def run(self):
-        if self.execution_type not in ["daily", "release", "debug"]:
+        if self.execution_type not in ["daily", "release", "debug", "weekly", "checkcsv"]:
             print("Option: \"{0}\" not supported".format(self.execution_type))
             return
         logdir = self.init_log()
+        if self.execution_type == "checkcsv":
+            try:
+                self.script.CheckCsv()
+            except Exception as e:
+                logging.error("Exception: {0}".format(e))
         if self.execution_type == "daily":
             try:
                 self.script.DailyTest()
+            except Exception as e:
+                logging.error("Exception: {0}".format(e))
+        if self.execution_type == "weekly":
+            try:
+                self.script.WeeklyTest()
             except Exception as e:
                 logging.error("Exception: {0}".format(e))
         elif self.execution_type == "release":
@@ -98,7 +108,6 @@ class TestScope:
         self.equip = []
         self.all_tc = []  # all the test cases loaded from csv file
         self.tc_to_run = []  # test cases pass check
-        self.read_csv2dict()
         self.check_csv()
 
     def read_csv2dict(self):
@@ -109,8 +118,11 @@ class TestScope:
 
     # Check whether all the test cases are valid
     def check_csv(self):
+        logging.info("Start checking {0}".format(self.csv_file))
+        self.read_csv2dict()
         if self.all_tc is None:
             logging.error("Error, read csv file failed")
+            return
 
         for tc in self.all_tc:
             try:
@@ -125,6 +137,7 @@ class TestScope:
                     pass
                 else:
                     logging.error("Invalid test case: {0}".format(tc))
+        logging.info("checking csv file done.")
 
     # do do
     def check_duplicate():
