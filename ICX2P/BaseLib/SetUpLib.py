@@ -383,9 +383,6 @@ def set_option_value(option, to_value, value_list, save=False, loc_cnt=20, delay
         return
     if save:
         send_keys(Key.SAVE_RESET)
-        if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE):
-            logging.info(f'Set [{option}]: {current_value} => {to_value} boot failed')
-            return
     logging.info(f'Set [{option}]: {current_value} => {to_value} successfully')
     return True
 
