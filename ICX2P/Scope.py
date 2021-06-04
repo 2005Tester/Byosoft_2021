@@ -1,6 +1,5 @@
 from Common import Unitool
 from Core import SutInit
-from Core.SutInit import Sut
 from ICX2P.Config import SutConfig
 from ICX2P.TestCase import UpdateBIOS, BiosTest, DefaultValueTest, Os, Release, Legacy, CpuInit01, MemInit02, PchInit03, \
     PcieInit04, Io05, Smbios09, Security22, BootDevice06
@@ -80,14 +79,16 @@ def full_scope():
     BiosTest.power_efficiency_mode_loop(unitool)
     BootDevice06.boot_device_type_001()
     BootDevice06.boot_order_002()
-    BootDevice06.boot_order_004(Sut.BMC_SSH)
+    BootDevice06.boot_order_004()
     if Legacy.enable_legacy_boot():
         BootDevice06.boot_device_type_002()
         Io05.system_info_002()
         # Io05.system_info_004()
         PcieInit04.pcie_resource_lspci_legacy()
-        BootDevice06.boot_order_012(Sut.BMC_SSH)
+        BootDevice06.boot_order_012()
         Legacy.disable_legacy_boot()
+        Legacy.disable_legacy_boot()
+        BootDevice06.boot_order_012()
 
 
 # Test scope for equipment mode image
@@ -147,6 +148,6 @@ def debug_scope():
     CpuInit01.cpu_mem_info()
     BiosTest.power_efficiency_mode_loop(unitool)
     BootDevice06.boot_order_001()
-    BootDevice06.boot_order_003(Sut.BMC_SSH)
-    BootDevice06.boot_order_004(Sut.BMC_SSH)
-    BootDevice06.boot_order_005(Sut.BMC_SSH)
+    BootDevice06.boot_order_003()
+    BootDevice06.boot_order_004()
+    BootDevice06.boot_order_005()

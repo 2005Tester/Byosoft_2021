@@ -1,9 +1,11 @@
+# Author: arthur
+
 import logging
 
 from ICX2P.Config.PlatConfig import Key, Msg
 from ICX2P.BaseLib import SetUpLib, BmcLib
 from Report import ReportGen
-from Core import MiscLib, SshLib
+from Core import MiscLib, SshLib, SutInit
 from ICX2P.Config import SutConfig
 
 # Boot Device Related Test case, test case ID, TC151-199
@@ -70,8 +72,8 @@ def enabled_disable_options(PXE_OPTION='IPv4 PXE'):
 
 # only used to test boot_order 04 10
 def boot_to_dvd(ssh, DVD_OPTION="UEFI Hitachi-LG Data Storage Inc Portable Super Multi Drive"):
-    cmds = ['ipmcget -d bootdevice\n', 'ipmcset -d bootdevice -v 5\n', 'ipmcget -d bootdevice\n']
-    rets = ['No override', 'successfully', 'Force boot from default CD/DVD']
+    cmds = ['ipmcset -d bootdevice -v 5\n', 'ipmcget -d bootdevice\n']
+    rets = ['successfully', 'Force boot from default CD/DVD']
     try:
         assert SshLib.interaction(ssh, cmds, rets, timeout=15)
         assert SetUpLib.boot_to_bootmanager()
@@ -177,55 +179,55 @@ def boot_order_002():
 # Precondition: 1、UEFI模式；2、Setup菜单启动顺序保持默认设置。
 # OnStart: NA
 # OnComplete: PXE
-def boot_order_003(ssh):
+def boot_order_003():
     tc = ('155', '[TC155]03 【UEFI模式】启动顺序优先级_Setup菜单和BMC设置', '支持启动顺序设置')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
-    cmds = ['ipmcget -d bootdevice\n', 'ipmcset -d bootdevice -v 1\n', 'ipmcget -d bootdevice\n']
-    rets = ['No override', 'successfully', 'Force PXE']
+    cmds = ['ipmcset -d bootdevice -v 1\n', 'ipmcget -d bootdevice\n']
+    rets = ['successfully', 'Force PXE']
     try:
-        assert SshLib.interaction(ssh, cmds, rets, timeout=15)
+        assert SshLib.interaction(SutInit.Sut.BMC_SSH, cmds, rets, timeout=15)
         assert BmcLib.force_reset()
         assert SetUpLib.wait_message('NBP file downloaded successfully')
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
     finally:
-        SshLib.interaction(ssh, restored_cmds, restored_rets, timeout=15)
+        SshLib.interaction(SutInit.Sut.BMC_SSH, restored_cmds, restored_rets, timeout=15)
 
 
 # Testcase Num: Testcase_BootOrder_004
 # Precondition: 1、BIOS默认值配置；2、单板安装四大类启动设备，硬盘、PXE、DVD光驱、软驱/U盘。
 # OnStart: NA
 # OnComplete: DVD
-def boot_order_004(ssh):
+def boot_order_004():
     tc = ('156', '[TC156]04【UEFI模式】启动顺序优先级_Setup菜单和BMC设置', '支持启动顺序设置')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
-        assert boot_to_dvd(ssh)
+        assert boot_to_dvd(SutInit.Sut.BMC_SSH)
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
     finally:
-        SshLib.interaction(ssh, restored_cmds, restored_rets, timeout=15)
+        SshLib.interaction(SutInit.Sut.BMC_SSH, restored_cmds, restored_rets, timeout=15)
 
 
 # Testcase Num: Testcase_BootOrder_005 011
 # Precondition: 1、UEFI or Legacy模式；2、Setup菜单启动顺序保持默认设置。
 # OnStart: NA
 # OnComplete: PXE
-def boot_order_005(ssh):
+def boot_order_005():
     tc = ('157', '[TC157]05 11【UEFI Legacy模式】启动顺序优先级_Setup菜单和BMC设置', '支持启动顺序设置')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
-    cmds = ['ipmcget -d bootdevice\n', 'ipmcset -d bootdevice -v 5\n', 'ipmcget -d bootdevice\n']
-    rets = ['No override', 'successfully', 'Force boot from default CD/DVD']
+    cmds = ['ipmcset -d bootdevice -v 5\n', 'ipmcget -d bootdevice\n']
+    rets = ['successfully', 'Force boot from default CD/DVD']
     try:
-        assert SshLib.interaction(ssh, cmds, rets, timeout=15)
+        assert SshLib.interaction(SutInit.Sut.BMC_SSH, cmds, rets, timeout=15)
         assert SetUpLib.boot_with_hotkey(Key.F12, 'NBP file downloaded successfully', 120)
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
     finally:
-        SshLib.interaction(ssh, restored_cmds, restored_rets, timeout=15)
+        SshLib.interaction(SutInit.Sut.BMC_SSH, restored_cmds, restored_rets, timeout=15)
 
 
 # Testcase Num: Testcase_BootOrder_007
@@ -248,16 +250,16 @@ def boot_order_007():
 # Precondition: 1、Legacy；2、单板安装四大类启动设备，硬盘、PXE、DVD光驱、软驱/U盘。
 # OnStart: NA
 # OnComplete: DVD
-def boot_order_012(ssh):
+def boot_order_012():
     tc = ('159', '[TC159]12 【Legacy模式】启动顺序优先级_BMC设置和F12热键', '支持启动顺序设置')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
-        assert boot_to_dvd(ssh, DVD_OPTION="ASUS SDRW-08D2S-U+\s")
+        assert boot_to_dvd(SutInit.Sut.BMC_SSH, DVD_OPTION="ASUS SDRW-08D2S-U+\s")
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
     finally:
-        SshLib.interaction(ssh, restored_cmds, restored_rets, timeout=15)
+        SshLib.interaction(SutInit.Sut.BMC_SSH, restored_cmds, restored_rets, timeout=15)
 
 
 # 09 支持SP启动
