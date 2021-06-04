@@ -1,14 +1,9 @@
-from Common import Unitool
 from Core import SutInit
-from ICX2P.Config import SutConfig
 from ICX2P.TestCase import UpdateBIOS, BiosTest, DefaultValueTest, Os, Release, Legacy, CpuInit01, MemInit02, PchInit03, \
     PcieInit04, Io05, Smbios09, Security22, BootDevice06
 
 # init SUT
 SutInit.SutInit("ICX2P")
-
-# init unitool
-unitool = Unitool.SshUnitool(SutConfig.OS_IP, SutConfig.OS_USER, SutConfig.OS_PASSWORD, SutConfig.UNI_PATH, True)
 
 
 # Test scope for non-equipment build
@@ -26,20 +21,20 @@ def full_scope():
     BiosTest.vtd()
     BiosTest.cnd_default_enable()
     CpuInit01.upi_link_status()
-    CpuInit01.cpu_cores_active_enable_1(unitool)
-    CpuInit01.cpu_cores_active_enable_middle(unitool)
-    CpuInit01.cpu_cores_active_enable_max(unitool)
-    CpuInit01.cpu_cores_disable_sys_normally(unitool)
-    CpuInit01.cores_customized_by_unitool(unitool)
-    CpuInit01.numa_01(unitool)
+    CpuInit01.cpu_cores_active_enable_1()
+    CpuInit01.cpu_cores_active_enable_middle()
+    CpuInit01.cpu_cores_active_enable_max()
+    CpuInit01.cpu_cores_disable_sys_normally()
+    CpuInit01.cores_customized_by_unitool()
+    CpuInit01.numa_01()
     CpuInit01.numa_02()
-    CpuInit01.numa_03(unitool)
+    CpuInit01.numa_03()
     CpuInit01.cpu_compa_02()
     CpuInit01.cpu_compa_03()
     CpuInit01.cpu_compa_05()
     if Os.boot_to_suse():
         Smbios09.smbios_test_all()
-        Release.equip_mode_flag_check(unitool)
+        Release.equip_mode_flag_check()
     Security22.pwd_test_all()
     MemInit02.dimm_power_mgt_01()
     MemInit02.dimm_power_mgt_02()
@@ -76,7 +71,7 @@ def full_scope():
     PcieInit04.pcie_resource_lspci_uefi()
     PcieInit04.aspm_global_disable_l1only()
     PcieInit04.aspm_per_port_loop()
-    BiosTest.power_efficiency_mode_loop(unitool)
+    BiosTest.power_efficiency_mode_loop()
     BootDevice06.boot_device_type_001()
     BootDevice06.boot_order_002()
     BootDevice06.boot_order_004()
@@ -95,8 +90,8 @@ def full_scope():
 def equip_scope():
     Release.equip_mode_version_check()
     Os.boot_to_suse_mfg()
-    Smbios09.smbios_type128(unitool)
-    MemInit02.rmt_equip_test(unitool)
+    Smbios09.smbios_type128()
+    MemInit02.rmt_equip_test()
 
 
 class ReleaseBasic:
@@ -117,14 +112,14 @@ class ReleaseBasic:
             Release.registry_check(self.branch)
             Release.compare_fdm_log(self.branch)
             # Release.hpm_upgrade_test(unitool, self.branch)  # need get release hpm bios from huawei
-            Release.hpm_downgrade_test(unitool, self.branch)
+            Release.hpm_downgrade_test(self.branch)
 
     def equip_scope(self):
         if UpdateBIOS.update_bios_mfg(self.branch):
             Release.equip_mode_version_check()
-            Smbios09.smbios_type128(unitool)
+            Smbios09.smbios_type128()
             if Os.boot_to_suse():
-                Release.equip_mode_flag_check(unitool)
+                Release.equip_mode_flag_check()
 
 
 # Define test scope for daily test
@@ -146,7 +141,7 @@ def release_scope():
 def debug_scope():
     UpdateBIOS.update_bios('master')
     CpuInit01.cpu_mem_info()
-    BiosTest.power_efficiency_mode_loop(unitool)
+    BiosTest.power_efficiency_mode_loop()
     BootDevice06.boot_order_001()
     BootDevice06.boot_order_003()
     BootDevice06.boot_order_004()

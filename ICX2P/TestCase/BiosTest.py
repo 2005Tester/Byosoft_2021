@@ -389,7 +389,7 @@ def serial_print_error_check():
 # Precondition: 配置好unitool
 # OnStart: Boot to linux
 # OnComplete: NA
-def power_efficiency_mode_loop(unitool):
+def power_efficiency_mode_loop():
     tc = ('028', '[TC028]Testcase_PowerEfficiency_001', 'PowerEfficiency场景配置测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     baseline = os.path.join(os.path.dirname(__file__), r"..\Tools\PowerEfficiency\2288V6_PowerEfficiency.csv")
@@ -419,7 +419,7 @@ def power_efficiency_mode_loop(unitool):
             healthy_state[to_mode] = BmcLib.bmc_warning_check()
             # Check each Attribute's value
             name_list = [row_data[0] for row_data in data[1:]]
-            read_res = unitool.read(*name_list)
+            read_res = Sut.UNITOOL.read(*name_list)
             for row_index, attr_name in enumerate(data[1:]):
                 key = attr_name[0]
                 value = attr_name[data[0].index(f"{to_mode}_check")-1]

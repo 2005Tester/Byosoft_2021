@@ -15,7 +15,7 @@ from Report import ReportGen
 
 
 # function Module : 使用unitool还原bios setting
-def reset_cpu_setting(unitool, cmd_var):
+def reset_cpu_setting(cmd_var):
     cmd = eval("dict(%s)" % cmd_var.replace(":", "="))
     if not BmcLib.force_reset():
         logging.info('power off-on fail')
@@ -23,11 +23,11 @@ def reset_cpu_setting(unitool, cmd_var):
     if not MiscLib.ping_sut(SutConfig.OS_IP, 300):
         logging.info('boot linux-suse fail')
         return False
-    if not unitool.write(**cmd):
+    if not Sut.UNITOOL.write(**cmd):
         logging.info('unitool write_in fail')
         return False
     logging.info("unitool.write_in pass")
-    if not unitool.check(**cmd):
+    if not Sut.UNITOOL.check(**cmd):
         logging.info('check unitool_write fail')
         return False
     logging.info('Modify bios setting to default setting by unipwd tool, Pass')
@@ -35,7 +35,7 @@ def reset_cpu_setting(unitool, cmd_var):
 
 
 #  function Module, TC205,TC206,TC207 调用
-def cpu_cores_active_enable(unitool, num, set_n):
+def cpu_cores_active_enable(num, set_n):
     ACT_CPU_CORES = ['Active Processor Cores', '<All>']
     cmd_var = 'ActiveCpuCores:0'
     try:
@@ -80,7 +80,7 @@ def cpu_cores_active_enable(unitool, num, set_n):
     except AssertionError:
         logging.info("异常还原")
     finally:
-        reset_cpu_setting(unitool, cmd_var)
+        reset_cpu_setting(cmd_var)
 
 # Testcase_CPU_COMPA_015, 016 - TBD
 # Precondition: NA
@@ -208,37 +208,37 @@ def cpu_cores_active():
 # Precondition: unitool
 # OnStart: NA
 # OnComplete: suse Page
-def cpu_cores_active_enable_1(unitool):
+def cpu_cores_active_enable_1():
     tc = ('205', '[TC205] Testcase_CoreDisable_002', 'Enable 1 CPU core test')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     num = 1
     set_n = 28
     try:
-        assert cpu_cores_active_enable(unitool, num, set_n)
+        assert cpu_cores_active_enable(num, set_n)
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
 
 
-def cpu_cores_active_enable_middle(unitool):
+def cpu_cores_active_enable_middle():
     tc = ('206', '[TC206] Testcase_CoreDisable_003', 'Enable middle-num CPU core test')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     num = 14
     set_n = 14
     try:
-        assert cpu_cores_active_enable(unitool, num, set_n)
+        assert cpu_cores_active_enable(num, set_n)
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
 
 
-def cpu_cores_active_enable_max(unitool):
+def cpu_cores_active_enable_max():
     tc = ('207', '[TC207] Testcase_CoreDisable_004', 'Enable max-1 CPU core test')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     num = 27
     set_n = 1
     try:
-        assert cpu_cores_active_enable(unitool, num, set_n)
+        assert cpu_cores_active_enable(num, set_n)
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
@@ -248,11 +248,10 @@ def cpu_cores_active_enable_max(unitool):
 # Precondition: unitool
 # OnStart: NA
 # OnComplete: suse Page
-def cpu_cores_disable_sys_normally(unitool):
+def cpu_cores_disable_sys_normally():
     tc = ('208', '[TC208] CoreDisable_005', 'After disable the CPU core, the system runs normally')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     ACT_CPU_CORES = ['Active Processor Cores', '<All>']
-    cmd_var = 'ActiveCpuCores:0'
     n = 1
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
@@ -276,7 +275,7 @@ def cpu_cores_disable_sys_normally(unitool):
         logging.info("异常还原")
         result.log_fail(capture=True)
     finally:
-        reset_cpu_setting(unitool, cmd_var)
+        BmcLib.clear_cmos()
 
 
 # Unitool to modify the number of CPU cores,in bios and OS Verify CPU Cores
@@ -287,7 +286,6 @@ def cores_customized_by_unitool(unitool):
     tc = ('209', '[TC209] CoreDisable_007', 'Unitool to modify the number of CPU cores,in bios and OS Verify CPU Cores')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     ACT_CPU_CORES = ['Active Processor Cores', '<20>']
-    cmd_var = 'ActiveCpuCores:0'
     try:
         assert SetUpLib.boot_with_hotkey(Key.F11, "Boot Manager Menu", 300)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 20, "Welcome to GRUB")
@@ -317,12 +315,13 @@ def cores_customized_by_unitool(unitool):
         logging.info("异常还原")
         result.log_fail(capture=True)
     finally:
-        reset_cpu_setting(unitool, cmd_var)
+        BmcLib.clear_cmos()
 
 # modify the numa disable/enable,in OS Verification
 # Precondition: suse
 # OnStart: NA
 # OnComplete: suse Page
+
 
 # function Module
 def numa_disabled_verify(): # 进入 Numa page，设置 Numa 为 Disabled,到 suse中验证
@@ -337,6 +336,7 @@ def numa_disabled_verify(): # 进入 Numa page，设置 Numa 为 Disabled,到 su
     if not MiscLib.ping_sut(SutConfig.OS_IP, 600):
         return False
     return True
+
 
 def numa_enabled_verify(): # 进入 Numa page，设置 Numa 为 Enabled，到 suse中验证
     numa_aft = ['NUMA', '<Disabled>']
@@ -357,11 +357,10 @@ def numa_enabled_verify(): # 进入 Numa page，设置 Numa 为 Enabled，到 su
 # Precondition: linux-OS
 # OnStart: NA
 # OnComplete: NA
-def numa_01(unitool):
+def numa_01():
     tc = ('210', '[TC210] Testcase_NUMA_001', '内存NUMA特性设置测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     Num_cmd = r'numactl --hardware'
-    cmd_var = 'NumaEn:1'
     try:
         assert numa_disabled_verify()
         nodes_dis = SshLib.execute_command(Sut.OS_SSH, Num_cmd).split('nodes')[0].split(':')[1]
@@ -383,7 +382,7 @@ def numa_01(unitool):
         logging.info("异常还原")
         result.log_fail(capture=True)
     finally:
-        reset_cpu_setting(unitool, cmd_var)
+        BmcLib.clear_cmos()
 
 
 # Author: Fubaolin
@@ -428,10 +427,9 @@ def numa_02():
 # Precondition: linux-OS,Unitool,
 # OnStart: NA
 # OnComplete: NA
-def numa_03(unitool):
+def numa_03():
     tc = ('212', '[TC212] Testcase_NUMA_003', '关闭NUMA内存条1DPC反复复位测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
-    cmd_var = 'NumaEn:1'
     n = 1
     try:
         assert numa_disabled_verify()
@@ -447,7 +445,7 @@ def numa_03(unitool):
         logging.info("异常还原")
         result.log_fail(capture=True)
     finally:
-        reset_cpu_setting(unitool, cmd_var)
+        BmcLib.clear_cmos()
 
 
 # Author: Fubaolin
@@ -475,7 +473,6 @@ def cpu_compa_02():
         result.log_pass()
     except AssertionError:
         result.log_fail()
-
 
 
 # Author: Fubaolin

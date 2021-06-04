@@ -109,15 +109,21 @@ def clear_cmos():
     ret_confirm = ''
     cmds = [cmd_clearcoms, cmd_confirm]
     rets = [ret_clearcmos, ret_confirm]
+    sleep_cnt = 0
     if is_power_off():
         pass
     else:
-        if power_off():
-            time.sleep(30)  # wait for 30s due to if in OS
-            pass
-
+        power_off()
+        while sleep_cnt <= 10:
+            if is_power_off():
+                break
+            else:
+                time.sleep(3)
+                sleep_cnt += 1
     if Sut.BMC_SSH.login():
-        return Sut.BMC_SSH.interaction(cmds, rets)
+        Sut.BMC_SSH.interaction(cmds, rets)
+        logging.info("[BmcLib]clear cmos done")
+        return
     else:
         logging.error("BmcLib: clear CMOS failed by BMC command")
         return

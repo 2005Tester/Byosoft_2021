@@ -37,10 +37,10 @@ def me_version_status():
 
 
 # 非装备模式BIOS设置装备模式flag, 预期设置不成功.
-def equip_mode_flag_check(unitool):
+def equip_mode_flag_check():
     tc = ('902', '[TC902] Equipment mode flag check', '非装备模式BIOS设置装备模式flag, 预期设置不成功.')
     result = ReportGen.LogHeaderResult(tc)
-    res = unitool.set_config(BiosCfg.EQUIP_FLAG)
+    res = Sut.UNITOOL.set_config(BiosCfg.EQUIP_FLAG)
     if res:
         result.log_fail()
         return
@@ -98,7 +98,7 @@ def hpm_upgrade_test(unitool, new_branch):
             SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5)
 
 
-def hpm_downgrade_test(unitool, new_branch):
+def hpm_downgrade_test(new_branch):
     tc = ('905', '[TC905] HPM降级保持配置不变', "HPM降级BIOS后，原来设置的非默认BIOS设置不变")
     result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
 
@@ -114,11 +114,11 @@ def hpm_downgrade_test(unitool, new_branch):
         assert SetUpLib.update_default_password()
         assert SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5)
         assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
-        assert unitool.write(**BiosCfg.HPM_KEEP)
+        assert Sut.UNITOOL.write(**BiosCfg.HPM_KEEP)
         assert Update.flash_local_hpm(old_hpm_local[0])
         flash_latest = False
         assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
-        assert unitool.check(**BiosCfg.HPM_KEEP)
+        assert Sut.UNITOOL.check(**BiosCfg.HPM_KEEP)
         result.log_pass()
         return True
     except Exception as e:

@@ -160,7 +160,7 @@ def smbios_test_all():
 # Precondition: Linux配置好 unitool和rw工具, os ssh可访问
 # OnStart: 进入Linux系统
 # OnComplete: clearCMOS后正常启动
-def smbios_type128(unitool):
+def smbios_type128():
     tc = ('528', '[TC528]Testcase_MemMargin_002', '装备模式下内存margin测试, 检查Smbios Type128信息')
     result = ReportGen.LogHeaderResult(tc)
     logging.info("Change setup option to enable RMT")
@@ -168,7 +168,7 @@ def smbios_type128(unitool):
         assert BmcLib.force_reset()
         assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE)
         assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
-        assert unitool.set_config(BiosCfg.MFG_RMT), "Change setup by unitool failed."
+        assert Sut.UNITOOL.set_config(BiosCfg.MFG_RMT), "Change setup by unitool failed."
         logging.info("Reboot SUT to Linux")
         assert BmcLib.force_reset()
         ser_rmt_data = SerialLib.cut_log(Sut.BIOS_COM, "START_BSSA_RMT", "Lane Margin", duration=15, timeout=600)
