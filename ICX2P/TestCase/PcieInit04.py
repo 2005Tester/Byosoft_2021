@@ -489,5 +489,5 @@ def sriov_global_menu():
         assert SetUpLib.get_all_values(Msg.SRIOV_GLOBAL, Key.DOWN, 5) == sriov_vals  # 可选值检查
         result.log_pass()
     except Exception as e:
-        result.log_fail()
+        logging.error(e)
         result.log_fail()

@@ -65,7 +65,7 @@ def equip_mode_version_check():
     return True
 
 
-def hpm_upgrade_test(unitool, new_branch):
+def hpm_upgrade_test(new_branch):
     tc = ('904', '[TC904] HPM升级保持配置不变', "HPM升级BIOS后，原来设置的非默认BIOS设置不变")
     result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
 
@@ -82,11 +82,11 @@ def hpm_upgrade_test(unitool, new_branch):
         SetUpLib.update_default_password()
         SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5)
         assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
-        assert unitool.write(**BiosCfg.HPM_KEEP)
+        assert Sut.UNITOOL.write(**BiosCfg.HPM_KEEP)
         assert Update.flash_local_hpm(new_hpm_local[0])
         flash_latest = True
         assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
-        assert unitool.check(**BiosCfg.HPM_KEEP)
+        assert Sut.UNITOOL.check(**BiosCfg.HPM_KEEP)
         result.log_pass()
         return True
     except AssertionError:

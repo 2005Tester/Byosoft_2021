@@ -282,7 +282,7 @@ def cpu_cores_disable_sys_normally():
 # Precondition: Unitool
 # OnStart: NA
 # OnComplete: suse Page
-def cores_customized_by_unitool(unitool):
+def cores_customized_by_unitool():
     tc = ('209', '[TC209] CoreDisable_007', 'Unitool to modify the number of CPU cores,in bios and OS Verify CPU Cores')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     ACT_CPU_CORES = ['Active Processor Cores', '<20>']
@@ -292,7 +292,7 @@ def cores_customized_by_unitool(unitool):
         assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE, 170)
         logging.info("Suse_OS Boot Successful")
         MiscLib.ping_sut(SutConfig.OS_IP, 600)
-        assert unitool.write(ActiveCpuCores=20)
+        assert Sut.UNITOOL.write(ActiveCpuCores=20)
         SshLib.execute_command(Sut.OS_SSH, r'reboot')
         # 进入Bios ，验证 unitool修改是否成功
         assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)

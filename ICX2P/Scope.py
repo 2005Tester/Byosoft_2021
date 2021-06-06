@@ -112,7 +112,7 @@ class ReleaseBasic:
                 Smbios09.smbios_test_all()
             Release.registry_check(self.branch)
             Release.compare_fdm_log(self.branch)
-            # Release.hpm_upgrade_test(unitool, self.branch)  # need get release hpm bios from huawei
+            # Release.hpm_upgrade_test(self.branch)  # need get release hpm bios
             Release.hpm_downgrade_test(self.branch)
 
     def equip_scope(self):

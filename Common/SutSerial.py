@@ -427,44 +427,49 @@ class SutControl:
                 logging.info(f"Nothing found, timeout exit for {timeout}s")
                 return data_saved
 
-    # locate to the target option first, and get the value list
+    # get one option all value list, need locate to the target option first
     def get_value_list(self):
         all_patten = re.compile(f"{SEP}{VALR}")
         self.session.flushInput()
         self.send_keys_with_delay(ENTER)
-        self.data = self.receive_data(self.session.in_waiting)
-        val_list = all_patten.findall(self.data)
+        tmpdata = self.receive_data(self.session.in_waiting)
+        self.send_keys_with_delay(ENTER)
+        val_list = all_patten.findall(tmpdata)
         if not val_list:
             logging.error("Fail to match values list")
             return
         logging.info("Current option values: {}".format(val_list))
         return val_list
 
-    # directly press enter to choose target value
+    # locate to the target value, need locate to the target option first
+    # value_str: the target value to highlight
     def locate_value(self, value_str):
         hl_patten = re.compile(f"{SEP}{VALR}{HLP}")  # hight patten
         val_list = self.get_value_list()
-        hl_before = hl_patten.findall(self.data)
         if not val_list:
             return
         if value_str not in val_list:
             logging.error('"{}" not in value list'.format(value_str))
             return
-        if hl_before[-1] == value_str:
+        self.session.flushInput()
+        self.send_keys_with_delay(ENTER)
+        tmpdata = self.receive_data(self.session.in_waiting)
+        hl_default = hl_patten.findall(tmpdata)
+        if hl_default[-1] == value_str:
             logging.info('Current select option is "{}"'.format(value_str))
             return True
-        offset = val_list.index(value_str)-val_list.index(hl_before[-1])
+        offset = val_list.index(value_str)-val_list.index(hl_default[-1])
         press_key = DOWN if offset > 0 else UP
         key_cnt = abs(offset)
-        self.send_keys_with_delay([press_key]*(key_cnt-1))
-        self.session.flushInput()
-        self.send_keys_with_delay(press_key)
-        refresh_data = self.receive_data(self.session.in_waiting)
-        hl_after = hl_patten.findall(refresh_data)
-        if not hl_after:
+        for k in range(key_cnt):
+            self.send_keys(press_key)
+            time.sleep(1)
+            tmpdata = self.receive_data(self.session.in_waiting)
+        hl_current = hl_patten.findall(tmpdata)
+        if not hl_current:
             logging.error("Fail to verify current select value after key pressed")
             return
-        if hl_after[-1] == value_str:
+        if hl_current[-1] == value_str:
             logging.info('Locate to value "{}" pass'.format(value_str))
             return True
         logging.error('Locate to value "{}" failed'.format(value_str))
