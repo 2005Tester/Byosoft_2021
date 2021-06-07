@@ -551,3 +551,46 @@ def cpu_compa_05():
         return True
     except AssertionError:
         result.log_fail(capture=True)
+
+
+# Author: Fubaolin
+# CPU信息显示测试
+# Precondition: linux-OS
+# OnStart: NA
+# OnComplete: NA
+def cpu_compa_06():
+    tc = ('217', '[TC217] Testcase_CPU_COMPA_006', 'CPU信息显示测试')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    pro_fre = ['Processor Frequency\s+2.000GHz+|\s+2.000GHz']
+    pro_ver = ['Processor 1 Version \s+Intel\(R\) Xeon\(R\) Gold 6 \s+330 CPU @ 2.00GHz',
+               'Processor 2 Version \s+Intel\(R\) Xeon\(R\) Gold 6 \s+330 CPU @ 2.00GHz']
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.UP, Msg.PATH_PER_CPU_INFO, 20, Msg.PER_CPU)
+        assert SetUpLib.verify_info(pro_fre, 20)
+        assert SetUpLib.verify_info(pro_ver, 20)
+        assert BmcLib.force_reset()
+        # 在smbios4中检查：cpu型号，频率，个数
+        cpu_version = \
+        SshLib.execute_command(Sut.OS_SSH, r'dmidecode -t 4 | grep "Version:" ').replace('\n', '').split(':')[-1].strip()
+        if cpu_version == 'Intel(R) Xeon(R) Gold 6330 CPU @ 2.00GHz':
+            logging.info('cpu_version is ok')
+        else:
+            logging.info('Different, please check')
+            return result.log_fail(capture=True)
+        cpu_num = SshLib.execute_command(Sut.OS_SSH, r'dmidecode -t 4 | grep "Socket Designation:" ')
+        if 'CPU01' in cpu_num:
+            if 'CPU02' in cpu_num:
+                logging.info('cpu_num is ok')
+            else:
+                logging.info('cpu02 no found,please check')
+                return result.log_fail(capture=True)
+        else:
+            logging.info('cpu01 no found,please check')
+            return result.log_fail(capture=True)
+        result.log_pass()
+        return True
+    except AssertionError:
+        result.log_fail(capture=True)
+
+
