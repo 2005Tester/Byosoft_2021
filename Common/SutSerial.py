@@ -94,14 +94,15 @@ class SutControl:
             logging.debug("Found: \"{0}\"".format(msg))
             return True
 
-    def cleanup_data(self, data):
+    def cleanup_data(self, data, save=True):
         pat1 = "\x1B[@-_][0-?]*[ -/]*[@-~]"
         pat2 = "[-\+^]{3,}"
         pat3 = "/\s+\\\\"
         dic = {pat1: "", pat2: "", pat3: ""}
         for k, v in dic.items():
             data = re.compile(k).sub(v, data)
-        self.write_data2log(data)
+        if save:
+            self.write_data2log(data)
         return data
 
     def is_boot_success(self):
@@ -400,7 +401,8 @@ class SutControl:
     # cut a section of serial log
     def cut_log(self, start_str, end_str, duration=20, timeout=200):
         logging.info(f"Cut serial log from: '{start_str}' to '{end_str}'")
-        data_saved = ""
+        data_cut = ""
+        boot_log = ""
         cut_begain = 0
         patten_start = re.compile(start_str)
         patten_end = re.compile(end_str)
@@ -408,24 +410,28 @@ class SutControl:
         while True:
             if self.session.in_waiting:
                 tmp_line = self.session.readline().decode("utf-8", errors='ignore')  # readline to avoid keywords split
-                cln_data = self.cleanup_data(tmp_line)
+                cln_data = self.cleanup_data(tmp_line, save=False)
+                boot_log += cln_data
                 if patten_start.search(cln_data):  # start_str found
                     cut_begain = time.time()
                     logging.info(f"Start string found: {start_str}")
                 if cut_begain:
                     if time.time() - cut_begain < duration:  # cache serial output
-                        data_saved += cln_data
+                        data_cut += cln_data
                     if patten_end.search(cln_data):  # cache last tmp_line
                         logging.info(f"End string found: {end_str}")
-                        if not patten_end.search(data_saved):  # in case of first tmp_line contains start and end str
-                            data_saved += cln_data
-                        return data_saved
+                        if not patten_end.search(data_cut):  # in case of first tmp_line contains start and end str
+                            data_cut += cln_data
+                        self.write_data2log(boot_log)
+                        return data_cut
                     if time.time() - cut_begain > duration:  # duration timeout
                         logging.info(f"Start_str found but missing end_str: duration timeout {duration}s")
-                        return data_saved
+                        self.write_data2log(boot_log)
+                        return data_cut
             if time.time() - start_time > timeout:  # nothing found, timeout limit
                 logging.info(f"Nothing found, timeout exit for {timeout}s")
-                return data_saved
+                self.write_data2log(boot_log)
+                return data_cut
 
     # get one option all value list, need locate to the target option first
     def get_value_list(self):
