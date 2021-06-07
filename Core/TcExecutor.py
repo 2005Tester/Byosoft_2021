@@ -120,6 +120,8 @@ class TestScope:
         self.tc_to_run = []  # test cases pass check
         self.csv_errs = []
         self._read_csv2dict()
+        self._filter_invalid_Case()
+        self._get_test_cases()
 
     def _read_csv2dict(self):
         with open(self.csv_file, 'r') as f:
@@ -139,7 +141,8 @@ class TestScope:
             logging.error("Check fail: {0}.{1}".format(file_name, func_name))
 
     def _filter_invalid_Case(self):
-        logging.info("Looking for invalid test cases...")
+        logging.info("Check and remove invalid test cases...")
+        invalid_case = 0
         for tc in self.all_tc:
             try:
                 module, case = tuple(tc['Name'].split('.'))
@@ -148,6 +151,7 @@ class TestScope:
                 else:
                     logging.info("TC:{0},  Module: {1} doesn't exist".format(tc, module))
                     self.csv_errs.append("TC:{0},  Module: {1} doesn't exist".format(tc, module))
+                    invalid_case += 1
             except Exception as e:
                 if tc['Name'] == '':
                     pass
@@ -155,6 +159,8 @@ class TestScope:
                     logging.error("Invalid test case: {0}".format(tc))
                     logging.error(e)
                     self.csv_errs.append("Invalid test case: {0}".format(tc))
+                    invalid_case += 1
+        logging.info("{0} invalid test case found.".format(invalid_case))
 
     # Check whether all the test cases are valid
     def check_csv(self):
@@ -163,7 +169,6 @@ class TestScope:
             logging.error("Error, read csv file failed")
             return
         self._check_duplicate()  # check duplicate test cases
-        self._filter_invalid_Case()
         if self.csv_errs:
             logging.info("[Failed]Checking csv file, {0} errors found:".format(len(self.csv_errs)))
             for err in self.csv_errs:
@@ -207,8 +212,7 @@ class TestScope:
     def run_test(self, category):
         if category not in DEP_CATEGORY:
             logging.error("Wrong parameter, supported category: {0}".format(DEP_CATEGORY))
-        self._filter_invalid_Case()
-        self._get_test_cases()
+
         scope = {
             DEP_CATEGORY[0]: self.default,
             DEP_CATEGORY[1]: self.os,
