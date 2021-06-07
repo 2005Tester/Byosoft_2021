@@ -12,6 +12,7 @@ import logging
 import logging.config
 import argparse
 import importlib
+from Core import var
 from Common import LogConfig
 from Report.ReportGen import ReportGenerator
 
@@ -108,6 +109,7 @@ class TestScope:
         if execution_type not in EXEC_TYPE:
             logging.error("Wrong parameter, supported execution type: {0}".format(EXEC_TYPE))
             return
+        self.project = var.get('project')
         self.csv_file = csv_file
         self.execution_type = execution_type
         self.default = []
@@ -117,9 +119,9 @@ class TestScope:
         self.all_tc = []  # all the test cases loaded from csv file
         self.tc_to_run = []  # test cases pass check
         self.csv_errs = []
-        self.read_csv2dict()
+        self._read_csv2dict()
 
-    def read_csv2dict(self):
+    def _read_csv2dict(self):
         with open(self.csv_file, 'r') as f:
             tcs = csv.DictReader(f)
             for row in tcs:
@@ -129,20 +131,15 @@ class TestScope:
                     self.all_tc.append(row)
 
     def _check_case(self, file_name, func_name):
-        module_path = 'ICX2P\\TestCase\\' + file_name + '.py'
+        module_path = '{0}\\TestCase\\'.format(self.project) + file_name + '.py'
         if file_name and os.path.exists(module_path):
             # todo add test function check
             return True
         else:
             logging.error("Check fail: {0}.{1}".format(file_name, func_name))
 
-    # Check whether all the test cases are valid
-    def check_csv(self):
-        logging.info("Start checking {0}".format(self.csv_file))       
-        if self.all_tc is None:
-            logging.error("Error, read csv file failed")
-            return
-        self.check_duplicate()  # check duplicate test cases
+    def _filter_invalid_Case(self):
+        logging.info("Looking for invalid test cases...")
         for tc in self.all_tc:
             try:
                 module, case = tuple(tc['Name'].split('.'))
@@ -150,12 +147,23 @@ class TestScope:
                     self.tc_to_run.append(tc)
                 else:
                     logging.info("TC:{0},  Module: {1} doesn't exist".format(tc, module))
+                    self.csv_errs.append("TC:{0},  Module: {1} doesn't exist".format(tc, module))
             except Exception as e:
                 if tc['Name'] == '':
                     pass
                 else:
                     logging.error("Invalid test case: {0}".format(tc))
                     logging.error(e)
+                    self.csv_errs.append("Invalid test case: {0}".format(tc))
+
+    # Check whether all the test cases are valid
+    def check_csv(self):
+        logging.info("Start checking {0}".format(self.csv_file))
+        if self.all_tc is None:
+            logging.error("Error, read csv file failed")
+            return
+        self._check_duplicate()  # check duplicate test cases
+        self._filter_invalid_Case()
         if self.csv_errs:
             logging.info("[Failed]Checking csv file, {0} errors found:".format(len(self.csv_errs)))
             for err in self.csv_errs:
@@ -164,7 +172,7 @@ class TestScope:
             logging.info("[Pass]Checking csv file done")
 
     # check whether there are duplicate test cases in csv file.
-    def check_duplicate(self):
+    def _check_duplicate(self):
         logging.info("Checking duplicate test cases...")
         temp_list = []
         for tc in self.all_tc:
@@ -174,7 +182,7 @@ class TestScope:
             else:
                 temp_list.append(tc['Name'])
 
-    def get_test_cases(self):
+    def _get_test_cases(self):
         logging.info("Get test cases to be executed.")
         if self.tc_to_run is None:
             logging.error("Test case list is empty")
@@ -199,8 +207,8 @@ class TestScope:
     def run_test(self, category):
         if category not in DEP_CATEGORY:
             logging.error("Wrong parameter, supported category: {0}".format(DEP_CATEGORY))
-        self.check_duplicate()
-        self.get_test_cases()
+        self._filter_invalid_Case()
+        self._get_test_cases()
         scope = {
             DEP_CATEGORY[0]: self.default,
             DEP_CATEGORY[1]: self.os,
@@ -213,7 +221,7 @@ class TestScope:
             casename, para = case.split('(')
             para = para.replace(')', '')
             try:
-                mde = importlib.import_module(name='.TestCase.{0}'.format(module), package='ICX2P')
+                mde = importlib.import_module(name='.TestCase.{0}'.format(module), package='{0}'.format(self.project))
                 func = getattr(mde, casename)
                 if para == '':
                     func()

@@ -1,6 +1,7 @@
 import logging
 # global variables to track test progress etc
 _global_var = {
+    'project': '',
     'current_test': '',
     "branch": '',
     'num_pass': 0,
@@ -24,7 +25,7 @@ def set(key, value):
         raise Exception("Key: {0} not exist in global variable dict.".format(key))
 
 
-def get(key, defValue=None):
+def get(key):
     try:
         return _global_var[key]
     except KeyError:
