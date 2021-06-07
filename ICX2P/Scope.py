@@ -162,6 +162,12 @@ def release_scope():
     release_basic.equip_scope()
 
 
+# Bascic check for csv test plan file
+def check_csv():
+    test_scope = TestScope(SutConfig.TESTCASE_CSV, "Daily")
+    test_scope.check_csv()
+
+
 def debug_scope():
     UpdateBIOS.update_bios('master')
     CpuInit01.cpu_mem_info()

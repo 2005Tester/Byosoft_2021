@@ -99,8 +99,15 @@ class RunTest:
         self.gen_report(logdir)
 
 
+EXEC_TYPE = ['Release', 'Daily', 'Weekly']
+DEP_CATEGORY = ['default', 'os', 'legacy', 'equip']
+
+
 class TestScope:
     def __init__(self, csv_file, execution_type):
+        if execution_type not in EXEC_TYPE:
+            logging.error("Wrong parameter, supported execution type: {0}".format(EXEC_TYPE))
+            return
         self.csv_file = csv_file
         self.execution_type = execution_type
         self.default = []
@@ -109,14 +116,17 @@ class TestScope:
         self.equip = []
         self.all_tc = []  # all the test cases loaded from csv file
         self.tc_to_run = []  # test cases pass check
-        self.check_csv()
-        self.get_test_cases()
+        self.csv_errs = []
+        self.read_csv2dict()
 
     def read_csv2dict(self):
         with open(self.csv_file, 'r') as f:
             tcs = csv.DictReader(f)
             for row in tcs:
-                self.all_tc.append(row)
+                if row['Name'] == '':
+                    pass
+                else:
+                    self.all_tc.append(row)
 
     def _check_case(self, file_name, func_name):
         module_path = 'ICX2P\\TestCase\\' + file_name + '.py'
@@ -128,12 +138,11 @@ class TestScope:
 
     # Check whether all the test cases are valid
     def check_csv(self):
-        logging.info("Start checking {0}".format(self.csv_file))
-        self.read_csv2dict()
+        logging.info("Start checking {0}".format(self.csv_file))       
         if self.all_tc is None:
             logging.error("Error, read csv file failed")
             return
-
+        self.check_duplicate()  # check duplicate test cases
         for tc in self.all_tc:
             try:
                 module, case = tuple(tc['Name'].split('.'))
@@ -147,14 +156,29 @@ class TestScope:
                 else:
                     logging.error("Invalid test case: {0}".format(tc))
                     logging.error(e)
-        logging.info("checking csv file done.")
+        if self.csv_errs:
+            logging.info("[Failed]Checking csv file, {0} errors found:".format(len(self.csv_errs)))
+            for err in self.csv_errs:
+                logging.error(err)
+        else:
+            logging.info("[Pass]Checking csv file done")
 
-    # do do
-    def check_duplicate():
-        pass
+    # check whether there are duplicate test cases in csv file.
+    def check_duplicate(self):
+        logging.info("Checking duplicate test cases...")
+        temp_list = []
+        for tc in self.all_tc:
+            if tc['Name'] in temp_list:
+                logging.error("Duplicate test case found: {0}".format(tc))
+                self.csv_errs.append("Duplicated test case: {0}".format(tc))
+            else:
+                temp_list.append(tc['Name'])
 
     def get_test_cases(self):
         logging.info("Get test cases to be executed.")
+        if self.tc_to_run is None:
+            logging.error("Test case list is empty")
+            return
         for row in self.tc_to_run:
             if row[self.execution_type]:
                 if row['Dependency'] == 'os':
@@ -171,12 +195,17 @@ class TestScope:
         logging.info("OS: {0}".format(len(self.os)))
         logging.info("Total Test cases: {0}".format(len(self.default) + len(self.legacy) + len(self.os) + len(self.equip)))
 
+    # fetch and run valid test cases defined in csv file
     def run_test(self, category):
+        if category not in DEP_CATEGORY:
+            logging.error("Wrong parameter, supported category: {0}".format(DEP_CATEGORY))
+        self.check_duplicate()
+        self.get_test_cases()
         scope = {
-            'os': self.os,
-            'legacy': self.legacy,
-            'equip': self.equip,
-            'default': self.default
+            DEP_CATEGORY[0]: self.default,
+            DEP_CATEGORY[1]: self.os,
+            DEP_CATEGORY[2]: self.legacy,
+            DEP_CATEGORY[3]: self.equip
         }
         testcases = scope[category]
         for tc in testcases:
