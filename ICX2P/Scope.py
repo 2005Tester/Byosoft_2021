@@ -8,44 +8,19 @@ from ICX2P.TestCase import UpdateBIOS, BiosTest, Os, Release, Legacy, CpuInit01,
 SutInit.SutInit("ICX2P")
 
 
-def release_basic(branch):  # Release minimal self test score
-    var.set('branch', branch)
-    # default mode test scope
-    if UpdateBIOS.update_bios(branch):
-        BiosTest.post_test()
-        BiosTest.power_cycling()
-        Release.check_bmc_warning()
-        Release.me_version_status()
-        BiosTest.pxe_test()
-        BiosTest.load_default()
-        BiosTest.security_boot()
-        Release.registry_check()
-        Release.compare_fdm_log()
-        Release.hpm_downgrade_test()
-        if Os.boot_to_suse():
-            Smbios09.smbios_test_all()
-
-    # Equip mode test scope
-    if UpdateBIOS.update_bios_mfg(branch):
-        Release.equip_mode_version_check()
-        Smbios09.smbios_type128()
-        if Os.boot_to_suse_mfg():
-            Release.equip_mode_flag_check()
-
-
 # Supported type (case senstive): Release, Daily, Weekly
 def scope(type, branch='master'):
     test_scope = TestScope(SutConfig.TESTCASE_CSV, type)
     if UpdateBIOS.update_bios(branch):
-        if Os.boot_to_suse():
+        if test_scope.os and Os.boot_to_suse():
             test_scope.run_test('os')
         test_scope.run_test('default')
 
-    if Legacy.enable_legacy_boot():
+    if test_scope.legacy and Legacy.enable_legacy_boot():
         test_scope.run_test('legacy')
         Legacy.disable_legacy_boot()
 
-    if UpdateBIOS.update_bios_mfg(branch):
+    if test_scope.equip and UpdateBIOS.update_bios_mfg(branch):
         test_scope.run_test('equip')
 
 
