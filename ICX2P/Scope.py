@@ -2,100 +2,10 @@ from Core import SutInit
 from Core import var
 from Core.TcExecutor import TestScope
 from ICX2P.Config import SutConfig
-from ICX2P.TestCase import UpdateBIOS, BiosTest, DefaultValueTest, Os, Release, Legacy, CpuInit01, MemInit02, PchInit03, \
-    PcieInit04, Io05, Smbios09, Security22, BootDevice06
+from ICX2P.TestCase import UpdateBIOS, BiosTest, Os, Release, Legacy, CpuInit01, Smbios09, BootDevice06
 
 # init SUT
 SutInit.SutInit("ICX2P")
-
-
-# Test scope for non-equipment build
-def full_scope():
-    BiosTest.post_test()
-    BiosTest.power_cycling()
-    BiosTest.usb_test()
-    CpuInit01.cpu_mem_info()
-    BiosTest.press_f2()
-    CpuInit01.static_turbo_default()
-    CpuInit01.ufs_default_value()
-    DefaultValueTest.rrqirq()
-    BiosTest.dram_rapl_option_check()
-    BiosTest.security_boot()
-    BiosTest.vtd()
-    BiosTest.cnd_default_enable()
-    CpuInit01.upi_link_status()
-    CpuInit01.cpu_cores_active_enable_1()
-    CpuInit01.cpu_cores_active_enable_middle()
-    CpuInit01.cpu_cores_active_enable_max()
-    CpuInit01.cpu_cores_disable_sys_normally()
-    CpuInit01.cores_customized_by_unitool()
-    CpuInit01.numa_01()
-    CpuInit01.numa_02()
-    CpuInit01.numa_03()
-    CpuInit01.cpu_compa_02()
-    CpuInit01.cpu_compa_03()
-    CpuInit01.cpu_compa_05()
-    if Os.boot_to_suse():
-        Smbios09.smbios_test_all()
-        Release.equip_mode_flag_check()
-    Security22.pwd_test_all()
-    MemInit02.dimm_power_mgt_01()
-    MemInit02.dimm_power_mgt_02()
-    MemInit02.dimm_power_mgt_04()
-    MemInit02.dimm_power_mgt_05()
-    MemInit02.dimm_power_mgt_07()
-    MemInit02.memory_compa_001()
-    MemInit02.memory_compa_006()
-    MemInit02.dimm_power_mgt_010()
-    MemInit02.dimm_power_mgt_011()
-    MemInit02.dimm_power_mgt_012()
-    MemInit02.mem_refresh_001()
-    MemInit02.mem_refresh_002()
-    MemInit02.set_mem_freq_001_006()
-    MemInit02.mtrr_max_range()
-    MemInit02.mtrr_fixed_range()
-    Io05.system_info_001()
-    Io05.system_info_003()
-    Release.me_version_status()
-    BiosTest.load_default()
-    MemInit02.rmt_menu_test()
-    PchInit03.usb_default_enable_check()
-    PchInit03.post_gpio_error_check()
-    DefaultValueTest.pcie_port_bandwidth_check()
-    BiosTest.serial_print_keywords()
-    BiosTest.serial_print_error_check()
-    PcieInit04.pcie_resource_mmiol()
-    PcieInit04.pcie_resource_mmioh()
-    PcieInit04.pcie_resource_mmioh_menu()
-    PcieInit04.pcie_resource_64b()
-    PcieInit04.pcie_resource_bus()
-    PcieInit04.pcie_resource_legacyio()
-    PcieInit04.pcie_resource_ioapic()
-    PcieInit04.pcie_resource_lspci_uefi()
-    PcieInit04.aspm_global_disable_l1only()
-    PcieInit04.aspm_per_port_loop()
-    PcieInit04.sriov_global_menu()
-    BiosTest.power_efficiency_mode_loop()
-    BootDevice06.boot_device_type_001()
-    BootDevice06.boot_order_002()
-    BootDevice06.boot_order_004()
-    if Legacy.enable_legacy_boot():
-        BootDevice06.boot_device_type_002()
-        Io05.system_info_002()
-        # Io05.system_info_004()
-        PcieInit04.pcie_resource_lspci_legacy()
-        BootDevice06.boot_order_012()
-        Legacy.disable_legacy_boot()
-        Legacy.disable_legacy_boot()
-        BootDevice06.boot_order_012()
-
-
-# Test scope for equipment mode image
-def equip_scope():
-    Release.equip_mode_version_check()
-    Os.boot_to_suse_mfg()
-    Smbios09.smbios_type128()
-    MemInit02.rmt_equip_test()
 
 
 def release_basic(branch):  # Release minimal self test score
@@ -141,10 +51,7 @@ def scope(type, branch='master'):
 
 # Define test scope for daily test
 def daily_scope():
-    UpdateBIOS.update_bios('master')
-    full_scope()
-    if UpdateBIOS.update_bios_mfg('master'):
-        equip_scope()
+    scope("Daily")
 
 
 # Entry for weekly test
