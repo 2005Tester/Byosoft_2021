@@ -2,6 +2,7 @@ import logging
 # global variables to track test progress etc
 _global_var = {
     'current_test': '',
+    "branch": '',
     'num_pass': 0,
     'num_fail': 0,
     'num_skip': 0,

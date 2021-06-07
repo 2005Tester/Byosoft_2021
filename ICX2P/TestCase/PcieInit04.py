@@ -421,7 +421,6 @@ def aspm_per_port_loop():
     tc = ('641', '[TC641] Testcase_ASPM_003 / Testcase_ASPM_004', 'Root Port ASPM开关测试 / 遍历Root Port ASPM开关测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     iio_aspm_values = ["L1 Only", "Disabled"]
-    aspm_values = ["Disabled", "Per individual port", "L1 Only"]
     aspm_lnkcap_flag = {"Disabled": "not supported", "L1 Only": "L1"}
     save_value = "Disabled"  # ASPM per port 默认值
 
@@ -437,7 +436,7 @@ def aspm_per_port_loop():
                 for port in root_ports:  # Root Port遍历
                     assert SetUpLib.enter_menu(Key.DOWN, [port], 10, "Link Speed")
                     assert SetUpLib.get_option_value([Msg.ASPM_ROOT_PORT, "<.+>"], Key.UP, 10) == save_value  # 默认值检查
-                    assert SetUpLib.get_all_values(Msg.ASPM_ROOT_PORT, Key.UP, 10) == aspm_values
+                    assert SetUpLib.get_all_values(Msg.ASPM_ROOT_PORT, Key.UP, 10) == iio_aspm_values
                     assert SetUpLib.set_option_value(Msg.ASPM_ROOT_PORT, value, key=Key.UP, loc_cnt=8)
                     SetUpLib.send_keys(Key.ESC)
                 SetUpLib.send_keys(Key.ESC)

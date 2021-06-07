@@ -1,7 +1,7 @@
 import os
 import glob
 import logging
-from Core import SshLib, MiscLib
+from Core import SshLib, MiscLib, var
 from Core.SutInit import Sut
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg, BiosCfg
@@ -40,6 +40,11 @@ def me_version_status():
 def equip_mode_flag_check():
     tc = ('902', '[TC902] Equipment mode flag check', '非装备模式BIOS设置装备模式flag, 预期设置不成功.')
     result = ReportGen.LogHeaderResult(tc)
+    if not MiscLib.ping_sut(SutConfig.OS_IP, 10):
+        if not BmcLib.force_reset():
+            return
+        if not MiscLib.ping_sut(SutConfig.OS_IP, 300):
+            return
     res = Sut.UNITOOL.set_config(BiosCfg.EQUIP_FLAG)
     if res:
         result.log_fail()
@@ -65,10 +70,11 @@ def equip_mode_version_check():
     return True
 
 
-def hpm_upgrade_test(new_branch):
+def hpm_upgrade_test():
     tc = ('904', '[TC904] HPM升级保持配置不变', "HPM升级BIOS后，原来设置的非默认BIOS设置不变")
     result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
 
+    new_branch = var.get('branch')
     old_branch = PlatMisc.last_release(new_branch)
     old_bin_download = Update.get_test_image(SutConfig.LOG_DIR, old_branch, 'debug-build')
     new_bin_download = Update.get_test_image(SutConfig.LOG_DIR, new_branch, 'debug-build')
@@ -98,10 +104,11 @@ def hpm_upgrade_test(new_branch):
             SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5)
 
 
-def hpm_downgrade_test(new_branch):
+def hpm_downgrade_test():
     tc = ('905', '[TC905] HPM降级保持配置不变', "HPM降级BIOS后，原来设置的非默认BIOS设置不变")
     result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
 
+    new_branch = var.get('branch')
     new_bin_download = Update.get_test_image(SutConfig.LOG_DIR, new_branch, 'debug-build')
     old_branch = PlatMisc.last_release(new_branch)
     old_path_local = os.path.join(SutConfig.BIOS_PATH, old_branch)
@@ -135,10 +142,11 @@ def hpm_downgrade_test(new_branch):
 # Precondition: BMC正常登录
 # OnStart: NA
 # OnComplete: NA
-def compare_fdm_log(new_branch):
+def compare_fdm_log():
     tc = ('906', '[TC906] Compare FDM Log Size', "Compare FDM Log size with previous BIOS version")
     result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
 
+    new_branch = var.get('branch')
     old_branch = PlatMisc.last_release(new_branch)
     new_img = Update.get_test_image(SutConfig.LOG_DIR, new_branch, 'debug-build')
     old_img = Update.get_test_image(SutConfig.LOG_DIR, old_branch, 'debug-build')
@@ -208,10 +216,11 @@ def check_bmc_warning():
 # Precondition: BMC正常登录
 # OnStart: NA
 # OnComplete: NA
-def registry_check(new_branch):
+def registry_check():
     tc = ('908', '[TC908] Compare registry.json file with previous version', "Compare registry.json file with previous version")
     result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
 
+    new_branch = var.get('branch')
     old_branch = PlatMisc.last_release(new_branch)
     old_img = Update.get_test_image(SutConfig.LOG_DIR, old_branch, 'debug-build')
     new_img = Update.get_test_image(SutConfig.LOG_DIR, new_branch, 'debug-build')

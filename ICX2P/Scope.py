@@ -1,4 +1,5 @@
 from Core import SutInit
+from Core import var
 from Core.TcExecutor import TestScope
 from ICX2P.Config import SutConfig
 from ICX2P.TestCase import UpdateBIOS, BiosTest, DefaultValueTest, Os, Release, Legacy, CpuInit01, MemInit02, PchInit03, \
@@ -97,38 +98,35 @@ def equip_scope():
     MemInit02.rmt_equip_test()
 
 
-class ReleaseBasic:
-    def __init__(self, release_branch):
-        self.branch = release_branch
+def release_basic(branch):  # Release minimal self test score
+    var.set('branch', branch)
+    # default mode test scope
+    if UpdateBIOS.update_bios(branch):
+        BiosTest.post_test()
+        BiosTest.power_cycling()
+        Release.check_bmc_warning()
+        Release.me_version_status()
+        BiosTest.pxe_test()
+        BiosTest.load_default()
+        BiosTest.security_boot()
+        Release.registry_check()
+        Release.compare_fdm_log()
+        Release.hpm_downgrade_test()
+        if Os.boot_to_suse():
+            Smbios09.smbios_test_all()
 
-    def normal_scope(self):  # Non-Equip BIOS Test Scope
-        if UpdateBIOS.update_bios(self.branch):
-            BiosTest.post_test()
-            BiosTest.power_cycling()
-            Release.check_bmc_warning()
-            Release.me_version_status()
-            BiosTest.pxe_test()
-            BiosTest.load_default()
-            BiosTest.security_boot()
-            if Os.boot_to_suse():
-                Smbios09.smbios_test_all()
-            Release.registry_check(self.branch)
-            Release.compare_fdm_log(self.branch)
-            # Release.hpm_upgrade_test(self.branch)  # need get release hpm bios
-            Release.hpm_downgrade_test(self.branch)
-
-    def equip_scope(self):
-        if UpdateBIOS.update_bios_mfg(self.branch):
-            Release.equip_mode_version_check()
-            Smbios09.smbios_type128()
-            if Os.boot_to_suse():
-                Release.equip_mode_flag_check()
+    # Equip mode test scope
+    if UpdateBIOS.update_bios_mfg(branch):
+        Release.equip_mode_version_check()
+        Smbios09.smbios_type128()
+        if Os.boot_to_suse_mfg():
+            Release.equip_mode_flag_check()
 
 
 # Supported type (case senstive): Release, Daily, Weekly
-def scope(type):
+def scope(type, branch='master'):
     test_scope = TestScope(SutConfig.TESTCASE_CSV, type)
-    if UpdateBIOS.update_bios('master'):
+    if UpdateBIOS.update_bios(branch):
         if Os.boot_to_suse():
             test_scope.run_test('os')
         test_scope.run_test('default')
@@ -137,7 +135,7 @@ def scope(type):
         test_scope.run_test('legacy')
         Legacy.disable_legacy_boot()
 
-    if UpdateBIOS.update_bios_mfg('master'):
+    if UpdateBIOS.update_bios_mfg(branch):
         test_scope.run_test('equip')
 
 
@@ -157,9 +155,8 @@ def weekly_scope():
 def release_scope():
     """Release Basic Function Test"""
     release_branch = "2288V6_012"
-    release_basic = ReleaseBasic(release_branch)
-    release_basic.normal_scope()
-    release_basic.equip_scope()
+    var.set('branch', release_branch)
+    scope("Release", release_branch)
 
 
 # Bascic check for csv test plan file
