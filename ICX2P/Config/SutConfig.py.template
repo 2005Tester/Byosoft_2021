@@ -11,6 +11,8 @@ import os
 import datetime
 from ICX2P.Config.PlatConfig import Key
 
+TESTCASE_CSV = "ICX2P\\AllTest.csv"
+
 # Report Setting
 PROJECT_NAME = "2288V6"
 SUT_CONFIG = "SUT1-Full-DIMM"

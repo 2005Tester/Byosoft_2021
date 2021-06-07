@@ -1,5 +1,6 @@
 from Core import SutInit
 from Core.TcExecutor import TestScope
+from ICX2P.Config import SutConfig
 from ICX2P.TestCase import UpdateBIOS, BiosTest, DefaultValueTest, Os, Release, Legacy, CpuInit01, MemInit02, PchInit03, \
     PcieInit04, Io05, Smbios09, Security22, BootDevice06
 
