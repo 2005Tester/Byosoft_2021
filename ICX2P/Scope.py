@@ -1,4 +1,5 @@
 from Core import SutInit
+from Core.TcExecutor import TestScope
 from ICX2P.TestCase import UpdateBIOS, BiosTest, DefaultValueTest, Os, Release, Legacy, CpuInit01, MemInit02, PchInit03, \
     PcieInit04, Io05, Smbios09, Security22, BootDevice06
 
@@ -123,12 +124,33 @@ class ReleaseBasic:
                 Release.equip_mode_flag_check()
 
 
+# Supported type (case senstive): Release, Daily, Weekly
+def scope(type):
+    test_scope = TestScope(SutConfig.TESTCASE_CSV, type)
+    if UpdateBIOS.update_bios('master'):
+        if Os.boot_to_suse():
+            test_scope.run_test('os')
+        test_scope.run_test('default')
+
+    if Legacy.enable_legacy_boot():
+        test_scope.run_test('legacy')
+        Legacy.disable_legacy_boot()
+
+    if UpdateBIOS.update_bios_mfg('master'):
+        test_scope.run_test('equip')
+
+
 # Define test scope for daily test
 def daily_scope():
     UpdateBIOS.update_bios('master')
     full_scope()
     if UpdateBIOS.update_bios_mfg('master'):
         equip_scope()
+
+
+# Entry for weekly test
+def weekly_scope():
+    scope("Weekly")
 
 
 def release_scope():
