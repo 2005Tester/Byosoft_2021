@@ -143,10 +143,10 @@ def update_bios(bios_img):
         return
     if not BmcLib.program_flash():
         return
-    if not BmcLib.power_on():
-        return
-    if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE):
-        return
+#    if not BmcLib.power_on():
+#        return
+#    if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE):
+#        return
     logging.info("BIOS update successfully.")
     logging.info("BIOS Imgae: {0}".format(bios_img))
     return True
