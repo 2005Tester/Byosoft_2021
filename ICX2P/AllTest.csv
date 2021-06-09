@@ -1,4 +1,4 @@
-Name,Dependency,Release,Daily,Weekly
+Name,Group,Release,Daily,Weekly
 BiosTest.post_test(),,Yes,Yes,Yes
 BiosTest.power_cycling(),,Yes,Yes,Yes
 Release.check_bmc_warning(),,Yes,Yes,Yes
@@ -49,7 +49,7 @@ MemInit02.mtrr_max_range(),,,Yes,Yes
 MemInit02.mtrr_fixed_range(),,,Yes,Yes
 Io05.system_info_001(),,,Yes,Yes
 Io05.system_info_003(),,,Yes,Yes
-MemInit02.rmt_menu_test(),,,Yes,Yes
+MemInit02.rmt_menu_test(),fulldebug,,Yes,Yes
 PchInit03.usb_default_enable_check(),,,Yes,Yes
 PchInit03.post_gpio_error_check(),,,Yes,Yes
 DefaultValueTest.pcie_port_bandwidth_check(),,,Yes,Yes

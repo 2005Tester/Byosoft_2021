@@ -101,7 +101,7 @@ class RunTest:
 
 
 EXEC_TYPE = ['Release', 'Daily', 'Weekly']
-DEP_CATEGORY = ['default', 'os', 'legacy', 'equip']
+TC_GROUP = ['default', 'os', 'legacy', 'equip', 'fulldebug']
 
 
 class TestScope:
@@ -116,6 +116,7 @@ class TestScope:
         self.legacy = []
         self.os = []
         self.equip = []
+        self.fulldebug = []
         self.all_tc = []  # all the test cases loaded from csv file
         self.tc_to_run = []  # test cases pass check
         self.csv_errs = []
@@ -194,30 +195,34 @@ class TestScope:
             return
         for row in self.tc_to_run:
             if row[self.execution_type]:
-                if row['Dependency'] == 'os':
+                if row['Group'] == 'os':
                     self.os.append(row['Name'])
-                elif row['Dependency'] == 'legacy':
+                elif row['Group'] == 'legacy':
                     self.legacy.append(row['Name'])
-                elif row['Dependency'] == 'equip':
+                elif row['Group'] == 'equip':
                     self.equip.append(row['Name'])
+                elif row['Group'] == 'fulldebug':
+                    self.fulldebug.append(row['Name'])
                 else:
                     self.default.append(row['Name'])
         logging.info("Default: {0}".format(len(self.default)))
         logging.info("Equip: {0}".format(len(self.equip)))
         logging.info("Legacy: {0}".format(len(self.legacy)))
         logging.info("OS: {0}".format(len(self.os)))
+        logging.info("Full Debug: {0}".format(len(self.fulldebug)))
         logging.info("Total Test cases: {0}".format(len(self.default) + len(self.legacy) + len(self.os) + len(self.equip)))
 
     # fetch and run valid test cases defined in csv file
     def run_test(self, category):
-        if category not in DEP_CATEGORY:
-            logging.error("Wrong parameter, supported category: {0}".format(DEP_CATEGORY))
+        if category not in TC_GROUP:
+            logging.error("Wrong parameter, supported category: {0}".format(TC_GROUP))
 
         scope = {
-            DEP_CATEGORY[0]: self.default,
-            DEP_CATEGORY[1]: self.os,
-            DEP_CATEGORY[2]: self.legacy,
-            DEP_CATEGORY[3]: self.equip
+            TC_GROUP[0]: self.default,
+            TC_GROUP[1]: self.os,
+            TC_GROUP[2]: self.legacy,
+            TC_GROUP[3]: self.equip,
+            TC_GROUP[4]: self.fulldebug
         }
         testcases = scope[category]
         for tc in testcases:

@@ -2,7 +2,7 @@ from Core import SutInit
 from Core import var
 from Core.TcExecutor import TestScope
 from ICX2P.Config import SutConfig
-from ICX2P.TestCase import UpdateBIOS, BiosTest, Os, Release, Legacy, CpuInit01, Smbios09, BootDevice06
+from ICX2P.TestCase import UpdateBIOS, BiosTest, Os, Legacy, CpuInit01, BootDevice06
 
 # init SUT
 SutInit.SutInit("ICX2P")
@@ -15,6 +15,7 @@ def scope(type, branch='master'):
         if test_scope.os and Os.boot_to_suse():
             test_scope.run_test('os')
         test_scope.run_test('default')
+        test_scope.run_test('fulldebug')
 
     if test_scope.legacy and Legacy.enable_legacy_boot():
         test_scope.run_test('legacy')
