@@ -33,19 +33,19 @@ def check_info():
 
 def hotkey_press():
     result_list = []
-    if not SetUpLib.boot_to_bios_config():
-        result_list.append('1')
+    if not SetUpLib.boot_with_hotkey(Key.DEL, 'Del is pressed. Go to Setup Utility', 60):
+        result_list.append('DEL key test fail')
 
-    if not SetUpLib.boot_to_bootmanager():
-        result_list.append('2')
+    if not SetUpLib.boot_with_hotkey(Key.F11, 'F11 is pressed. Go to BootManager', 60):
+        result_list.append('F11 key test fail')
 
-    if not SetUpLib.boot_with_hotkey(Key.F12, 'NBP file downloaded successfully', 60):
-        result_list.append('3')
+    if not SetUpLib.boot_with_hotkey(Key.F12, 'F12 is pressed. Go to PXE boot', 60):
+        result_list.append('F12 key test fail')
 
-    if SetUpLib.continue_boot_with_hotkey(Key.F6, Msg.SUSE_GRUB, 60):
-        result_list.append('4')
+    if not SetUpLib.continue_boot_with_hotkey(Key.F6, 'F6 is pressed. Go to SP boot', 60):
+        result_list.append('F6 key test fail')
 
-    logging.debug(result_list)
+    logging.info(result_list)
     # check the result,
     if len(result_list) == 0:
         return True
