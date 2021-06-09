@@ -326,19 +326,16 @@ def serial_print_keywords():
         cpu_log = SerialLib.cut_log(Sut.BIOS_COM, "CPU Resource Allocation", "START_SOCKET_0_DIMMINFO_TABLE", 100, timeout)
         key_string1 = re.search(cpu_resource, cpu_log)
         assert key_string1, "CPU Resource Allocation not found"
-        logging.debug(key_string1.group())
         logging.info("CPU Resource Allocation check pass")
         # BIOS Revision
         ver_log = SerialLib.cut_log(Sut.BIOS_COM, "BootType :", "BIOS Date :", 100, timeout)
         key_string2 = re.search(bios_ver, ver_log)
         assert key_string2, "BIOS Revision not found"
-        logging.debug(key_string2.group())
         logging.info("BIOS Revision check pass")
         # PCIE LINK STATUS
         pcie_log = SerialLib.cut_log(Sut.BIOS_COM, "Press Del go to Setup Utility", "BIOS boot completed", 100, timeout)
         key_string3 = re.search(pcie_lnk, pcie_log)
         assert key_string3, "[Assert]: PCIE LINK STATUS not found, Confirm whether PCIE device exist"
-        logging.debug(key_string3.group())
         logging.info("PCIE LINK STATUS check pass")
         return True
 
