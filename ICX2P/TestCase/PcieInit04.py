@@ -267,6 +267,7 @@ def pcie_resource_lspci_uefi():
     # main test process
     try:
         lspci_info = get_lspci_info()
+        assert lspci_info, "Invalid lspci info"
         reboot_cnt = 1
         for cnt in range(9):
             current_lspci = get_lspci_info()
