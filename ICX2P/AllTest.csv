@@ -51,9 +51,9 @@ Io05.system_info_001(),,,Yes,Yes
 Io05.system_info_003(),,,Yes,Yes
 MemInit02.rmt_menu_test(),fulldebug,,Yes,Yes
 PchInit03.usb_default_enable_check(),,,Yes,Yes
-PchInit03.post_gpio_error_check(),,,Yes,Yes
+PchInit03.post_gpio_error_check(),fulldebug,,Yes,Yes
 DefaultValueTest.pcie_port_bandwidth_check(),,,Yes,Yes
-BiosTest.serial_print_keywords(),,,Yes,Yes
+BiosTest.serial_print_keywords(),fulldebug,,Yes,Yes
 BiosTest.serial_print_error_check(),,,Yes,Yes
 PcieInit04.pcie_resource_mmiol(),,,Yes,Yes
 PcieInit04.pcie_resource_mmioh(),,,Yes,Yes
@@ -80,3 +80,4 @@ BootDevice06.boot_device_type_002(),legacy,,Yes,Yes
 BootDevice06.boot_order_012(),legacy,,Yes,Yes
 Io05.system_info_002(),legacy,,Yes,Yes
 PcieInit04.pcie_resource_lspci_legacy(),legacy,,Yes,Yes
+,,,,
