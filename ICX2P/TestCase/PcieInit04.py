@@ -491,3 +491,61 @@ def sriov_global_menu():
     except Exception as e:
         logging.error(e)
         result.log_fail()
+
+
+# Author: WangQingshan
+# SRIOV总开关测试
+# Precondition: Linux
+# OnStart: NA
+# OnComplete: NA
+def sriov_enable_disable():
+    tc = ('643', '[TC643] Testcase_SRIOV_002', 'SRIOV总开关测试')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+
+    def sriov_status_check(status):
+        try:
+            assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+            assert SetUpLib.enter_menu(Key.UP, [Msg.VIRTUAL_CFG], 5, Msg.VIRTUAL_CFG)
+            assert SetUpLib.set_option_value(Msg.SRIOV_GLOBAL, status, Key.UP, 4, save=True)
+            pcie_bdf = SerialLib.cut_log(Sut.BIOS_COM, "PCIE LINK STATUS:", Msg.BIOS_BOOT_COMPLETE, 20, 200)
+            assert pcie_bdf, "Invalid PCIE LINK STATUS"
+            bdf_list = re.findall("PCIE LINK STATUS: ([0-9a-fA-F]+:[0-4]+\.[0-9a-fA-F])", pcie_bdf)
+            assert bdf_list, "Invalid BDF"
+            logging.info(f"PCIE Bus: {bdf_list}")
+            bdf_list = ["4b:00.0"]
+            assert MiscLib.ping_sut(SutConfig.OS_IP, 300)
+            sriov_sup_port = {}
+            for port in bdf_list:
+                port_info = SshLib.execute_command(Sut.OS_SSH, f"lspci -s {port} -vvv")
+                if "SR-IOV" in port_info:
+                    logging.info(f"{port} support SR-IOV, start to check BAR resource")
+                    sriov_sup_port[port] = port_info
+                    sriov_info = re.findall("\(SR-IOV\)([\S\s]*)VF Migration:", port_info)
+                    assert sriov_info, "Find SRIOV detail information failed"
+                    bars = re.findall("(Region \d): Memory at (\w+)", sriov_info[0])
+                    assert bars, f"Find SR-IOV bar resource failed"
+                    for bar in bars:
+                        region_addr = int(bar[1], 16)
+                        assert region_addr != 0, f"Verify SR-IOV fail: {port} {bar}, please double check in other OS"
+                    logging.info(f"Verify {port} SR-IOV pass: {bars}")
+            if not sriov_sup_port:
+                return 0
+            return True
+        except Exception as e0:
+            logging.error(e0)
+
+    try:
+        sriov_en_check = sriov_status_check("Enabled")
+        if sriov_en_check == 0:
+            logging.info("No PCIE devices support SR-IOV, test skipped")
+            result.log_skip()
+            return
+        assert sriov_en_check
+        sriov_dis_check = sriov_status_check("Disabled")
+        assert sriov_dis_check
+        result.log_pass()
+    except Exception as e:
+        logging.error(e)
+        result.log_fail()
+    finally:
+        BmcLib.clear_cmos()
