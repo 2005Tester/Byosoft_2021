@@ -12,6 +12,18 @@ from Report import ReportGen
 ##########################################
 #              CPU Test Cases            #
 ##########################################
+# function Module : acpidump验证X2APIC
+def acpidump():
+    assert MiscLib.ping_sut(SutConfig.OS_IP, 300)
+    SshLib.execute_command(Sut.OS_SSH, r'rm *.dat *.out *.dsl')  # 清理
+    SshLib.execute_command(Sut.OS_SSH, r'acpidump -o ACPI.out')  # 导出acpi列表
+    logging.info("get ACPI.out")
+    SshLib.execute_command(Sut.OS_SSH, r'acpixtract -a ACPI.out')  # 获取ACPI.dat文件
+    logging.info("get ACPI.dat")
+    SshLib.execute_command(Sut.OS_SSH, r'iasl -d apic.dat')  # 解析acpi.dat文件
+    logging.info("analysis apic.dat")
+    Local_APIC = SshLib.execute_command(Sut.OS_SSH, r'cat apic.dsl')
+    return (Local_APIC)
 
 
 # function Module : 使用unitool还原bios setting
@@ -592,5 +604,46 @@ def cpu_compa_06():
         return True
     except AssertionError:
         result.log_fail(capture=True)
+
+
+# Author: Fubaolin
+# X2APIC选项测试
+# Precondition: linux-OS
+# OnStart: NA
+# OnComplete: NA
+def cpu_compa_017():
+    tc = ('215', '[TC215] Testcase_CPU_COMPA_017', 'X2APIC选项测试')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    Extended_APIC = ['Extended APIC', '<Disabled>']
+    ht_bef = ["Hyper-Threading \[ALL\]", "<Enabled>"]
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.UP, Msg.PATH_PRO_CFG, 20, Msg.EXTENDED_APIC)
+        assert SetUpLib.locate_option(Key.DOWN, Extended_APIC, 20)
+        SetUpLib.send_keys([Key.F5, Key.F10, Key.Y], 3)
+        apic_n = acpidump().split('Raw Table Data')[0].count('Processor x2Apic ID')
+        if apic_n == 112:
+            logging.info('X2APIC个数与当前CPU总线程数一致')
+        else:
+            logging.info('X2APIC个数与当前CPU总线程数不一致，需要检查')
+            return result.log_fail(capture=True)
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.PROCESSOR_CONFIG)
+        assert SetUpLib.locate_option(Key.DOWN, ht_bef, 20)
+        SetUpLib.send_keys([Key.F6, Key.F10, Key.Y], 3)
+        apic_n = acpidump().split('Raw Table Data')[0].count('Processor x2Apic ID')
+        if apic_n == 56:
+            logging.info('X2APIC个数与当前CPU总核数一致')
+        else:
+            logging.info('X2APIC个数与当前CPU总核数不一致，需要检查')
+            return result.log_fail(capture=True)
+        SshLib.execute_command(Sut.OS_SSH, r'rm *.dat *.out *.dsl')
+        result.log_pass()
+        return True
+    except AssertionError:
+        result.log_fail(capture=True)
+    finally:
+        BmcLib.clear_cmos()
+
 
 

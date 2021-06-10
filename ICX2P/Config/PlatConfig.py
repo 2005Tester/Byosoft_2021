@@ -89,6 +89,7 @@ class Msg:
     IIO_CONFIG = "IIO Configuration"
     NUMA = "NUMA"
     ASPM_ROOT_PORT = "PCIe ASPM Support"
+    EXTENDED_APIC = "Extended APIC"
 
     # menus of PCH configuration
     PCH_CONFIG = 'PCH Configuration'
