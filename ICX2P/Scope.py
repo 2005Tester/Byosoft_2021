@@ -2,7 +2,7 @@ from Core import SutInit
 from Core import var
 from Core.TcExecutor import TestScope
 from ICX2P.Config import SutConfig
-from ICX2P.TestCase import UpdateBIOS, BiosTest, Os, Legacy, CpuInit01, BootDevice06
+from ICX2P.TestCase import UpdateBIOS, Os, Legacy
 
 # init SUT
 SutInit.SutInit("ICX2P")
@@ -49,10 +49,5 @@ def check_csv():
 
 
 def debug_scope():
-    UpdateBIOS.update_bios('master')
-    CpuInit01.cpu_mem_info()
-    BiosTest.power_efficiency_mode_loop()
-    BootDevice06.boot_order_001()
-    BootDevice06.boot_order_003()
-    BootDevice06.boot_order_004()
-    BootDevice06.boot_order_005()
+    from ICX2P.TestCase import Io05
+    Io05.system_info_003()

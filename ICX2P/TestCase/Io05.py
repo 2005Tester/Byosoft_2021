@@ -32,25 +32,38 @@ def check_info():
 
 
 def hotkey_press():
-    result_list = []
-    if not SetUpLib.boot_with_hotkey(Key.DEL, 'Del is pressed. Go to Setup Utility', 60):
-        result_list.append('DEL key test fail')
+    flag_sendkey = Msg.HOTKEY_PROMPT_DEL
+    failures = 0
+    del_pressed = 'Del is pressed. Go to Setup Utility'
+    f11_pressed = 'F11 is pressed. Go to BootManager'
+    f12_pressed = 'F12 is pressed. Go to PXE boot'
+    f6_pressed = 'F6 is pressed. Go to SP boot'
 
-    if not SetUpLib.boot_with_hotkey(Key.F11, 'F11 is pressed. Go to BootManager', 60):
-        result_list.append('F11 key test fail')
+    key_msg = [
+        (Key.DEL, del_pressed),
+        (Key.F11, f11_pressed),
+        (Key.F12, f12_pressed),
+        (Key.F6, f6_pressed)
+    ]
 
-    if not SetUpLib.boot_with_hotkey(Key.F12, 'F12 is pressed. Go to PXE boot', 60):
-        result_list.append('F12 key test fail')
+    for check_item in key_msg:
+        logging.info('**Testing: {0}'.format(check_item[1]))
+        try:
+            BmcLib.force_reset()
+            assert SetUpLib.wait_message(flag_sendkey, 180)
+            SetUpLib.send_key(check_item[0])
+            assert SetUpLib.wait_message(check_item[1])
+            logging.info('**Test pass.')
+        except AssertionError:
+            failures += 1
+            logging.info('**Test fail.')
 
-    if not SetUpLib.continue_boot_with_hotkey(Key.F6, 'F6 is pressed. Go to SP boot', 60):
-        result_list.append('F6 key test fail')
-
-    logging.info(result_list)
-    # check the result,
-    if len(result_list) == 0:
+    if failures == 0:
         return True
     else:
+        logging.info("{0} test failed".format(failures))
         return False
+
 
 ##########################################
 #            Release Test Cases          #
