@@ -31,6 +31,7 @@ CpuInit01.cpu_compa_02(),,,Yes,Yes
 CpuInit01.cpu_compa_03(),,,Yes,Yes
 CpuInit01.cpu_compa_05(),,,Yes,Yes
 CpuInit01.cpu_compa_06(),,,Yes,Yes
+CpuInit01.cpu_compa_017(),,,Yes,Yes
 Security22.pwd_test_all(),,,Yes,Yes
 MemInit02.dimm_power_mgt_01(),,,Yes,Yes
 MemInit02.dimm_power_mgt_02(),,,Yes,Yes

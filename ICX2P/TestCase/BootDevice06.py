@@ -159,10 +159,11 @@ def boot_order_002():
         SetUpLib.send_keys([Key.F6, Key.F10, Key.Y])
         if not SetUpLib.wait_message('NBP file downloaded successfully', 120):
             result_list.append('1')
+        assert SetUpLib.boot_to_page(Msg.PAGE_BOOT)
         assert SetUpLib.enter_menu(Key.DOWN, ['Boot Type Order'], 12, 'Hard Disk Drive')
         assert SetUpLib.locate_option(Key.DOWN, ['PXE'], 7)
         SetUpLib.send_keys([Key.F6 * 2, Key.F10, Key.Y])
-        if not SetUpLib.wait_message(Msg.SUSE_GRUB, 120):
+        if not SetUpLib.wait_message('Install SUSE 15.2', 120):
             result_list.append('2')
         logging.debug(result_list)
         # check the result,
