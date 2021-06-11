@@ -71,7 +71,7 @@ PcieInit04.sriov_enable_disable(),,,Yes,Yes
 BiosTest.power_efficiency_mode_loop(),,,Yes,Yes
 BootDevice06.boot_device_type_001(),,,Yes,Yes
 BootDevice06.boot_order_002(),,,Yes,Yes
-BootDevice06.boot_order_004(),,,Yes,Yes
+BootDevice06.boot_order_004(),,,,
 Smbios09.smbios_test_all(),os,Yes,Yes,Yes
 Release.equip_mode_flag_check(),os,Yes,Yes,Yes
 Release.equip_mode_version_check(),equip,Yes,Yes,Yes
