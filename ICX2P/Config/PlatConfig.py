@@ -137,7 +137,7 @@ class Msg:
     RC_VERSION = '0.2.2.0030'
     BIOS_REVISION = '0.12'
     BIOS_DATE = '05/25/2021'
-    iBMC_VERSION = '3.01.15.03'
+    iBMC_VERSION = '3.01.15.06'
     iBMC_IP = '192.168.2.102'
     CPU_TYPE = 'Ice Lake'
     TOTAL_MEMORY = '65536MB'
