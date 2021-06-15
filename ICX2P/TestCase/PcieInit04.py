@@ -512,7 +512,6 @@ def sriov_enable_disable():
             bdf_list = re.findall("PCIE LINK STATUS: ([0-9a-fA-F]+:[0-4]+\.[0-9a-fA-F])", pcie_bdf)
             assert bdf_list, "Invalid BDF"
             logging.info(f"PCIE Bus: {bdf_list}")
-            bdf_list = ["4b:00.0"]
             assert MiscLib.ping_sut(SutConfig.OS_IP, 300)
             sriov_sup_port = {}
             for port in bdf_list:
