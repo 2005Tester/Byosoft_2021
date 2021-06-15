@@ -330,12 +330,20 @@ def memory_compa_001():
 def memory_compa_006(n=1):
     tc = ('710', '[TC710] Testcase_MemoryCompa_006', '06 内存容量一致性测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
-    res_lst = []
     for i in range(n):
+        res_lst = []
         try:
-            assert SetUpLib.boot_to_page('BIOS Revision'), "boot_to_page -> fail"
-            assert SetUpLib.verify_info(['Total Memory\s+65536 MB'], 20), "dimm_size_verify -> fail"
-            assert SetUpLib.boot_suse_from_bm(), "boot_to_os -> fail"
+            assert BmcLib.force_reset()
+            meminfo = SerialLib.cut_log(Sut.BIOS_COM, "Total Memory :", "", 3, 300)
+            mem_mb = re.search("Total Memory : (\d+)MB", meminfo)
+            assert mem_mb, "Search total memory size from serial failed"
+            mem_size_ser = int(mem_mb.group(1))
+            assert SetUpLib.continue_to_page('BIOS Revision')
+            assert SetUpLib.verify_info([f'Total Memory\s+{mem_size_ser} MB'], 20), "dimm_size_verify -> fail"
+            assert SetUpLib.back_to_front_page("Boot Manager")
+            SetUpLib.send_key(Key.ENTER)
+            assert SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 5, Msg.BIOS_BOOT_COMPLETE)
+            assert MiscLib.ping_sut(SutConfig.OS_IP, 200)
             res = SshLib.execute_command(Sut.OS_SSH, 'dmesg | grep -i e820')
             for j in res.split('\n'):
                 if 'BIOS-e820' in j and 'ACPI' not in j:
@@ -354,9 +362,10 @@ def memory_compa_006(n=1):
             e820 = numpy.matrix.tolist(stop_array - base_array)
             mem_size = sum(e820) / 1024 / 1024 / 1024
             logging.debug(int(mem_size))
-            assert int(mem_size) == SysCfg.DIMM_SIZE, 'dimm_size_diff_fail'
+            assert int(mem_size) == mem_size_ser//1024, 'dimm_size_diff_fail'
             result.log_pass()
-        except AssertionError:
+        except AssertionError as e:
+            logging.error(e)
             result.log_fail(capture=True)
 
 
