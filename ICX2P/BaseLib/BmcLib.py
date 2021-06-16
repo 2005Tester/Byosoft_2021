@@ -1,5 +1,6 @@
 import os
 import logging
+import re
 import tarfile
 import time
 from Core.SutInit import Sut
@@ -210,3 +211,23 @@ def bmc_warning_check():
         return False
     logging.info("[BMC Warning Check] Current system in health state")
     return True
+
+
+# 从BMC读取当前固件版本信息, 返回版本信息为字符串格式
+def firmware_version_check():
+    class BmcInfo:
+        BIOS = None
+        BMC = None
+        CPLD = None
+    cmd = "ipmcget -d v"
+    info = SshLib.execute_command(Sut.BMC_SSH, cmd)
+    if not info:
+        logging.error(f'Cmd "{cmd}" return nothing')
+        return
+    bios_ver = "".join(re.findall("\nActive\s+BIOS\s+Version:\s+.*?\)([.\d]+)", info))
+    BmcInfo.BIOS = bios_ver
+    bmc_ver = "".join(re.findall("\nActive\s+iBMC\s+Version:\s+.*?\)([.\d]+)", info))
+    BmcInfo.BMC = bmc_ver
+    cpld_ver = "".join(re.findall("\nCPLD\s+Version:\s+.*?\)([.\d]+)", info))
+    BmcInfo.CPLD = cpld_ver
+    return BmcInfo
