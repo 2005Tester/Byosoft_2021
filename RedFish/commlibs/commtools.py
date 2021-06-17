@@ -1,8 +1,10 @@
 # -*- encoding=utf8 -*-
 import os
+import re
 import time
 import logging
 import subprocess
+import openpyxl
 import pandas
 from Core import SerialLib
 import RedFish.config as config
@@ -90,3 +92,53 @@ def to_excel(data, name="", path=os.path.abspath(config.REPORT_DIR)):
     elif isinstance(data, pandas.DataFrame):
         data.to_excel(path_name)
     logging.info("Create excel {} successful!".format(path_name))
+
+
+def read_default_values(unitool, variables):
+    var_format = []
+    for var in variables:
+        if "[0]" in var:
+            var_format.append(var[:var.find("[")])
+        else:
+            var_format.append(var)
+    key_values = unitool.read(*var_format)
+    return key_values
+
+
+def option_value_index_map(base_xlsx):
+    base_xlsx = openpyxl.load_workbook(base_xlsx)
+    sheets = base_xlsx.sheetnames
+    base_sheet = base_xlsx[sheets[0]]
+    setup_col = "K"  # setup column index of xlsx
+    value_col = "I"  # value column index of xlsx
+    max_row = base_sheet.max_row
+    table = {}
+    for row in range(1, max_row):
+        option = base_sheet[f"{setup_col}{row}"].value
+        if not option:
+            continue
+        option = option.replace("\n", "").strip()
+        values = base_sheet[f"{value_col}{row}"].value
+        if not values:
+            continue
+        value_list = values.split("\n")
+        for v in value_list:
+            if len(re.findall(":", v)) == 1:
+                vname = v.split(":")[0]
+                vidx = v.split(":")[1].strip()
+                index = str(int(vidx, 16)) if "0x" in vidx else vidx
+                if isinstance(table.get(option), dict):
+                    table[option].update({index: vname.strip()})
+                else:
+                    table[option] = {index: vname.strip()}
+            elif len(re.findall(":", v)) > 1:
+                vname = v[:v.rfind(":")]
+                vidx = v[v.rfind(":")+1:]
+                index = str(int(vidx, 16)) if "0x" in vidx else vidx
+                if isinstance(table.get(option), dict) and table.get(option):
+                    table[option].update({index: vname.strip()})
+                else:
+                    table[option] = {index: vname.strip()}
+            else:
+                table[option] = v
+    return table

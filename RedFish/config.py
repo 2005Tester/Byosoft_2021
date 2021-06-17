@@ -10,14 +10,14 @@ import os
 import datetime
 
 # SSH Configuration
-bmc_ip = '192.168.2.102'
+bmc_ip = '192.168.2.101'
 port = '22'
 bmc_user = 'Administrator'
 bmc_pw = 'Admin@9001'
 
-COM = "COM7"
+COM = "COM2"
 
-os_ip = '192.168.2.150'
+os_ip = '192.168.2.160'
 os_user = "root"
 os_pw = "root"
 os_timeout = 900
@@ -35,6 +35,7 @@ headers = {
 
 unitool_path = "/root/flashtool/unitool"
 AppExcel = r".\baseline\PowerEfficiency_Baseline.xls"
+baseline_xlsx = r'.\baseline\2288v6_setup_baseline_Byosoft_V0.1.xlsx'
 
 # log setting
 timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')

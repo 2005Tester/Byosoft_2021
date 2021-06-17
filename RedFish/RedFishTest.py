@@ -22,18 +22,20 @@ from RedFish import testcase
 # from HY5 import updatebios
 from Common import LogConfig
 import logging.config
-from Common import ssh
+from Common import ssh, Unitool
 from Common.SutSerial import SutControl
 from RedFish.commlibs.commtools import reboot_sut
 from RedFish.testitems.DepTest import DepenTest
 from RedFish.testitems.NonDepTest import NonDepTest
 from RedFish.testitems.PowerEfficiency import app_test
+from RedFish.testitems.default_test import redfish_default_value_test, rfish_post_load_default_test
 from Core import var
 
 var.set("serial_log", os.path.join(config.SERIAL_LOG))
 
 requests.packages.urllib3.disable_warnings()
 bmc = ssh.SshConnection(config.bmc_ip, config.bmc_user, config.bmc_pw)
+unitool = Unitool.SshUnitool(config.os_ip, config.os_user, config.os_pw, config.unitool_path, True)
 ser = SutControl(config.COM, 115200, 0.5)
 
 
@@ -425,6 +427,12 @@ if __name__ == "__main__":
         elif argv[1] == "power":
             logging.info("Testing ApplicationProfile")
             app_test(bmc, ser)
+
+        elif argv[1] == "default":
+            logging.info("Redfish Default Test")
+            redfish_default_value_test(bmc, unitool)
+            rfish_post_load_default_test(bmc, unitool)
+
 
         elif os.path.isfile(argv[1]):
             logging.info("Run test for %s" % argv[1])
