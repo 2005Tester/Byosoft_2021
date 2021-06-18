@@ -141,8 +141,9 @@ def boot_order_001():
 def boot_order_002():
     tc = ('154', '[TC154]02 08【UEFI Legacy模式】启动顺序优先级_Setup菜单和BMC设置', '支持启动顺序设置')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
-    result_list = []
+    n_fail = 0
     try:
+        logging.info("** Change boot order: Others->PXE->DVD-ROM Drive->Hard Disk Drive")
         assert SetUpLib.boot_to_page(Msg.PAGE_BOOT)
         assert SetUpLib.enter_menu(Key.DOWN, ['Boot Type Order'], 12, 'Hard Disk Drive')
         assert SetUpLib.locate_option(Key.DOWN, ['Others'], 7)
@@ -152,23 +153,25 @@ def boot_order_002():
         assert SetUpLib.locate_option(Key.DOWN, ['DVD-ROM Drive'], 7)
         SetUpLib.send_keys([Key.F6, Key.F10, Key.Y])
         if not SetUpLib.wait_message('Shell', 120):
-            result_list.append('0')
+            logging.info("Boot to others failed.")
+            n_fail += 1
+        logging.info("** Change boot order: PXE->Others->DVD-ROM Drive->Hard Disk Drive")
         assert SetUpLib.boot_to_page(Msg.PAGE_BOOT)
         assert SetUpLib.enter_menu(Key.DOWN, ['Boot Type Order'], 12, 'Hard Disk Drive')
         assert SetUpLib.locate_option(Key.DOWN, ['PXE'], 7)
         SetUpLib.send_keys([Key.F6, Key.F10, Key.Y])
         if not SetUpLib.wait_message('NBP file downloaded successfully', 120):
-            result_list.append('1')
+            logging.info("** Boot to PXE failed")
+            n_fail += 1
+        logging.info("** Change boot order: DVD-ROM Drive->PXE->Others->Hard Disk Drive")
         assert SetUpLib.boot_to_page(Msg.PAGE_BOOT)
         assert SetUpLib.enter_menu(Key.DOWN, ['Boot Type Order'], 12, 'Hard Disk Drive')
-        assert SetUpLib.locate_option(Key.DOWN, ['PXE'], 7)
+        assert SetUpLib.locate_option(Key.DOWN, ['DVD-ROM Drive'], 7)
         SetUpLib.send_keys([Key.F6 * 2, Key.F10, Key.Y])
         if not SetUpLib.wait_message('Install SUSE 15.2', 120):
-            result_list.append('2')
-        logging.debug(result_list)
-        # check the result,
-        if len(result_list) != 0:
-            raise AssertionError
+            logging.info("** Failed to boot to DVD-ROM")
+            n_fail += 1
+        assert n_fail
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
