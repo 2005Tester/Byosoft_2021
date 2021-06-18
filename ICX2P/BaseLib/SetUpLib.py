@@ -404,20 +404,25 @@ def back_to_front_page(highlight="Continue"):
         return
     send_keys([Key.ESC, Key.Y])
     if locate_option(Key.RIGHT, [highlight], 3):
+        logging.info(f"locaet to {highlight} success")
         return True
     send_key(Key.DOWN)
     if locate_option(Key.RIGHT, [highlight], 3):
+        logging.info(f"locaet to {highlight} success")
         return True
 
 
 # auto locate to the option and change the value to target, need enter the menu page first
 def set_option_value(option, value, key=Key.DOWN, loc_cnt=15, save=False):
+    logging.info(f'Set {option} -> {value}')
     if not locate_option(key, [option, f"<.+>"], loc_cnt):
         return
     if Sut.BIOS_COM.locate_value(value):
         send_keys(Key.ENTER)
         if save:
+            logging.info(f'Save configuration and reset')
             send_keys(Key.SAVE_RESET)
+        logging.info(f'Set {option} to {value} pass')
         return True
 
 

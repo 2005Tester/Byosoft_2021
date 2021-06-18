@@ -68,6 +68,7 @@ PcieInit04.aspm_disable_l1only(),,,Yes,Yes
 PcieInit04.aspm_per_port_loop(),,,,Yes
 PcieInit04.sriov_global_menu(),,,,Yes
 PcieInit04.sriov_enable_disable(),,,Yes,Yes
+PcieInit04.sriov_per_port_loop(),,,Yes,Yes
 BiosTest.power_efficiency_mode_loop(),,,Yes,Yes
 BootDevice06.boot_device_type_001(),,,Yes,Yes
 BootDevice06.boot_order_002(),,,Yes,Yes

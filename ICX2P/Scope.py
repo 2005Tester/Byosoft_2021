@@ -37,7 +37,7 @@ def weekly_scope():
 
 def release_scope():
     """Release Basic Function Test"""
-    release_branch = "2288V6_012"
+    release_branch = "2288V6_013"
     var.set('branch', release_branch)
     scope("Release", release_branch)
 
