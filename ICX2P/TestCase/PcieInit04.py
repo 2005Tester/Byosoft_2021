@@ -551,7 +551,7 @@ def sriov_enable_disable():
 
 
 # Author: WangQingshan
-# SRIOV总开关测试
+# 遍历Root Port SR-IOV开关测试
 # Precondition: Linux
 # OnStart: NA
 # OnComplete: NA
@@ -610,3 +610,33 @@ def sriov_per_port_loop():
         result.log_fail()
     finally:
         BmcLib.clear_cmos()
+
+
+# Author: WangQingshan
+# Setup菜单提供CPU RootPort端口开关测试
+# Precondition: Linux
+# OnStart: NA
+# OnComplete: NA
+def root_port_switch_menu():
+    tc = ('645', '[TC645] Testcase_PCIePortItem_001', 'Setup菜单提供CPU RootPort端口开关测试')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    switch_option = "PCIe Port"
+    switch_value = ["Auto", "Disabled", "Enabled"]
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.UP, Msg.PATH_IIO_CONFIG, 15, Msg.IIO_CONFIG)
+        for cpu in range(SutConfig.SysCfg.CPU_CNT):  # CPU遍历
+            cpu_menu = f"CPU {cpu + 1} Configuration"
+            assert SetUpLib.enter_menu(Key.DOWN, [cpu_menu], 15, "PCIe Completion Timeout")
+            root_ports = PlatMisc.match_pcie_root_port(key=Key.DOWN, patten="(Port (?:[0-4][A-D]))", try_cnt=10)
+            for port in root_ports:  # Root Port遍历
+                assert SetUpLib.enter_menu(Key.DOWN, [port], 10, "PCIe Port")
+                SetUpLib.send_key(Key.DOWN)
+                assert SetUpLib.get_all_values(switch_option, Key.UP, 15) == switch_value
+                SetUpLib.send_keys(Key.ESC)
+            SetUpLib.send_keys(Key.ESC)
+        result.log_pass()
+    except Exception as e:
+        logging.error(e)
+        result.log_fail()
+
