@@ -83,6 +83,19 @@ def boot_to_dvd(ssh, DVD_OPTION="UEFI Hitachi-LG Data Storage Inc Portable Super
         return False
 
 
+# Verify DVD exists
+def dvd_verify():
+    logging.info("** Verify DVD exists ")
+    assert SetUpLib.boot_to_page(Msg.PAGE_BOOT)
+    assert SetUpLib.enter_menu(Key.DOWN, ['UEFI Boot'], 23, 'HDD Device')   # , 'DVD-ROM Drive  -page'   ,
+    if not SetUpLib.verify_info(['DVD-ROM Device'], 6):
+        logging.info("DVD-ROM device not connected")
+        return False
+    else:
+        logging.info(" DVD-ROM  device  connected is normal")
+        return True
+
+
 ##########################################
 #          Boot Device Test Cases        #
 ##########################################
@@ -207,8 +220,11 @@ def boot_order_004():
     tc = ('156', '[TC156]04【UEFI模式】启动顺序优先级_Setup菜单和BMC设置', '支持启动顺序设置')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
-        assert boot_to_dvd(SutInit.Sut.BMC_SSH)
-        result.log_pass()
+        if dvd_verify() == False:
+            result.log_skip()
+        else:
+            assert boot_to_dvd(SutInit.Sut.BMC_SSH)
+            result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
     finally:
@@ -258,8 +274,11 @@ def boot_order_012():
     tc = ('159', '[TC159]12 【Legacy模式】启动顺序优先级_BMC设置和F12热键', '支持启动顺序设置')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
-        assert boot_to_dvd(SutInit.Sut.BMC_SSH, DVD_OPTION="ASUS SDRW-08D2S-U+\s")
-        result.log_pass()
+        if dvd_verify() == False:
+            result.log_skip()
+        else:
+            assert boot_to_dvd(SutInit.Sut.BMC_SSH, DVD_OPTION="UEFI Hitachi-LG Data Storage Inc Portable Super Multi Drive")
+            result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
     finally:
