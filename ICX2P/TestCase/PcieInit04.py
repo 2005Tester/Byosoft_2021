@@ -640,3 +640,24 @@ def root_port_switch_menu():
         logging.error(e)
         result.log_fail()
 
+
+# Author: WangQingshan
+# Setup菜单显卡选择默认值测试
+# Precondition: Linux
+# OnStart: NA
+# OnComplete: NA
+def vga_option_menu():
+    tc = ('646', '[TC646] Testcase_DisplayMode_001', 'Setup菜单显卡选择默认值测试')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    vga_option = "Display Mode"
+    values = ["On Board Graphics", "Plug-in Graphics"]
+    vdefault = "On Board Graphics"
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, [Msg.MISC_CONFIG], 15, "Network CDN")
+        assert SetUpLib.get_option_value([vga_option, "<.+>"], Key.UP, 6) == vdefault
+        assert SetUpLib.get_all_values(vga_option, Key.UP, 15) == values
+        result.log_pass()
+    except Exception as e:
+        logging.error(e)
+        result.log_fail()
