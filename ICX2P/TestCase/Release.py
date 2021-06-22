@@ -1,6 +1,7 @@
 import os
 import glob
 import logging
+import re
 from Core import SshLib, MiscLib, var
 from Core.SutInit import Sut
 from ICX2P.Config import SutConfig
@@ -307,3 +308,35 @@ def bios_downgrade_flash():
         Update.update_bios(release_branch)
         SetUpLib.update_default_password()
         SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5)
+
+
+def boot_to_uefi_os():
+    tc = ('910', '[TC910] Boot to UEFI OS', 'Boot to UEFI OS and check dmesg info')
+    result = ReportGen.LogHeaderResult(tc)
+    dmesg_ignore = ["XFS .*?: Metadata (?:I/O|CRC) error"]
+
+    def dmesg_filter(dmesg_info):
+        nonlocal fail_cnt
+        for ignore in dmesg_ignore:
+            for line in dmesg_info.splitlines():
+                if re.search(ignore, line, re.I):
+                    continue
+                fail_cnt += 1
+                logging.info(f"** Dmesg wrong info: {line}")
+    try:
+        assert SetUpLib.boot_to_bootmanager()
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_OS, 20, Msg.BIOS_BOOT_COMPLETE)
+        assert MiscLib.ping_sut(SutConfig.OS_IP, 300)
+        dmesg_error = SshLib.execute_command(Sut.OS_SSH, "dmesg |grep -i error")
+        dmesg_fail = SshLib.execute_command(Sut.OS_SSH, "dmesg |grep -i fail")
+        fail_cnt = 0
+        if dmesg_error:
+            dmesg_filter(dmesg_error)
+        if dmesg_fail:
+            dmesg_filter(dmesg_fail)
+        assert not fail_cnt, "[Assert] Dmesg info contains wrong message"
+        result.log_pass()
+    except Exception as e:
+        logging.error(e)
+        result.log_fail()
+
