@@ -100,13 +100,6 @@ def cscripts_inband_register(cmd, exp_list, stop=-6):
         logging.info('exp_list should be a non-empty list, not other types - {0}'.format(err))
 
 
-def toBIOSConf(serial):
-    serial.send_keys_with_delay(SutConfig.key2Setup)
-    if not serial.waitString('System Time', timeout=60):
-        return
-    return True
-
-
 def dcCycle():
     if not SetUpLib.boot_to_setup():
         return

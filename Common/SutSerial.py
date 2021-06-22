@@ -111,13 +111,13 @@ class SutControl:
         while True:
             try:
                 if self.session.in_waiting:
-                    data = self.session.read(256).decode("utf-8")
-                    data = self.cleanup_data(data)
-                    if self.find_msg("Press F2", data):
+                    self.data = self.session.read(256).decode("utf-8")
+                    self.data = self.cleanup_data(self.data)
+                    if self.find_msg("Press F2", self.data):
                         self.send_data("Admin@9009")
                         self.send_data(chr(0x0D))  # Send Enter
                         logging.info("Send password...")
-                    if self.find_msg("BIOS boot completed.", data):
+                    if self.find_msg("BIOS boot completed.", self.data):
                         return True
             except Exception as e:
                 logging.error("check_boot_success:{0}".format(e))
@@ -165,16 +165,16 @@ class SutControl:
         while True:
             try:
                 if self.session.in_waiting:
-                    data = self.session.read(256).decode("utf-8")
-                    data = self.cleanup_data(data)
-                    if self.find_msg("Press F2", data):
+                    self.data = self.session.read(256).decode("utf-8")
+                    self.data = self.cleanup_data(self.data)
+                    if self.find_msg("Press F2", self.data):
                         self.send_data("Admin@9009")
                         self.send_data(chr(0x0D))  # Send Enter
                         logging.info("Send password...")
-                    if self.find_msg(msg1, data):
+                    if self.find_msg(msg1, self.data):
                         logging.info("String \"{0}\" should not occur in BIOS log.".format(msg1))
                         return
-                    if self.find_msg(msg2, data):
+                    if self.find_msg(msg2, self.data):
                         return True
             except Exception as e:
                 logging.error("is_msg_not_present:{0}".format(e))
@@ -182,53 +182,6 @@ class SutControl:
             if self.is_timeout(start_time, 300):
                 logging.debug("is_msg_not_present: timeout")
                 break
-
-    # Find 1 string, waitString
-    def waitString(self, msg, timeout=10, regex=False):
-        """
-        Read data from Console Redirection port, and wait specified string
-        :param msg: String to be captured
-        :param timeout: Timeout of wait duration
-        :return: True, if get specified string from COM port
-                 False, script has not capture specified string after timeout
-        """
-        t_start = time.time()
-        f = open(var.get('serial_log'), 'a')
-        # buffer_list = []
-        logging.info("Waiting for string:\"{0}\"".format(msg))
-        while True:
-            try:
-                buffer = b''
-                count = self.session.inWaiting()
-                if count > 0:
-                    data = self.session.read(count)
-                    if data == '':
-                        break
-                    # else:
-                    #     buffer_list.append(data)
-                    #     print(buffer_list)
-                    if data != buffer:
-                        f.write(data.decode())
-                        if not regex:
-                            if msg in data.decode():
-                                logging.info("Find string:{0}".format(msg))
-                                break
-                        else:
-                            if re.search(msg, data.decode(), re.M):
-                                logging.debug("Find string:{0}".format(msg))
-                                break
-
-                time.sleep(0.01)
-            except EOFError:
-                pass
-
-            now = time.time()
-            spent_time = (now - t_start)
-            if spent_time > timeout:
-                logging.info("Can not find string(timeout):{0}".format(msg))
-                return False
-        f.close()
-        return True
 
     # For e.g: post test, find more than 1 string, waitStrings
     def waitStrings(self, msg_list=None, timeout=5):
@@ -283,16 +236,16 @@ class SutControl:
         while True:
             try:
                 if self.session.in_waiting:
-                    data = self.session.read(256).decode("utf-8", errors='ignore')
-                    data = self.cleanup_data(data)
-                    if self.find_msg(hotkey_prompt, data):
+                    self.data = self.session.read(256).decode("utf-8", errors='ignore')
+                    self.data = self.cleanup_data(self.data)
+                    if self.find_msg(hotkey_prompt, self.data):
                         self.send_keys(key)
                         logging.info("Hot Key sent")
-                    if self.find_msg(pw_prompt, data):
+                    if self.find_msg(pw_prompt, self.data):
                         self.send_data(password)
                         self.send_data(chr(0x0D))  # Send Enter
                         logging.info("Send password...")
-                    if self.find_msg(msg, data):
+                    if self.find_msg(msg, self.data):
                         return True
             except Exception as e:
                 logging.error(e)
