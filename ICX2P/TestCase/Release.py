@@ -15,6 +15,25 @@ from Common.RedfishLib import Redfish
 ##########################################
 #            Release Test Cases          #
 ##########################################
+release_downgrade_tested = None
+release_registry_old = None
+release_registry_new = None
+
+
+def bios_parallel_flash():
+    tc = ('900', '[TC900] Parallel flash', "Check BIOS version under setup and iBMC Web")
+    result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
+    release_branch = var.get("branch")
+    try:
+        img = Update.get_test_image(SutConfig.LOG_DIR, release_branch, 'debug-build')
+        assert Update.update_bios(img)
+        assert SetUpLib.update_default_password()
+        assert SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5)
+        result.log_pass()
+    except Exception as e:
+        logging.error(e)
+        result.log_fail(capture=True)
+
 
 def me_version_status():
     tc = ('901', '[TC901] ME_Check ME Version and status', 'ME version should be match within BIOS bin file, ME Status shoule be normal.')
@@ -146,11 +165,13 @@ def compare_fdm_log():
     tc = ('906', '[TC906] Compare FDM Log Size', "Compare FDM Log size with previous BIOS version")
     result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
 
+    rfish = Redfish(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)
     new_branch = var.get('branch')
     old_branch = PlatMisc.last_release(new_branch)
     new_img = Update.get_test_image(SutConfig.LOG_DIR, new_branch, 'debug-build')
     old_img = Update.get_test_image(SutConfig.LOG_DIR, old_branch, 'debug-build')
     flash_latest = False
+    global release_downgrade_tested, release_registry_old, release_registry_new
 
     def read_fdm(bios_img, test_flag):
         try:
@@ -167,21 +188,28 @@ def compare_fdm_log():
         except Exception as err:
             logging.info(err)
             return 0
-
+    # main test process
     try:
-        # Flash latest release img
-        latest = read_fdm(new_img, "latest")
-        assert latest != 0, "Exception: Read latest fdmlog"
-        flash_latest = True
+        # dump latest release fdmlog
+        dump_path = os.path.join(SutConfig.LOG_DIR, f"TC{tc[0]}/latest")
+        if not os.path.exists(dump_path):
+            os.makedirs(dump_path)
+        assert BmcLib.bmc_dumpinfo(path=dump_path, name="dump", uncom=True)
+        assert os.path.isfile(os.path.join(dump_path, rf"dump\dump_info\LogDump\fdm_log")), "fdmlog not found"
+        with open(os.path.join(dump_path, r"dump\dump_info\LogDump\fdm_log"), "r") as fdm_log:
+            latest = fdm_log.read()
         # Flash last release img
         downgrade = read_fdm(old_img, "downgrade")
         assert downgrade != 0, "Exception: Read downgrade fdmlog"
         flash_latest = False
+        release_downgrade_tested = True
+        release_registry_old = rfish.registry_dump(dump_json=True, path=SutConfig.LOG_DIR, name="Registry_old.json")
         assert latest == downgrade, "FDM LOG if different after BIOS downgrade"
         # Flash latest release img back again
         upgrade = read_fdm(new_img, "upgrade")
         assert upgrade != 0, "Exception: Read upgrade fdmlog"
         flash_latest = True
+        release_registry_new = rfish.registry_dump(dump_json=True, path=SutConfig.LOG_DIR, name="Registry_new.json")
         assert downgrade == upgrade, "FDM LOG if different after BIOS upgrade"
         result.log_pass()
         return True
@@ -191,6 +219,8 @@ def compare_fdm_log():
     finally:
         if not flash_latest:
             Update.update_bios(new_img)
+            SetUpLib.update_default_password()
+            SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5)
 
 
 # 检查BMC是否记录异常告警信息
@@ -226,19 +256,23 @@ def registry_check():
     new_img = Update.get_test_image(SutConfig.LOG_DIR, new_branch, 'debug-build')
     rfish = Redfish(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)
     flash_latest = False
+    global release_registry_old, release_registry_new
 
     try:
         # old branch bios image registry dump
-        assert Update.update_bios(old_img)
-        flash_latest = False
-        logging.info("dump old registry")
-        old_registry = rfish.registry_dump()
+        if not release_registry_old:
+            assert Update.update_bios(old_img)
+            flash_latest = False
+            logging.info("dump old registry")
+            release_registry_old = rfish.registry_dump(dump_json=True, path=SutConfig.LOG_DIR, name="Registry_old.json")
         # new branch bios image registry dump
-        assert Update.update_bios(new_img)
+        if not release_registry_new:
+            assert Update.update_bios(new_img)
+            flash_latest = True
+            logging.info("dump new registry")
+            release_registry_new = rfish.registry_dump(dump_json=True, path=SutConfig.LOG_DIR, name="Registry_new.json")
+        assert release_registry_old == release_registry_new, "Check old registry is different from new registry"
         flash_latest = True
-        logging.info("dump new registry")
-        new_registry = rfish.registry_dump()
-        assert old_registry == new_registry, "Check old registry is different from new registry"
         logging.info("Check old registry is same with new registry")
         result.log_pass()
     except Exception as e:
@@ -247,3 +281,29 @@ def registry_check():
     finally:
         if not flash_latest:
             Update.update_bios(new_img)
+            SetUpLib.update_default_password()
+            SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5)
+
+
+def bios_downgrade_flash():
+    tc = ('909', '[TC909] Downgrade flash', "Check BIOS version under setup and iBMC Web")
+    result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
+    global release_downgrade_tested
+    release_branch = var.get("branch")
+    try:
+        if release_downgrade_tested:
+            result.log_pass()
+            return True
+        last_bios = PlatMisc.last_release(release_branch)
+        img = Update.get_test_image(SutConfig.LOG_DIR, last_bios, 'debug-build')
+        assert Update.update_bios(img)
+        assert SetUpLib.update_default_password()
+        assert SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5)
+        result.log_pass()
+    except Exception as e:
+        logging.error(e)
+        result.log_fail(capture=True)
+    finally:
+        Update.update_bios(release_branch)
+        SetUpLib.update_default_password()
+        SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5)
