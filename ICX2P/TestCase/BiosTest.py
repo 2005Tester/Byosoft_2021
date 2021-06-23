@@ -17,6 +17,7 @@ from ICX2P.Config.SutConfig import SysCfg
 from ICX2P.Config.PlatConfig import Msg, Key
 from ICX2P.Config import SutConfig
 from ICX2P.BaseLib import BmcLib, PlatMisc, SetUpLib
+from ICX2P.BaseLib.PlatMisc import ReleaseTestStatus
 from Report import ReportGen
 from Common.LogAnalyzer import LogAnalyzer
 
@@ -95,6 +96,7 @@ def pxe_test(n=1):
             result.log_fail()
             return
     result.log_pass()
+    ReleaseTestStatus.pxe_boot_uefi = True
     return True
 
 

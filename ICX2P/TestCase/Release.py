@@ -7,6 +7,7 @@ from Core.SutInit import Sut
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg, BiosCfg
 from ICX2P.BaseLib import BmcLib, SetUpLib, Update, PlatMisc
+from ICX2P.BaseLib.PlatMisc import ReleaseTestStatus
 from Report import ReportGen
 from Common.RedfishLib import Redfish
 
@@ -16,9 +17,6 @@ from Common.RedfishLib import Redfish
 ##########################################
 #            Release Test Cases          #
 ##########################################
-release_downgrade_tested = None
-release_registry_old = None
-release_registry_new = None
 
 
 def bios_parallel_flash():
@@ -45,7 +43,7 @@ def me_version_status():
     if not SetUpLib.enter_menu(Key.DOWN, ["Server ME Configuration"], 20, "General ME Configuration"):
         result.log_fail()
         return
-    me_info = ['Oper. Firmware Version\s+{0}'.format(Msg.ME_VERSION), 
+    me_info = ['Oper. Firmware Version\s+{0}'.format(Msg.ME_VERSION),
                'Recovery Firmware Version\s+{0}'.format(Msg.ME_VERSION),
                'Current State\s+Operational']
     if not SetUpLib.verify_info(me_info, 13):
@@ -172,7 +170,6 @@ def compare_fdm_log():
     new_img = Update.get_test_image(SutConfig.LOG_DIR, new_branch, 'debug-build')
     old_img = Update.get_test_image(SutConfig.LOG_DIR, old_branch, 'debug-build')
     flash_latest = False
-    global release_downgrade_tested, release_registry_old, release_registry_new
 
     def read_fdm(bios_img, test_flag):
         try:
@@ -203,14 +200,17 @@ def compare_fdm_log():
         downgrade = read_fdm(old_img, "downgrade")
         assert downgrade != 0, "Exception: Read downgrade fdmlog"
         flash_latest = False
-        release_downgrade_tested = True
-        release_registry_old = rfish.registry_dump(dump_json=True, path=SutConfig.LOG_DIR, name="Registry_old.json")
+        logging.info('Mark Downgrade Flash BIOS if already tested')
+        ReleaseTestStatus.downgrade_tested = True
+        logging.info('Dump "registry.json" file for later registry compare')
+        ReleaseTestStatus.registry_old = rfish.registry_dump(dump_json=True, path=SutConfig.LOG_DIR, name="Registry_old.json")
         assert latest == downgrade, "FDM LOG if different after BIOS downgrade"
         # Flash latest release img back again
         upgrade = read_fdm(new_img, "upgrade")
         assert upgrade != 0, "Exception: Read upgrade fdmlog"
         flash_latest = True
-        release_registry_new = rfish.registry_dump(dump_json=True, path=SutConfig.LOG_DIR, name="Registry_new.json")
+        logging.info('Dump "registry.json" file for later registry compare')
+        ReleaseTestStatus.registry_new = rfish.registry_dump(dump_json=True, path=SutConfig.LOG_DIR, name="Registry_new.json")
         assert downgrade == upgrade, "FDM LOG if different after BIOS upgrade"
         result.log_pass()
         return True
@@ -257,22 +257,21 @@ def registry_check():
     new_img = Update.get_test_image(SutConfig.LOG_DIR, new_branch, 'debug-build')
     rfish = Redfish(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)
     flash_latest = False
-    global release_registry_old, release_registry_new
 
     try:
         # old branch bios image registry dump
-        if not release_registry_old:
+        if not ReleaseTestStatus.registry_old:
             assert Update.update_bios(old_img)
             flash_latest = False
             logging.info("dump old registry")
-            release_registry_old = rfish.registry_dump(dump_json=True, path=SutConfig.LOG_DIR, name="Registry_old.json")
+            ReleaseTestStatus.registry_old = rfish.registry_dump(dump_json=True, path=SutConfig.LOG_DIR, name="Registry_old.json")
         # new branch bios image registry dump
-        if not release_registry_new:
+        if not ReleaseTestStatus.registry_new:
             assert Update.update_bios(new_img)
             flash_latest = True
             logging.info("dump new registry")
-            release_registry_new = rfish.registry_dump(dump_json=True, path=SutConfig.LOG_DIR, name="Registry_new.json")
-        assert release_registry_old == release_registry_new, "Check old registry is different from new registry"
+            ReleaseTestStatus.registry_new = rfish.registry_dump(dump_json=True, path=SutConfig.LOG_DIR, name="Registry_new.json")
+        assert ReleaseTestStatus.registry_old == ReleaseTestStatus.registry_new, "Check old registry is different from new registry"
         flash_latest = True
         logging.info("Check old registry is same with new registry")
         result.log_pass()
@@ -289,10 +288,10 @@ def registry_check():
 def bios_downgrade_flash():
     tc = ('909', '[TC909] Downgrade flash', "Check BIOS version under setup and iBMC Web")
     result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
-    global release_downgrade_tested
     release_branch = var.get("branch")
     try:
-        if release_downgrade_tested:
+        if ReleaseTestStatus.downgrade_tested:
+            logging.info("Bios downgrade flash is already verified in other test")
             result.log_pass()
             return True
         last_bios = PlatMisc.last_release(release_branch)
@@ -305,22 +304,24 @@ def bios_downgrade_flash():
         logging.error(e)
         result.log_fail(capture=True)
     finally:
-        Update.update_bios(release_branch)
-        SetUpLib.update_default_password()
-        SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5)
+        if not ReleaseTestStatus.downgrade_tested:
+            Update.update_bios(release_branch)
+            SetUpLib.update_default_password()
+            SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5)
 
 
 def boot_to_uefi_os():
     tc = ('910', '[TC910] Boot to UEFI OS', 'Boot to UEFI OS and check dmesg info')
     result = ReportGen.LogHeaderResult(tc)
-    dmesg_ignore = ["XFS .*?: Metadata (?:I/O|CRC) error"]
+    fail_cnt = 0
+    dmesg_ignore = ["XFS .*?: Metadata (?:I/O|CRC) error",
+                    "ERST.*? support is initialized",
+                    "regulatory.(?:0|db)"]
 
     def dmesg_filter(dmesg_info):
         nonlocal fail_cnt
-        for ignore in dmesg_ignore:
-            for line in dmesg_info.splitlines():
-                if re.search(ignore, line, re.I):
-                    continue
+        for line in dmesg_info.splitlines():
+            if not any(re.search(ignore, line, re.I) for ignore in dmesg_ignore):
                 fail_cnt += 1
                 logging.info(f"** Dmesg wrong info: {line}")
     try:
@@ -329,7 +330,6 @@ def boot_to_uefi_os():
         assert MiscLib.ping_sut(SutConfig.OS_IP, 300)
         dmesg_error = SshLib.execute_command(Sut.OS_SSH, "dmesg |grep -i error")
         dmesg_fail = SshLib.execute_command(Sut.OS_SSH, "dmesg |grep -i fail")
-        fail_cnt = 0
         if dmesg_error:
             dmesg_filter(dmesg_error)
         if dmesg_fail:
@@ -339,4 +339,3 @@ def boot_to_uefi_os():
     except Exception as e:
         logging.error(e)
         result.log_fail()
-

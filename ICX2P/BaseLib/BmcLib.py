@@ -180,6 +180,8 @@ def bmc_dumpinfo(path, name="dump", uncom=False):
         logging.debug(res)
         return
     logging.info(f"Dump finished, Copy to folder: {path}")
+    if not os.path.exists(path):
+        os.makedirs(path)
     tar_file = os.path.join(path, f"{name}.tar.gz")
     if not SshLib.sftp_download_file(Sut.BMC_SFTP, "/tmp/dump_info.tar.gz", tar_file):
         return

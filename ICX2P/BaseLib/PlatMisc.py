@@ -169,3 +169,25 @@ def dvd_verify():
         return True
     except AssertionError:
         logging.info("DVD-ROM device not found.")
+
+
+# 标记Release测试状态，避免重复测试
+class ReleaseTestStatus:
+    downgrade_tested = None
+    registry_old = None
+    registry_new = None
+    boot_to_setup = None
+    hot_key_uefi = None
+    hot_key_legacy = None
+    pxe_boot_uefi = None
+    pxe_boot_legacy = None
+    warm_boot_fdmlog = None
+    cold_boot_fdmlog = None
+
+
+def read_bmc_dump_log(package_path, sub_path):
+    log_path = os.path.join(package_path, sub_path)
+    if not os.path.isfile(log_path):
+        return
+    with open(log_path) as log:
+        return log.read()
