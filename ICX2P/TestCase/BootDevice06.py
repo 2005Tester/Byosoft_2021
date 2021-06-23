@@ -1,9 +1,8 @@
 # Author: arthur
 
 import logging
-
 from ICX2P.Config.PlatConfig import Key, Msg
-from ICX2P.BaseLib import SetUpLib, BmcLib
+from ICX2P.BaseLib import SetUpLib, BmcLib, PlatMisc
 from Report import ReportGen
 from Core import MiscLib, SshLib, SutInit
 from ICX2P.Config import SutConfig
@@ -70,30 +69,19 @@ def enabled_disable_options(PXE_OPTION='IPv4 PXE'):
         return False
 
 
-# only used to test boot_order 04 10
+# Force dvd boot when PXE set to 1st option in BMC
 def boot_to_dvd(ssh, DVD_OPTION="UEFI Hitachi-LG Data Storage Inc Portable Super Multi Drive"):
-    cmds = ['ipmcset -d bootdevice -v 5\n', 'ipmcget -d bootdevice\n']
-    rets = ['successfully', 'Force boot from default CD/DVD']
+    logging.info("Set PXE as first boot option from BMC.")
+    cmds = ['ipmcset -d bootdevice -v 1\n', 'ipmcget -d bootdevice\n']
+    rets = ['successfully', 'Force PXE']
     try:
         assert SshLib.interaction(ssh, cmds, rets, timeout=15)
+        logging.info("Boot from DVD Boot via boot manager.")
         assert SetUpLib.boot_to_bootmanager()
         assert SetUpLib.enter_menu(Key.DOWN, [DVD_OPTION], 12, 'Loading')
         return True
     except AssertionError:
         return False
-
-
-# Verify DVD exists
-def dvd_verify():
-    logging.info("** Verify DVD exists ")
-    assert SetUpLib.boot_to_page(Msg.PAGE_BOOT)
-    assert SetUpLib.enter_menu(Key.DOWN, ['UEFI Boot'], 23, 'HDD Device')   # , 'DVD-ROM Drive  -page'   ,
-    if not SetUpLib.verify_info(['DVD-ROM Device'], 6):
-        logging.info("DVD-ROM device not connected")
-        return False
-    else:
-        logging.info(" DVD-ROM  device  connected is normal")
-        return True
 
 
 ##########################################
@@ -219,16 +207,16 @@ def boot_order_003():
 def boot_order_004():
     tc = ('156', '[TC156]04【UEFI模式】启动顺序优先级_Setup菜单和BMC设置', '支持启动顺序设置')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    if not PlatMisc.dvd_verify():
+        result.log_skip()
+        return
     try:
-        if dvd_verify() == False:
-            result.log_skip()
-        else:
-            assert boot_to_dvd(SutInit.Sut.BMC_SSH)
-            result.log_pass()
+        assert boot_to_dvd(SutInit.Sut.BMC_SSH)
+        result.log_pass()
+        SshLib.interaction(SutInit.Sut.BMC_SSH, restored_cmds, restored_rets, timeout=15)
+        return True
     except AssertionError:
         result.log_fail(capture=True)
-    finally:
-        SshLib.interaction(SutInit.Sut.BMC_SSH, restored_cmds, restored_rets, timeout=15)
 
 
 # Testcase Num: Testcase_BootOrder_005 011
@@ -273,16 +261,16 @@ def boot_order_007():
 def boot_order_012():
     tc = ('159', '[TC159]12 【Legacy模式】启动顺序优先级_BMC设置和F12热键', '支持启动顺序设置')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    if not PlatMisc.dvd_verify():
+        result.log_skip()
+        return
     try:
-        if dvd_verify() == False:
-            result.log_skip()
-        else:
-            assert boot_to_dvd(SutInit.Sut.BMC_SSH, DVD_OPTION="UEFI Hitachi-LG Data Storage Inc Portable Super Multi Drive")
-            result.log_pass()
+        assert boot_to_dvd(SutInit.Sut.BMC_SSH, DVD_OPTION="UEFI Hitachi-LG Data Storage Inc Portable Super Multi Drive")
+        result.log_pass()
+        SshLib.interaction(SutInit.Sut.BMC_SSH, restored_cmds, restored_rets, timeout=15)
+        return True
     except AssertionError:
         result.log_fail(capture=True)
-    finally:
-        SshLib.interaction(SutInit.Sut.BMC_SSH, restored_cmds, restored_rets, timeout=15)
 
 
 # 09 支持SP启动

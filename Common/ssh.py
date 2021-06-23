@@ -161,6 +161,7 @@ class SshConnection:
             op.send(cmds[i])
             time.sleep(4)
             res = op.recv(1024)
+            logging.debug(res.decode('utf-8'))
             start_time = time.time()
             while not re.search(strs[i], res.decode('utf-8')):
                 if op.recv_ready():

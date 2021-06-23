@@ -11,10 +11,9 @@ import csv
 import re
 import datetime
 import logging
-import subprocess
 import time
 from ICX2P.Config import SutConfig
-from ICX2P.Config.PlatConfig import Msg
+from ICX2P.Config.PlatConfig import Msg, Key
 from ICX2P.BaseLib import BmcLib, SetUpLib
 from Core.SutInit import Sut
 from Core import SerialLib, SshLib
@@ -157,3 +156,16 @@ def match_pcie_root_port(key, patten="(Port (?:DMI|[0-4][A-D]))", try_cnt=10):
     for port in root_ports:
         logging.info(f'Root port "{port}" matched"')
     return root_ports
+
+
+# Check whether DVD-ROM exists in boot manager
+def dvd_verify():
+    logging.info("** Verify DVD exists ")
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_BOOT)
+        assert SetUpLib.enter_menu(Key.DOWN, ['[UEFILegacy] Boot'], 23, 'HDD Device')   # , 'DVD-ROM Drive  -page'   ,
+        assert SetUpLib.verify_info(['DVD-ROM Device'], 4)
+        logging.info(" DVD-ROM device found.")
+        return True
+    except AssertionError:
+        logging.info("DVD-ROM device not found.")
