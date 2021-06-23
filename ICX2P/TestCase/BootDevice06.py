@@ -70,7 +70,7 @@ def enabled_disable_options(PXE_OPTION='IPv4 PXE'):
 
 
 # Force dvd boot when PXE set to 1st option in BMC
-def boot_to_dvd(ssh, DVD_OPTION="UEFI Hitachi-LG Data Storage Inc Portable Super Multi Drive"):
+def boot_to_dvd(ssh, dvd_option, msg_install_start):
     logging.info("Set PXE as first boot option from BMC.")
     cmds = ['ipmcset -d bootdevice -v 1\n', 'ipmcget -d bootdevice\n']
     rets = ['successfully', 'Force PXE']
@@ -78,7 +78,7 @@ def boot_to_dvd(ssh, DVD_OPTION="UEFI Hitachi-LG Data Storage Inc Portable Super
         assert SshLib.interaction(ssh, cmds, rets, timeout=15)
         logging.info("Boot from DVD Boot via boot manager.")
         assert SetUpLib.boot_to_bootmanager()
-        assert SetUpLib.enter_menu(Key.DOWN, [DVD_OPTION], 12, 'Loading')
+        assert SetUpLib.enter_menu(Key.DOWN, [dvd_option], 12, msg_install_start)
         return True
     except AssertionError:
         return False
@@ -211,7 +211,7 @@ def boot_order_004():
         result.log_skip()
         return
     try:
-        assert boot_to_dvd(SutInit.Sut.BMC_SSH)
+        assert boot_to_dvd(SutInit.Sut.BMC_SSH, "Virtual DVD-ROM VM", "Welcome to GRUB")
         result.log_pass()
         SshLib.interaction(SutInit.Sut.BMC_SSH, restored_cmds, restored_rets, timeout=15)
         return True
@@ -254,20 +254,20 @@ def boot_order_007():
         BmcLib.clear_cmos()
 
 
-# Testcase Num: Testcase_BootOrder_012
+# Testcase Num: Testcase_BootOrder_010
 # Precondition: 1、Legacy；2、单板安装四大类启动设备，硬盘、PXE、DVD光驱、软驱/U盘。
 # OnStart: NA
 # OnComplete: DVD
-def boot_order_012():
-    tc = ('159', '[TC159]12 【Legacy模式】启动顺序优先级_BMC设置和F12热键', '支持启动顺序设置')
+def boot_order_010():
+    tc = ('159', '[TC159]10 [Legacy模式] 启动顺序优先级_BMC设置和F11热键', '支持启动顺序设置')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     if not PlatMisc.dvd_verify():
         result.log_skip()
         return
     try:
-        assert boot_to_dvd(SutInit.Sut.BMC_SSH, DVD_OPTION="UEFI Hitachi-LG Data Storage Inc Portable Super Multi Drive")
+        assert boot_to_dvd(SutInit.Sut.BMC_SSH, r"Virtual DVD-ROM VM 1\.1\.0", "Initializing gfx code")
         result.log_pass()
-        SshLib.interaction(SutInit.Sut.BMC_SSH, restored_cmds, restored_rets, timeout=15)
+        SshLib.interaction(SutInit.Sut.BMC_SSH, restored_cmds, restored_rets, timeout=20)
         return True
     except AssertionError:
         result.log_fail(capture=True)

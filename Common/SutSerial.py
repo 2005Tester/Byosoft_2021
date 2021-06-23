@@ -323,7 +323,7 @@ class SutControl:
             self.send_keys(ENTER)
             time.sleep(2)
         if not self.is_msg_present_general(confirm_msg, timeout):
-            logging.info("{0} not captured, may not enter corect menu")
+            logging.info("{0} not captured, may not enter correct menu".format(confirm_msg))
             return
         logging.info("Enter menu: {0} successfully".format(option_path[-1]))
         return True
