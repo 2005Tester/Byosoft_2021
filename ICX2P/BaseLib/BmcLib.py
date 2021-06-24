@@ -1,10 +1,9 @@
 import os
 import logging
 import re
-import tarfile
 import time
 from Core.SutInit import Sut
-from Core import SshLib
+from Core import SshLib, MiscLib
 
 
 # update by arthur,
@@ -189,14 +188,7 @@ def bmc_dumpinfo(path, name="dump", uncom=False):
     if not uncom:
         return tar_file
     logging.info(f"Uncompress file: {tar_file}")
-    try:
-        uncom_path = os.path.join(path, name)
-        tar = tarfile.open(tar_file)
-        tar.extractall(path=uncom_path)
-        return uncom_path
-    except Exception:
-        logging.info("Exception: uncompress the dumpinfo fail")
-        return False
+    return MiscLib.uncompress_targz(tar_file, path)
 
 
 # 检查当前状态BMC web是否有告警

@@ -1,7 +1,6 @@
 import os
 import glob
 import logging
-import re
 from Core import SshLib, MiscLib, var
 from Core.SutInit import Sut
 from ICX2P.Config import SutConfig
@@ -176,13 +175,9 @@ def compare_fdm_log():
             assert Update.update_bios(bios_img), "update latest bios fail"
             assert SetUpLib.update_default_password(), "update_default_password fail"
             assert SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5), "move_boot_option_up fail"
-            dump_path = os.path.join(SutConfig.LOG_DIR, f"TC{tc[0]}/{test_flag}")
-            if not os.path.exists(dump_path):
-                os.makedirs(dump_path)
-            assert BmcLib.bmc_dumpinfo(path=dump_path, name="dump", uncom=True)
-            assert os.path.isfile(os.path.join(dump_path, rf"dump\dump_info\LogDump\fdm_log")), "fdmlog not found"
-            with open(os.path.join(dump_path, r"dump\dump_info\LogDump\fdm_log"), "r") as fdm_log:
-                return fdm_log.read()
+            _dump_path = os.path.join(SutConfig.LOG_DIR, f"TC{tc[0]}/{test_flag}")
+            _dump_dir = BmcLib.bmc_dumpinfo(path=_dump_path, name="dump", uncom=True)
+            return PlatMisc.read_bmc_dump_log(_dump_dir, "dump_info/LogDump/fdm_log")
         except Exception as err:
             logging.info(err)
             return 0
@@ -190,12 +185,8 @@ def compare_fdm_log():
     try:
         # dump latest release fdmlog
         dump_path = os.path.join(SutConfig.LOG_DIR, f"TC{tc[0]}/latest")
-        if not os.path.exists(dump_path):
-            os.makedirs(dump_path)
-        assert BmcLib.bmc_dumpinfo(path=dump_path, name="dump", uncom=True)
-        assert os.path.isfile(os.path.join(dump_path, rf"dump\dump_info\LogDump\fdm_log")), "fdmlog not found"
-        with open(os.path.join(dump_path, r"dump\dump_info\LogDump\fdm_log"), "r") as fdm_log:
-            latest = fdm_log.read()
+        dump_dir = BmcLib.bmc_dumpinfo(path=dump_path, name="dump", uncom=True)
+        latest = PlatMisc.read_bmc_dump_log(dump_dir, "dump_info/LogDump/fdm_log")
         # Flash last release img
         downgrade = read_fdm(old_img, "downgrade")
         assert downgrade != 0, "Exception: Read downgrade fdmlog"
@@ -313,28 +304,12 @@ def bios_downgrade_flash():
 def boot_to_uefi_os():
     tc = ('910', '[TC910] Boot to UEFI OS', 'Boot to UEFI OS and check dmesg info')
     result = ReportGen.LogHeaderResult(tc)
-    fail_cnt = 0
-    dmesg_ignore = ["XFS .*?: Metadata (?:I/O|CRC) error",
-                    "ERST.*? support is initialized",
-                    "regulatory.(?:0|db)"]
-
-    def dmesg_filter(dmesg_info):
-        nonlocal fail_cnt
-        for line in dmesg_info.splitlines():
-            if not any(re.search(ignore, line, re.I) for ignore in dmesg_ignore):
-                fail_cnt += 1
-                logging.info(f"** Dmesg error/fail info: {line}")
+    err_ignore = ["XFS .*?: Metadata (?:I/O|CRC) error", "ERST.*? support is initialized", "regulatory.(?:0|db)"]
     try:
         assert SetUpLib.boot_to_bootmanager()
         assert SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_OS, 20, Msg.BIOS_BOOT_COMPLETE)
         assert MiscLib.ping_sut(SutConfig.OS_IP, 300)
-        dmesg_error = SshLib.execute_command(Sut.OS_SSH, "dmesg |grep -i error")
-        dmesg_fail = SshLib.execute_command(Sut.OS_SSH, "dmesg |grep -i fail")
-        if dmesg_error:
-            dmesg_filter(dmesg_error)
-        if dmesg_fail:
-            dmesg_filter(dmesg_fail)
-        assert not fail_cnt, "[Assert] Dmesg info contains error/fail message"
+        assert not PlatMisc.get_dmesg_keywords(["error", "fail"], err_ignore)
         result.log_pass()
     except Exception as e:
         logging.error(e)

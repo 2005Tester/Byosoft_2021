@@ -2,6 +2,8 @@ import logging
 import subprocess
 import time
 import re
+import os
+import tarfile
 
 # function library to hold platform indepedent operations, to simplify test case developemnt.
 
@@ -37,3 +39,16 @@ def verify_msgs_in_log(msg_list, captured_log):
             logging.info("Not verified: {0}".format(msg))
             result = False
     return result
+
+
+def uncompress_targz(targz_file, uncom_path):
+    file_name = targz_file[:targz_file.find(".")]
+    try:
+        uncom_path = os.path.join(uncom_path, file_name)
+        tar = tarfile.open(targz_file)
+        tar.extractall(path=uncom_path)
+        return uncom_path
+    except Exception as e:
+        logging.error(e)
+        logging.info("Exception: uncompress the tar.gz fail")
+        return False

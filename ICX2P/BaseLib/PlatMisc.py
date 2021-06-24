@@ -191,3 +191,22 @@ def read_bmc_dump_log(package_path, sub_path):
         return
     with open(log_path) as log:
         return log.read()
+
+
+# 检查dmesg信息种是否存在某个关键字，返回相应行组成的列表
+# 比如检查 error, fail, 则 keywords = ["error", "fail]
+def get_dmesg_keywords(keywords: list, ignore_list=None):
+    ignore_list = [] if not ignore_list else list(ignore_list)
+    err_lines = []
+    for words in keywords:
+        logging.info(f'Check is there any "{words}" in dmesg')
+        dmesg_err = SshLib.execute_command(Sut.OS_SSH, f"dmesg |grep -i {words})")
+        if not dmesg_err:
+            logging.info(f'Check dmesg of "{words}" pass')
+            continue
+        for line in dmesg_err.splitlines():
+            if any(re.search(ignore, line, re.I) for ignore in ignore_list):
+                continue
+            err_lines.append(err_lines)
+            logging.info(f"Unexpected dmesg info: {line}")
+    return err_lines
