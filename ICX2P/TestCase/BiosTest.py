@@ -11,7 +11,7 @@ import re
 import time
 import os
 import csv
-from Core import SerialLib, MiscLib
+from Core import SerialLib, MiscLib, SshLib
 from Core.SutInit import Sut
 from ICX2P.Config.SutConfig import SysCfg
 from ICX2P.Config.PlatConfig import Msg, Key
@@ -42,54 +42,68 @@ def post_test():  # POST: POST Log(TBD) and Information Check
 
 
 # PM: Warm reset n times, Cold reset n times and AC (TBD)
-def power_cycling(n=5):
-    tc = ('003', '[TC003]Power Control Test', 'Power Control Test')
+def warm_reboot(count=5):
+    tc = ('003', f'[TC003]Warm reset {count} times', f'Warm reset {count} times test')
     result = ReportGen.LogHeaderResult(tc)
-    res_lst = []
-    if not SetUpLib.boot_to_bios_config():
-        result.log_fail()
-        return
-    logging.info("Warm reset loops: {0}".format(n))
-    for i in range(n):
-        try:
+    reboot_fail = 0
+    try:
+        assert BmcLib.enable_fdmlog_dump()
+        tc_dir = os.path.join(SutConfig.LOG_DIR, f"TC{tc[0]}")  # check fdmlog
+        dump_dir_b = BmcLib.bmc_dumpinfo(tc_dir, "dump_before", uncom=True)
+        fdmlog_b = PlatMisc.read_bmc_dump_log(dump_dir_b, "dump_info/LogDump/fdm_log")
+        bmc_event_b = BmcLib.bmc_warning_check().message  # check bmc warning
+        assert SetUpLib.boot_to_bios_config()
+        logging.info("Warm reset loops: {0}".format(count))
+        for i in range(count):  # warm reboot
             logging.info("Warm reset cycle: {0}".format(i + 1))
             SetUpLib.send_key(Key.CTRL_ALT_DELETE)
             logging.debug("Ctrl + Alt + Del key sent")
-            if not SetUpLib.boot_to_bios_config():
-                logging.info("Warm reset Test:Fail")
-                flag_reset = 1
-                res_lst.append(flag_reset)
-                continue
-        except Exception as e:
-            logging.error(e)
-            result.log_fail()
-            return
-    # DC cycle n times
-    logging.info("Cold reset loops: {0}".format(n))
-    for j in range(n):
-        try:
+            if not SetUpLib.continue_to_setup():
+                reboot_fail += 1
+        dump_dir_a = BmcLib.bmc_dumpinfo(tc_dir, "dump_after", uncom=True)  # check fdmlog
+        fdmlog_a = PlatMisc.read_bmc_dump_log(dump_dir_a, "dump_info/LogDump/fdm_log")
+        bmc_event_a = BmcLib.bmc_warning_check().message  # check bmc warning
+        assert fdmlog_b == fdmlog_a, f"New fdmlog recorded after {count} times warm reset"
+        assert bmc_event_b == bmc_event_a, f"New bmc enevts detected after {count} times warm reset"
+        assert not reboot_fail, f"Warm reset fail times: {reboot_fail}"
+        result.log_pass()
+    except Exception as e:
+        logging.error(e)
+        result.log_fail()
+
+
+# DC cycle n times
+def cold_reboot(count=5):
+    tc = ('004', f'[TC004]Cold reset {count} times', f'Cold reset {count} times test')
+    result = ReportGen.LogHeaderResult(tc)
+    reboot_fail = 0
+    try:
+        assert BmcLib.enable_fdmlog_dump()
+        tc_dir = os.path.join(SutConfig.LOG_DIR, f"TC{tc[0]}")  # check fdmlog
+        dump_dir_b = BmcLib.bmc_dumpinfo(tc_dir, "dump_before", uncom=True)
+        fdmlog_b = PlatMisc.read_bmc_dump_log(dump_dir_b, "dump_info/LogDump/fdm_log")
+        bmc_event_b = BmcLib.bmc_warning_check().message  # check bmc warning
+        assert SetUpLib.boot_to_bios_config()
+        logging.info("Cold reset loops: {0}".format(count))
+        for j in range(count):  # cold reboot
             logging.info("DC reset cycle: {0}".format(j + 1))
             if not PlatMisc.dcCycle():
-                logging.info("DC cycle Test:Fail")
-                flag_dc = 2
-                res_lst.append(flag_dc)
-                result.log_fail()
-                return
-        except Exception as e:
-            logging.error(e)
-            result.log_fail()
-            return
-    logging.debug(res_lst)
-    if len(res_lst) != 0:
+                reboot_fail += 1
+        dump_dir_a = BmcLib.bmc_dumpinfo(tc_dir, "dump_after", uncom=True)  # check fdmlog
+        fdmlog_a = PlatMisc.read_bmc_dump_log(dump_dir_a, "dump_info/LogDump/fdm_log")
+        bmc_event_a = BmcLib.bmc_warning_check().message  # check bmc warning
+        assert fdmlog_b == fdmlog_a, f"New fdmlog recorded after {count} times cold reset"
+        assert bmc_event_b == bmc_event_a, f"New bmc enevts detected after {count} times cold reset"
+        assert not reboot_fail, f"Cold reset fail times: {reboot_fail}"
+        result.log_pass()
+    except Exception as e:
+        logging.error(e)
         result.log_fail()
-        return
-    result.log_pass()
-    return True
 
 
 # PXE Test
 def pxe_test(n=1):
-    tc = ('004', '[TC004] PXE Hotkey Test', 'PXE HotKey Test')
+    tc = ('005', '[TC005] PXE Hotkey Test', 'PXE HotKey Test')
     result = ReportGen.LogHeaderResult(tc)
     for i in range(n):
         if not SetUpLib.boot_with_hotkey(Key.F12, 'NBP file downloaded successfully', 180):
@@ -406,6 +420,7 @@ def power_efficiency_mode_loop():
     failed_items = {}
     healthy_state = {}
     try:
+        origin_event = BmcLib.bmc_warning_check().message  # get bmc health state before test
         for col_index, to_mode in enumerate(data[0][1:]):
             # Set power efficiency mode
             result_index = data[0].index(to_mode)+1
@@ -416,7 +431,7 @@ def power_efficiency_mode_loop():
             assert SetUpLib.set_option_value(option, to_mode, Key.DOWN, 10, save=True)
             assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
             # Check each mode BMC warning info
-            healthy_state[to_mode] = BmcLib.bmc_warning_check()
+            healthy_state[to_mode] = BmcLib.bmc_warning_check().message
             # Check each Attribute's value
             name_list = [row_data[0] for row_data in data[1:]]
             read_res = Sut.UNITOOL.read(*name_list)
@@ -443,19 +458,17 @@ def power_efficiency_mode_loop():
             report_writer = csv.writer(report)
             report_writer.writerows(data)
         # show test result in test log
-        warning_mode = [mode for mode in healthy_state if not healthy_state.get(mode)]
+        warning_fail_modes = [mode for mode in healthy_state if healthy_state.get(mode) != origin_event]
         test_result = False if failed_items else True
         logging.info(f"Test result: {test_result}")
         for mode, attr_kv in failed_items.items():
             for att_k, att_v in attr_kv.items():
                 logging.info(f"{mode}={att_k}, Read Value={att_v} failed")
-        for warn_mode in warning_mode:
+        for warn_mode in warning_fail_modes:
             logging.info(f'[Warning] Power efficiency = {warn_mode}: BMC warning detected')
         # Result summary
-        if (not failed_items) and (not warning_mode):
-            result.log_pass()
-            return True
-        result.log_fail()
+        assert (not failed_items) and (not warning_fail_modes)
+        result.log_pass()
     except Exception as e:
         logging.info(e)
         result.log_fail()

@@ -2,7 +2,8 @@ Name,Group,Release,Daily,Weekly
 Release.bios_parallel_flash(),,Yes,,
 BiosTest.post_test(),,Yes,Yes,Yes
 Release.boot_to_uefi_os(),,Yes,,
-BiosTest.power_cycling(),,Yes,Yes,Yes
+BiosTest.warm_reboot(),,Yes,Yes,Yes
+BiosTest.cold_reboot(),,Yes,Yes,Yes
 Release.check_bmc_warning(),,Yes,Yes,Yes
 Release.me_version_status(),,Yes,Yes,Yes
 BiosTest.pxe_test(),,Yes,Yes,Yes

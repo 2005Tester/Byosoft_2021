@@ -231,7 +231,7 @@ def compare_fdm_log():
 def check_bmc_warning():
     tc = ('907', '[TC907] iBMC warning info in web', "Check no any warning info")
     result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
-    check_result = BmcLib.bmc_warning_check()
+    check_result = BmcLib.bmc_warning_check().status
     if check_result is None:
         result.log_skip()
         return
@@ -323,7 +323,7 @@ def boot_to_uefi_os():
         for line in dmesg_info.splitlines():
             if not any(re.search(ignore, line, re.I) for ignore in dmesg_ignore):
                 fail_cnt += 1
-                logging.info(f"** Dmesg wrong info: {line}")
+                logging.info(f"** Dmesg error/fail info: {line}")
     try:
         assert SetUpLib.boot_to_bootmanager()
         assert SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_OS, 20, Msg.BIOS_BOOT_COMPLETE)
@@ -334,7 +334,7 @@ def boot_to_uefi_os():
             dmesg_filter(dmesg_error)
         if dmesg_fail:
             dmesg_filter(dmesg_fail)
-        assert not fail_cnt, "[Assert] Dmesg info contains wrong message"
+        assert not fail_cnt, "[Assert] Dmesg info contains error/fail message"
         result.log_pass()
     except Exception as e:
         logging.error(e)

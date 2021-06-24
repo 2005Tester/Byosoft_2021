@@ -201,18 +201,24 @@ def bmc_dumpinfo(path, name="dump", uncom=False):
 
 # 检查当前状态BMC web是否有告警
 def bmc_warning_check():
+    class Result:
+        status = None  #
+        message = None
     cmd = "ipmcget -d healthevents"
     res = SshLib.execute_command(Sut.BMC_SSH, cmd)
     if not res:
         logging.error(f'Run cmd "{cmd}" error')
         return
-    if "System in health state" not in res:
+    if "System in health state" in res:
+        logging.info("[BMC Warning Check] Current system in health state")
+        Result.status = True
+    else:
         logging.info("[BMC Warning Check] Alarms/Events detected")
+        Result.status = False
         for line in res.split("\r\n"):
             logging.info(line)
-        return False
-    logging.info("[BMC Warning Check] Current system in health state")
-    return True
+    Result.message = res
+    return Result
 
 
 # 从BMC读取当前固件版本信息, 返回版本信息为字符串格式
@@ -233,3 +239,10 @@ def firmware_version_check():
     cpld_ver = "".join(re.findall("\nCPLD\s+Version:\s+.*?\)([.\d]+)", info))
     BmcInfo.CPLD = cpld_ver
     return BmcInfo
+
+
+# Enable fdmlog
+def enable_fdmlog_dump():
+    dump_cmd = ["maint_debug_cli\n", "attach diag\n", "dump_state 1\n"]
+    dump_rtn = ["Shell", "Success", "Success"]
+    return SshLib.interaction(Sut.BMC_SSH, dump_cmd, dump_rtn, 10)
