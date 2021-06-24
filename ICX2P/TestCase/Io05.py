@@ -25,7 +25,7 @@ def check_info():
     capture_end = "Press F6 go to SP boot"
     try:
         assert BmcLib.force_reset()
-        log_cut = SerialLib.cut_log(Sut.BIOS_COM, capture_start, capture_end, 60, 120)
+        log_cut = SerialLib.cut_log(Sut.BIOS_COM, capture_start, capture_end, 120, 150)
         assert MiscLib.verify_msgs_in_log(check_list, log_cut)
         return True
     except AssertionError:
