@@ -337,7 +337,6 @@ def serial_print_keywords():
     pcie_lnk = r"PCIE LINK STATUS:"
 
     def check_process(timeout):
-        assert BmcLib.force_reset()
         # CPU Resource Allocation
         cpu_log = SerialLib.cut_log(Sut.BIOS_COM, "CPU Resource Allocation", "START_SOCKET_0_DIMMINFO_TABLE", 100, timeout)
         key_string1 = re.search(cpu_resource, cpu_log)
@@ -358,9 +357,12 @@ def serial_print_keywords():
     try:
         # Open serial debug message
         assert BmcLib.debug_message(True)
+        assert BmcLib.force_reset()
         assert check_process(timeout=600)
         # Close serial debug message
         assert BmcLib.debug_message(False)
+        assert SetUpLib.boot_to_bios_config()
+        SetUpLib.send_keys(Key.CTRL_ALT_DELETE)
         assert check_process(timeout=200)
         result.log_pass()
     except AssertionError as e:

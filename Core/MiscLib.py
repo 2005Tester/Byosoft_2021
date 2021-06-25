@@ -41,14 +41,17 @@ def verify_msgs_in_log(msg_list, captured_log):
     return result
 
 
+# Extract files from ".tar.gz" package
 def uncompress_targz(targz_file, uncom_path):
-    file_name = targz_file[:targz_file.find(".")]
     try:
+        assert targz_file.endswith(".tar.gz"), f"Unsupported file ext: {targz_file}"
+        name_ext = os.path.split(targz_file)[1]
+        file_name = name_ext[:name_ext.find(".tar.gz")]
         uncom_path = os.path.join(uncom_path, file_name)
         tar = tarfile.open(targz_file)
         tar.extractall(path=uncom_path)
         return uncom_path
     except Exception as e:
         logging.error(e)
-        logging.info("Exception: uncompress the tar.gz fail")
+        logging.info(f"Exception: uncompress package {targz_file} fail")
         return False
