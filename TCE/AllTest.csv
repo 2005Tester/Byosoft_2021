@@ -1,0 +1,13 @@
+Name,Group,Release,Daily,Weekly
+BiosTest.post_test(),,Yes,Yes,Yes
+Release.boot_to_uefi_os(),,Yes,,
+BiosTest.warm_reboot(),,Yes,Yes,Yes
+BiosTest.cold_reboot(),,Yes,Yes,Yes
+BiosTest.pxe_test(),,Yes,Yes,Yes
+BiosTest.security_boot(),,Yes,Yes,Yes
+BiosTest.usb_test(),,,Yes,Yes
+BiosTest.press_f2(),,,Yes,Yes
+BiosTest.dram_rapl_option_check(),,,Yes,Yes
+BiosTest.vtd(),,,Yes,Yes
+BiosTest.cnd_default_enable(),,,Yes,Yes
+Os.boot_to_suse_mfg(),equip,Yes,Yes,Yes
