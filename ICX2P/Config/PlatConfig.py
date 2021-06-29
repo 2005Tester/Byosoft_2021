@@ -90,6 +90,7 @@ class Msg:
     NUMA = "NUMA"
     ASPM_ROOT_PORT = "PCIe ASPM Support"
     EXTENDED_APIC = "Extended APIC"
+    SYS_EVENT_LOG = "System Event Log"
 
     # menus of PCH configuration
     PCH_CONFIG = 'PCH Configuration'
@@ -147,6 +148,9 @@ class Msg:
 
     # Release Branch Name
     RELEASE_BRANCH = "2288V6_{}"
+
+    # show logo flag
+    LOGO_SHOW = "BootType :"
 
 
 # BIOS configuration to be set by unitool

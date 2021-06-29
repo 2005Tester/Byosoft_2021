@@ -238,3 +238,16 @@ def enable_fdmlog_dump():
     dump_cmd = ["maint_debug_cli\n", "attach diag\n", "dump_state 1\n"]
     dump_rtn = ["Shell", "Success", "Success"]
     return SshLib.interaction(Sut.BMC_SSH, dump_cmd, dump_rtn, 10)
+
+
+# 抓取当前KVM屏幕图像，并保存到本地
+def capture_kvm_screen(path, name):
+    save_screen = SshLib.execute_command(Sut.BMC_SSH, "ipmcset -d printscreen")
+    if "successfully" not in save_screen:
+        logging.info("BMC dump screen failed")
+        return
+    save_path = "".join(re.findall("Download print screen image to (.+) successfully.", save_screen))
+    img_file = os.path.join(path, f"{name}.jpeg")
+    if SshLib.sftp_download_file(Sut.BMC_SFTP, save_path, img_file):
+        logging.info(f"Dump current kvm screen success, save image {img_file}")
+        return img_file

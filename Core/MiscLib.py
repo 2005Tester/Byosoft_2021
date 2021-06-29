@@ -4,6 +4,7 @@ import time
 import re
 import os
 import tarfile
+from PIL import Image, ImageChops
 
 # function library to hold platform indepedent operations, to simplify test case developemnt.
 
@@ -55,3 +56,22 @@ def uncompress_targz(targz_file, uncom_path):
         logging.error(e)
         logging.info(f"Exception: uncompress package {targz_file} fail")
         return False
+
+
+# compare whether two images are the same
+# "image_diff" save the difference as a picture if not same
+# return True if they are same
+def compare_images(image1, image2, image_diff=""):
+    image_one = Image.open(image1)
+    image_two = Image.open(image2)
+    try:
+        diff = ImageChops.difference(image_one, image_two)
+        if diff.getbbox() is None:
+            logging.info("Compare two images are the same")
+            return True
+        if image_diff:
+            logging.info("Compare two images are different")
+            diff.save(image_diff)
+            return False
+    except Exception as e:
+        print(f"Compare image error：\n{e}")

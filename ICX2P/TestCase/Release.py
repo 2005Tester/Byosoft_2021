@@ -276,6 +276,11 @@ def registry_check():
             SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5)
 
 
+# Author: WangQingshan
+# Release BIOS降级测试
+# Precondition: BMC正常登录
+# OnStart: NA
+# OnComplete: NA
 def bios_downgrade_flash():
     tc = ('909', '[TC909] Downgrade flash', "Check BIOS version under setup and iBMC Web")
     result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
@@ -301,6 +306,11 @@ def bios_downgrade_flash():
             SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5)
 
 
+# Author: WangQingshan
+# 启动到UEFI系统并检查dmesg信息
+# Precondition: BMC正常登录
+# OnStart: NA
+# OnComplete: NA
 def boot_to_uefi_os():
     tc = ('910', '[TC910] Boot to UEFI OS', 'Boot to UEFI OS and check dmesg info')
     result = ReportGen.LogHeaderResult(tc)
@@ -314,3 +324,70 @@ def boot_to_uefi_os():
     except Exception as e:
         logging.error(e)
         result.log_fail()
+
+
+# Author: WangQingshan
+# 装备模式BIOS IIO菜单需要显示IOU信息 测试
+# Precondition: BMC正常登录
+# OnStart: NA
+# OnComplete: NA
+def equip_iou_not_hidden():
+    tc = ('911', '[TC911] BIOS bin with equipment mode, IOU not hidden', 'BIOS bin with equipment mode, IOU not hidden')
+    result = ReportGen.LogHeaderResult(tc)
+    iou_info = "IOU\d \(IIO PCIe Port \d\)\s+x(?:16|8|4)"
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_IIO_CONFIG, 10, "CPU 1 Configuration")
+        for cpu in range(SutConfig.SysCfg.CPU_CNT):
+            assert SetUpLib.enter_menu(Key.DOWN, [f"CPU {cpu+1} Configuration"], 10, iou_info)
+            SetUpLib.send_keys(Key.ESC)
+        result.log_pass()
+    except AssertionError:
+        result.log_fail()
+
+
+# Author: WangQingshan
+# 装备模式BIOS，用装备工具设置选项/密码/Logo并恢复默认测试
+# Precondition: BMC正常登录
+# OnStart: NA
+# OnComplete: NA
+def equip_tool_set_and_restore():
+    tc = ('912', '[TC912] Restore BIOS default setting via equipment tool', 'Restore BIOS default setting via equipment tool')
+    result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
+    try:
+        # 抓取默认logo和bios设置
+        origin_logo = PlatMisc.save_logo(SutConfig.LOG_DIR, "origin_logo")
+        assert origin_logo
+        assert MiscLib.ping_sut(SutConfig.OS_IP, 300)
+        default_config = Sut.UNITOOL.read(*BiosCfg.HPM_KEEP)
+        # # 修改为非默认
+        assert Sut.UNITOOL.write(**BiosCfg.HPM_KEEP)
+        assert PlatMisc.unipwd_tool("set", "admin@9001")
+        assert PlatMisc.unilogo_update(name="CustomLogo.bmp")
+        # 重启并检查修改结果
+        modify_logo = PlatMisc.save_logo(SutConfig.LOG_DIR, "modify_logo")
+        assert modify_logo
+        assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
+        assert Sut.UNITOOL.check(**BiosCfg.HPM_KEEP)
+        assert PlatMisc.unipwd_tool("check", "admin@9001")
+        # 恢复默认
+        assert "Load Default success" in SshLib.execute_command(Sut.OS_SSH, f"cd {SutConfig.UNI_PATH};./unitool -c")
+        logging.info("Unitool load default scuuess")
+        assert PlatMisc.unipwd_tool("set", SutConfig.BIOS_PW_DEFAULT)
+        assert PlatMisc.unilogo_update(name=os.path.split(origin_logo)[1], path=os.path.split(origin_logo)[0])
+        # 重启并检查恢复默认结果
+        restore_logo = PlatMisc.save_logo(SutConfig.LOG_DIR, "restore_logo")
+        assert restore_logo
+        assert MiscLib.compare_images(origin_logo, restore_logo)
+        assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
+        assert Sut.UNITOOL.check(**default_config)
+        assert PlatMisc.unipwd_tool("check", SutConfig.BIOS_PW_DEFAULT)
+        result.log_pass()
+    except AssertionError:
+        result.log_fail()
+    finally:
+        if not MiscLib.ping_sut(SutConfig.OS_IP, 600):
+            BmcLib.force_reset()
+            MiscLib.ping_sut(SutConfig.OS_IP, 600)
+        PlatMisc.unipwd_tool("set", SutConfig.BIOS_PASSWORD)
+        BmcLib.clear_cmos()

@@ -12,6 +12,7 @@ import re
 import datetime
 import logging
 import time
+from PIL import Image
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Msg, Key
 from ICX2P.BaseLib import BmcLib, SetUpLib
@@ -210,3 +211,64 @@ def get_dmesg_keywords(keywords: list, ignore_list=None):
             err_lines.append(err_lines)
             logging.info(f"Unexpected dmesg info: {line}")
     return err_lines
+
+
+# cmd support: set / clear / check / sets / checks
+# cmd support align with unipwd helping message
+def unipwd_tool(cmd="set", password=""):
+    cmd_support = ["set", "clear", "check", "sets", "checks"]
+    password = "" if cmd == "clear" else password
+    cd_path = f"cd {SutConfig.UNI_PATH}"
+    ins_mod = f"insmod ufudev.ko"
+    pwd_exec = f"./unipwd -{cmd} {password}"
+    rtn_pass = f"{cmd} password success"
+    try:
+        assert cmd in cmd_support, f"{cmd} not in support list {cmd_support}"
+        rtn = SshLib.execute_command(Sut.OS_SSH, f"{cd_path};{ins_mod};{pwd_exec}")
+        assert rtn_pass in rtn.lower(), f"Unipwd {cmd} password failed"
+        logging.info(f"Unipwd {cmd} password success")
+        return True
+    except Exception as e:
+        logging.error(e)
+
+
+# update logo with unilogo tool in linux
+# 若path参数为空，则默认刷\Tools\Logo里的logo文件
+def unilogo_update(name, path=""):
+    cd_path = f"cd {SutConfig.UNI_PATH}"
+    ins_mod = f"insmod ufudev.ko"
+    logo_flash = f"./unilogo -logo ./{name}"
+    rtn_pass = f"Update Logo.+success"
+    try:
+        if not path:
+            logging.info(f"Update the logo in ..Tools/Logo/{name}")
+            path = os.path.join(os.path.dirname(__file__), r"..\Tools\Logo")
+            assert name in os.listdir(path), f"Logo name {name} not exist in directory: Tools/Logo"  # 检查name文件是否存在
+        assert SshLib.sftp_upload_file(Sut.OS_SFTP, f"{path}/{name}", f"{SutConfig.UNI_PATH}/{name}", ret_msg="")
+        rtn = SshLib.execute_command(Sut.OS_SSH, f"{cd_path};{ins_mod};{logo_flash}")
+        assert rtn, f"execute_command for flash logo error: {rtn}"
+        assert re.search(rtn_pass, rtn.lower(), re.I), f"Unilogo update logo failed:\n{rtn}"
+        logging.info(f"Unilogo update logo success")
+        return True
+    except Exception as e:
+        logging.error(e)
+
+
+# 保存logo图片, 默认格式为bmp
+def save_logo(path=SutConfig.LOG_DIR, name="logo", logo_loc=(88, 160, 248, 320)):
+    now = time.strftime("%Y%m%d_%H%M%S", time.localtime())
+    try:
+        assert BmcLib.force_reset()
+        SerialLib.clean_buffer(Sut.BIOS_COM)
+        assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.LOGO_SHOW, 120)
+        img_file = BmcLib.capture_kvm_screen(SutConfig.LOG_DIR, f"Screen_{now}")
+        img_open = Image.open(img_file)  # 打开图片
+        cut_logo = img_open.crop(logo_loc)  # logo裁剪
+        cut_logo = cut_logo.convert("P", palette=Image.ADAPTIVE, colors=256)
+        save_img = os.path.join(path, f"{name}.bmp")
+        cut_logo.save(save_img, format="bmp", bits=8, quality=95)  # 保存裁剪部分
+        assert os.path.isfile(save_img)
+        logging.info(f"Save logo success: {save_img}")
+        return save_img
+    except Exception as e:
+        logging.error(e)

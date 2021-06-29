@@ -82,6 +82,8 @@ BootDevice06.boot_order_004(),,,Yes,Yes
 Smbios09.smbios_test_all(),os,Yes,Yes,Yes
 Release.equip_mode_flag_check(),os,Yes,Yes,Yes
 Release.equip_mode_version_check(),equip,Yes,Yes,Yes
+Release.equip_iou_not_hidden(),equip,Yes,Yes,Yes
+Release.equip_tool_set_and_restore(),equip,Yes,Yes,Yes
 Os.boot_to_suse_mfg(),equip,Yes,Yes,Yes
 Smbios09.smbios_type128(),equip,Yes,Yes,Yes
 MemInit02.rmt_equip_test(),equip,,Yes,Yes
