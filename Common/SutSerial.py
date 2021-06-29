@@ -233,6 +233,7 @@ class SutControl:
     def boot_with_hotkey(self, key, msg, timeout, hotkey_prompt="Press Del go to Setup Utility", pw_prompt="Press F2", password="Admin@9009"):
         start_time = time.time()
         logging.debug("boot_with_hotkey: Receiving data from SUT...")
+        self.session.flushInput()
         while True:
             try:
                 if self.session.in_waiting:
