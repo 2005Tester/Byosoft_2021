@@ -1,6 +1,7 @@
 Name,Group,Release,Daily,Weekly
 Release.bios_parallel_flash(),,Yes,,
 BiosTest.post_test(),,Yes,Yes,Yes
+Release.post_logo_check(),,Yes,Yes,Yes
 Release.boot_to_uefi_os(),,Yes,,
 BiosTest.warm_reboot(),,Yes,Yes,Yes
 BiosTest.cold_reboot(),,Yes,Yes,Yes

@@ -391,3 +391,21 @@ def equip_tool_set_and_restore():
             MiscLib.ping_sut(SutConfig.OS_IP, 600)
         PlatMisc.unipwd_tool("set", SutConfig.BIOS_PASSWORD)
         BmcLib.clear_cmos()
+
+
+# Author: WangQingshan
+# 检查启动logo
+# Precondition: BMC正常登录
+# OnStart: NA
+# OnComplete: NA
+def post_logo_check():
+    tc = ('913', '[TC913] POST Logo', 'Check POST Logo.')
+    result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
+    try:
+        default_logo = os.path.abspath(os.path.join(os.path.dirname(__file__), r"..\Tools\Logo\DefaultLogo.bmp"))
+        logging.info(f"Default logo: {default_logo}")
+        post_logo = PlatMisc.save_logo(name="post_logo")
+        assert MiscLib.compare_images(default_logo, post_logo)
+        result.log_pass()
+    except AssertionError:
+        result.log_fail()
