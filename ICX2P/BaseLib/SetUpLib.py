@@ -244,8 +244,17 @@ def boot_to_bootmanager():
 
 # Switch to legacy mode
 def enable_legacy_boot():
+    logging.info("Check current boot mode.")
+    if not boot_to_setup():
+        return
+    send_key(Key.DOWN)
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, "Boot From File", delay=10):
+        logging.info("Already in legacy boot mode.")
+        return True
     logging.info("Switch to legacy boot mode")
-    if not boot_to_page(Msg.PAGE_BOOT):
+    send_keys([Key.RIGHT, Key.RIGHT, Key.ENTER])
+    if not Sut.BIOS_COM.locate_setup_option(Key.RIGHT, [Msg.PAGE_BOOT], 12):
+        logging.info("Boot configuration page not found.")
         return
     if not locate_option(Key.DOWN, ["Boot Type", "<UEFIBoot>"], 25):
         return
@@ -265,8 +274,19 @@ def enable_legacy_boot():
 
 # Switch to uefi boot mode
 def disable_legacy_boot():
-    logging.info("Switch to uefi boot mode")
-    if not boot_to_page(Msg.PAGE_BOOT):
+    logging.info("Check current boot mode.")
+    if not boot_to_setup():
+        return
+    send_key(Key.DOWN)
+    if SerialLib.is_msg_present(Sut.BIOS_COM, "Boot From File", delay=10):
+        logging.info("UEFI boot mode detected.")
+        return True
+    else:
+        logging.info("Legacy boot mode detected")
+        send_key(Key.RIGHT)
+    send_key(Key.ENTER)
+    if not Sut.BIOS_COM.locate_setup_option(Key.RIGHT, [Msg.PAGE_BOOT], 12):
+        logging.info("Boot configuration page not found.")
         return
     if not locate_option(Key.DOWN, ["Boot Type", "<LegacyBoot>"], 25):
         return

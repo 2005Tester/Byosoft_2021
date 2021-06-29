@@ -1,3 +1,4 @@
+from ICX2P.BaseLib import SetUpLib
 from Core import SutInit
 from Core import var
 from Core.TcExecutor import TestScope
@@ -50,4 +51,7 @@ def check_csv():
 
 def debug_scope():
     from ICX2P.TestCase import Io05
+    UpdateBIOS.update_bios('master')
+    Legacy.enable_legacy_boot()
+    Legacy.disable_legacy_boot()
     Io05.system_info_003()

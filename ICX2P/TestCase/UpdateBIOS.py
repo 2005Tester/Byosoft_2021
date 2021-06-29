@@ -14,6 +14,7 @@ def update_bios(branch):
     if not SetUpLib.update_default_password():
         result.log_fail(capture=True)
         return
+    SetUpLib.disable_legacy_boot()
     if not SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5):
         result.log_fail(capture=True)
         return
@@ -31,6 +32,7 @@ def update_bios_mfg(branch):
     if not SetUpLib.update_default_password():
         result.log_fail(capture=True)
         return
+    SetUpLib.disable_legacy_boot()
     if not SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5):
         result.log_fail(capture=True)
         return
