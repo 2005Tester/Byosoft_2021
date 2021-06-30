@@ -173,17 +173,16 @@ def dvd_verify():
 
 
 # 标记Release测试状态，避免重复测试
-class ReleaseTestStatus:
+class ReleaseTest:
+    new_bios = None
+    old_bios = None
     downgrade_tested = None
     registry_old = None
     registry_new = None
-    boot_to_setup = None
     hot_key_uefi = None
     hot_key_legacy = None
     pxe_boot_uefi = None
     pxe_boot_legacy = None
-    warm_boot_fdmlog = None
-    cold_boot_fdmlog = None
 
 
 def read_bmc_dump_log(package_path, sub_path):

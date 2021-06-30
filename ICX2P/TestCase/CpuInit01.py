@@ -60,7 +60,7 @@ def cpu_cores_active_enable(num, set_n):
         logging.info("**reboot**")
         assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
         # assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
-        SetUpLib.send_keys(Key.ENTER)
+        SetUpLib.send_keys([Key.ENTER])
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.MEMORY_TOP], 20, 'DIMM000')
         logging.info("**Verify Memory Information**")
         assert SetUpLib.verify_info(SutConfig.DIMM_info, 20)

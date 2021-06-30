@@ -17,7 +17,7 @@ from ICX2P.Config.SutConfig import SysCfg
 from ICX2P.Config.PlatConfig import Msg, Key
 from ICX2P.Config import SutConfig
 from ICX2P.BaseLib import BmcLib, PlatMisc, SetUpLib
-from ICX2P.BaseLib.PlatMisc import ReleaseTestStatus
+from ICX2P.BaseLib.PlatMisc import ReleaseTest
 from Report import ReportGen
 from Common.LogAnalyzer import LogAnalyzer
 
@@ -110,7 +110,7 @@ def pxe_test(n=1):
             result.log_fail()
             return
     result.log_pass()
-    ReleaseTestStatus.pxe_boot_uefi = True
+    ReleaseTest.pxe_boot_uefi = True
     return True
 
 
@@ -416,9 +416,6 @@ def power_efficiency_mode_loop():
     with open(baseline, "r", encoding="utf-8-sig") as file:
         data = list(csv.reader(file))
     option = "Performance Profile"
-    # list order must follow the bios menu sequence
-    value_list = ["Custom", "Efficiency", "Performance", "Load Balance", "High RAS", "HPC", "General Computing",
-                  "Low Latency", "Server Side Java", "Memory Throughput", "I/O Throughput", "Energy Saving", "NFV"]
     failed_items = {}
     healthy_state = {}
     try:
@@ -429,7 +426,7 @@ def power_efficiency_mode_loop():
             data[0].insert(result_index, f"{to_mode}_check")
             assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
             assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_ADV_PM_CFG, 15, "Performance Profile")
-            SetUpLib.send_keys(Key.UP)
+            SetUpLib.send_keys([Key.UP])
             assert SetUpLib.set_option_value(option, to_mode, Key.DOWN, 10, save=True)
             assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
             # Check each mode BMC warning info

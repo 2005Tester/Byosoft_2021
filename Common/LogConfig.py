@@ -43,6 +43,7 @@ def gen_config(log_dir):
                         'handlers': ['console','file'],
                         },
             'requests.packages.urllib3.connectionpool': {'level': 'ERROR'},
+            'redfish': {'level': 'ERROR'}
 
         },
         'root': {

@@ -383,8 +383,8 @@ def aspm_global_disable_l1only():
                     assert not SetUpLib.locate_option(Key.UP, [Msg.ASPM_ROOT_PORT, "<.+>"],
                                                       10), f'"{Msg.ASPM_ROOT_PORT}" should be hidden'
                     logging.info(f'Verify pass: "{Msg.ASPM_ROOT_PORT}" is hidden')
-                    SetUpLib.send_keys(Key.ESC)
-                SetUpLib.send_keys(Key.ESC)
+                    SetUpLib.send_keys([Key.ESC])
+                SetUpLib.send_keys([Key.ESC])
             SetUpLib.send_keys([Key.F10, Key.Y])  # 检查完毕保存设置重启进OS检查状态
             assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE)
             assert MiscLib.ping_sut(SutConfig.OS_IP, 300)
@@ -439,8 +439,8 @@ def aspm_per_port_loop():
                     assert SetUpLib.get_option_value([Msg.ASPM_ROOT_PORT, "<.+>"], Key.UP, 10) == save_value  # 默认值检查
                     assert SetUpLib.get_all_values(Msg.ASPM_ROOT_PORT, Key.UP, 10) == iio_aspm_values
                     assert SetUpLib.set_option_value(Msg.ASPM_ROOT_PORT, value, key=Key.UP, loc_cnt=8)
-                    SetUpLib.send_keys(Key.ESC)
-                SetUpLib.send_keys(Key.ESC)
+                    SetUpLib.send_keys([Key.ESC])
+                SetUpLib.send_keys([Key.ESC])
             SetUpLib.send_keys(Key.SAVE_RESET)  # per port 遍历修改完成，保存设置重启进OS检查状态
             save_value = value
             assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE)
@@ -633,8 +633,8 @@ def root_port_switch_menu():
                 assert SetUpLib.enter_menu(Key.DOWN, [port], 10, "PCIe Port")
                 SetUpLib.send_key(Key.DOWN)
                 assert SetUpLib.get_all_values(switch_option, Key.UP, 15) == switch_value
-                SetUpLib.send_keys(Key.ESC)
-            SetUpLib.send_keys(Key.ESC)
+                SetUpLib.send_keys([Key.ESC])
+            SetUpLib.send_keys([Key.ESC])
         result.log_pass()
     except Exception as e:
         logging.error(e)
