@@ -316,6 +316,18 @@ def boot_suse_from_bm():
     return True
 
 
+# Boot Suse from boot manager
+def boot_option_from_bm(boot_option, comfirm_msg):
+    if not boot_to_bootmanager():
+        return
+    if not enter_menu(Key.DOWN, boot_option, 8, Msg.SUSE_GRUB):
+        return
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, comfirm_msg):
+        return
+    logging.info("OS Boot Successful")
+    return True
+
+
 # Boot Suse from boot manager without any power action, e.g, used wth F10 + Y in Setup
 def continue_to_boot_suse_from_bm():
     if not continue_to_bootmanager():

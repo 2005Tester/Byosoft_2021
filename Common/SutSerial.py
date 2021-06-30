@@ -322,7 +322,7 @@ class SutControl:
                 logging.info("Not Found: {0}".format(option))
                 return
             self.send_keys(ENTER)
-            time.sleep(2)
+#            time.sleep(2)
         if not self.is_msg_present_general(confirm_msg, timeout):
             logging.info("{0} not captured, may not enter correct menu".format(confirm_msg))
             return
