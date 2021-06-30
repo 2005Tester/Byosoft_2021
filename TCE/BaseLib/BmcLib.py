@@ -196,8 +196,8 @@ def bmc_warning_check():
     class Result:
         status = None  #
         message = None
-    cmd = "ipmcget -d healthevents"
-    res = SshLib.execute_command(Sut.BMC_SSH, cmd)
+    cmd = ["ipmcget -d healthevents"]
+    res = SshLib.interaction(Sut.BMC_SSH, cmd, [''])[1]
     if not res:
         logging.error(f'Run cmd "{cmd}" error')
         return

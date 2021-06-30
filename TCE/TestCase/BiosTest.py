@@ -10,6 +10,7 @@ import logging
 import re
 import time
 import os
+import csv
 from Core import SerialLib, MiscLib
 from Core.SutInit import Sut
 from TCE.Config.SutConfig import SysCfg
@@ -159,68 +160,6 @@ def press_f2():
         return True
     except AssertionError:
         result.log_fail()
-
-
-# Setup: Load default and setting saving - AT test cases below,
-def load_default():
-    tc = ('011', '[TC011] Load default and setting saving Test', 'BIOS Load default Test')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
-    pxe_boot = ["PXE Boot Capability", "<UEFI:IPv4>"]
-    boot_fail_policy = ["Boot Fail Policy", "<Boot Retry>"]
-    pxe_boot_2 = ["PXE Boot Capability", "<UEFI:IPv6>"]
-    boot_fail_policy_2 = ["Boot Fail Policy", "<Cold Boot>"]
-    default_options = [boot_fail_policy, pxe_boot]
-    changed_options = [boot_fail_policy_2, pxe_boot_2]
-    if not SetUpLib.boot_to_page(Msg.PAGE_BOOT):
-        result.log_fail(capture=True)
-        return
-
-    # change option boot fail policy from "Boot Retry" to "Cold Boot"
-    logging.info("***change option boot fail policy from Boot Retry to Cold Boot")
-    if not SetUpLib.locate_option(Key.DOWN, boot_fail_policy, 15):
-        result.log_fail(capture=True)
-        return
-    SetUpLib.send_key(Key.F5)
-    result.capture_screen()
-
-    # change pxe option from IPV4 to IPV6
-    logging.info("***change pxe option from IPV4 to IPV6")
-    if not SetUpLib.locate_option(Key.DOWN, pxe_boot, 15):
-        result.log_fail(capture=True)
-        return
-    SetUpLib.send_key(Key.F5)
-    result.capture_screen()
-
-    logging.info("***Save and reset.")
-    SetUpLib.send_keys([Key.F10, Key.Y])
-    time.sleep(15)
-
-    # Verify modified options
-    if not SetUpLib.boot_to_page(Msg.PAGE_BOOT):
-        result.log_fail(capture=True)
-        return
-    result.capture_screen()
-    if not SetUpLib.verify_options(Key.DOWN, changed_options, 15):
-        result.log_fail(capture=True)
-        return
-    logging.info("***Modified options are verified.")
-
-    logging.info("***Reset defaul by hotkey")
-    SetUpLib.send_keys([Key.F9, Key.Y, Key.F10, Key.Y], delay=5)
-    result.capture_screen()
-    time.sleep(15)
-
-    # Verify whether options are reset to default
-    logging.info("***Verify whether options are reset to default")
-    if not SetUpLib.continue_to_page(Msg.PAGE_BOOT):
-        result.log_fail(capture=True)
-        return
-    if not SetUpLib.verify_options(Key.DOWN, default_options, 15):
-        result.log_fail(capture=True)
-        return
-
-    result.log_pass()
-    return True
 
 
 # Testcase_DRAM_RAPL_001
@@ -399,3 +338,81 @@ def serial_print_error_check():
     except AssertionError as e:
         logging.info(e)
         result.log_fail()
+
+
+# 依据能效菜单基线文件(TCE/Tools/PowerEfficiency/TCE_PowerEfficiency.csv)验证所有能效场景，其关联选项是否配置正确
+# Precondition: 配置好unitool
+# OnStart: Boot to linux
+# OnComplete: NA
+def power_efficiency_mode_loop():
+    tc = ('028', '[TC028]Testcase_PowerEfficiency_001', 'PowerEfficiency场景配置测试')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    baseline = os.path.join(os.path.dirname(__file__), r"..\Tools\PowerEfficiency\TCE_PowerEfficiency.csv")
+    if not os.path.exists(baseline):
+        logging.error("Baseline file not found.")
+        result.log_skip()
+        return
+    with open(baseline, "r", encoding="utf-8-sig") as file:
+        data = list(csv.reader(file))
+    option = "Performance Profile"
+    # list order must follow the bios menu sequence
+    value_list = ["Custom", "Efficiency", "Performance", "Load Balance", "High RAS", "HPC", "General Computing",
+                  "Low Latency", "Server Side Java", "Memory Throughput", "I/O Throughput", "Energy Saving", "NFV"]
+    failed_items = {}
+    healthy_state = {}
+    try:
+        origin_event = BmcLib.bmc_warning_check().message  # get bmc health state before test
+        for col_index, to_mode in enumerate(data[0][1:]):
+            # Set power efficiency mode
+            result_index = data[0].index(to_mode) + 1
+            data[0].insert(result_index, f"{to_mode}_check")
+            assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+            assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_ADV_PM_CFG, 15, "Performance Profile")
+            SetUpLib.send_key(Key.UP)
+            time.sleep(2)
+            assert SetUpLib.set_option_value(option, to_mode, Key.DOWN, 10, save=True)
+            assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
+            # Check each mode BMC warning info
+            healthy_state[to_mode] = BmcLib.bmc_warning_check().message
+            # Check each Attribute's value
+            name_list = [row_data[0] for row_data in data[1:]]
+            read_res = Sut.UNITOOL.read(*name_list)
+            for row_index, attr_name in enumerate(data[1:]):
+                key = attr_name[0]
+                value = attr_name[data[0].index(f"{to_mode}_check") - 1]
+                value = str(int(value, 16)) if ("0x" in value) else value
+                read_val = read_res.get(key) if read_res else None
+                if read_val != value:
+                    if failed_items.get(to_mode):
+                        failed_items[to_mode][key] = read_val
+                    else:
+                        failed_items[to_mode] = {key: read_val}
+                    data[row_index + 1].insert(result_index, read_val)
+                    continue
+                data[row_index + 1].insert(result_index, "pass")
+        # Gen test report csv file
+        report_path = os.path.join(SutConfig.LOG_DIR, f"TC{tc[0]}")
+        if not os.path.exists(report_path):
+            os.makedirs(report_path)
+        report_file = os.path.join(report_path, "power_efficiency_test_report.csv")
+        logging.info(f"Detail test report saved at {report_file}")
+        with open(report_file, "w", newline="") as report:
+            report_writer = csv.writer(report)
+            report_writer.writerows(data)
+        # show test result in test log
+        warning_fail_modes = [mode for mode in healthy_state if healthy_state.get(mode) != origin_event]
+        test_result = False if failed_items else True
+        logging.info(f"Test result: {test_result}")
+        for mode, attr_kv in failed_items.items():
+            for att_k, att_v in attr_kv.items():
+                logging.info(f"{mode}={att_k}, Read Value={att_v} failed")
+        for warn_mode in warning_fail_modes:
+            logging.info(f'[Warning] Power efficiency = {warn_mode}: BMC warning detected')
+        # Result summary
+        assert (not failed_items) and (not warning_fail_modes)
+        result.log_pass()
+    except Exception as e:
+        logging.info(e)
+        result.log_fail()
+    finally:
+        BmcLib.clear_cmos()
