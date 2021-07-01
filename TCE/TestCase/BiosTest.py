@@ -33,7 +33,7 @@ def post_test():  # POST: POST Log(TBD) and Information Check
     capture_end = "Press F6 go to SP boot"
     try:
         assert BmcLib.force_reset()
-        log_cut = SerialLib.cut_log(Sut.BIOS_COM, capture_start, capture_end, 60, 120)
+        log_cut = SerialLib.cut_log(Sut.BIOS_COM, capture_start, capture_end, 100, 150)
         assert MiscLib.verify_msgs_in_log(msg_list, log_cut)
         result.log_pass()
         return True
