@@ -371,12 +371,18 @@ def update_default_password():
     if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.PW_PROMPT):
         return
     send_data(SutConfig.BIOS_PW_DEFAULT)
-    send_key(Key.ENTER*2)
+    send_keys(Key.ENTER*2)
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, "Enter a 8-16 character password"):
+        return
+    send_key(Key.ENTER)
     if not SerialLib.is_msg_present(Sut.BIOS_COM, "Enter New Password"):
         return
     send_data(SutConfig.BIOS_PASSWORD)
     send_key(Key.ENTER)
     send_data(SutConfig.BIOS_PASSWORD)
+    send_key(Key.ENTER)
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, "Change password success."):
+        return
     send_key(Key.ENTER)
     if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.HOME_PAGE):
         return
