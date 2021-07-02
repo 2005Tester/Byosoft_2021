@@ -10,6 +10,7 @@ Release.me_version_status(),,Yes,Yes,Yes
 BiosTest.pxe_test(),,Yes,Yes,Yes
 BiosTest.load_default(),,Yes,Yes,Yes
 BiosTest.security_boot(),,Yes,Yes,Yes
+Release.chipsec_test(),,Yes,,
 Release.compare_fdm_log(),,Yes,,
 Release.registry_check(),,Yes,,
 Release.hpm_downgrade_test(),,Yes,,

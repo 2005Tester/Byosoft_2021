@@ -71,6 +71,7 @@ class Msg:
     UNCORE_GENERAL = 'Uncore General Configuration'
     MEMORY_CONFIG = 'Memory Configuration'
     MEMORY_TOP = 'Memory Topology'
+    MEMORY_RAS_CFG = "Memory RAS Configuration"
     ADV_POWER_MGF_CONFIG = 'Advanced Power Mgmt. Configuration'
     MEM_FRE = 'Memory Frequency'
     MEM2X_REFRESH = 'Refresh Options'
@@ -127,6 +128,9 @@ class Msg:
     PXE_OPT = 'UEFI HTTPSv4: Network - Port00 SLOT1'
     UBUNTU = BootOS.Ubuntu
     SUSE_GRUB = 'Welcome to GRUB'
+
+    # Menus in Exit
+    SAVE_WO_RESET = "Save Changes Without Exiting"
 
     # Menus of Virtualization Configuration page
     VIRTUAL_CFG = "Virtualization Configuration"

@@ -456,7 +456,7 @@ def set_option_value(option, value, key=Key.DOWN, loc_cnt=15, save=False):
     if not locate_option(key, [option, f"<.+>"], loc_cnt):
         return
     if Sut.BIOS_COM.locate_value(value):
-        send_keys(Key.ENTER)
+        send_keys([Key.ENTER])
         if save:
             logging.info(f'Save configuration and reset')
             send_keys(Key.SAVE_RESET)
@@ -468,6 +468,16 @@ def set_option_value(option, value, key=Key.DOWN, loc_cnt=15, save=False):
 def get_all_values(option, key=Key.DOWN, loc_cnt=15):
     if not locate_option(key, [option, f"<.+>"], loc_cnt):
         return
-    values = Sut.BIOS_COM.get_value_list()
-    if values:
-        return values
+    return Sut.BIOS_COM.get_value_list()
+
+
+# save configurations without reset
+def save_without_reset(option=Msg.SAVE_WO_RESET):
+    if not back_to_setup_toppage():
+        return
+    if not locate_option(Key.RIGHT, [Msg.PAGE_SAVE], 6):
+        return
+    if locate_option(Key.DOWN, [option], 6):
+        send_key(Key.ENTER)
+        send_keys([Key.ENTER], delay=10)
+        return True

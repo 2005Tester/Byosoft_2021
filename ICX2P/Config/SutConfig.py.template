@@ -52,6 +52,7 @@ OS_PASSWORD = '1'
 UNI_PATH = "/root/flashtool/unitool"
 RW_PATH = '/root/rw'
 CSCRIPTS_PATH = '/root/Cscripts'
+CHIPSEC_PATH = "/root/chipsec"
 
 
 # BIOS Firmware Directory, Must manual copy image files to the directory before test

@@ -22,7 +22,7 @@ ES = "(\x1B[@-_][0-?]*[ -/]*[@-~]){1,7}"
 
 SEP = "(?:\x1b\[\d+;\d+H){1}"  # value separator
 HLP = "(?:\x1b\[\d+m){3}"  # value hightlight ending flag, last appeared valid
-VALR = "(\w[\w -/]*\w)"  # bios value name ruler
+VALR = "(\w[\w -/]*[\w)])"  # bios value name ruler
 
 
 class SutControl:
@@ -391,9 +391,9 @@ class SutControl:
     def get_value_list(self):
         all_patten = re.compile(f"{SEP}{VALR}")
         self.session.flushInput()
-        self.send_keys_with_delay(ENTER)
+        self.send_keys_with_delay([ENTER])
         tmpdata = self.receive_data(self.session.in_waiting)
-        self.send_keys_with_delay(ENTER)
+        self.send_keys_with_delay([ENTER])
         val_list = all_patten.findall(tmpdata)
         if not val_list:
             logging.error("Fail to match values list")
@@ -412,7 +412,7 @@ class SutControl:
             logging.error('"{}" not in value list'.format(value_str))
             return
         self.session.flushInput()
-        self.send_keys_with_delay(ENTER)
+        self.send_keys_with_delay([ENTER])
         tmpdata = self.receive_data(self.session.in_waiting)
         hl_default = hl_patten.findall(tmpdata)
         if hl_default[-1] == value_str:
@@ -422,8 +422,7 @@ class SutControl:
         press_key = DOWN if offset > 0 else UP
         key_cnt = abs(offset)
         for k in range(key_cnt):
-            self.send_keys(press_key)
-            time.sleep(1)
+            self.send_keys_with_delay([press_key])
             tmpdata = self.receive_data(self.session.in_waiting)
         hl_current = hl_patten.findall(tmpdata)
         if not hl_current:

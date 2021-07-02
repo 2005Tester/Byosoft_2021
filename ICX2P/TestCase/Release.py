@@ -1,4 +1,5 @@
 import os
+import re
 import glob
 import logging
 from Core import SshLib, MiscLib, var
@@ -419,3 +420,73 @@ def post_logo_check():
         result.log_pass()
     except AssertionError:
         result.log_fail()
+
+
+# Author: WangQingshan
+# Chipsec工具检查是否有fail或warning
+# Precondition: Linux
+# OnStart: NA
+# OnComplete: NA
+def chipsec_test():
+    tc = ('914', '[TC914] Chipsec Test', 'The version is scanned by chipsec without warning')
+    result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
+
+    tme_en = [[Msg.PROCESSOR_CONFIG], "Total Memory Encryption \(TME\)", "Enabled"]
+    sgx_en = [[], "SW Guard Extensions \(SGX\)", "Enabled"]
+    uma_base = [[Msg.COMMON_REF_CONFIG], "UMA-Based Clustering", "Disable (All2All)"]
+    adddc_en = [[Msg.MEMORY_CONFIG, Msg.MEMORY_RAS_CFG], "ADDDC Sparing", "Disabled"]
+    warnning_ignored = [
+        "WARNING: chipsec.modules.biosguard",
+        "WARNING: chipsec.modules.common.debugenabled",
+        "WARNING: chipsec.modules.common.uefi.access_platform",
+        "WARNING: chipsec.modules.common.uefi.s3bootscript"]
+
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG], 15, Msg.PROCESSOR_CONFIG)
+
+        assert SetUpLib.enter_menu(Key.DOWN, uma_base[0], 15, "MMIO High Base")
+        assert SetUpLib.set_option_value(uma_base[1], uma_base[2], key=Key.UP)
+        SetUpLib.send_keys([Key.ESC]*len(uma_base[0]))
+
+        assert SetUpLib.enter_menu(Key.DOWN, adddc_en[0], 15, "Memory RAS Configuration Setup")
+        assert SetUpLib.set_option_value(adddc_en[1], adddc_en[2], key=Key.UP)
+        SetUpLib.send_keys([Key.ESC]*len(adddc_en[0]))
+
+        assert SetUpLib.enter_menu(Key.DOWN, tme_en[0], 15, Msg.ACT_CPU_CORES)
+        assert SetUpLib.set_option_value(tme_en[1], tme_en[2], key=Key.UP)
+        assert SetUpLib.set_option_value(sgx_en[1], sgx_en[2])
+        assert SetUpLib.save_without_reset()
+
+        assert SetUpLib.back_to_front_page("Administer Secure Boot")
+        SetUpLib.send_key(Key.ENTER)
+        assert SetUpLib.enter_menu(Key.UP, ["Secure Boot Factory Options"], 5, "Erase all Secure Boot Settings")
+        assert SetUpLib.locate_option(Key.DOWN, ["Restore Secure Boot to Factory Settings"], 3)
+        SetUpLib.send_keys([Key.ENTER])
+        SetUpLib.send_keys([Key.Y], delay=15)
+        SetUpLib.send_keys([Key.ESC])
+        assert SetUpLib.locate_option(Key.DOWN, ["Attempt Secure Boot", "\[X\]"], 5)
+        SetUpLib.send_keys([Key.ENTER]*2 + Key.SAVE_RESET)
+        assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
+        assert SshLib.interaction(Sut.OS_SSH, [f"cd {SutConfig.CHIPSEC_PATH}\n", "python3 chipsec_main.py > chipsec_log.txt"], ["", ""])
+        chipsec_log = os.path.join(SutConfig.LOG_DIR, "chipsec_log.txt")
+        assert SshLib.sftp_download_file(Sut.OS_SFTP, f"{SutConfig.CHIPSEC_PATH}/chipsec_log.txt", chipsec_log)
+        assert os.path.exists(chipsec_log)
+        with open(chipsec_log) as ch_log:
+            fail_cnt = 0
+            warn_cnt = 0
+            for line in ch_log.readlines():
+                if re.search("WARNING: chipsec\.", line, re.I) and not any(ig in line for ig in warnning_ignored):
+                    warn_cnt += 1
+                    logging.info(line.strip())
+                elif re.search("FAILED: chipsec\.", line, re.I):
+                    fail_cnt += 1
+                    logging.info(line.strip())
+        assert (not fail_cnt) and (not warn_cnt), f"Chipsec test: {fail_cnt} failed, {warn_cnt} warnings"
+        logging.info("** Chipsec test pass: No any unexpected fail or warning")
+        result.log_pass()
+    except Exception as e:
+        logging.error(e)
+        result.log_fail()
+    finally:
+        BmcLib.clear_cmos()
