@@ -416,6 +416,10 @@ def post_logo_check():
         default_logo = os.path.abspath(os.path.join(os.path.dirname(__file__), r"..\Tools\Logo\DefaultLogo.bmp"))
         logging.info(f"Default logo: {default_logo}")
         post_logo = PlatMisc.save_logo(name="post_logo")
+        if not post_logo:
+            logging.info("Post logo cat't be captured, please confirm the KVM is open as share mode, not private mode")
+            result.log_skip()
+            return
         assert MiscLib.compare_images(default_logo, post_logo)
         result.log_pass()
     except AssertionError:
