@@ -251,3 +251,15 @@ def capture_kvm_screen(path, name):
     if SshLib.sftp_download_file(Sut.BMC_SFTP, save_path, img_file):
         logging.info(f"Dump current kvm screen success, save image {img_file}")
         return img_file
+
+
+# Set fan mode by bmc
+def set_fan_level():
+    logging.info("[BmcLib] Set fan mode.")
+    cmd_fan_manual_mode = 'ipmcset -d fanmode -v 1 0\n'
+    ret_fan_manual_mode = 'Set fan mode successfully'
+    cmd_fan_40 = 'ipmcset -d fanlevel -v 40\n'
+    ret_fan_40 = 'Set fan level successfully'
+    cmds = [cmd_fan_manual_mode, cmd_fan_40]
+    rets = [ret_fan_manual_mode, ret_fan_40]
+    return SshLib.interaction(Sut.BMC_SSH, cmds, rets)

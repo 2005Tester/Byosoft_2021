@@ -99,24 +99,6 @@ def hpm_update(hpm_name="bios.hpm"):
         return True
 
 
-def poweron_sut():
-    logging.info("Power on Sut.")
-    sshconn = ssh.SshConnection(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)
-    cmd_power_on = 'ipmcset -d powerstate -v 1\n'
-    ret_power_on = 'Do you want to continue'
-    cmd_confirm = 'Y\n'
-    ret_confirm = 'Control fru0 power on successfully'
-    cmd_fan_manual_mode = 'ipmcset -d fanmode -v 1 0\n'
-    ret_fan_manual_mode = 'Set fan mode successfully'
-    cmd_fan_40 = 'ipmcset -d fanlevel -v 40\n'
-    ret_fan_40 = 'Set fan level successfully'
-    cmds = [cmd_power_on, cmd_confirm, cmd_fan_manual_mode, cmd_fan_40]
-    rets = [ret_power_on, ret_confirm, ret_fan_manual_mode, ret_fan_40]
-
-    if sshconn.login():
-        return sshconn.interaction(cmds, rets)
-
-
 def update_specific_img(bios):
     if not upload_bios(bios):
         logging.info("Upload BIOS image failed")
@@ -124,7 +106,7 @@ def update_specific_img(bios):
     if not BmcLib.program_flash():
         logging.info("Program flash failed")
         return
-    if not poweron_sut():
+    if not BmcLib.power_on():
         logging.error("power on sut fail")
         return
     if not SetUpLib.wait_message(Msg.BIOS_BOOT_COMPLETE):
