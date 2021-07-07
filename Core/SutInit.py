@@ -3,6 +3,7 @@ import logging
 from Common import SutSerial
 from Common import ssh
 from Common import Unitool
+from Common import RedfishLib
 from Core import var
 
 
@@ -11,6 +12,7 @@ class Sut:
     BMC_COM = None
     BMC_SSH = None
     BMC_SFTP = None
+    BMC_RFISH = None
     OS_SSH = None
     OS_SFTP = None
     UNITOOL = None
@@ -42,6 +44,10 @@ class SutInit:
         Sut.BMC_SFTP = self.init_bmc_sftp()
         if not Sut.BMC_SFTP:
             logging.info("Failed to initilize BMC SFTP connection")
+
+        Sut.BMC_RFISH = self.init_bmc_redfish()
+        if not Sut.BMC_RFISH:
+            logging.info("Failed to initilize BMC Redfish connection")
 
         Sut.OS_SFTP = self.init_os_sftp()
         if not Sut.OS_SFTP:
@@ -94,6 +100,16 @@ class SutInit:
             password = self.sut.BMC_PASSWORD
             bmc_sftp = ssh.sftp(ip, user, password)
             return bmc_sftp
+        except AttributeError:
+            logging.error("BMC IP not configured, skip initlize BMC SFTP interface")
+
+    def init_bmc_redfish(self):
+        try:
+            ip = self.sut.BMC_IP
+            user = self.sut.BMC_USER
+            password = self.sut.BMC_PASSWORD
+            bmc_redfish = RedfishLib.Redfish(ip, user, password)
+            return bmc_redfish
         except AttributeError:
             logging.error("BMC IP not configured, skip initlize BMC SFTP interface")
 

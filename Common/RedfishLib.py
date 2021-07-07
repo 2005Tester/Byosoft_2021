@@ -59,7 +59,7 @@ class Redfish(object):
 
     # 获取E-Tag
     def get_etag(self, path):
-        e_tag = self.session.get(self.SYSTEM).getheader(name="ETag")
+        e_tag = self.session.get(path).getheader(name="ETag")
         if not e_tag:
             time.sleep(5)
             self.get_etag(path)
@@ -77,22 +77,22 @@ class Redfish(object):
             return {}
 
     def patch_data(self, path: str, data: dict):
-        """ PATCH data to path, return status/body """
+        """ PATCH data to path, return status/body/result """
         class PatchStatus:
             status = None
             result = None
             body = None
-        # try:
-        assert self.login()
-        get_data = self.session.patch(path=path, body=data, headers=self.get_etag(path))
-        PatchStatus.status = get_data.status
-        PatchStatus.body = get_data.dict
-        PatchStatus.result = True if (get_data.status == 200) else False
-        assert self.logout()
-        return PatchStatus
-        # except Exception as e:
-        #     logging.error(e)
-        #     return {}
+        try:
+            assert self.login()
+            get_data = self.session.patch(path=path, body=data, headers=self.get_etag(path))
+            PatchStatus.status = get_data.status
+            PatchStatus.body = get_data.dict
+            PatchStatus.result = True if (get_data.status == 200) else False
+            assert self.logout()
+            return PatchStatus
+        except Exception as e:
+            logging.error(e)
+            return {}
 
     # 获取attribute的当前值,同时更新self.current
     def read_bios_option(self, *args):

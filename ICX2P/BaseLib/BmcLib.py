@@ -263,3 +263,30 @@ def set_fan_level():
     cmds = [cmd_fan_manual_mode, cmd_fan_40]
     rets = [ret_fan_manual_mode, ret_fan_40]
     return SshLib.interaction(Sut.BMC_SSH, cmds, rets)
+
+
+# Check whether current boot type is UEFI via BMC redfish
+def is_uefi_boot():
+    logging.info("[BmcLib] Check if current boot as UEFI mode.")
+    try:
+        boot_type = Sut.BMC_RFISH.get_info(Sut.BMC_RFISH.SYSTEM)["Boot"]["BootSourceOverrideMode"]
+        logging.info(f"Current boot type: {boot_type}")
+        if boot_type == "UEFI":
+            return True
+    except Exception as e:
+        logging.error(e)
+
+
+# Set boot type to UEFI/Legacy via redfish, default only
+def set_boot_mode(mode, once=True):
+    logging.info("[BmcLib] Set boot type with redfish.")
+    mode_list = ["UEFI", "Legacy"]
+    try:
+        assert mode in mode_list, f"Give invalid boot type, Only '{mode_list}' allowed"
+        overwrite_en = "Once" if once else "Continuous"
+        patch_body = {"Boot": {"BootSourceOverrideEnabled": overwrite_en,"BootSourceOverrideMode": mode}}
+        patch_result = Sut.BMC_RFISH.patch_data(path=Sut.BMC_RFISH.SYSTEM, data=patch_body).result
+        logging.info(f"BMC set boot type to '{mode}' for {overwrite_en}")
+        return patch_result
+    except Exception as e:
+        logging.error(e)
