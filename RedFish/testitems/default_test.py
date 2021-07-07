@@ -28,7 +28,7 @@ def redfish_default_value_test(ssh_bmc, unitool):
         if var_data[index].get("Value"):
             var_data[index]["Value"] = [val["ValueName"] for val in att["Value"]]
     var_pd = pandas.DataFrame(var_data).set_index("AttributeName")
-    var_list = rfish.AttributeName_list()
+    var_list = [n.get("AttributeName") for n in rfish.Attributes()]
     reboot_to_os(ssh_bmc)
     val_map = option_value_index_map(base_xlsx=cfg.baseline_xlsx)
     val_idx = read_default_values(unitool, var_list)
@@ -81,7 +81,7 @@ def rfish_post_load_default_test(ssh_bmc, unitool):
         if val_modify.get(option) != str(pick_setup.get(option)):
             logging.info(f"{option} set config failed")
     rfish = Redfish(cfg.bmc_ip, cfg.bmc_user, cfg.bmc_pw)
-    rfish.load_default()
+    rfish.bios_load_default()
     reboot_to_os(ssh_bmc)
     val_after_post = unitool.read(*pick_setup)
     for option in pick_setup_default:

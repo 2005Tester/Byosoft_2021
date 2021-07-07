@@ -46,7 +46,7 @@ def app_test(bmc, serial):
     pd = pandas.read_excel(config.AppExcel, sheet_name=0, index_col="AttributeName")
     rfish = Redfish(config.bmc_ip, config.bmc_user, config.bmc_pw)
     rfish.registry_dump(True, path=config.TEST_RESULT_DIR, name="registry.json")  # 获取registry数据
-    names = rfish.AttributeName_list()
+    names = [n.get("AttributeName") for n in rfish.Attributes()]
     app_name = "".join([app for app in app_name_list if app in names])
 
     for ap in pd:
@@ -55,15 +55,15 @@ def app_test(bmc, serial):
         pd[ap + "_Check"] = ""
 
         # PATCH AppProfile选项
-        if not rfish.write(**{app_name: ap}).result:
+        if not rfish.set_bios_option(**{app_name: ap}).result:
             logging.info('Error: {} = {} PATCH Fail!'.format(app_name, repr(ap)))
             continue
         logging.info('{} = {} PATCH Pass!'.format(app_name, repr(ap)))
 
         # 重启后确认能效菜单是否为预期，并保存一份json文件
         reboot_sut(bmc, serial)
-        if not rfish.check(**{app_name: ap}):
-            logging.info('Current AppValue is "{}"'.format(rfish.read(app_name)))
+        if not rfish.check_bios_option(**{app_name: ap}):
+            logging.info('Current AppValue is "{}"'.format(rfish.read_bios_option(app_name)))
             logging.info('Redfish Check: {} = {}  Fail'.format(app_name, repr(ap)))
             continue
         rfish.current_dump(True, path=config.TEST_RESULT_DIR, name="{}.json".format(ap.replace("/", "")))

@@ -82,7 +82,7 @@ class NonDepTest(Redfish):
         name = "BootType"
         default = self.att_pd.loc[name, "DefaultValue"]
         logging.info(f"BootType load default to \"{default}\"")
-        if self.write(**{name: default}).result:
+        if self.set_bios_option(**{name: default}).result:
             logging.info("BootType load default successfully")
 
     def try_patch_all(self):
@@ -99,7 +99,7 @@ class NonDepTest(Redfish):
         logging.info(f"Try Patch {len(self.patch_key_value)} items that without dependency")
 
         while True:
-            write = self.write(**self.patch_key_value)
+            write = self.set_bios_option(**self.patch_key_value)
             logging.info(f"PATCH Status: {write.status}")
             logging.info(f"PATCH Message: {write.body}")
             if write.result:
@@ -127,17 +127,17 @@ class NonDepTest(Redfish):
         all_keys = list(self.test_fail_key_value.keys())
         for index in range(len(all_keys)//10+1):
             logging.info("================================================")
-            self.load_default()
+            self.bios_load_default()
             reboot_sut(self.bmc, self.ser)
             test_keys = all_keys[0:10] if len(all_keys)>10 else all_keys
             test_kv = {k: self.test_fail_key_value[k] for k in test_keys}
-            patch = self.write(**test_kv)
+            patch = self.set_bios_option(**test_kv)
             logging.info(f"[NarrowDown]: PATCH {patch.body}")
             if patch.result:
                 for key in test_kv:
                     self.result.loc[key, "patch_status"] = "pass"
                 reboot_sut(self.bmc, self.ser)
-            if self.check(**test_kv):
+            if self.check_bios_option(**test_kv):
                 logging.info("[NarrowDown]: pass")
                 for key in test_kv:
                     self.result.loc[key, "check_status"] = "pass"
@@ -195,13 +195,13 @@ class NonDepTest(Redfish):
                     continue
             logging.info(f"Testing: {patch_kv}")
             self.result.loc[key, "default_value"] = self.att_pd.loc[key, "DefaultValue"]
-            self.load_default()
+            self.bios_load_default()
             reboot_sut(self.bmc, self.ser)
-            patch = self.write(**patch_kv)
+            patch = self.set_bios_option(**patch_kv)
             if patch.result:
                 logging.info(f"[PATCH] {patch.body} successfully")
                 reboot_sut(self.bmc, self.ser)
-                check_value = self.read(*patch_kv.keys())
+                check_value = self.read_bios_option(*patch_kv.keys())
                 for check_name in patch_kv.keys():
                     self.result.loc[check_name, "patch_status"] = "pass"
                     if check_value.get(check_name) == value:
@@ -228,7 +228,7 @@ class NonDepTest(Redfish):
         to_excel(self.result, name)
 
     def run_test(self):
-        self.load_default()  # 测试前先恢复默认
+        self.bios_load_default()  # 测试前先恢复默认
         reboot_sut(self.bmc, self.ser)
         self.attributes_data()  # 获取所有变量信息
         self.gen_patch_key_value()  # 生成非默认值数据表
@@ -236,7 +236,7 @@ class NonDepTest(Redfish):
         self.drop_been_mapped()  # 去掉默认情况就存在联动关系的选项
         self.try_patch_all()  # 先尝试批量修改
         reboot_sut(self.bmc, self.ser)
-        data = self.read(*self.patch_key_value.keys())
+        data = self.read_bios_option(*self.patch_key_value.keys())
         self.test_fail_key_value = {}
         for key, value in self.patch_key_value.items():  # 检查批量修改的结果
             if data.get(key) != value:
@@ -247,12 +247,12 @@ class NonDepTest(Redfish):
             self.result.loc[key, "check_status"] = "pass"
         self.gen_report("非联动测试结果批量修改")  # 批量修改结果生成报告
         self.boot_type_load_default()  # 恢复 BootType为UEFI（因为POST无法恢复）
-        self.load_default()
+        self.bios_load_default()
         reboot_sut(self.bmc, self.ser)
         self.narrow_down_fail_items()  # 测试Fail的10个1组，尝试PATCH，并更新测试结果数据表
         self.single_patch_test()  # 剩下的Fail选项 + 非默认情况下有联动关系的单独测试， 每次PATCH一项并重启，更新测试结果数据表
         # 测完恢复默认
-        self.load_default()
+        self.bios_load_default()
         reboot_sut(self.bmc, self.ser)
         # 生成测试报告
         self.gen_report("非联动测试结果汇总")

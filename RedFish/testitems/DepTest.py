@@ -234,7 +234,7 @@ class DepenTest(Redfish):
                 map_value = int(map_value) if map_value.isdigit() else map_value
             # Check Value Equal MapTo
             if map_property == "CurrentValue":
-                if not self.check(**{map_key: map_value}):
+                if not self.check_bios_option(**{map_key: map_value}):
                     result = result & False
                     logging.info(rf"[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <fail>")
                     continue
@@ -292,7 +292,7 @@ class DepenTest(Redfish):
             if default in vale:
                 vale.remove(default)
             value = random.choice(vale)
-            return self.write(**{key: value})
+            return self.set_bios_option(**{key: value})
         if att_series["Type"] == "Integer":
             low = int(att_series["LowerBound"])
             up = int(att_series["UpperBound"] + 1)
@@ -301,7 +301,7 @@ class DepenTest(Redfish):
             iter_range = list(range(low, up, scrlar))
             iter_range.remove(default)
             ival = random.choice(iter_range)
-            return self.write(**{key: ival})
+            return self.set_bios_option(**{key: ival})
 
     def gen_report(self):
         """ 生成最终结果 """
@@ -336,7 +336,7 @@ class DepenTest(Redfish):
                 logging.info("==========================================================")
 
                 # Load Default and Reboot
-                self.load_default()
+                self.bios_load_default()
                 if not reboot_sut(ssh_bmc=self.ssh, serial=self.serial):
                     logging.info("Boot up failed")
                     continue
@@ -353,7 +353,7 @@ class DepenTest(Redfish):
                     self.map_from_pd.loc[row, "IsMapped"] = "yes"
                     key_value = self.gen_data_w_top(mf_item)
                     self.map_from_pd.loc[row, "PATCH"] = json.dumps(key_value, indent=4)
-                    patch_result = self.write(**key_value)
+                    patch_result = self.set_bios_option(**key_value)
                     if not patch_result.result:
                         logging.info(r"[PATCH] {} <fail>".format(key_value))
                         logging.info(f"Status: {patch_result.status}")
@@ -366,7 +366,7 @@ class DepenTest(Redfish):
                 else:
                     # Normal PATCH
                     self.map_from_pd.loc[row, "PATCH"] = json.dumps(key_value, indent=4)
-                    patch_result = self.write(**key_value)
+                    patch_result = self.set_bios_option(**key_value)
                     if not patch_result.result:
                         logging.info(r"[PATCH] {} <fail>".format(key_value))
                         logging.info(rf"Error Message: {patch_result.body}")
@@ -382,7 +382,7 @@ class DepenTest(Redfish):
                 logging.info("Boot up successfully")
 
                 # CHECK MapFrom
-                if not self.check(**key_value):
+                if not self.check_bios_option(**key_value):
                     logging.info(r"[CHECK] >>> MapFrom: {} <fail>".format(key_value))
                     self.map_from_pd.loc[row, "CheckStatus"] = "fail"
                     continue
@@ -399,7 +399,7 @@ class DepenTest(Redfish):
 
                 # Force to UEFI if 'BootType' is set to 'LegacyBoot' (this attribute can't be load default with post)
                 if ('BootType', 'LegacyBoot') in key_value.items():
-                    assert self.write(BootType='UEFIBoot').result
+                    assert self.set_bios_option(BootType='UEFIBoot').result
                     assert reboot_sut(self.ssh, self.serial)
 
             except Exception as e:

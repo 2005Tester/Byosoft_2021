@@ -11,21 +11,19 @@ from redfish.rest.v1 import InvalidCredentialsError, RetriesExhaustedError
 
 
 class Redfish(object):
-    CURRENT_PATH = r"/redfish/v1/Systems/1/Bios"
+    SYSTEM = "/redfish/v1/Systems/1"
+    CHASSIS = "/redfish/v1/Chassis/1"
+    MANAGER = "/redfish/v1/Managers/1"
+    BIOS_CURRENT = rf"{SYSTEM}/Bios"
+    BIOS_SETTING = rf"{SYSTEM}/Bios/Settings"
+    BIOS_RESET = rf"{SYSTEM}/Bios/Actions/Bios.ResetBios"
     REGISTRY_PATH = r"/redfish/v1/RegistryStore/AttributeRegistries/en/BiosAttributeRegistry.v{}_{}_{}.json"
-    PATCH_PATH = r"/redfish/v1/Systems/1/Bios/Settings"
-    POST_PATH = r"/redfish/v1/Systems/1/Bios/Actions/Bios.ResetBios"
 
     def __init__(self, bmc_ip, user, pw):
         self.host = f"https://{bmc_ip}"
         self.user = user
         self.pw = pw
-        self.current = None
-        self.registry = None
-        self.current_json = None
-        self.registry_json = None
         self.session = redfish.redfish_client(base_url=self.host, username=self.user, password=self.pw, timeout=5, max_retry=5)
-        self.reg_match()
 
     def login(self):
         try:
@@ -46,45 +44,76 @@ class Redfish(object):
 
     def logout(self):
         self.session.logout()
+        return True
 
-    # 获取registry文件的版本号
-    def reg_match(self):
+    # 获取registry.json文件的版本号与路径
+    def get_reg_path(self):
         if not self.login():
             return
-        data = self.session.get(self.CURRENT_PATH)
+        data = self.session.get(self.BIOS_CURRENT)
         if data.status != 200:
             return
         reg_ver = re.findall(r"BiosAttributeRegistry.(\d+).(\d+).(\d+)", data.dict.get("AttributeRegistry"))[0]
-        self.REGISTRY_PATH = self.REGISTRY_PATH.format(reg_ver[0], reg_ver[1], reg_ver[2])
         self.logout()
+        return self.REGISTRY_PATH.format(reg_ver[0], reg_ver[1], reg_ver[2])
 
     # 获取E-Tag
-    def get_etag(self):
-        e_tag = self.session.get(self.PATCH_PATH).getheader(name="ETag")
+    def get_etag(self, path):
+        e_tag = self.session.get(self.SYSTEM).getheader(name="ETag")
         if not e_tag:
             time.sleep(5)
-            self.get_etag()
+            self.get_etag(path)
         return {"If-Match": e_tag}
 
+    def get_info(self, path: str):
+        """ GET data from path, return Dict """
+        try:
+            assert self.login()
+            get_data = self.session.get(path).dict
+            assert self.logout()
+            return get_data
+        except Exception as e:
+            logging.error(e)
+            return {}
+
+    def patch_data(self, path: str, data: dict):
+        """ PATCH data to path, return status/body """
+        class PatchStatus:
+            status = None
+            result = None
+            body = None
+        # try:
+        assert self.login()
+        get_data = self.session.patch(path=path, body=data, headers=self.get_etag(path))
+        PatchStatus.status = get_data.status
+        PatchStatus.body = get_data.dict
+        PatchStatus.result = True if (get_data.status == 200) else False
+        assert self.logout()
+        return PatchStatus
+        # except Exception as e:
+        #     logging.error(e)
+        #     return {}
+
     # 获取attribute的当前值,同时更新self.current
-    def read(self, *args):
+    def read_bios_option(self, *args):
         """
         Input:  *[key1, key2] or "key1", "key2"
         Output: {key1: value1, key2: value2}
         """
         result = {}
-        if not self.login():
-            return result
-        data = self.session.get(self.CURRENT_PATH)
-        if data.status == 200:
-            self.current = data.dict.get("Attributes")
+        try:
+            assert self.login()
+            all_data = self.session.get(self.BIOS_CURRENT).dict
             for key in args:
-                result[key] = self.current.get(key)
+                result[key] = all_data.get("Attributes").get(key)
             self.logout()
             return result
+        except Exception as e:
+            logging.error(e)
+            return {}
 
     # 输入选项和取值，PATCH后LOG打印结果
-    def write(self, **kwargs):
+    def set_bios_option(self, **kwargs):
         """
         Input:  **{"key1": value1, "key2": value2} or key1=value1, key2=value2
         Output: {   status:     patch status code: int,
@@ -100,7 +129,7 @@ class Redfish(object):
         if not self.login():
             return PatchStatus
         body = {"Attributes": kwargs}
-        patch = self.session.patch(path=self.PATCH_PATH, body=body, headers=self.get_etag())
+        patch = self.session.patch(path=self.BIOS_SETTING, body=body, headers=self.get_etag(self.BIOS_SETTING))
         time.sleep(0.5)
         result = True if (patch.status == 200) else False
         if patch.status == 200:
@@ -114,14 +143,14 @@ class Redfish(object):
         return PatchStatus
 
     # 检查选项key的值是否为value,同时更新self.current
-    def check(self, **kwargs):
+    def check_bios_option(self, **kwargs):
         """
         Input:  **{key1: value1, key2: value2} or key1=value1, key2=value2
         Output: True / False
         """
         if not self.login():
             return
-        data = self.session.get(self.CURRENT_PATH)
+        data = self.session.get(self.BIOS_CURRENT)
         fail_cnt = 0
         if data.status == 200:
             self.current = data.dict.get("Attributes")
@@ -132,11 +161,11 @@ class Redfish(object):
             return fail_cnt == 0
 
     # 通过POST请求恢复默认
-    def load_default(self):
+    def bios_load_default(self):
         """ Load Default with POST operation, unable to change UEFI/Legacy """
         if not self.login():
             return
-        response = self.session.post(path=self.POST_PATH, body={})
+        response = self.session.post(path=self.BIOS_RESET, body={})
         if response.status == 200:
             logging.info("BIOS load default successful!")
             self.logout()
@@ -146,7 +175,7 @@ class Redfish(object):
     def current_dump(self, dump_json=False, path=".", name="CurrentValue.json"):
         if not self.login():
             return
-        data = self.session.get(self.CURRENT_PATH)
+        data = self.session.get(self.BIOS_CURRENT)
         if data.status == 200:
             self.current = data.dict.get("Attributes")
             if dump_json:
@@ -163,7 +192,7 @@ class Redfish(object):
     def registry_dump(self, dump_json=False, path=".", name="Registry.json"):
         if not self.login():
             return
-        data = self.session.get(self.REGISTRY_PATH)
+        data = self.session.get(self.get_reg_path())
         if data.status == 200:
             self.registry = {k: v for k, v in data.dict.items() if
                              k in ["Language", "RegistryVersion", "RegistryEntries"]}
@@ -178,22 +207,19 @@ class Redfish(object):
         logging.info("Error: response code: {}".format(data.status))
 
     def Attributes(self):
-        if not self.registry:
-            self.registry_dump()
-        return self.registry["RegistryEntries"]["Attributes"]
+        try:
+            return self.registry["RegistryEntries"]["Attributes"]
+        except:
+            return self.registry_dump()["RegistryEntries"]["Attributes"]
 
     def Menus(self):
-        if not self.registry:
-            self.registry_dump()
-        return self.registry["RegistryEntries"]["Menus"]
+        try:
+            return self.registry["RegistryEntries"]["Menus"]
+        except:
+            return self.registry_dump()["RegistryEntries"]["Menus"]
 
     def Dependencies(self):
-        if not self.registry:
-            self.registry_dump()
-        return self.registry["RegistryEntries"]["Dependencies"]
-
-    def AttributeName_list(self):
-        return [n.get("AttributeName") for n in self.Attributes()]
-
-    def DependencyFor_list(self):
-        return list(set([d.get("DependencyFor") for d in self.Dependencies()]))
+        try:
+            return self.registry["RegistryEntries"]["Dependencies"]
+        except:
+            return self.registry_dump()["RegistryEntries"]["Dependencies"]
