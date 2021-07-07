@@ -28,25 +28,28 @@ class sftp:
 
     def login(self):
         logging.debug("Try sftp login.")
-        if self.try_count >= 5:
-            logging.error("Failed in SFTP login, after try {0} times.".format(self.login_try))
+        if self.try_count >= 4:
+            logging.error("Failed in SFTP login, after retry {0} times.".format(self.try_count))
             self.try_count = 0
             return
         try:
+            self.try_count += 1
             self.transport = paramiko.Transport(self.host_ip, 22)
             self.transport.banner_timeout = 120
             self.transport.connect(username=self.username, password=self.password)
             self.sftp = paramiko.SFTPClient.from_transport(self.transport)
+            self.try_count = 0
+            logging.debug("SFTP login successfully")
+            return True
         except EOFError:
             logging.error('EOFError, retry after 60 seconds.')
             time.sleep(60)
             self.login()
         except Exception as e:
-            print(e)
             logging.error("Exception in SFTP login: {0}".format(e))
-            return
-        logging.info("SFTP login successfully")
-        return True
+            logging.error("Retry login after 60 seconds")
+            time.sleep(60)
+            self.login()
 
     def ls_dir(self, dir='.'):
         return self.sftp.listdir(dir)
