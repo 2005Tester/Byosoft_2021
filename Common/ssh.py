@@ -88,7 +88,8 @@ class sftp:
             return True
         except Exception as e:
             logging.info(f"Failed to download file: {e}")
-        self.close_session()
+        finally:
+            self.close_session()
 
     def close_session(self):
         self.sftp.close()
