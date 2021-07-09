@@ -169,8 +169,6 @@ def program_flash():
 # uncom=True: uncompress the file, return path="path/name" | uncom=False: return file="path/name.tar.gz"
 def bmc_dumpinfo(path, name="dump", uncom=False):
     cmd_diag = "ipmcget -d diaginfo\n"
-    if not Sut.BMC_SSH.login():
-        return False
     SshLib.sftp_remove_file(Sut.BMC_SFTP, ".bin")
     logging.info("Start BMC dump, Please wait...")
     res = SshLib.interaction(Sut.BMC_SSH, [cmd_diag], ['successfully'])[1]
