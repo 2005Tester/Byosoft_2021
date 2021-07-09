@@ -112,8 +112,13 @@ def dcCycle():
 
 
 def last_release(current_branch, step=1):
-    current_ver = int(current_branch[-3:])
-    last_ver = "{:03}".format(current_ver - step)
+    skip_num = "4"
+    latest_int = int(current_branch[-3:])
+    last_str = "{:03}".format(latest_int - step)
+    if skip_num in last_str:
+        last_ver = "{:03}".format(latest_int - step - (10**(2-last_str.find(skip_num))))
+    else:
+        last_ver = "{:03}".format(latest_int - step)
     last_branch = Msg.RELEASE_BRANCH.format(last_ver)
     return last_branch
 
