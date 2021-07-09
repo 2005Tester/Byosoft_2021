@@ -24,11 +24,11 @@ def get_test_image(dst, branch, job):
     gitlab_icx = GitLab.Gitlab(31, 'PbLqm_njsnGxCQBtHoMG')
     res = BmcLib.get_productname()
     if res == ['4U']:
-        test_image_4u = gitlab_icx.download_latest_image(branch, dst, "WTCEA", job)
+        test_image_4u = gitlab_icx.download_latest_image(branch, dst, "WTCEAV+\d+\_byo", job)
         logging.info("Image for test: {0}".format(test_image_4u))
         return (test_image_4u)
     elif res == ['2U']:
-        test_image_2u = gitlab_icx.download_latest_image(branch, dst, "WTCEB", job)
+        test_image_2u = gitlab_icx.download_latest_image(branch, dst, "WTCEBV+\d+\_byo", job)
         logging.info("Image for test: {0}".format(test_image_2u))
         return (test_image_2u)
     else:
