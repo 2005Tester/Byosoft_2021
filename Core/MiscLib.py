@@ -4,6 +4,7 @@ import time
 import re
 import os
 import tarfile
+from collections import Counter
 from PIL import Image, ImageChops
 
 # function library to hold platform indepedent operations, to simplify test case developemnt.
@@ -75,3 +76,15 @@ def compare_images(image1, image2, image_diff=""):
             return False
     except Exception as e:
         print(f"Compare image error：\n{e}")
+
+
+# compare two items contains same values but ignore the sequence
+def same_values(item_a, item_b):
+    try:
+        if Counter(item_a) == Counter(item_b):
+            logging.debug("Values are same.")
+            return True
+        logging.debug("Values are different.")
+        return False
+    except Exception as e:
+        logging.error(e)

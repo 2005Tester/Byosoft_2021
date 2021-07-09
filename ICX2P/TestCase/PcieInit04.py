@@ -377,7 +377,7 @@ def aspm_global_disable_l1only():
             for cpu in range(SutConfig.SysCfg.CPU_CNT):  # CPU遍历
                 cpu_menu = f"CPU {cpu+1} Configuration"
                 assert SetUpLib.enter_menu(Key.DOWN, [cpu_menu], 15, "PCIe Completion Timeout")
-                root_ports = PlatMisc.match_pcie_root_port(key=Key.DOWN, try_cnt=10)
+                root_ports = PlatMisc.match_options(Key.DOWN, "(Port (?:DMI|[0-4][A-D]))", 10)
                 for port in root_ports:  # Root Port遍历
                     assert SetUpLib.enter_menu(Key.DOWN, [port], 10, "Link Speed")
                     assert not SetUpLib.locate_option(Key.UP, [Msg.ASPM_ROOT_PORT, "<.+>"],
@@ -433,7 +433,7 @@ def aspm_per_port_loop():
             for cpu in range(SutConfig.SysCfg.CPU_CNT):  # CPU遍历
                 cpu_menu = f"CPU {cpu+1} Configuration"
                 assert SetUpLib.enter_menu(Key.DOWN, [cpu_menu], 15, "PCIe Completion Timeout")
-                root_ports = PlatMisc.match_pcie_root_port(key=Key.DOWN, try_cnt=10)  # 动态获取Root Port
+                root_ports = PlatMisc.match_options(Key.DOWN, "(Port (?:DMI|[0-4][A-D]))", 10)  # 动态获取Root Port
                 for port in root_ports:  # Root Port遍历
                     assert SetUpLib.enter_menu(Key.DOWN, [port], 10, "Link Speed")
                     assert SetUpLib.get_option_value([Msg.ASPM_ROOT_PORT, "<.+>"], Key.UP, 10) == save_value  # 默认值检查
@@ -563,7 +563,7 @@ def sriov_per_port_loop():
         try:
             assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
             assert SetUpLib.enter_menu(Key.UP, [Msg.VIRTUAL_CFG], 5, Msg.VIRTUAL_CFG)
-            port_list = PlatMisc.match_pcie_root_port(Key.DOWN, r"(CPU \d Port (?:DMI|[0-4][A-D]) SR-IOV Support)", 15)
+            port_list = PlatMisc.match_options(Key.DOWN, r"(CPU \d Port (?:DMI|[0-4][A-D]) SR-IOV Support)", 15)
             for port in port_list:
                 assert SetUpLib.set_option_value(port, value, save=False)
             SetUpLib.send_keys(Key.SAVE_RESET)
@@ -628,7 +628,7 @@ def root_port_switch_menu():
         for cpu in range(SutConfig.SysCfg.CPU_CNT):  # CPU遍历
             cpu_menu = f"CPU {cpu + 1} Configuration"
             assert SetUpLib.enter_menu(Key.DOWN, [cpu_menu], 15, "PCIe Completion Timeout")
-            root_ports = PlatMisc.match_pcie_root_port(key=Key.DOWN, patten="(Port (?:[0-4][A-D]))", try_cnt=10)
+            root_ports = PlatMisc.match_options(Key.DOWN, "(Port (?:[0-4][A-D]))", 10)
             for port in root_ports:  # Root Port遍历
                 assert SetUpLib.enter_menu(Key.DOWN, [port], 10, "PCIe Port")
                 SetUpLib.send_key(Key.DOWN)
@@ -661,3 +661,56 @@ def vga_option_menu():
     except Exception as e:
         logging.error(e)
         result.log_fail()
+
+
+# Author: WangQingshan
+# 遍历UEFI、Legacy: 检查外接网卡PXE开关默认状态
+# Precondition: NA
+# OnStart: Enable Legacy Mode
+# OnComplete: Enable Legacy Mode
+def slot_pxe_menu_check():
+    tc = ('647', '[TC647] Testcase_SlotPxeCfg_001', '遍历UEFI/Legacy: 外接网卡PXE开关默认状态')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+
+    global_pxe_optioin = "Slot Pxe"
+    slot_pxe_port = "CPU\d First Slot Lan Port\d PXE"
+    pxe_values = ["Enabled", "Disabled"]
+    default_value = "<Enabled>"
+
+    try:
+        # Legacy Mode
+        if BmcLib.is_uefi_boot():
+            assert BmcLib.set_boot_mode("Legacy", once=True)
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, [Msg.NETWORK_CONFIG], 5, global_pxe_optioin)
+        assert SetUpLib.locate_option(Key.UP, [global_pxe_optioin, default_value], 10)
+        assert MiscLib.same_values(SetUpLib.get_all_values(global_pxe_optioin, Key.DOWN, 10), pxe_values)
+        pxe_ports = PlatMisc.match_options(Key.UP, slot_pxe_port, 10)
+        if not pxe_ports:
+            logging.info("No network card detected on each CPU first pcie slot, test skipped")
+            result.log_skip()
+            return
+        for p in pxe_ports:
+            assert SetUpLib.locate_option(Key.DOWN, [p, default_value], 10)  # 验证默认值
+            assert MiscLib.same_values(SetUpLib.get_all_values(p, Key.DOWN, 10), pxe_values)  # 验证可选值
+
+        # UEFI Mode
+        assert BmcLib.set_boot_mode("UEFI", once=True)
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, [Msg.NETWORK_CONFIG], 5, global_pxe_optioin)
+        assert SetUpLib.locate_option(Key.UP, [global_pxe_optioin, default_value], 10)
+        assert MiscLib.same_values(SetUpLib.get_all_values(global_pxe_optioin, Key.DOWN, 10), pxe_values)
+        pxe_ports = PlatMisc.match_options(Key.UP, slot_pxe_port, 10)
+        if not pxe_ports:
+            logging.info("No network card detected on each CPU first pcie slot, test skipped")
+            result.log_skip()
+            return
+        for p in pxe_ports:
+            assert SetUpLib.locate_option(Key.DOWN, [p, default_value], 10)  # 验证默认值
+            assert MiscLib.same_values(SetUpLib.get_all_values(p, Key.DOWN, 10), pxe_values)  # 验证可选值
+        result.log_pass()
+    except Exception as e:
+        logging.error(e)
+        result.log_fail()
+    finally:
+        BmcLib.set_boot_mode("Legacy", once=False)

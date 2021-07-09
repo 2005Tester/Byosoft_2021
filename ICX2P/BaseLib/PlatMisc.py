@@ -140,8 +140,8 @@ def dump_cpu_resource():
     return csv_file
 
 
-# dynamic match all pcie root port of one page
-def match_pcie_root_port(key, patten="(Port (?:DMI|[0-4][A-D]))", try_cnt=10):
+# match all similar named options of one page
+def match_options(key, patten, try_cnt=10):
     name_patten = re.compile(patten)
     SerialLib.clean_buffer(Sut.BIOS_COM)
     tmp_data = ""
@@ -150,13 +150,13 @@ def match_pcie_root_port(key, patten="(Port (?:DMI|[0-4][A-D]))", try_cnt=10):
         tmp_data += SerialLib.recv_data(Sut.BIOS_COM, 1024)
     search_result = name_patten.findall(tmp_data)
     if not search_result:
-        logging.info("No any pcie root port matched")
+        logging.info(f"No any options matched for '{patten}'")
         return
-    root_ports = list(set(search_result))
-    root_ports.sort(reverse=False)
-    for port in root_ports:
-        logging.info(f'Root port "{port}" matched"')
-    return root_ports
+    menu_list = list(set(search_result))
+    menu_list.sort(reverse=False)
+    for port in menu_list:
+        logging.info(f"Option '{port}' matched")
+    return menu_list
 
 
 # Check whether DVD-ROM exists in boot manager
