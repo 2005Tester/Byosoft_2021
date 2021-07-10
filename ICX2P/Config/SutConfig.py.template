@@ -12,6 +12,7 @@ import datetime
 from ICX2P.Config.PlatConfig import Key
 
 TESTCASE_CSV = "ICX2P\\AllTest.csv"
+RELEASE_BRANCH = "2288V6_015"
 
 # Report Setting
 PROJECT_NAME = "2288V6"
