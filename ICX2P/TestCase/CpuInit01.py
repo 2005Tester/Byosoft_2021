@@ -300,7 +300,7 @@ def cores_customized_by_unitool():
     ACT_CPU_CORES = ['Active Processor Cores', '<20>']
     try:
         assert SetUpLib.boot_with_hotkey(Key.F11, "Boot Manager Menu", 300)
-        assert SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 20, "Welcome to GRUB")
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 20, Msg.SUSE_GRUB)
         assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE, 170)
         logging.info("Suse_OS Boot Successful")
         MiscLib.ping_sut(SutConfig.OS_IP, 600)
@@ -408,7 +408,7 @@ def numa_02():
     Num_cmd = r'numactl -H'
     try:
         assert SetUpLib.boot_with_hotkey(Key.F11, "Boot Manager Menu", 300)
-        assert SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 20, "Welcome to GRUB")
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 20, Msg.SUSE_GRUB)
         assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE, 170)
         logging.info("Suse_OS Boot Successful")
         numa_h = SshLib.execute_command(Sut.OS_SSH, Num_cmd)
@@ -470,7 +470,7 @@ def cpu_compa_02():
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
     try:
         assert SetUpLib.boot_with_hotkey(Key.F11, "Boot Manager Menu", 300)
-        assert SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 20, "Welcome to GRUB")
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 20, Msg.SUSE_GRUB)
         assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE, 170)
         logging.info("Suse_OS Boot Successful")
         fail_dir = SutConfig.LOG_DIR + r'\TC213.log'

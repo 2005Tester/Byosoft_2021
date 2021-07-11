@@ -211,7 +211,7 @@ def boot_order_004():
         result.log_skip()
         return
     try:
-        assert boot_to_dvd(SutInit.Sut.BMC_SSH, "Virtual DVD-ROM VM", "Welcome to GRUB")
+        assert boot_to_dvd(SutInit.Sut.BMC_SSH, "Virtual DVD-ROM VM", Msg.SUSE_GRUB)
         result.log_pass()
         SshLib.interaction(SutInit.Sut.BMC_SSH, restored_cmds, restored_rets, timeout=15)
         return True

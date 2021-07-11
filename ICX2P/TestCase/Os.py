@@ -38,7 +38,7 @@ def boot_to_suse_mfg():
     if not SetUpLib.boot_to_bootmanager():
         result.log_fail()
         return
-    msg = "Welcome to GRUB"
+    msg = Msg.SUSE_GRUB
     if not SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 20, msg):
         result.log_fail()
         return
