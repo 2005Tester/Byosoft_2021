@@ -12,8 +12,8 @@ import logging
 import os
 import re
 from Core.SutInit import Sut
-from Core import SshLib
-from Common import ssh, GitLab
+from Core import SshLib, Ci
+from Common import ssh
 from TCE.Config import SutConfig
 from TCE.Config.PlatConfig import Msg
 from TCE.BaseLib import SetUpLib, BmcLib
@@ -21,7 +21,7 @@ from TCE.BaseLib import SetUpLib, BmcLib
 
 # Obtain the path of latest bios image from Gitlab artifacts
 def get_test_image(dst, branch, job):
-    gitlab_icx = GitLab.Gitlab(31, 'PbLqm_njsnGxCQBtHoMG')
+    gitlab_icx = Ci.Gitlab(31, 'PbLqm_njsnGxCQBtHoMG')
     res = BmcLib.get_productname()
     if res == ['4U']:
         test_image_4u = gitlab_icx.download_latest_image(branch, dst, "WTCEAV+\d+\_byo", job)

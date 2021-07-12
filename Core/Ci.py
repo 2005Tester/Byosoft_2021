@@ -6,17 +6,14 @@
 #  stored in a retrieval system, or transmitted in any form or by any
 #  means without the express written consent of Byosoft Corporation.
 
-
-# Project ID, HwICX: 31, Moc25: 12, Byo: 34
-
 import logging
 import requests
 import zipfile
-import json
 import os
 import re
 
 
+# Project ID, HwICX: 31, Moc25: 12, Byo: 34
 class Gitlab:
     def __init__(self, projectid, access_token):
         self.projectid = projectid

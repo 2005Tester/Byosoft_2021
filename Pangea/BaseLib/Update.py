@@ -8,14 +8,14 @@
 # -*- encoding=utf8 -*-
 import logging
 import os
-from Common import GitLab
+from Core import Ci
 from Pangea.SutConfig import Msg
 from Pangea.BaseLib import SshLib, PowerLib
 
 
 # Obtain the path of latest bios image from Gitlab artifacts
 def get_test_image(dst):
-    gitlab_icx = GitLab.Gitlab(41, 'zY5yGx4mXyVo-YC6rjYv')
+    gitlab_icx = Ci.Gitlab(41, 'zY5yGx4mXyVo-YC6rjYv')
     test_image = gitlab_icx.download_latest_image_master(dst, 'Pangea_')
     logging.info(test_image)
     return test_image
