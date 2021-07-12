@@ -114,6 +114,9 @@ class SshConnection:
             self.login_try += 1
             self.ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             self.ssh_client.connect(self.host_ip, port=22, username=self.username, password=self.password)
+            self.login_try = 0
+            logging.debug("SSH login successfully.")
+            return True
         except AuthenticationException:
             logging.error('AuthenticationException, Incorrect Username or Password.')
             return
@@ -129,11 +132,9 @@ class SshConnection:
             logging.info('ConnectionAbortedError, retry after 60 seconds.')
             time.sleep(60)
             self.login()
-        except:
+        except Exception:
             logging.error("Error in ssh connection:", sys.exc_info()[0])
             return
-        self.login_try = 0
-        return True
 
     # execute command on SUT
     def execute_command(self, command):
