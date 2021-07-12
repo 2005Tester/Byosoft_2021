@@ -28,6 +28,7 @@ def acpidump():
 
 # function Module : 使用unitool还原bios setting
 def reset_cpu_setting(cmd_var):
+    logging.info("Reseting CPU settings.")
     cmd = eval("dict(%s)" % cmd_var.replace(":", "="))
     if not BmcLib.force_reset():
         logging.info('power off-on fail')

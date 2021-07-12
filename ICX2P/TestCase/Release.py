@@ -59,9 +59,9 @@ def equip_mode_flag_check():
     tc = ('902', '[TC902] Equipment mode flag check', '非装备模式BIOS设置装备模式flag, 预期设置不成功.')
     result = ReportGen.LogHeaderResult(tc)
     if not MiscLib.ping_sut(SutConfig.OS_IP, 10):
-        if not BmcLib.force_reset():
-            return
+        BmcLib.force_reset()
         if not MiscLib.ping_sut(SutConfig.OS_IP, 300):
+            result.log_skip()
             return
     res = Sut.UNITOOL.set_config(BiosCfg.EQUIP_FLAG)
     if res:
