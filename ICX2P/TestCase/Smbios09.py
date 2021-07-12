@@ -139,7 +139,7 @@ class Type128Test:
 
 # Function to test a single type
 def smbios_test(ssh, type):
-    tcid = str(400+type)
+    tcid = str(400 + type)
     tc = (tcid, '[TC{0}]SMBIOS Type {1}'.format(tcid, type), '检查SMBIOS Type {0}信息'.format(type))
     result = ReportGen.LogHeaderResult(tc)
     expted_log = 'ICX2P\\Tools\\Smbios\\type{0}.txt'.format(type)
@@ -152,6 +152,9 @@ def smbios_test(ssh, type):
 
 # Test all types defined in list TYPES
 def smbios_test_all():
+    if not MiscLib.ping_sut(SutConfig.OS_IP, 60):
+        logging.info("Skip SMBIOS test.")
+        return
     for typeid in TYPES:
         smbios_test(Sut.OS_SSH, typeid)
 

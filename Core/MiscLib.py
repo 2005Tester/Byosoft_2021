@@ -12,7 +12,7 @@ from PIL import Image, ImageChops
 
 # check whether SUT is online
 def ping_sut(ip, timeout):
-    logging.info("Test network connection...")
+    logging.info("Ping SUT: {0}...".format(ip))
     ping_cmd = 'ping {0}'.format(ip)
     start_time = time.time()
     while True:
@@ -24,7 +24,7 @@ def ping_sut(ip, timeout):
             logging.info("SUT is online.")
             return True
         if time_spent > timeout:
-            logging.error("Lost SUT for %s seconds, check the network connection" % time_spent)
+            logging.error("Failed to ping SUT")
             return False
 
 
