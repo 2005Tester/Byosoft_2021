@@ -88,11 +88,19 @@ class SutControl:
                 logging.error(e)
                 break
 
-    @staticmethod
-    def find_msg(msg, data):
+    def find_msg(self, msg, data):
         if re.search(msg, data):
-            logging.debug("Found: \"{0}\"".format(msg))
+            logging.debug("Found: \"{0}\"".format(self._cleanup_print_msg(msg)))
             return True
+
+    # cleanup print message
+    def _cleanup_print_msg(self, data):
+        pat1 = r"{\d,\d}"
+        pat2 = r"\(.+\)"
+        dic = {pat1: "", pat2: ""}
+        for k, v in dic.items():
+            data = re.compile(k).sub(v, data)
+        return data
 
     def cleanup_data(self, data, save=True):
         pat1 = "\x1B[@-_][0-?]*[ -/]*[@-~]"
@@ -127,7 +135,7 @@ class SutControl:
                 break
 
     def is_msg_present_general(self, msg, delay=150, pw_prompt=None, pw=None, cleanup=True):
-        logging.debug("Waiting for:\"{0}\"".format(msg))
+        logging.debug("Waiting for:\"{0}\"".format(self._cleanup_print_msg(msg)))
         start_time = time.time()
         logging.debug("is_msg_present_general: receiving data from serial port...")
         if self.find_msg(msg, self.data):
@@ -159,7 +167,7 @@ class SutControl:
 
     # verify specified message (msg1) should not appeare in serial log, but msg2 should be present
     def is_msg_not_present(self, msg1, msg2):
-        logging.info("Waiting for:\"{0}\" not \"{1}\"".format(msg2, msg1))
+        logging.info("Waiting for:\"{0}\" not \"{1}\"".format(self._cleanup_print_msg(msg2), self._cleanup_print_msg(msg1)))
         start_time = time.time()
         logging.debug("is_msg_not_present: receiving data from serial port...")
         while True:
