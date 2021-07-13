@@ -110,7 +110,8 @@ class SutInit:
             password = self.sut.BMC_PASSWORD
             bmc_redfish = RedfishLib.Redfish(ip, user, password)
             return bmc_redfish
-        except AttributeError:
+        except Exception as e:
+            logging.error(e)
             logging.error("BMC IP not configured, skip initlize BMC SFTP interface")
 
     def init_os_sftp(self):

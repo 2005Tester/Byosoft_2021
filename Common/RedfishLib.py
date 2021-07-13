@@ -23,10 +23,11 @@ class Redfish(object):
         self.host = f"https://{bmc_ip}"
         self.user = user
         self.pw = pw
-        self.session = redfish.redfish_client(base_url=self.host, username=self.user, password=self.pw, timeout=5, max_retry=5)
+        self.session = None
 
     def login(self):
         try:
+            self.session = redfish.redfish_client(base_url=self.host, username=self.user, password=self.pw, timeout=5, max_retry=5)
             self.session.login(auth="basic")
             logging.info("Redfish login successfully")
         except InvalidCredentialsError:
