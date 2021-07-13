@@ -44,12 +44,12 @@ class sftp:
         except EOFError:
             logging.error('EOFError, retry after 60 seconds.')
             time.sleep(60)
-            self.login()
+            return self.login()
         except Exception as e:
             logging.error("Exception in SFTP login: {0}".format(e))
             logging.error("Retry login after 60 seconds")
             time.sleep(60)
-            self.login()
+            return self.login()
 
     def ls_dir(self, dir='.'):
         return self.sftp.listdir(dir)
@@ -123,15 +123,15 @@ class SshConnection:
         except NoValidConnectionsError:
             logging.error('NoValidConnectionsError, retry after 60 seconds.')
             time.sleep(60)
-            self.login()
+            return self.login()
         except TimeoutError:
             logging.info("TimeoutError, retry aftre 60 seconds.")
             time.sleep(60)
-            self.login()
+            return self.login()
         except ConnectionAbortedError:
             logging.info('ConnectionAbortedError, retry after 60 seconds.')
             time.sleep(60)
-            self.login()
+            return self.login()
         except Exception:
             logging.error("Error in ssh connection:", sys.exc_info()[0])
             return
