@@ -17,7 +17,7 @@ restored_rets = ['successfully', 'No override']
 
 
 def boot_device(boot='UEFI Boot', os="SUSE Linux Enterprise\(LUN0\) RAID CARD",
-                pxe='UEFI HTTPSv4: Intel Network - Port00 SLOT1'):
+                pxe=r'UEFI PXEv4:\([0-9A-Z\-]{17}\) - Port00 SLOT1'):
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_BOOT)
         assert SetUpLib.enter_menu(Key.DOWN, ['Boot Type Order'], 12, 'Hard Disk Drive')
