@@ -125,7 +125,7 @@ class SshConnection:
             time.sleep(60)
             return self.login()
         except TimeoutError:
-            logging.info("TimeoutError, retry aftre 60 seconds.")
+            logging.info("TimeoutError, retry after 60 seconds.")
             time.sleep(60)
             return self.login()
         except ConnectionAbortedError:
@@ -134,11 +134,13 @@ class SshConnection:
             return self.login()
         except Exception:
             logging.error("Error in ssh connection:", sys.exc_info()[0])
-            return
+            logging.info("Retry after 60 seconds.")
+            time.sleep(60)
+            return self.login()
 
     # execute command on SUT
     def execute_command(self, command):
-        logging.debug("Sending: {0}".format(command))
+        logging.info("Sending: {0}".format(command))
         stdin, stdout, stderr = self.ssh_client.exec_command(command)
         res = stdout.read().decode()
         self.close_session()
