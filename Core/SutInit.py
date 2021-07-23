@@ -112,7 +112,7 @@ class SutInit:
             return bmc_redfish
         except Exception as e:
             logging.error(e)
-            logging.error("BMC IP not configured, skip initlize BMC SFTP interface")
+            logging.error("BMC IP not configured, skip initlize BMC Redfish interface")
 
     def init_os_sftp(self):
         try:

@@ -67,8 +67,11 @@ class NonDepTest(Redfish):
         for dep in dep_data:
             mapfrom = {mf["MapFromAttribute"]: mf["MapFromValue"] for mf in dep["Dependency"]["MapFrom"]}
             for mf_key, mf_value in mapfrom.items():
-                if self.att_pd.loc[mf_key, "DefaultValue"] != mf_value:  # 有联动关系但默认情况不关联的视为非关联项，可直接修改
-                    continue
+                try:
+                    if self.att_pd.loc[mf_key, "DefaultValue"] != mf_value:  # 有联动关系但默认情况不关联的视为非关联项，可直接修改
+                        continue
+                except Exception as e:
+                    logging.error(f"{e} missing in attributes list")
             mapto_name = dep["Dependency"]["MapToAttribute"]
             mapto_property = dep["Dependency"]["MapToProperty"]
             mapto_value = dep["Dependency"]["MapToValue"]
