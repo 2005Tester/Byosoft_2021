@@ -299,7 +299,7 @@ def Testcase_MemRAS_033():
 @bios_setting("Default")
 def Testcase_MemRAS_034():
     if os_ssh.open_shell():
-        os_ssh.env_set()
+        os_ssh.install_driver()
         check_info("./unitool -r ScrambleEn", sys._getframe().f_code.co_name)
         os_ssh.close_shell()
 

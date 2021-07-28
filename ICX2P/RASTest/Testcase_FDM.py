@@ -343,7 +343,7 @@ def Testcase_FDM_MEM_RAS_011():
 # 13 内存CE阈值和漏桶值测试
 def Testcase_FDM_MEM_RAS_013():
     if os_ssh.open_shell():
-        os_ssh.env_set()
+        os_ssh.install_driver()
         check_info("./unitool -r spareErrTh", sys._getframe().f_code.co_name)
         os_ssh.close_shell()
 

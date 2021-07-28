@@ -207,6 +207,36 @@ def bios_setting(name):
     return setting_decorator
 
 
+def set_msp(enable: bool):
+    en_cmd = ["raw 0x30 0x92 0xDB 0x07 0x00 0x42 0x01", "raw 0x30 0x92 0xDB 0x07 0x00 0x42 0x05"]
+    dis_cmd = ["raw 0x30 0x92 0xDB 0x07 0x00 0x42 0x00", "raw 0x30 0x92 0xDB 0x07 0x00 0x42 0x04"]
+    success_flag = "db 07 00"
+    ipmi_tool = os.path.abspath(f"{os.path.dirname(sys.argv[0])}/../Tools/ipmitool/ipmitool.exe")
+    print(ipmi_tool)
+    ipmicmd, flag = (en_cmd, "enable") if enable else (dis_cmd, "disable")
+    failed = 0
+    for icmd in ipmicmd:
+        p = subprocess.Popen(args=f"{ipmi_tool} -I lanplus -H {BMC_IP} -U {BMC_USER} -P {BMC_PW} {icmd}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        (stdoutput, erroutput) = p.communicate()
+        if success_flag not in stdoutput.decode('gbk'):
+            failed += 1
+    if failed == 0:
+        logcustom(f"ipmitool set msp to '{flag}' successfully", "igreen")
+    else:
+        logcustom(f"ipmitool set msp to '{flag}' failed: {stdoutput.decode('gbk')}", "ired")
+    return failed==0
+
+
+# 装饰器，ipmi修改msp配置, 测试前开启MSP，测试完成后关闭MSP
+def msp_enable(func):
+    def wrapper(*args, **kwargs):
+        set_msp(enable=True)
+        func_return = func(*args, **kwargs)
+        set_msp(enable=False)
+        return func_return
+    return wrapper
+
+
 def force_power_cycle(bmc_ssh=bmc):
     logcustom("BMC Force Power Cycle...", "icyan")
     cmd_powercycle = 'ipmcset -d frucontrol -v 2\n'
@@ -272,7 +302,10 @@ def bmc_dump(ssh, path, name):
     old_files = [b for b in files if (".bin" in b) or ("dump_info.tar.gz" in b)]
     if old_files:
         for old in old_files:
-            sftp.remove(old)
+            try:
+                sftp.remove(old)
+            except Exception as e:
+                logcustom(f"Remove {old} failed: {e}", "ired")
             logcustom("Remove {}!".format(old), "icyan")
     logcustom("Start BMC dump, Please wait...", "icyan")
     if ssh.execute_command(cmd_diag):  # default close session, re-open in next step

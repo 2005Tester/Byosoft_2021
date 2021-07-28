@@ -76,7 +76,7 @@ def Testcase_CPURAS_011():
 @bios_setting("Default")
 def Testcase_CPURAS_012():
     if os_ssh.open_shell():
-        os_ssh.env_set()
+        os_ssh.install_driver()
         check_info("./unitool -r LmceEn", sys._getframe().f_code.co_name)
     print("msr(0x179)={:0>64b}".format(excmd("msr(0x179)")))
     print("msr(0x4D0)={:0>64b}".format(excmd("msr(0x4d0)")))
@@ -115,7 +115,7 @@ def Testcase_CPURAS_017():
     excmd(Cmd.kti_mc_st, _halt=False, _go=False)
 
 # 18 UPI全带宽，PH_TDC [7:0]范围单lane或多lane故障
-@bios_setting("Default")
+@bios_setting("UpiFailover")
 def Testcase_CPURAS_018():
     excmd(Cmd.upi_top)
     excmd(Cmd.inj_upi_failover.format(usocket, uport, 1, hex(0x2)))
@@ -123,7 +123,7 @@ def Testcase_CPURAS_018():
     excmd(Cmd.upi_top)
 
 # 19 UPI全带宽，PH_TDC [19:12]范围单lane或多lane故障
-@bios_setting("Default")
+@bios_setting("UpiFailover")
 def Testcase_CPURAS_019():
     excmd(Cmd.upi_top)
     excmd(Cmd.inj_upi_failover.format(usocket, uport, 1, hex(0x2000)))
@@ -131,7 +131,7 @@ def Testcase_CPURAS_019():
     excmd(Cmd.upi_top)
 
 # 20 UPI全带宽，PH_RDC [7:0]范围单lane或多lane故障
-@bios_setting("Default")
+@bios_setting("UpiFailover")
 def Testcase_CPURAS_020():
     excmd(Cmd.upi_top)
     excmd(Cmd.inj_upi_failover.format(usocket, uport, 0, hex(0x2)))
@@ -139,7 +139,7 @@ def Testcase_CPURAS_020():
     excmd(Cmd.upi_top)
 
 # 21 UPI全带宽，PH_RDC [19:12]范围单lane或多lane故障
-@bios_setting("Default")
+@bios_setting("UpiFailover")
 def Testcase_CPURAS_021():
     excmd(Cmd.upi_top)
     excmd(Cmd.inj_upi_failover.format(usocket, uport, 0, hex(0x2000)))
@@ -147,7 +147,7 @@ def Testcase_CPURAS_021():
     excmd(Cmd.upi_top)
 
 # 22 16bit CRC UPI链路保护测试
-@bios_setting("Default")
+@bios_setting("UpiFailover")
 def Testcase_CPURAS_022():
     excmd(Cmd.upi_top)
     excmd(Cmd.inj_upi_failover.format(usocket, uport, 0, hex(0x2000)))

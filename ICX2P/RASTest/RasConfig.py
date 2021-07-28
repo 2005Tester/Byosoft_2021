@@ -17,7 +17,7 @@ OS_PW = "root"
 # BMC配置信息
 BMC_IP = "192.168.2.101"
 BMC_USER = "Administrator"
-BMC_PW = "admin@9000"
+BMC_PW = "Admin@9001"
 
 # 【首次测试请确认配置】
 # "startCscripts.py" 文件的路径
@@ -261,6 +261,11 @@ class Bios:
         "PclsEn": 1,
         "ADDDCEn": 1,
         "spareErrTh": 1,
+    }
+
+    UpiFailover = {
+        "KtiLinkL0pEn": 0,
+        "KtiLinkL1En": 0
     }
 
     IERR = {
