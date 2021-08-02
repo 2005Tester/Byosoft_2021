@@ -90,7 +90,7 @@ Os.boot_to_suse_mfg(),equip,Yes,Yes,Yes
 Smbios09.smbios_type128(),equip,Yes,Yes,Yes
 MemInit02.rmt_equip_test(),equip,,Yes,Yes
 Legacy.boot_to_legacy_os(),legacy,Yes,,
+PcieInit04.pcie_resource_lspci_legacy(),legacy,,Yes,Yes
 BootDevice06.boot_device_type_002(),legacy,,Yes,Yes
 BootDevice06.boot_order_010(),legacy,,Yes,Yes
 Io05.system_info_002(),legacy,,Yes,Yes
-PcieInit04.pcie_resource_lspci_legacy(),legacy,,Yes,Yes
