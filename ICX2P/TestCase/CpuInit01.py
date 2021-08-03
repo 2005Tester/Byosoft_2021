@@ -415,7 +415,8 @@ def numa_02():
         assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE, 170)
         logging.info("Suse_OS Boot Successful")
         numa_h = SshLib.execute_command(Sut.OS_SSH, Num_cmd)
-        numa_n =int(numa_h.split("nodes")[0].split(":")[1].replace(' ', '')) #获取CPU数量
+        assert numa_h
+        numa_n = int(numa_h.split("nodes")[0].split(":")[1].replace(' ', '')) #获取CPU数量
         i = 0
         for i in range(numa_n):
             numa_var = list(numa_h.split("node   0   1")[1].split(r'{}:'.format(i))[1].splitlines()[0].replace('  ', ' '). strip().split(' '))
@@ -423,7 +424,7 @@ def numa_02():
             if numa_var[i] == '10': #  CPU自己与自己距离为‘10’
                 logging.info("内部CPU距离正常")
                 numa_var.pop(i)
-                for j in range(numa_n-1):
+                for j in range(numa_n - 1):
                     if numa_var[j] =='20': # CPU与其他cpu 距离为‘20’
                         logging.info("外部CPU距离正常")
                     else:
@@ -503,10 +504,14 @@ def cpu_compa_03():
     try:
         assert BmcLib.force_reset()
         # HT-enabled查看物理CPU中core数量
-        Core_Count = SshLib.execute_command(Sut.OS_SSH, r'cat /proc/cpuinfo| grep "cpu cores"| uniq').split(':')[1].replace(' ', '').strip('\n')
+        res = SshLib.execute_command(Sut.OS_SSH, r'cat /proc/cpuinfo| grep "cpu cores"| uniq')
+        assert res
+        Core_Count = res.split(':')[1].replace(' ', '').strip('\n')
         logging.info("**Core_Count = {}".format(Core_Count))
         # 查看逻辑CPU的个数
-        Logical_CPU = SshLib.execute_command(Sut.OS_SSH, r'cat /proc/cpuinfo| grep "processor"| wc -l').strip('\n')
+        res = SshLib.execute_command(Sut.OS_SSH, r'cat /proc/cpuinfo| grep "processor"| wc -l')
+        assert res
+        Logical_CPU = res.strip('\n')
         logging.info("**Core_Enabled = {}".format(Logical_CPU))
         if Core_Count == '28' and Logical_CPU == '112':
             logging.info("**Core_Count pass, Logical_CPU pass**")
@@ -518,10 +523,14 @@ def cpu_compa_03():
         assert SetUpLib.verify_info(ht_bef, 2)
         SetUpLib.send_keys([Key.F6, Key.F10, Key.Y], 3)
         # HT-disabled 查看物理CPU中core数量
-        Core_Count = SshLib.execute_command(Sut.OS_SSH, r'cat /proc/cpuinfo| grep "cpu cores"| uniq').split(':')[1].replace(' ', '').strip('\n')
+        res = SshLib.execute_command(Sut.OS_SSH, r'cat /proc/cpuinfo| grep "cpu cores"| uniq')
+        assert res
+        Core_Count = res.split(':')[1].replace(' ', '').strip('\n')
         logging.info("**Core_Count = {}**".format(Core_Count))
         # 查看逻辑CPU的个数
-        Logical_CPU = SshLib.execute_command(Sut.OS_SSH, r'cat /proc/cpuinfo| grep "processor"| wc -l').strip('\n')
+        res = SshLib.execute_command(Sut.OS_SSH, r'cat /proc/cpuinfo| grep "processor"| wc -l')
+        assert res
+        Logical_CPU = res.strip('\n')
         logging.info("**Core_Enabled = {}**".format(Logical_CPU))
         if Core_Count == '28' and Logical_CPU == '56':
             logging.info("**Core_Count pass, Logical_CPU pass**")
@@ -555,7 +564,9 @@ def cpu_compa_05():
         assert SetUpLib.verify_info(mic_version, 6)
         assert BmcLib.force_reset()
         # OS中 查看CPU微码
-        mic_ver = SshLib.execute_command(Sut.OS_SSH, r'cat /sys/devices/system/cpu/cpu0/microcode/version').strip('\n')
+        res = SshLib.execute_command(Sut.OS_SSH, r'cat /sys/devices/system/cpu/cpu0/microcode/version')
+        assert res
+        mic_ver = res.strip('\n')
         logging.info("**mic_ver = {}**".format(mic_ver))
         if mic_ver == '0xd0002a0':
             logging.info("The microcode-version in OS is the same as that in BIOS")
@@ -586,14 +597,16 @@ def cpu_compa_06():
         assert SetUpLib.verify_info(pro_ver, 20)
         assert BmcLib.force_reset()
         # 在smbios4中检查：cpu型号，频率，个数
-        cpu_version = \
-        SshLib.execute_command(Sut.OS_SSH, r'dmidecode -t 4 | grep "Version:" ').replace('\n', '').split(':')[-1].strip()
+        res = SshLib.execute_command(Sut.OS_SSH, r'dmidecode -t 4 | grep "Version:" ')
+        assert res
+        cpu_version = res.replace('\n', '').split(':')[-1].strip()
         if cpu_version == 'Intel(R) Xeon(R) Gold 6330 CPU @ 2.00GHz':
             logging.info('cpu_version is ok')
         else:
             logging.info('Different, please check')
             return result.log_fail(capture=True)
         cpu_num = SshLib.execute_command(Sut.OS_SSH, r'dmidecode -t 4 | grep "Socket Designation:" ')
+        assert cpu_num
         if 'CPU01' in cpu_num:
             if 'CPU02' in cpu_num:
                 logging.info('cpu_num is ok')
