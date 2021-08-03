@@ -1,7 +1,6 @@
 import re
 import logging
 import os
-import time
 from Common.LogAnalyzer import LogAnalyzer
 
 

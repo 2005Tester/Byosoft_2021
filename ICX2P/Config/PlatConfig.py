@@ -159,6 +159,11 @@ class Msg:
 
 # BIOS configuration to be set by unitool
 class BiosCfg:
+
+    ActiveCpuCores_Default = {
+        'ActiveCpuCores': 0
+    }
+
     MFG_RMT = {
         "EquipMentModeFlag": 1,
         "EnableBiosSsaRMT": 1,

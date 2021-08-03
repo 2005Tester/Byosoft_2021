@@ -2,7 +2,7 @@ import logging
 from Core import SerialLib, SshLib, MiscLib
 from Core.SutInit import Sut
 from ICX2P.Config import SutConfig
-from ICX2P.Config.PlatConfig import Key, Msg
+from ICX2P.Config.PlatConfig import BiosCfg, Key, Msg
 from ICX2P.BaseLib import SetUpLib, BmcLib
 from Report import ReportGen
 
@@ -29,20 +29,17 @@ def acpidump():
 # function Module : 使用unitool还原bios setting
 def reset_cpu_setting(cmd_var):
     logging.info("Reseting CPU settings.")
-    cmd = eval("dict(%s)" % cmd_var.replace(":", "="))
-    if not BmcLib.force_reset():
-        logging.info('power off-on fail')
-        return False
-    if not MiscLib.ping_sut(SutConfig.OS_IP, 300):
-        logging.info('boot linux-suse fail')
-        return False
-    if not Sut.UNITOOL.write(**cmd):
+    if not MiscLib.ping_sut(SutConfig.OS_IP, 60):
+        SetUpLib.boot_suse_from_bm()
+        if not MiscLib.ping_sut(SutConfig.OS_IP, 300):
+            return
+    if not Sut.UNITOOL.write(**cmd_var):
         logging.info('unitool write_in fail')
-        return False
+        return
     logging.info("unitool.write_in pass")
-    if not Sut.UNITOOL.check(**cmd):
+    if not Sut.UNITOOL.check(**cmd_var):
         logging.info('check unitool_write fail')
-        return False
+        return
     logging.info('Modify bios setting to default setting by unipwd tool, Pass')
     return True
 
@@ -50,7 +47,6 @@ def reset_cpu_setting(cmd_var):
 #  function Module, TC205,TC206,TC207 调用
 def cpu_cores_active_enable(num, set_n):
     ACT_CPU_CORES = ['Active Processor Cores', '<All>']
-    cmd_var = 'ActiveCpuCores:0'
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.ACT_CPU_CORES)
@@ -68,13 +64,14 @@ def cpu_cores_active_enable(num, set_n):
         # boot suse #
         assert BmcLib.force_reset()
         # 每个CPU下只有num个core。
-        res1 = SshLib.execute_command(Sut.OS_SSH, r'lscpu | grep " per socket" ').replace('\n', '').split(':')[-1].strip()
+        res1 = SshLib.execute_command(Sut.OS_SSH, r'lscpu | grep " per socket" ')
         assert res1
+        res1 = res1.replace('\n', '').split(':')[-1].strip()
         if int(res1) == num:
             logging.info("**Core Enable pass**")
         else:
-            logging.info("**Core Enable eorro**")
-            return False
+            logging.info("**Core Enable error**")
+            return
         # 在smbios4中检查：Core数量为总数，Core Enable为num，线程数为Enabled核数的两倍 #
         smbios4_Core_Count = SshLib.execute_command(Sut.OS_SSH, r'dmidecode -t 4 | grep "Core Count" ').replace('\n', '').split(':')[-1].strip()
         logging.info("**Core_Count = {}**".format(smbios4_Core_Count))
@@ -86,14 +83,13 @@ def cpu_cores_active_enable(num, set_n):
             logging.info("**Core_Count pass, Core_Enabled pass,Thread_Count pass")
         else:
             logging.info("**Core eorro**")
-            return False
+            return
         # 使用 unitool 还原 'Active Processor Cores', '<All>' #
         logging.info("正常还原")
         return True
     except AssertionError:
         logging.info("异常还原")
-    finally:
-        reset_cpu_setting(cmd_var)
+
 
 # Testcase_CPU_COMPA_015, 016 - TBD
 # Precondition: NA
@@ -231,6 +227,8 @@ def cpu_cores_active_enable_1():
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
+    finally:
+        reset_cpu_setting(BiosCfg.ActiveCpuCores_Default)
 
 
 def cpu_cores_active_enable_middle():
@@ -243,6 +241,8 @@ def cpu_cores_active_enable_middle():
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
+    finally:
+        reset_cpu_setting(BiosCfg.ActiveCpuCores_Default)
 
 
 def cpu_cores_active_enable_max():
@@ -255,6 +255,8 @@ def cpu_cores_active_enable_max():
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
+    finally:
+        reset_cpu_setting(BiosCfg.ActiveCpuCores_Default)
 
 
 # Verify CPU disable Processor Cores,the system runs normally
