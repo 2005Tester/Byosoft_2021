@@ -89,7 +89,7 @@ class LogHeaderResult:
             filename = 'TC' + self.tc[0] + '_' + str(self.suffix) + ".jpg"
             file_path = os.path.join(self.imgdir, filename)
         try:
-            bmc = importlib.import_module(name='.BaseLib.BmcLib', package=var.get('projectt'))
+            bmc = importlib.import_module(name='.BaseLib.BmcLib', package=var.get('project'))
             bmc.capture_kvm_screen(self.imgdir, filename)
             logging.info("Screen captured by BMC: {0}".format(filename))
         except Exception as e:
