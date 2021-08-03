@@ -131,7 +131,7 @@ def usb_test():
         return
 
     if not SetUpLib.verify_info(msg_list, 7):
-        result.log_fail()
+        result.log_fail(capture=True)
         return
     result.log_pass()
     return True

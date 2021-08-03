@@ -13,6 +13,7 @@ import logging
 import requests
 import glob
 import pyautogui
+import importlib
 import logging.config
 from Core.SutInit import Sut
 from Core import var
@@ -88,12 +89,19 @@ class LogHeaderResult:
             filename = 'TC' + self.tc[0] + '_' + str(self.suffix) + ".jpg"
             file_path = os.path.join(self.imgdir, filename)
         try:
-            screen = pyautogui.screenshot()
-            screen.save(os.path.join(self.imgdir, file_path))
-            logging.info("Screen captured: {0}".format(filename))
+            bmc = importlib.import_module(name='.BaseLib.BmcLib', package=var.get('projectt'))
+            bmc.capture_kvm_screen(self.imgdir, filename)
+            logging.info("Screen captured by BMC: {0}".format(filename))
         except Exception as e:
-            logging.info("Failed to capture screen.")
+            logging.error("Failed to capture screen by bmc.")
             logging.error(e)
+            try:
+                screen = pyautogui.screenshot()
+                screen.save(os.path.join(self.imgdir, file_path))
+                logging.info("Screen captured by host: {0}".format(filename))
+            except Exception as e:
+                logging.info("Failed to capture screen.")
+                logging.error(e)
 
 
 class ReportGenerator:
