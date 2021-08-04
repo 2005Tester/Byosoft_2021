@@ -26,7 +26,10 @@ class LogHeaderResult:
     def __init__(self, tc, imgdir=None):
         self.tc = tc
         self.serial = Sut.BIOS_COM
-        self.imgdir = imgdir
+        if imgdir:
+            self.imgdir = imgdir
+        else:
+            self.imgdir = var.get('log_dir')
         self.suffix = 1
         self.msg_start = '<TC{0}><Tittle>{1}:Start'.format(tc[0], tc[1])
         self.msg_description = '<TC{0}><Description>{1}'.format(tc[0], tc[2])
@@ -52,18 +55,18 @@ class LogHeaderResult:
         logging.info(self.msg_pass)
         var.increase('num_pass')
         self.log_progress()
-        logging.info("-"*80)
+        logging.info("-" * 80)
         if self.serial:
             self.msg_serial = '\n##### TC{0} {1}: Pass #####\n'.format(self.tc[0], self.tc[1])
             self.serial.write_data2log(self.msg_serial)
 
-    def log_fail(self, capture=None):
+    def log_fail(self, capture=True):
         if capture:
             self.capture_screen()
         logging.info(self.msg_fail)
         var.increase('num_fail')
         self.log_progress()
-        logging.info("-"*80)
+        logging.info("-" * 80)
         if self.serial:
             self.msg_serial = '\n##### TC{0} {1}: Fail #####\n'.format(self.tc[0], self.tc[1])
             self.serial.write_data2log(self.msg_serial)
@@ -72,13 +75,13 @@ class LogHeaderResult:
         logging.info(self.msg_skip)
         var.increase('num_skip')
         self.log_progress()
-        logging.info("-"*80)
+        logging.info("-" * 80)
         if self.serial:
             self.msg_serial = '\n##### TC{0} {1}: Skip #####\n'.format(self.tc[0], self.tc[1])
             self.serial.write_data2log(self.msg_serial)
 
     def capture_screen(self):
-        filename = 'TC' + self.tc[0] + '_' + str(self.suffix) + ".jpg"
+        filename = 'TC' + self.tc[0] + '_' + str(self.suffix)
         if self.imgdir:
             file_path = os.path.join(self.imgdir, filename)
         else:
@@ -86,7 +89,7 @@ class LogHeaderResult:
             return
         if os.path.exists(file_path):
             self.suffix += 1
-            filename = 'TC' + self.tc[0] + '_' + str(self.suffix) + ".jpg"
+            filename = 'TC' + self.tc[0] + '_' + str(self.suffix)
             file_path = os.path.join(self.imgdir, filename)
         try:
             bmc = importlib.import_module(name='.BaseLib.BmcLib', package=var.get('project'))
@@ -97,7 +100,7 @@ class LogHeaderResult:
             logging.error(e)
             try:
                 screen = pyautogui.screenshot()
-                screen.save(os.path.join(self.imgdir, file_path))
+                screen.save(file_path + '.jpg')
                 logging.info("Screen captured by host: {0}".format(filename))
             except Exception as e:
                 logging.info("Failed to capture screen.")
