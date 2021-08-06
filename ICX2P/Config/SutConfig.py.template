@@ -90,7 +90,12 @@ pwd_info = 'The current password is the default password.Please update password!
 
 
 # CPU, DIMM info
-CPU_info = ['Processor ID\s+000606A6', 'Processor Frequency\s+2.000GHz']
+CPU_TYPE = "\s*".join("6330")
+CPU_FREQ = "2.0"
+PRO_ID = "000606A6"
+
+CPU_info = [f'Processor ID\s+{PRO_ID}', f'Processor Frequency\s+(?:{CPU_FREQ}00GHz.*){SysCfg.CPU_CNT}']
+CPU_SKU = [f"Processor {cpu+1} Version \s+Intel\(R\) Xeon\(R\) Gold {CPU_TYPE} CPU @ {CPU_FREQ}0GHz" for cpu in range(SysCfg.CPU_CNT)]
 DIMM_info = ['DIMM020\(C\)\s+S0.CC.D0:2933MT/s Hynix DRx4 32GB RDIMM',
              'DIMM160\(G\)\s+S1.CG.D0:2933MT/s Hynix DRx4 32GB RDIMM']
 

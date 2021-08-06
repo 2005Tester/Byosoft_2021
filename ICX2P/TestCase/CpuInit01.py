@@ -587,14 +587,11 @@ def cpu_compa_05():
 def cpu_compa_06():
     tc = ('217', '[TC217] Testcase_CPU_COMPA_006', 'CPU信息显示测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
-    pro_fre = ['Processor Frequency\s+2.000GHz+|\s+2.000GHz']
-    pro_ver = ['Processor 1 Version \s+Intel\(R\) Xeon\(R\) Gold 6 \s+330 CPU @ 2.00GHz',
-               'Processor 2 Version \s+Intel\(R\) Xeon\(R\) Gold 6 \s+330 CPU @ 2.00GHz']
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.UP, Msg.PATH_PER_CPU_INFO, 20, Msg.PER_CPU)
-        assert SetUpLib.verify_info(pro_fre, 20)
-        assert SetUpLib.verify_info(pro_ver, 20)
+        assert SetUpLib.verify_info([SutConfig.CPU_info[1]], 20)
+        assert SetUpLib.verify_info(SutConfig.CPU_SKU, 20)
         assert BmcLib.force_reset()
         # 在smbios4中检查：cpu型号，频率，个数
         res = SshLib.execute_command(Sut.OS_SSH, r'dmidecode -t 4 | grep "Version:" ')

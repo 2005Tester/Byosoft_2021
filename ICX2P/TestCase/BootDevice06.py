@@ -16,7 +16,7 @@ restored_cmds = ['ipmcset -d bootdevice -v 0\n', 'ipmcget -d bootdevice\n']
 restored_rets = ['successfully', 'No override']
 
 
-def boot_device(boot='UEFI Boot', os="SUSE Linux Enterprise\(LUN0\) RAID CARD",
+def boot_device(boot='UEFI Boot', os=Msg.BOOT_OPTION_OS[0],
                 pxe=r'UEFI PXEv4:\([0-9A-Z\-]{17}\) - Port00 SLOT1'):
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_BOOT)

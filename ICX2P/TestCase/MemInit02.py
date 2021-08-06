@@ -44,19 +44,6 @@ def navigate_to_cke():
         logging.info("navigate_to_cke: Fail")
 
 
-# used to set mem freq test
-def navegate_to_mem_fre_option(n=1):
-    try:
-        assert SetUpLib.boot_to_page(Msg.CPU_CONFIG), "boot_to_page -> fail"
-        assert SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, Msg.MEMORY_CONFIG], 10, Msg.MEM_FRE), "enter_menu -> fail"
-        assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM_FRE, '<Auto>'], 14), "locate_option -> fail"
-        SetUpLib.send_keys([Key.F6 * n, Key.F10, Key.Y])
-        assert SetUpLib.continue_to_boot_suse_from_bm(), "boot_to_os -> fail"
-        return True
-    except AssertionError:
-        return
-
-
 # Precondition: BIOS默认密码
 # OnStart: NA
 # OnComplete: BIOS Setup
@@ -438,43 +425,45 @@ def rmt_equip_test():
 def set_mem_freq_001_006(n=1):
     tc = ('714', '[TC714] Testcase_SetMemFreq_001_006', '01-06 内存频率选项测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
-    result_list = []
-    try:
-        assert SetUpLib.boot_to_page('BIOS Revision'), "boot_to_page -> fail"
-        if SetUpLib.verify_info(['System Memory Speed\s+2666 MT\/s'], 12):
-            logging.info('DIMM FRE is 2666 MT/s')
-            assert navegate_to_mem_fre_option(), '2666-dimm_2666_mem_freq_test -> fail'
-        elif SetUpLib.verify_info(['System Memory Speed\s+2933 MT\/s'], 12):
-            logging.info('DIMM FRE is 2933 MT/s')
-            # '2933-dimm_2666_mem_freq_test -> fail'
-            if not navegate_to_mem_fre_option():
-                result_list.append('1')
-            # '2933-dimm_2933_mem_freq_test -> fail'
-            if not navegate_to_mem_fre_option(2):
-                result_list.append('2')
-        elif SetUpLib.verify_info(['System Memory Speed\s+3200 MT\/s'], 12):
-            logging.info('DIMM FRE is 3200 MT/s')
-            for i in range(n):
-                # '3200-dimm_2666_mem_freq_test -> fail'
-                if not navegate_to_mem_fre_option():
-                    result_list.append('3')
-                # '3200-dimm_2933_mem_freq_test -> fail'
-                if not navegate_to_mem_fre_option(2):
-                    result_list.append('4')
-                # '3200-dimm_3200_mem_freq_test -> fail'
-                if not navegate_to_mem_fre_option(3):
-                    result_list.append('5')
-        else:
-            logging.info('Not supported this dimm type, break out')
+    freq_values = ["Auto", "2666", "2933", "3200"]
 
-        logging.debug(result_list)
-        # check the result,
-        if len(result_list) == 0:
-            result.log_pass()
-            return True
-        else:
-            raise AssertionError
-    except AssertionError:
+    def ddr_boot_freq():
+        try:
+            assert BmcLib.force_reset()
+            dimm_info = SerialLib.cut_log(Sut.BIOS_COM, "START_DIMMINFO_SYSTEM_TABLE", "STOP_DIMMINFO_SYSTEM_TABLE", 20, 300)
+            assert dimm_info, "Invalid Dimm info table"
+            ddr_freq = re.search("DDR Freq.*?DDR4-(\d+)", dimm_info)
+            assert ddr_freq, "Current DDR Freq not found"
+            ddr_freq_default = ddr_freq.group(1)
+            logging.info("Current DDR frequency is: {} MHz".format(ddr_freq_default))
+            return ddr_freq_default
+        except Exception as e:
+            logging.info(e)
+
+    try:
+        for r in range(n):
+            default_freq = ddr_boot_freq()
+            assert default_freq
+            assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
+            assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_CONFIG, 10, "PPR Type")
+            freq_support = SetUpLib.get_all_values("Memory Frequency", Key.DOWN, 5)
+            assert MiscLib.same_values(freq_support, freq_values)
+            for freq in ["2666", "3200"]:
+                assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+                assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_CONFIG, 10, "PPR Type")
+                assert SetUpLib.set_option_value("Memory Frequency", freq, save=True)
+                boot_freq = ddr_boot_freq()
+                assert boot_freq
+                if freq == "2666":
+                    assert boot_freq == freq, f"Set Memory Frequency to {freq} but check boot log mismatch"
+                if freq == "3200":
+                    assert boot_freq == default_freq, f"Current DDR Freq: {boot_freq} not match with default memory frequency"
+                logging.info(f"Check memory freuency match with {freq} Mhz")
+                assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
+        result.log_pass()
+        return True
+    except Exception as e:
+        logging.error(e)
         result.log_fail(capture=True)
     finally:
         BmcLib.clear_cmos()

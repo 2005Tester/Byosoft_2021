@@ -322,7 +322,7 @@ class SutControl:
             try_counts -= 1
 
     # Enter specifc setup menu by given path(list)
-    def enter_menu(self, key, option_path, try_counts, confirm_msg, timeout=15):
+    def enter_menu(self, key, option_path, try_counts, confirm_msg, timeout=20):  # increase delay for os boot
         logging.info("Go to setup menu:{0}".format(option_path))
         for option in option_path:
             logging.info("Locate menu: {0}".format(option))
