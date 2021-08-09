@@ -429,29 +429,33 @@ def set_mem_freq_001_006(n=1):
 
     def ddr_boot_freq():
         try:
-            assert BmcLib.force_reset()
             dimm_info = SerialLib.cut_log(Sut.BIOS_COM, "START_DIMMINFO_SYSTEM_TABLE", "STOP_DIMMINFO_SYSTEM_TABLE", 20, 300)
             assert dimm_info, "Invalid Dimm info table"
             ddr_freq = re.search("DDR Freq.*?DDR4-(\d+)", dimm_info)
             assert ddr_freq, "Current DDR Freq not found"
             ddr_freq_default = ddr_freq.group(1)
-            logging.info("Current DDR frequency is: {} MHz".format(ddr_freq_default))
+            logging.info("**Current DDR frequency is: {} MHz".format(ddr_freq_default))
             return ddr_freq_default
         except Exception as e:
-            logging.info(e)
+            logging.error(e)
 
     try:
         for r in range(n):
+            assert BmcLib.force_reset()
             default_freq = ddr_boot_freq()
             assert default_freq
+            logging.info("**Check whether supported frequency values are correct.")
             assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
             assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_CONFIG, 10, "PPR Type")
             freq_support = SetUpLib.get_all_values("Memory Frequency", Key.DOWN, 5)
             assert MiscLib.same_values(freq_support, freq_values)
+            logging.info("**Supported frequency values verified.")
             for freq in ["2666", "3200"]:
+                logging.info("**Set memory frequenct to: {0}".format(freq))
                 assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
                 assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_CONFIG, 10, "PPR Type")
                 assert SetUpLib.set_option_value("Memory Frequency", freq, save=True)
+                logging.info("**Verifying current memory frequency.")
                 boot_freq = ddr_boot_freq()
                 assert boot_freq
                 if freq == "2666":
