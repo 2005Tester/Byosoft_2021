@@ -98,6 +98,10 @@ CPU_info = [f'Processor ID\s+{PRO_ID}', f'Processor Frequency\s+(?:{CPU_FREQ}00G
 CPU_SKU = ["Processor {0} Version \s+Intel\(R\) Xeon\(R\) Gold {1} CPU @ {2}0GHz"
            .format(cpu + 1, "\s*".join(CPU_TYPE), CPU_FREQ) for cpu in range(SysCfg.CPU_CNT)]
 
+DIMM_info = ['DIMM020\(C\)\s+S0.CC.D0:2933MT/s Hynix DRx4 32GB RDIMM',
+             'DIMM160\(G\)\s+S1.CG.D0:2933MT/s Hynix DRx4 32GB RDIMM']
+
+
 # Common key order
 key2Setup = [Key.RIGHT, Key.RIGHT, Key.DOWN, Key.ENTER]
 key2pwd = [Key.RIGHT, Key.RIGHT, Key.RIGHT]
