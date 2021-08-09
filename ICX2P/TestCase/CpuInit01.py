@@ -1,4 +1,6 @@
 import logging
+import re
+
 from Core import SerialLib, SshLib, MiscLib
 from Core.SutInit import Sut
 from ICX2P.Config import SutConfig
@@ -590,32 +592,22 @@ def cpu_compa_06():
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.UP, Msg.PATH_PER_CPU_INFO, 20, Msg.PER_CPU)
-        assert SetUpLib.verify_info([SutConfig.CPU_info[1]], 20)
+        assert SetUpLib.verify_info(SutConfig.CPU_info, 20)
         assert SetUpLib.verify_info(SutConfig.CPU_SKU, 20)
         assert BmcLib.force_reset()
         # 在smbios4中检查：cpu型号，频率，个数
+        expect_cpu_type = f'Intel\(R\) Xeon\(R\) Gold {SutConfig.CPU_TYPE} CPU @ {SutConfig.CPU_FREQ}0GHz'
         res = SshLib.execute_command(Sut.OS_SSH, r'dmidecode -t 4 | grep "Version:" ')
-        assert res
-        cpu_version = res.replace('\n', '').split(':')[-1].strip()
-        if cpu_version == 'Intel(R) Xeon(R) Gold 6330 CPU @ 2.00GHz':
-            logging.info('cpu_version is ok')
-        else:
-            logging.info('Different, please check')
-            return result.log_fail(capture=True)
-        cpu_num = SshLib.execute_command(Sut.OS_SSH, r'dmidecode -t 4 | grep "Socket Designation:" ')
-        assert cpu_num
-        if 'CPU01' in cpu_num:
-            if 'CPU02' in cpu_num:
-                logging.info('cpu_num is ok')
-            else:
-                logging.info('cpu02 no found,please check')
-                return result.log_fail(capture=True)
-        else:
-            logging.info('cpu01 no found,please check')
-            return result.log_fail(capture=True)
+        assert res, "Get invalid data of dmidecode -t4"
+        os_cpu_list = re.findall(expect_cpu_type, res)
+        assert os_cpu_list, "**OS check CPU type or frequency mismatch"
+        logging.info("**OS check CPU type and frequency success")
+        assert len(os_cpu_list) == SutConfig.SysCfg.CPU_CNT, "OS CPU count mismatch"
+        logging.info("**OS check CPU count success")
         result.log_pass()
         return True
-    except AssertionError:
+    except Exception as e:
+        logging.error(e)
         result.log_fail(capture=True)
 
 
