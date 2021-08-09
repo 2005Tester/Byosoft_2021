@@ -26,6 +26,7 @@ elif cli.get_project() == "hygon":
 elif cli.get_project() == "tce":
     from TCE.Config import SutConfig as cfg
     from TCE import Main as script
+    var.set('project', 'TCE')
 
 else:
     print("Invalid project name.")
