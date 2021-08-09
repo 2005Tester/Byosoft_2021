@@ -197,3 +197,10 @@ class BiosCfg:
         "BMCWDTEnable": 1,
     }
 
+    Spread_Spectrum_bef = {
+        "EnableClockSpreadSpec": 0
+    }
+
+    Spread_Spectrum_aft = {
+        "EnableClockSpreadSpec": 1
+    }

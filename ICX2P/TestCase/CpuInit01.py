@@ -659,4 +659,28 @@ def cpu_compa_017():
         BmcLib.clear_cmos()
 
 
-
+# Author: Fubaolin
+# 支持时钟展频设置
+# Precondition: linux-OS
+# OnStart: NA
+# OnComplete: NA
+def cpu_SpreadSpectrum_001():
+    tc = ('218', '[TC218] Testcase_SpreadSpectrum_001', 'BIOS支持时钟展频设置测试')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    Spread_Spectrum  = ['Spread Spectrum', '<Disabled>']
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_SPREAD_SPECTRUM, 20, 'Spread Spectrum')
+        assert SetUpLib.verify_info(Spread_Spectrum, 10)
+        # boot to suse,use unitool  verify_info
+        assert SetUpLib.boot_suse_from_bm()
+        assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
+        assert Sut.UNITOOL.open_shell()
+        assert Sut.UNITOOL.check(**BiosCfg.Spread_Spectrum_bef)
+        assert Sut.UNITOOL.write(**BiosCfg.Spread_Spectrum_aft)
+        assert Sut.UNITOOL.check(**BiosCfg.Spread_Spectrum_aft)
+        result.log_pass()
+    except AssertionError:
+        result.log_fail(capture=True)
+    finally:
+        BmcLib.clear_cmos()
