@@ -159,7 +159,7 @@ def dimm_power_mgt_07():
 def dimm_power_mgt_010():
     tc = ('705', '[TC705]Testcase_MemPower_010', '内存省电模式使能PPD时寄存器状态测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
-    exp_list = ['0x00000001:ddrt_cke_en(24:24)', '0x00000001:ppd_en(09:09)', '0x00000000:apd_en(08:08)', '0x0000000d:cke_idle_timer(07:00)']
+    exp_list = ['0x00000001:ddrt_cke_en(24:24)', '0x00000001:ppd_en(09:09)', '0x00000000:apd_en(08:08)']
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.MEM_POWER_ADV)
@@ -183,7 +183,7 @@ def dimm_power_mgt_010():
 def dimm_power_mgt_011():
     tc = ('706', '[TC706]Testcase_MemPower_011', '内存省电模式使能APD时寄存器状态测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
-    exp_list = ['0x00000001:ddrt_cke_en(24:24)', '0x00000000:ppd_en(09:09)', '0x00000001:apd_en(08:08)', '0x0000000d:cke_idle_timer(07:00)']
+    exp_list = ['0x00000001:ddrt_cke_en(24:24)', '0x00000000:ppd_en(09:09)', '0x00000001:apd_en(08:08)']
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.MEM_POWER_ADV)
@@ -219,7 +219,9 @@ def dimm_power_mgt_011():
 def dimm_power_mgt_012():
     tc = ('707', '[TC707]Testcase_MemPower_012', '内存省电模式使能时更改定时器选项测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
-    exp_list = ['0x00000001:ddrt_cke_en(24:24)', '0x00000001:ppd_en(09:09)', '0x00000000:apd_en(08:08)', '0x000000ad:cke_idle_timer(07:00)']
+    cke_idle_set_value = 255
+    cke_idle_timer = hex(int((1 / (SutConfig.DIMM_FREQ / 2) * 1000) * cke_idle_set_value))[2:]
+    exp_list = ['0x00000001:ddrt_cke_en(24:24)', '0x00000001:ppd_en(09:09)', '0x00000000:apd_en(08:08)', f'0x000000{cke_idle_timer:0>2}:cke_idle_timer(07:00)']
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.MEM_POWER_ADV)
@@ -228,13 +230,13 @@ def dimm_power_mgt_012():
         assert (SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
         assert (SetUpLib.verify_options(Key.DOWN, [['CKE Idle Timer', '\[20\]']], 7))
         SetUpLib.send_key(Key.ENTER)  # Send Enter
-        SetUpLib.send_data_enter('255')  # set 255
+        SetUpLib.send_data_enter(f'{cke_idle_set_value}')  # set 255
         SetUpLib.send_keys(Key.SAVE_RESET)
         assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.MEM_POWER_ADV)
         assert (SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
         assert (SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
-        assert (SetUpLib.verify_options(Key.DOWN, [['CKE Idle Timer', '\[255\]']], 7))
+        assert (SetUpLib.verify_options(Key.DOWN, [['CKE Idle Timer', f'\[{cke_idle_set_value}\]']], 7))
         assert (SetUpLib.boot_suse_from_bm())
         assert (PlatMisc.cscripts_inband_register(cscripts_cmd_cke, exp_list))
         result.log_pass()
