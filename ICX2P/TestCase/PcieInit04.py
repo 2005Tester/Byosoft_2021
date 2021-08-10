@@ -245,7 +245,7 @@ def pcie_resource_ioapic():
 def pcie_resource_lspci_uefi():
     tc = ('637', '[TC637] Testcase_PCIeResource_020', '【UEFI模式】PCIe设备资源一致性测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
-    pcie_bdf = r"PCIE LINK STATUS:\s+(.+):\s+Link up as"
+    pcie_bdf = r"PCIE LINK STATUS:\s+(\w{2}:\w{2}.\w):\s+Link up as"
 
     def get_lspci_info():
         try:
