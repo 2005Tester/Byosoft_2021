@@ -34,7 +34,7 @@ def power_on():
     while is_power_off() and (try_count > 0):
         if Sut.BMC_SSH.login():
             Sut.BMC_SSH.interaction(cmds, rets)
-            time.sleep(3)
+            time.sleep(5)
         if not is_power_off():
             return True
         try_count -= 1
@@ -194,6 +194,7 @@ def bmc_warning_check():
     class Result:
         status = None  #
         message = None
+
     cmd = ["ipmcget -d healthevents"]
     res = SshLib.interaction(Sut.BMC_SSH, cmd, [''])[1]
     if not res:
@@ -217,6 +218,7 @@ def firmware_version_check():
         BIOS = None
         BMC = None
         CPLD = None
+
     cmd = "ipmcget -d v"
     info = SshLib.execute_command(Sut.BMC_SSH, cmd)
     if not info:
@@ -242,14 +244,50 @@ def get_productname():
     logging.info("Return product name to fetch the right bios...")
     cmd = ['ipmcget -d ver\n']
     ret = ['Mainboard']
-    prd = []   # product name list
+    prd = []  # product name list
     data = SshLib.interaction(Sut.BMC_SSH, cmd, ret)[1]
-    if 'CN221V2' in data:   # 4U product name
+    if 'CN221V2' in data:  # 4U product name
         prd.append('4U')
-    elif 'CN221SV2' in data:    # 2U product name
+    elif 'CN221SV2' in data:  # 2U product name
         prd.append('2U')
     else:
         print('No action.')
         return
     return prd
 
+
+# 抓取当前KVM屏幕图像，并保存到本地
+def capture_kvm_screen(path, name):
+    save_screen = SshLib.interaction(Sut.BMC_SSH, ["ipmcset -d printscreen\n"], ["successfully"], 15)
+    if not save_screen:
+        logging.info("BMC dump screen run command failed")
+        return
+    save_path = "".join(re.findall("Download print screen image to (.+) successfully.", save_screen[1]))
+    img_file = os.path.join(path, f"{name}.jpeg")
+    if SshLib.sftp_download_file(Sut.BMC_SFTP, save_path, img_file):
+        logging.info(f"Dump current kvm screen success, save image {img_file}")
+        return img_file
+
+
+# Set fan mode by bmc
+def set_fan_level():
+    logging.info("[BmcLib] Set fan mode.")
+    cmd_fan_manual_mode = 'ipmcset -d fanmode -v 1 0\n'
+    ret_fan_manual_mode = 'Set fan mode successfully'
+    cmd_fan_40 = 'ipmcset -d fanlevel -v 40\n'
+    ret_fan_40 = 'Set fan level successfully'
+    cmds = [cmd_fan_manual_mode, cmd_fan_40]
+    rets = [ret_fan_manual_mode, ret_fan_40]
+    return SshLib.interaction(Sut.BMC_SSH, cmds, rets)
+
+
+# Check whether current boot type is UEFI via BMC redfish
+def is_uefi_boot():
+    logging.info("[BmcLib] Check if current boot as UEFI mode.")
+    try:
+        boot_type = Sut.BMC_RFISH.get_info(Sut.BMC_RFISH.SYSTEM)["Boot"]["BootSourceOverrideMode"]
+        logging.info(f"Current boot type: {boot_type}")
+        if boot_type == "UEFI":
+            return True
+    except Exception as e:
+        logging.error(e)

@@ -11,10 +11,6 @@ def DailyTest():
     TestScope.daily_scope()
 
 
-def WeeklyTest():
-    TestScope.weekly_scope()
-
-
 def Debug():
     TestScope.debug_scope()
 

@@ -17,7 +17,6 @@ from TCE.Config.SutConfig import SysCfg
 from TCE.Config.PlatConfig import Msg, Key
 from TCE.Config import SutConfig
 from TCE.BaseLib import BmcLib, PlatMisc, SetUpLib
-from TCE.BaseLib.PlatMisc import ReleaseTestStatus
 from Report import ReportGen
 from Common.LogAnalyzer import LogAnalyzer
 
@@ -253,6 +252,7 @@ def vtd():
         return
     logging.info("Save and reboot")
     SetUpLib.send_keys([Key.F10, Key.Y])
+    assert SetUpLib.continue_to_boot_suse_from_bm()
     logging.info("Verify OS boot with VT-D disabled.")
     if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE):
         logging.info("OS boot failed")

@@ -7,6 +7,7 @@ import importlib
 platforms = {
     # 项目名 ： 平台名
     "ICX2P": "ICX",
+    "TCE": "ICX",
 }
 curpath = os.path.dirname(sys.argv[0])
 temp = "_temp"  # 临时文件名
@@ -14,12 +15,12 @@ temp = "_temp"  # 临时文件名
 welcome_msg = r"""
 ===========================================================
 请输入正确的参数:
-示例1： StartTest.py -p ICX2P -t ADDDC
-示例2： StartTest.py -p ICX2P -t FDM Mirror -f RASTest
-示例3： StartTest.py -p ICX2P -t Testcase_MemRAS_013
+示例1： StartTest.py -p ICX2P/TCE -t ADDDC
+示例2： StartTest.py -p ICX2P/TCE -t FDM Mirror -f RASTest
+示例3： StartTest.py -p ICX2P/TCE -t Testcase_MemRAS_013
 -----------------------------------------------------------
 -p:                   【 必选参数 | 测试平台 | 单个 】
-    -- ICX2P
+    -- ICX2P/TCE
 -----------------------------------------------------------
 -t:                   【 必选参数 | 测试项目 | 单个/多个 】
     -- FDM                      *************************

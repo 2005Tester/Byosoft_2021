@@ -34,11 +34,12 @@ class Key:
 
 # OS Boot Option Keywords
 class BootOS:
-    SLES = ".*SUSE Linux Enterprise.*"
-    # Ubuntu = ".*ubuntu.*"
-    # CentOS = ".*CentOS Linux.*"
-    # Windows = ".*Windows Boot Manager.*"
-    # VMware = ".*VMware ESXi.*"
+    name_ruler = r"RAID CARD|HDD\s*\d+|NVME\s*\d+|SLOT\s*\d+"
+    SLES = f"SUSE Linux Enterprise.*?(?:{name_ruler})"
+    Ubuntu = f"ubuntu.*?(?:{name_ruler})"
+    CentOS = f"CentOS Linux.*?(?:{name_ruler})"
+    Windows = f"Windows Boot Manager.*?(?:{name_ruler})"
+    VMware = f"VMware ESXi.*?(?:{name_ruler})"
 
 
 # Messages to identify a specific boot option, page, menu or system status
@@ -70,6 +71,7 @@ class Msg:
     UNCORE_GENERAL = 'Uncore General Configuration'
     MEMORY_CONFIG = 'Memory Configuration'
     MEMORY_TOP = 'Memory Topology'
+    MEMORY_RAS_CFG = "Memory RAS Configuration"
     ADV_POWER_MGF_CONFIG = 'Advanced Power Mgmt. Configuration'
     MEM_FRE = 'Memory Frequency'
     MEM2X_REFRESH = 'Refresh Options'
@@ -87,6 +89,9 @@ class Msg:
     ACT_CPU_CORES = 'Active Processor Cores'
     IIO_CONFIG = "IIO Configuration"
     NUMA = "NUMA"
+    ASPM_ROOT_PORT = "PCIe ASPM Support"
+    EXTENDED_APIC = "Extended APIC"
+    SYS_EVENT_LOG = "System Event Log"
 
     # menus of PCH configuration
     PCH_CONFIG = 'PCH Configuration'
@@ -119,19 +124,73 @@ class Msg:
     MENU_BOOT_ORDER = 'UEFI Boot'
     MENU_HDD_BOOT = 'HDD Device'
     BOOT_OPTION_SUSE = [BootOS.SLES]
-    PXE_OPT = 'UEFI HTTPSv4: Network - Port00 SLOT1'
+    BOOT_OPTION_OS = [BootOS.SLES]
+    PXE_OPT = 'UEFI PXEv4:\(00-17-02-9F-DC-B2\) - Port00'
+    UBUNTU = BootOS.Ubuntu
     SUSE_GRUB = 'Welcome to GRUB'
+
+    # Menus in Exit
+    SAVE_WO_RESET = "Save Changes Without Exiting"
+
+    # Menus of Virtualization Configuration page
+    VIRTUAL_CFG = "Virtualization Configuration"
+    SRIOV_GLOBAL = "PCIe SR-IOV"
+    SRIOV_IIO = r"CPU (\d) Port (DMI|[0-4][A-D]) SR-IOV Support"
 
     # Firmware version info
     ME_VERSION = '0F:4.4.4.56'
     RC_VERSION = '0.2.2.0030'
     BIOS_REVISION = '0.04'
-    BIOS_DATE = '06/25/2021'
-    iBMC_VERSION = '3.02.01.02'
-    iBMC_IP = '192.168.1.111'
+    BIOS_DATE = '07/29/2021'
+    iBMC_VERSION = '3.02.01.03'
+    iBMC_IP = '0.0.0.0'
     CPU_TYPE = 'Ice Lake'
-    TOTAL_MEMORY = '524288MB'
+    TOTAL_MEMORY = '65536MB'
 
     # POST GPIO ERROR Keywords print in serial log
     GPIO_ERR = "GPIO ERROR"
+
+    # show logo flag
+    LOGO_SHOW = "BootType :"
+
+
+# BIOS configuration to be set by unitool
+class BiosCfg:
+
+    ActiveCpuCores_Default = {
+        'ActiveCpuCores': 0
+    }
+
+    MFG_RMT = {
+        "EquipMentModeFlag": 1,
+        "EnableBiosSsaRMT": 1,
+        "EnableBiosSsaRMTonFCB": 1,
+        "serialDebugMsgLvl": 2
+    }
+
+    EQUIP_FLAG = {
+        "EquipmentModeFlag": 1
+    }
+
+    # HPM Upgrade/Downgrade keep BIOS Setting unchanged setting
+    HPM_KEEP = {
+        "UsbBoot": 0,
+        "WakeOnPME": 1,
+        "AcpiApicPolicy": 0,
+        "FDMSupport": 0,
+        "SataPort": 0,
+        "sSataPort": 0,
+        "PerformanceTuningMode": 0,
+        "VTdSupport": 0,
+        "ADDDCEn": 1,
+        "ActiveCpuCores": 4,
+        "ProcessorHyperThreadingDisable": 1,
+        "UFSDisable": 1,
+        "ProcessorEistEnable": 0,
+        "C6Enable": 1,
+        "IrqThreshold": 0,
+        "EnableBiosSsaRMT": 1,
+        "pprType": 0,
+        "BMCWDTEnable": 1,
+    }
 

@@ -12,6 +12,7 @@ import re
 import datetime
 import logging
 import time
+from PIL import Image
 from TCE.Config import SutConfig
 from TCE.Config.PlatConfig import Msg, Key
 from TCE.BaseLib import BmcLib, SetUpLib
@@ -111,8 +112,13 @@ def dcCycle():
 
 
 def last_release(current_branch, step=1):
-    current_ver = int(current_branch[-3:])
-    last_ver = "{:03}".format(current_ver - step)
+    skip_num = "4"
+    latest_int = int(current_branch[-3:])
+    last_str = "{:03}".format(latest_int - step)
+    if skip_num in last_str:
+        last_ver = "{:03}".format(latest_int - step - (10**(2-last_str.find(skip_num))))
+    else:
+        last_ver = "{:03}".format(latest_int - step)
     last_branch = Msg.RELEASE_BRANCH.format(last_ver)
     return last_branch
 
@@ -139,8 +145,8 @@ def dump_cpu_resource():
     return csv_file
 
 
-# dynamic match all pcie root port of one page
-def match_pcie_root_port(key, patten="(Port (?:DMI|[0-4][A-D]))", try_cnt=10):
+# match all similar named options of one page
+def match_options(key, patten, try_cnt=10):
     name_patten = re.compile(patten)
     SerialLib.clean_buffer(Sut.BIOS_COM)
     tmp_data = ""
@@ -149,13 +155,13 @@ def match_pcie_root_port(key, patten="(Port (?:DMI|[0-4][A-D]))", try_cnt=10):
         tmp_data += SerialLib.recv_data(Sut.BIOS_COM, 1024)
     search_result = name_patten.findall(tmp_data)
     if not search_result:
-        logging.info("No any pcie root port matched")
+        logging.info(f"No any options matched for '{patten}'")
         return
-    root_ports = list(set(search_result))
-    root_ports.sort(reverse=False)
-    for port in root_ports:
-        logging.info(f'Root port "{port}" matched"')
-    return root_ports
+    menu_list = list(set(search_result))
+    menu_list.sort(reverse=False)
+    for port in menu_list:
+        logging.info(f"Option '{port}' matched")
+    return menu_list
 
 
 # Check whether DVD-ROM exists in boot manager
@@ -172,17 +178,16 @@ def dvd_verify():
 
 
 # 标记Release测试状态，避免重复测试
-class ReleaseTestStatus:
+class ReleaseTest:
+    new_bios = None
+    old_bios = None
     downgrade_tested = None
     registry_old = None
     registry_new = None
-    boot_to_setup = None
     hot_key_uefi = None
     hot_key_legacy = None
     pxe_boot_uefi = None
     pxe_boot_legacy = None
-    warm_boot_fdmlog = None
-    cold_boot_fdmlog = None
 
 
 def read_bmc_dump_log(package_path, sub_path):
@@ -210,3 +215,64 @@ def get_dmesg_keywords(keywords: list, ignore_list=None):
             err_lines.append(err_lines)
             logging.info(f"Unexpected dmesg info: {line}")
     return err_lines
+
+
+# cmd support: set / clear / check / sets / checks
+# cmd support align with unipwd helping message
+def unipwd_tool(cmd="set", password=""):
+    cmd_support = ["set", "clear", "check", "sets", "checks"]
+    password = "" if cmd == "clear" else password
+    cd_path = f"cd {SutConfig.UNI_PATH}"
+    ins_mod = f"insmod ufudev.ko"
+    pwd_exec = f"./unipwd -{cmd} {password}"
+    rtn_pass = f"{cmd} password success"
+    try:
+        assert cmd in cmd_support, f"{cmd} not in support list {cmd_support}"
+        rtn = SshLib.execute_command(Sut.OS_SSH, f"{cd_path};{ins_mod};{pwd_exec}")
+        assert rtn_pass in rtn.lower(), f"Unipwd {cmd} password failed"
+        logging.info(f"Unipwd {cmd} password success")
+        return True
+    except Exception as e:
+        logging.error(e)
+
+
+# update logo with unilogo tool in linux
+# 若path参数为空，则默认刷\Tools\Logo里的logo文件
+def unilogo_update(name, path=""):
+    cd_path = f"cd {SutConfig.UNI_PATH}"
+    ins_mod = f"insmod ufudev.ko"
+    logo_flash = f"./unilogo -logo ./{name}"
+    rtn_pass = f"Update Logo.+success"
+    try:
+        if not path:
+            logging.info(f"Update the logo in ..Tools/Logo/{name}")
+            path = os.path.join(os.path.dirname(__file__), r"..\Tools\Logo")
+            assert name in os.listdir(path), f"Logo name {name} not exist in directory: Tools/Logo"  # 检查name文件是否存在
+        assert SshLib.sftp_upload_file(Sut.OS_SFTP, f"{path}/{name}", f"{SutConfig.UNI_PATH}/{name}", ret_msg="")
+        rtn = SshLib.execute_command(Sut.OS_SSH, f"{cd_path};{ins_mod};{logo_flash}")
+        assert rtn, f"execute_command for flash logo error: {rtn}"
+        assert re.search(rtn_pass, rtn.lower(), re.I), f"Unilogo update logo failed:\n{rtn}"
+        logging.info(f"Unilogo update logo success")
+        return True
+    except Exception as e:
+        logging.error(e)
+
+
+# 保存logo图片, 默认格式为bmp
+def save_logo(path=SutConfig.LOG_DIR, name="logo", logo_loc=(88, 160, 248, 320)):
+    now = time.strftime("%Y%m%d_%H%M%S", time.localtime())
+    try:
+        assert BmcLib.force_reset()
+        SerialLib.clean_buffer(Sut.BIOS_COM)
+        assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.LOGO_SHOW, 120)
+        img_file = BmcLib.capture_kvm_screen(SutConfig.LOG_DIR, f"Screen_{now}")
+        img_open = Image.open(img_file)  # 打开图片
+        cut_logo = img_open.crop(logo_loc)  # logo裁剪
+        cut_logo = cut_logo.convert("P", palette=Image.ADAPTIVE, colors=256)
+        save_img = os.path.join(path, f"{name}.bmp")
+        cut_logo.save(save_img, format="bmp", bits=8, quality=95)  # 保存裁剪部分
+        assert os.path.isfile(save_img)
+        logging.info(f"Save logo success: {save_img}")
+        return save_img
+    except Exception as e:
+        logging.error(e)

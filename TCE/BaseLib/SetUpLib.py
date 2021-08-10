@@ -52,10 +52,11 @@ def verify_options(key, options, trycounts):
         logging.info("All the setup options are verified")
         return True
     else:
-        logging.info("{0} options not verified".format(len(options)-len(verified_items)))    
+        logging.info("{0} options not verified".format(len(options) - len(verified_items)))
+
+    # Enter setup menu
 
 
-# Enter setup menu
 def enter_menu(key, option_path, try_counts, confirm_msg):
     try:
         return Sut.BIOS_COM.enter_menu(key, option_path, try_counts, confirm_msg)
@@ -242,11 +243,11 @@ def boot_to_bootmanager():
     return boot_with_hotkey(key, msg, 300)
 
 
-# Boot Suse from boot manager
-def boot_suse_from_bm():
+# Boot OS from boot manager
+def boot_suse_from_bm(os=Msg.BOOT_OPTION_SUSE, msg=Msg.SUSE_GRUB):
     if not boot_to_bootmanager():
         return
-    if not enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 8, Msg.SUSE_GRUB):
+    if not enter_menu(Key.DOWN, os, 8, msg):
         return
     if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE):
         return
@@ -254,11 +255,11 @@ def boot_suse_from_bm():
     return True
 
 
-# Boot Suse from boot manager without any power action, e.g, used wth F10 + Y in Setup
-def continue_to_boot_suse_from_bm():
+# Boot OS from boot manager without any power action, e.g, used wth F10 + Y in Setup
+def continue_to_boot_suse_from_bm(os=Msg.BOOT_OPTION_SUSE, msg=Msg.SUSE_GRUB):
     if not continue_to_bootmanager():
         return
-    if not enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 8, Msg.SUSE_GRUB):
+    if not enter_menu(Key.DOWN, os, 8, msg):
         return
     # if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE):
     #     return
@@ -393,3 +394,15 @@ def get_all_values(option, key=Key.DOWN, loc_cnt=15):
     values = Sut.BIOS_COM.get_value_list()
     if values:
         return values
+
+
+# save configurations without reset
+def save_without_reset(option=Msg.SAVE_WO_RESET):
+    if not back_to_setup_toppage():
+        return
+    if not locate_option(Key.RIGHT, [Msg.PAGE_SAVE], 6):
+        return
+    if locate_option(Key.DOWN, [option], 6):
+        send_key(Key.ENTER)
+        send_keys([Key.ENTER], delay=10)
+        return True

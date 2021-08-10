@@ -25,11 +25,6 @@ def daily_scope():
     scope("Daily")
 
 
-# Entry for weekly test
-def weekly_scope():
-    scope("Weekly")
-
-
 # Bascic check for csv test plan file
 def check_csv():
     test_scope = TestScope(SutConfig.TESTCASE_CSV, "Daily")
