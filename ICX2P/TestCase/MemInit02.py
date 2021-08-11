@@ -278,7 +278,7 @@ def rmt_menu_test():
         # Serial Debug Message: Enable
         assert BmcLib.debug_message(enable=True), "bmc_debug_message >> fail"
         SetUpLib.send_keys(Key.SAVE_RESET)
-        key_str = SerialLib.cut_log(Sut.BIOS_COM, SERIAL_RMT_FLAG[0], "Lane Margin", 20, 600)
+        key_str = SerialLib.cut_log(Sut.BIOS_COM, SERIAL_RMT_FLAG[0], "Lane Margin", 20, 1200)  # full dimm population delay
         logging.debug(key_str)
         assert (SERIAL_RMT_FLAG[0] in key_str)
         assert (SERIAL_RMT_FLAG[1] in key_str)
