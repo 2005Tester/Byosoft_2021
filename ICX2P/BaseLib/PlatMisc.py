@@ -91,7 +91,7 @@ def cscripts_inband_register(cmd, exp_list, stop=-6):
                     res_list.append(j.replace(" ", ""))  # strip()
         time.sleep(0.01)
         logging.debug(res_list)
-        if exp_list != res_list:
+        if not set(exp_list).issubset(set(res_list)):  # just check related register
             logging.info('Data compared -> fail')
             return
         logging.info('Data compared -> pass')
