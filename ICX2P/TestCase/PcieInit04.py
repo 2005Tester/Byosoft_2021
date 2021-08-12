@@ -289,6 +289,8 @@ def pcie_resource_lspci_uefi():
 def pcie_resource_lspci_legacy():
     tc = ('638', '[TC638] Testcase_PCIeResource_021', '【Legacy模式】PCIe设备资源一致性测试')
     result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    from Common import ssh
+    ssh_legacy_os = ssh.SshConnection(SutConfig.OS_IP_LEGACY, SutConfig.OS_USER, SutConfig.OS_PASSWORD)
     pcie_bdf = r"PCIE LINK STATUS:\s+(.+):\s+Link up as"
 
     def get_lspci_info():
@@ -299,11 +301,11 @@ def pcie_resource_lspci_legacy():
             bdf_list = re.findall(pcie_bdf, pcie_slot)
             assert bdf_list, "No PCIe Device Detected, test skipped"
             logging.info(f"Found PCie Device: {bdf_list}")
-            assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
+            assert MiscLib.ping_sut(SutConfig.OS_IP_LEGACY, 600)
             lspci_info = []
             for bdf in bdf_list:
                 pcie_cmd = f"lspci -s {bdf} -vvv"
-                pci_info = SshLib.execute_command(Sut.OS_SSH, pcie_cmd)
+                pci_info = SshLib.execute_command(ssh_legacy_os, pcie_cmd)
                 if not pci_info:
                     return
                 lspci_info.append(pci_info)

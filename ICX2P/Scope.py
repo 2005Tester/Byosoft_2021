@@ -1,5 +1,3 @@
-from ICX2P.TestCase.CpuInit01 import cpu_compa_017
-from ICX2P.BaseLib import SetUpLib
 from Core import SutInit
 from Core import var
 from Core.TcExecutor import TestScope
@@ -51,8 +49,9 @@ def check_csv():
 
 
 def debug_scope():
-    from ICX2P.TestCase import Io05, CpuInit01, MemInit02
+    from ICX2P.TestCase import Io05, CpuInit01, MemInit02, PcieInit04
     UpdateBIOS.update_bios('master')
     MemInit02.memory_compa_006()
     Legacy.enable_legacy_boot()
+    PcieInit04.pcie_resource_lspci_legacy()
     Legacy.disable_legacy_boot()
