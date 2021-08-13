@@ -28,7 +28,7 @@ def post_gpio_error_check():
     try:
         assert BmcLib.debug_message(enable=True), "debug message enable fail"
         assert BmcLib.force_reset()
-        assert SerialLib.is_msg_present(Sut.BIOS_COM, msg=Msg.BIOS_BOOT_COMPLETE, delay=600), "boot up fail"
+        assert SerialLib.is_msg_present(Sut.BIOS_COM, msg=Msg.BIOS_BOOT_COMPLETE, delay=1200), "boot up fail"
         assert os.path.isfile(var.get('serial_log')), "Invalid serial log"
         with open(var.get('serial_log'), 'r') as ser_log:
             ser_data = ser_log.read()

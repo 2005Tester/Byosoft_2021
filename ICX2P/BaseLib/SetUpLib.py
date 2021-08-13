@@ -308,7 +308,7 @@ def disable_legacy_boot():
 def boot_suse_from_bm():
     if not boot_to_bootmanager():
         return
-    if not enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 8, Msg.SUSE_GRUB):
+    if not enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 10, Msg.SUSE_GRUB):
         return
     if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE):
         return

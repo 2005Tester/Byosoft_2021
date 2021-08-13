@@ -112,8 +112,7 @@ def boot_device_type_002():
     tc = ('152', '[TC152]Legacy模式启动类型分类测试', '启动类型分类')
     result = ReportGen.LogHeaderResult(tc)
     try:
-        assert boot_device('Legacy Boot', '\(Bus 33 Dev 00\)PCI RAID Adapter RAID CARD',
-                           'IBA XE \(X550\) Slot 3100 v2434 Port 0 SLOT1')
+        assert boot_device('Legacy Boot', SutConfig.Legacy_OS, SutConfig.Legacy_PXE)
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)

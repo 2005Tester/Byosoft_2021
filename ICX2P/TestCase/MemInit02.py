@@ -480,7 +480,7 @@ def set_mem_freq_001_006(n=1):
 # OnStart: NA
 # OnComplete: SUSE OS
 def mtrr_max_range():
-    tc = ('715', '[TC715] Testcase_MTRR_002', '01 MTRR最大内存地址范围测试')
+    tc = ('715', '[TC715] Testcase_MTRR_001', '01 MTRR最大内存地址范围测试')
     result = ReportGen.LogHeaderResult(tc)
     try:
         assert SetUpLib.boot_suse_from_bm(), "boot_to_os -> fail"

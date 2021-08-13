@@ -125,8 +125,9 @@ def last_release(current_branch, step=1):
 
 # sub function for dump cpu resource allocation table
 def dump_cpu_resource():
-    if not BmcLib.force_reset():
+    if not SetUpLib.boot_to_setup():
         return
+    SetUpLib.send_keys(Key.CTRL_ALT_DELETE)  # BMC force_reset 4s delay may cause the serial log miss the desired section
     resource = SerialLib.cut_log(Sut.BIOS_COM, "CPU Resource Allocation", "START_SOCKET_0_DIMMINFO_TABLE", 10, 120)
     if not resource:
         return
