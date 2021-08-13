@@ -6,7 +6,7 @@ from TCE.Config.PlatConfig import Msg
 
 def update_bios(branch):
     tc = ('001', '[TC001]Update BIOS', 'Update BIOS')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     img = Update.get_test_image(SutConfig.LOG_DIR, branch, 'debug-build')
     # img = r"C:\Users\admin\Desktop\arthur\BIOS\WTCEAV004.bin"
     if not Update.update_bios(img):
@@ -24,7 +24,7 @@ def update_bios(branch):
 
 def update_bios_mfg(branch):
     tc = ('019', '[TC019]装备模式: Update BIOS', 'Update BIOS 装备模式')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     img = Update.get_test_image(SutConfig.LOG_DIR, branch, 'EQU-build')
     if not Update.update_bios(img):
         result.log_fail()

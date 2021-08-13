@@ -26,10 +26,6 @@ if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 
 
-HPM_DIR = ''
-INI_DIR = ''
-SHAR_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\AT Report\\2288V6\\{0}'.format(timestamp)
-
 # Serial Port Configuration
 BIOS_SERIAL = "com3"
 

@@ -77,7 +77,7 @@ def hotkey_press():
 # OnComplete: OS (BIOS boot completed)
 def system_info_001():
     tc = ('800', '[TC800] Testcase_SystemInfo_001', '01 【UEFI模式】POST启动第一屏显示信息测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         assert check_info()
         result.log_pass()
@@ -91,7 +91,7 @@ def system_info_001():
 # OnComplete: OS (BIOS boot completed)
 def system_info_002():
     tc = ('801', '[TC801] Testcase_SystemInfo_002', '02 【Legacy模式】POST启动第一屏显示信息测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         assert check_info()
         result.log_pass()
@@ -105,7 +105,7 @@ def system_info_002():
 # OnComplete: SP SETUP
 def system_info_003():
     tc = ('802', '[TC802] Testcase_SystemInfo_003', '03 按热键后屏幕底部显示提示信息测试 UEFI')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         assert hotkey_press()
         result.log_pass()

@@ -51,7 +51,7 @@ def rrqirq():
 # OnComplete: NA
 def pcie_port_bandwidth_check():
     tc = ('102', '[TC102] Testcase_PCIeInit_001', 'PCIe带宽默认值测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_IIO_CONFIG, 15, Msg.IIO_CONFIG)
@@ -77,7 +77,7 @@ def pcie_port_bandwidth_check():
 # OnComplete: SetUp
 def testcase_boot_fail_policy_001():
     tc = ('103', 'Verify Boot Fail Policy Information', 'Verify Boot Fail Policy is Boot Retry')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     Boot_Fail_Policy_Retry = ['<Boot Retry>']
     Boot_Fail_Policy_Value = 'Boot RetryCold BootNone'
     try:
@@ -96,7 +96,7 @@ def testcase_boot_fail_policy_001():
 # OnComplete: SetUp
 def testcase_com_resource_001():
     tc = ('104', 'Verify COM Information', 'Verify Boot Fail Policy is Boot Retry')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     PATH_MISC_CFG = ['Miscellaneous Configuration']
     Select_Base_IO = ['<3F8>\s+Select Base I/O Address']
     try:
@@ -116,7 +116,7 @@ def testcase_com_resource_001():
 # OnComplete: SetUp
 def testcase_NetworkMode_001():
     tc = ('105', 'Verify iBMC Network Mode Information', 'Verify iBMC Network Mode ')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     PAGE_SERVER_MGMT = 'iBMC version'
     PATH_IBMC_CFG = ['iBMC LAN Configuration']
     iBMC_Network_Mode_Dedicate =['<Dedicated>']

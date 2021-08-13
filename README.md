@@ -92,7 +92,7 @@ def equip_mode_flag_check(unitool):
 
 ## 使用截图功能  
 1. 创建LogHeaderResult()对象实例时传入截图保存路径,如:  
-result = ReportGen.LogHeaderResult(tc, serial, SutConfig.LOG_DIR)  
+result = ReportGen.LogHeaderResult(tc)  
 2. 需要的时候调用 result.capture_screen()  
 3. 有fail自动截屏, result.log_fail(capture=True)  
 

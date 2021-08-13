@@ -52,7 +52,7 @@ def boot_to_suse_mfg():
 
 def move_suse_to_first():
     tc = ('302', '[TC302] Move UEFI SUSE Linux to first boot option', 'Move UEFI SUSE Linux to first boot option')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     if not SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_SUSE, 5):
         result.log_fail(capture=True)
         return

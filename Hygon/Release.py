@@ -13,7 +13,7 @@ from Report import ReportGen
 
 def check_usb_info():
     tc = ('100', 'Verify USB INFO', 'Check usb device info')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         pass
         # assert SetUpLib.boot_to_setup(), 'boot to setup -> fail'

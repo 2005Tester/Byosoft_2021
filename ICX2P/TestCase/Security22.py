@@ -310,7 +310,7 @@ def Simple_password_save_disable():
 # Bios_Password_Security
 def Testcase_BiosPasswordSecurity_002():
     tc = ('036', '[TC036]BiosPasswordSecurity_002', '设置密码长度测试_密码长度小于最少字符数，修改失败测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_SECURITY)
         assert SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20)
@@ -326,7 +326,7 @@ def Testcase_BiosPasswordSecurity_002():
 
 def Testcase_BiosPasswordSecurity_003():
     tc = ('037', '[TC037]BiosPasswordSecurity_003', '设置密码长度度测试_密码长度等于最少字符数，修改成功测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_SECURITY)
         assert (SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
@@ -343,7 +343,7 @@ def Testcase_BiosPasswordSecurity_003():
 
 def Testcase_BiosPasswordSecurity_004():
     tc = ('038', '[TC038]BiosPasswordSecurity_004', '设置密码长度测试_密码长度大于最少字符数，小于最大字符数，修改成功测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_SECURITY)
         assert (SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
@@ -379,7 +379,7 @@ def Testcase_BiosPasswordSecurity_005_019_021():
 
 def Testcase_BiosPasswordSecurity_006():
     tc = ('040', '[TC040]BiosPasswordSecurity_006', '设置密码长度测试_密码长度超出最大字符数,修改失败测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_SECURITY)
         assert SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 10)
@@ -591,7 +591,7 @@ def Testcase_BiosPasswordSecurity_014_015():
 
 def Testcase_BiosPasswordSecurity_016_017():
     tc = ('048', '[TC048]BiosPasswordSecurity_016', '密码不能明文显示_不显示或用*代替字符测试;任意密码不显示或用*代替字符测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         assert SetUpLib.boot_to_pw_prompt(Key.DEL)
         SetUpLib.send_data(SutConfig.BIOS_PW_DEFAULT)
@@ -726,7 +726,7 @@ def Testcase_BiosPasswordSecurity_028():
 
 def pwd_auth_mgt_01():
     tc = ('053', '[TC053]AuthenticationManagement_001', '热键页面遍历热键，检查进入Setup菜单是否需要输入密码')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     hot_key = [Key.DEL, Key.F11, Key.F12, Key.F6]
     try:
         for hk in hot_key:
@@ -749,7 +749,7 @@ def pwd_auth_mgt_01():
 
 def pwd_auth_mgt_07():
     tc = ('054', '[TC054]AuthenticationManagement_007', '禁止提供自动登录等特殊功能')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         assert SetUpLib.boot_to_setup()
         result.log_pass()
@@ -761,7 +761,7 @@ def pwd_auth_mgt_07():
 def pwd_auth_mgt_08_10():
     tc = ('055', '[TC055]AuthenticationManagement_008_010',
           '管理员登录密码大于16位字符无法输入,普通用户登录密码大于16位无法输入;修改管理员密码界面需要先输入旧密码，再输入两次新密码')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     pwd_error = ['Admin@3456', 'Pw@99', '666666']
     admin_pwd_17 = 'Admin@6789byosoft'
     admin_pwd_16 = 'Admin@6789byosof'
@@ -834,7 +834,7 @@ def pwd_auth_mgt_08_10():
 
 def pwd_auth_mgt_09():
     tc = ('056', '[TC056]AuthenticationManagement_009', '禁止提示有助攻击者猜解系统口令的信息,输入错误的登录密码,仅提示密码错误')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         assert SetUpLib.boot_to_pw_prompt(Key.DEL)
         SetUpLib.send_key("Admin@6666")

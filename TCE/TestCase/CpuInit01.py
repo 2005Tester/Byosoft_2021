@@ -156,7 +156,7 @@ def ufs_default_value():
 # OnComplete: Setup Advanced power management page
 def static_turbo_default():
     tc = ('202', '[TC202]Testcase_Static_Turbo_001', '静态Turbo默认值测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     static_turbo_default = ['Static Turbo', '<Disabled>']
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
@@ -176,7 +176,7 @@ def static_turbo_default():
 # OnComplete: Setup Memory Topology Page
 def cpu_mem_info():
     tc = ('203', '[TC203]CPU Memory Information', 'Verify CPU and Memory Information')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PER_CPU_INFO, 20, 'BSP Revision')
@@ -198,7 +198,7 @@ def cpu_mem_info():
 # OnComplete: Processor Configuration Page
 def cpu_cores_active():
     tc = ('204', '[204]Testcase_CoreDisable_001', 'CPU Active Processor Cores information')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     ACT_CPU_CORES = ['Active Processor Cores', '<All>']
     list_info = ['All', '27', '26', '25', '24', '23', '22', '21', '20', '19', '18', '17', '16', '15', '14', '13', '12', '11', '10', '9', '8', '7', '6', '5', '4', '3', '2', '1']
     try:
@@ -220,7 +220,7 @@ def cpu_cores_active():
 # OnComplete: suse Page
 def cpu_cores_active_enable_1():
     tc = ('205', '[TC205] Testcase_CoreDisable_002', 'Enable 1 CPU core test')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     num = 1
     set_n = 31
     try:
@@ -234,7 +234,7 @@ def cpu_cores_active_enable_1():
 
 def cpu_cores_active_enable_middle():
     tc = ('206', '[TC206] Testcase_CoreDisable_003', 'Enable middle-num CPU core test')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     num = 18
     set_n = 14
     try:
@@ -248,7 +248,7 @@ def cpu_cores_active_enable_middle():
 
 def cpu_cores_active_enable_max():
     tc = ('207', '[TC207] Testcase_CoreDisable_004', 'Enable max-1 CPU core test')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     num = 31
     set_n = 1
     try:
@@ -266,7 +266,7 @@ def cpu_cores_active_enable_max():
 # OnComplete: suse Page
 def cpu_cores_disable_sys_normally():
     tc = ('208', '[TC208] CoreDisable_005', 'After disable the CPU core, the system runs normally')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     ACT_CPU_CORES = ['Active Processor Cores', '<All>']
     n = 1
     try:
@@ -300,7 +300,7 @@ def cpu_cores_disable_sys_normally():
 # OnComplete: suse Page
 def cores_customized_by_unitool():
     tc = ('209', '[TC209] CoreDisable_007', 'Unitool to modify the number of CPU cores,in bios and OS Verify CPU Cores')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     ACT_CPU_CORES = ['Active Processor Cores', '<20>']
     try:
         assert SetUpLib.boot_with_hotkey(Key.F11, "Boot Manager Menu", 300)
@@ -375,7 +375,7 @@ def numa_enabled_verify(): # 进入 Numa page，设置 Numa 为 Enabled，到 su
 # OnComplete: NA
 def numa_01():
     tc = ('210', '[TC210] Testcase_NUMA_001', '内存NUMA特性设置测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     Num_cmd = r'numactl --hardware'
     try:
         assert numa_disabled_verify()
@@ -408,7 +408,7 @@ def numa_01():
 # OnComplete: NA
 def numa_02():
     tc = ('211', '[TC211] Testcase_NUMA_002', 'NUMA Distance距离与硬件结构匹配测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     Num_cmd = r'numactl -H'
     try:
         assert SetUpLib.boot_with_hotkey(Key.F11, "Boot Manager Menu", 300)
@@ -446,7 +446,7 @@ def numa_02():
 # OnComplete: NA
 def numa_03():
     tc = ('212', '[TC212] Testcase_NUMA_003', '关闭NUMA内存条1DPC反复复位测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     n = 1
     try:
         assert numa_disabled_verify()
@@ -472,7 +472,7 @@ def numa_03():
 # OnComplete: NA
 def cpu_compa_02():
     tc = ('213', '[TC213] Testcase_CPU_COMPA_002', 'CPU BIST自检結果测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         assert SetUpLib.boot_with_hotkey(Key.F11, "Boot Manager Menu", 300)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 20, Msg.SUSE_GRUB)
@@ -499,7 +499,7 @@ def cpu_compa_02():
 # OnComplete: NA
 def cpu_compa_03():
     tc = ('214', '[TC214] Testcase_CPU_COMPA_003', 'CPU Hyper-Threading 特性测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     ht_bef = ["Hyper-Threading \[ALL\]", "<Enabled>"]
     ht_aft = ["Hyper-Threading \[ALL\]", "<Disabled>"]
     try:
@@ -557,7 +557,7 @@ def cpu_compa_03():
 # OnComplete: NA
 def cpu_compa_05():
     tc = ('216', '[TC216] Testcase_CPU_COMPA_005', 'CPU微码测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     mic_version = ['Microcode Revision\s+0D0002A0\s+|\s+0D0002A0']
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
@@ -587,7 +587,7 @@ def cpu_compa_05():
 # OnComplete: NA
 def cpu_compa_06():
     tc = ('217', '[TC217] Testcase_CPU_COMPA_006', 'CPU信息显示测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     pro_fre = ['Processor Frequency\s+2.200GHz+|\s+2.200GHz']
     pro_ver = ['Processor 1 Version \s+Intel\(R\) Xeon\(R\) Gold 6 \s+338N CPU @ 2.20GHz',
                'Processor 2 Version \s+Intel\(R\) Xeon\(R\) Gold 6 \s+338N CPU @ 2.20GHz']
@@ -630,7 +630,7 @@ def cpu_compa_06():
 # OnComplete: NA
 def cpu_compa_017():
     tc = ('215', '[TC215] Testcase_CPU_COMPA_017', 'X2APIC选项测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     Extended_APIC = ['Extended APIC', '<Disabled>']
     ht_bef = ["Hyper-Threading \[ALL\]", "<Enabled>"]
     try:

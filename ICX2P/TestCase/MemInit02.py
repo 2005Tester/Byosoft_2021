@@ -50,7 +50,7 @@ def navigate_to_cke():
 # 03 支持内存电源管理配置
 def dimm_power_mgt_01():
     tc = ('700', '[TC700]Testcase_MemPower_001', 'BIOS默认关闭DDR4内存的LP-ASR模式测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         assert (SetUpLib.boot_to_page(Msg.PAGE_INFO))
         if SetUpLib.verify_info(['CPU Number\s+2'], 7):
@@ -73,7 +73,7 @@ def dimm_power_mgt_01():
 # OnComplete: BIOS Setup
 def dimm_power_mgt_02():
     tc = ('701', '[TC701]Testcase_MemPower_002&3', 'BIOS默认关闭CKE Power Down&Setup菜单提供内存自刷新和CKE Power Down选项测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         assert (SetUpLib.boot_to_page(Msg.PAGE_INFO))
         assert navigate_to_mem_fre(), 'navigate to mem freq page -> fail'
@@ -92,7 +92,7 @@ def dimm_power_mgt_02():
 # OnComplete: SUSE OS
 def dimm_power_mgt_04():
     tc = ('702', '[TC702]Testcase_MemPower_004', '打开DDR4内存的LP-ASR模式功能测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_INFO)
         assert navigate_to_cke(), 'navigate to mem cke power page -> fail'
@@ -109,7 +109,7 @@ def dimm_power_mgt_04():
 # OnComplete: SUSE OS
 def dimm_power_mgt_05():
     tc = ('703', '[TC703]Testcase_MemPower_005', '打开CKE Power down功能测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_INFO)
         assert navigate_to_cke(), 'navigate to mem cke power page -> fail'
@@ -132,7 +132,7 @@ def dimm_power_mgt_05():
 # OnComplete: BIOS Setup
 def dimm_power_mgt_07():
     tc = ('704', '[TC704]Testcase_MemPower_007', '内存省电模式选项互斥测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         assert (SetUpLib.boot_to_page(Msg.PAGE_INFO))
         assert navigate_to_cke(), 'navigate to mem cke power page -> fail'
@@ -158,7 +158,7 @@ def dimm_power_mgt_07():
 # OnComplete: SUSE OS
 def dimm_power_mgt_010():
     tc = ('705', '[TC705]Testcase_MemPower_010', '内存省电模式使能PPD时寄存器状态测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     exp_list = ['0x00000001:ddrt_cke_en(24:24)', '0x00000001:ppd_en(09:09)', '0x00000000:apd_en(08:08)']
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
@@ -182,7 +182,7 @@ def dimm_power_mgt_010():
 # OnComplete: SUSE OS
 def dimm_power_mgt_011():
     tc = ('706', '[TC706]Testcase_MemPower_011', '内存省电模式使能APD时寄存器状态测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     exp_list = ['0x00000001:ddrt_cke_en(24:24)', '0x00000000:ppd_en(09:09)', '0x00000001:apd_en(08:08)']
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
@@ -218,7 +218,7 @@ def dimm_power_mgt_011():
 # OnComplete: SUSE OS
 def dimm_power_mgt_012():
     tc = ('707', '[TC707]Testcase_MemPower_012', '内存省电模式使能时更改定时器选项测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     cke_idle_set_value = 255
     cke_idle_timer = hex(int((1 / (SutConfig.DIMM_FREQ / 2) * 1000) * cke_idle_set_value))[2:]
     exp_list = ['0x00000001:ddrt_cke_en(24:24)', '0x00000001:ppd_en(09:09)', '0x00000000:apd_en(08:08)', f'0x000000{cke_idle_timer:0>2}:cke_idle_timer(07:00)']
@@ -252,7 +252,7 @@ def dimm_power_mgt_012():
 # OnComplete: NA
 def rmt_menu_test():
     tc = ('708', '[TC708] Testcase_MemMargin_001', '01 内存margin测试菜单选项测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
 
     BSSA_MENU = "BSSA Configuration Menu"
     BSSA_RMT = "BSSA Rank Margin Tool"
@@ -297,7 +297,7 @@ def rmt_menu_test():
 # OnComplete: BIOS SETUP
 def memory_compa_001():
     tc = ('709', '[TC709] Testcase_MemoryCompa_001', '01 内存初始化测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED), "boot_to_page -> fail"
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, Msg.MEMORY_TOP], 15,
@@ -314,7 +314,7 @@ def memory_compa_001():
 # OnComplete: SUSE OS
 def memory_compa_006(n=1):
     tc = ('710', '[TC710] Testcase_MemoryCompa_006', '06 内存容量一致性测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     for i in range(n):
         res_lst = []
         try:
@@ -360,7 +360,7 @@ def memory_compa_006(n=1):
 # OnComplete: SUSE OS
 def mem_refresh_001():
     tc = ('711', '[TC711] Testcase_MemRefresh_001', '01 设置动态内存刷新模式功能测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     exp_list = ['0x00000000:temp_thrt_hyst(26:24)', '0x00000064:temp_hi(23:16)', '0x0000005f:temp_mid(15:08)', '0x00000055:temp_lo(07:00)']
     try:
         assert SetUpLib.boot_to_page(Msg.CPU_CONFIG), "boot_to_page -> fail"
@@ -379,7 +379,7 @@ def mem_refresh_001():
 # OnComplete: SUSE OS
 def mem_refresh_002():
     tc = ('712', '[TC712] Testcase_MemRefresh_002', '02 设置静态2X内存刷新模式功能测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     exp_list = ['0x00000000:temp_thrt_hyst(26:24)', '0x00000064:temp_hi(23:16)', '0x0000005f:temp_mid(15:08)', '0x00000000:temp_lo(07:00)']
     try:
         assert SetUpLib.boot_to_page(Msg.CPU_CONFIG), "boot_to_page -> fail"
@@ -401,7 +401,7 @@ def mem_refresh_002():
 # OnComplete: SUSE OS
 def rmt_equip_test():
     tc = ('713', '[TC713]Testcase_MemoryCompa_009', '装备模式内存Margin功能测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         assert BmcLib.force_reset()
         assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE)
@@ -426,7 +426,7 @@ def rmt_equip_test():
 # OnComplete: SUSE OS
 def set_mem_freq_001_006(n=1):
     tc = ('714', '[TC714] Testcase_SetMemFreq_001_006', '01-06 内存频率选项测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     freq_values = ["Auto", "2666", "2933", "3200"]
 
     def ddr_boot_freq():
@@ -481,7 +481,7 @@ def set_mem_freq_001_006(n=1):
 # OnComplete: SUSE OS
 def mtrr_max_range():
     tc = ('715', '[TC715] Testcase_MTRR_002', '01 MTRR最大内存地址范围测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         assert SetUpLib.boot_suse_from_bm(), "boot_to_os -> fail"
         res = SshLib.execute_command(Sut.OS_SSH, 'cat /proc/mtrr')
@@ -502,7 +502,7 @@ def mtrr_max_range():
 # OnComplete: SUSE OS
 def mtrr_fixed_range():
     tc = ('716', '[TC716] Testcase_MTRR_002', '02 MTRR Fixed ranges测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     flag = []
     try:
         assert BmcLib.force_reset(), 'reset_system -> fail'

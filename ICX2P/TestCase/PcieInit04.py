@@ -23,7 +23,7 @@ from Report import ReportGen
 # OnComplete: NA
 def pcie_resource_mmiol():
     tc = ('630', '[TC630] Testcase_PCIeResource_001', 'MMIOL资源分配静态表测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
     try:
         if not os.path.exists(cpu_rsc_file):
@@ -53,7 +53,7 @@ def pcie_resource_mmiol():
 # OnComplete: NA
 def pcie_resource_mmioh():
     tc = ('631', '[TC631] Testcase_PCIeResource_002', 'MMIOH资源分配静态表测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     MMIOH = "MMIO High Base"
     MMIOH_size = "MMIO High Granularity Size"
     cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
@@ -92,7 +92,7 @@ def pcie_resource_mmioh():
 # OnComplete: NA
 def pcie_resource_mmioh_menu():
     tc = ('632', '[TC632] Testcase_PCIeResource_003', 'BIOS提供MMIOH资源调整选项测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     base_default = "13T"
     size_default = "64G"
     try:
@@ -117,7 +117,7 @@ def pcie_resource_mmioh_menu():
 # OnComplete: NA
 def pcie_resource_64b():
     tc = ('633', '[TC633] Testcase_PCIeResource_005', 'BIOS提供PCIe 64bit decode选项测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         # Set Config
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
@@ -163,7 +163,7 @@ def pcie_resource_64b():
 # OnComplete: NA
 def pcie_resource_bus():
     tc = ('634', '[TC634] Testcase_PCIeResource_007', 'BUS资源分配静态表测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
     try:
         if not os.path.exists(cpu_rsc_file):
@@ -190,7 +190,7 @@ def pcie_resource_bus():
 # OnComplete: NA
 def pcie_resource_legacyio():
     tc = ('635', '[TC635] Testcase_PCIeResource_008', 'Legacy IO资源分配静态表测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
     try:
         if not os.path.exists(cpu_rsc_file):
@@ -217,7 +217,7 @@ def pcie_resource_legacyio():
 # OnComplete: NA
 def pcie_resource_ioapic():
     tc = ('636', '[TC636] Testcase_PCIeResource_009', 'IOApic资源分配静态表测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
     try:
         if not os.path.exists(cpu_rsc_file):
@@ -244,7 +244,7 @@ def pcie_resource_ioapic():
 # OnComplete: NA
 def pcie_resource_lspci_uefi():
     tc = ('637', '[TC637] Testcase_PCIeResource_020', '【UEFI模式】PCIe设备资源一致性测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     pcie_bdf = r"PCIE LINK STATUS:\s+(\w{2}:\w{2}.\w):\s+Link up as"
 
     def get_lspci_info():
@@ -288,7 +288,7 @@ def pcie_resource_lspci_uefi():
 # OnComplete: NA
 def pcie_resource_lspci_legacy():
     tc = ('638', '[TC638] Testcase_PCIeResource_021', '【Legacy模式】PCIe设备资源一致性测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     from Common import ssh
     ssh_legacy_os = ssh.SshConnection(SutConfig.OS_IP_LEGACY, SutConfig.OS_USER, SutConfig.OS_PASSWORD)
     pcie_bdf = r"PCIE LINK STATUS:\s+(.+):\s+Link up as"
@@ -339,7 +339,7 @@ def pcie_resource_lspci_legacy():
 # OnComplete: NA
 def aspm_menu_default():
     tc = ('639', '[TC639] Testcase_ASPM_001', 'Setup菜单提供ASPM选项测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
 
     aspm_values = ["Disabled", "Per individual port", "L1 Only"]
     aspm_default = "Disabled"
@@ -362,7 +362,7 @@ def aspm_menu_default():
 # OnComplete: NA
 def aspm_global_disable_l1only():
     tc = ('640', '[TC640] Testcase_ASPM_002', 'ASPM总开关测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     aspm_lnkcap_flag = {"Disabled": "not supported", "L1 Only": "L1"}
     save_value = "Disabled"  # ASPM Global默认值
 
@@ -422,7 +422,7 @@ def aspm_global_disable_l1only():
 # OnComplete: NA
 def aspm_per_port_loop():
     tc = ('641', '[TC641] Testcase_ASPM_003 / Testcase_ASPM_004', 'Root Port ASPM开关测试 / 遍历Root Port ASPM开关测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     iio_aspm_values = ["L1 Only", "Disabled"]
     aspm_lnkcap_flag = {"Disabled": "not supported", "L1 Only": "L1"}
     save_value = "Disabled"  # ASPM per port 默认值
@@ -482,7 +482,7 @@ def aspm_per_port_loop():
 # OnComplete: NA
 def sriov_global_menu():
     tc = ('642', '[TC642] Testcase_SRIOV_001', 'Setup菜单提供SRIOV选项测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     sriov_vals = ["Disabled", "Enabled", "Per IIO Port"]
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
@@ -502,7 +502,7 @@ def sriov_global_menu():
 # OnComplete: NA
 def sriov_enable_disable():
     tc = ('643', '[TC643] Testcase_SRIOV_002', 'SRIOV总开关测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
 
     def sriov_status_check(status):
         try:
@@ -559,7 +559,7 @@ def sriov_enable_disable():
 # OnComplete: NA
 def sriov_per_port_loop():
     tc = ('644', '[TC644] Testcase_SRIOV_003 / Testcase_SRIOV_005', '遍历Root Port SR-IOV开关测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
 
     def sriov_per_port_switch(value):
         try:
@@ -621,7 +621,7 @@ def sriov_per_port_loop():
 # OnComplete: NA
 def root_port_switch_menu():
     tc = ('645', '[TC645] Testcase_PCIePortItem_001', 'Setup菜单提供CPU RootPort端口开关测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     switch_option = "PCIe Port"
     switch_value = ["Auto", "Disabled", "Enabled"]
     try:
@@ -650,7 +650,7 @@ def root_port_switch_menu():
 # OnComplete: NA
 def vga_option_menu():
     tc = ('646', '[TC646] Testcase_DisplayMode_001', 'Setup菜单显卡选择默认值测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     vga_option = "Display Mode"
     values = ["On Board Graphics", "Plug-in Graphics"]
     vdefault = "On Board Graphics"
@@ -672,7 +672,7 @@ def vga_option_menu():
 # OnComplete: Enable Legacy Mode
 def slot_pxe_menu_check():
     tc = ('647', '[TC647] Testcase_SlotPxeCfg_001', '遍历UEFI/Legacy: 外接网卡PXE开关默认状态')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
 
     global_pxe_optioin = "Slot Pxe"
     slot_pxe_port = "CPU\d First Slot Lan Port\d PXE"

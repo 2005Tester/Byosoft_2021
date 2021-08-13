@@ -165,7 +165,7 @@ def press_f2():
 # Setup: Load default and setting saving - AT test cases below,
 def load_default():
     tc = ('011', '[TC011] Load default and setting saving Test', 'BIOS Load default Test')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     pxe_boot = ["PXE Boot Capability", "<UEFI:IPv4>"]
     boot_fail_policy = ["Boot Fail Policy", "<Boot Retry>"]
     pxe_boot_2 = ["PXE Boot Capability", "<UEFI:IPv6>"]
@@ -259,7 +259,7 @@ def dram_rapl_option_check():
 # OnComplete: Setup Miscellaneous Configuration page
 def cnd_default_enable():
     tc = ('017', '[TC017]检查CDN开关默认值', '支持网口CDN特性开关')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     cdn_status = ['Network CDN', '<Enabled>']
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
@@ -274,7 +274,7 @@ def cnd_default_enable():
 # Testcase_SecurityBoot_001
 def security_boot():
     tc = ('023', '[TC023] Secure Boot默认值', 'Secure Boot默认值')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     keys_secure_boot = [Key.RIGHT, Key.DOWN, Key.ENTER]
     secureboot_disable = ['Current Secure Boot State\s+Disabled']
     if not SetUpLib.boot_to_setup():
@@ -331,7 +331,7 @@ def vtd():
 # OnComplete: NA
 def serial_print_keywords():
     tc = ('026', '[TC026]Testcase_SerialPrint_001', '启动关键信息打印测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     cpu_resource = r"[\s\S]*".join([rf"CPU{n}[\s\S]*Ubox.+" for n in range(SysCfg.CPU_CNT)])
     bios_ver = r"BIOS Revision :\s+\d.\d+"
     pcie_lnk = r"PCIE LINK STATUS:"
@@ -379,7 +379,7 @@ def serial_print_keywords():
 # OnComplete: NA
 def serial_print_error_check():
     tc = ('027', '[TC027]Testcase_SerialPrint_003', 'BIOS启动阶段串口报错检查')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     error_msg = ["error", "fail", "assert", "exception"]
     ignore_list = ["IdFromBmc Fail,Status: Device Error"]
     try:
@@ -407,7 +407,7 @@ def serial_print_error_check():
 # OnComplete: NA
 def power_efficiency_mode_loop():
     tc = ('028', '[TC028]Testcase_PowerEfficiency_001', 'PowerEfficiency场景配置测试')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     baseline = os.path.join(os.path.dirname(__file__), r"..\Tools\PowerEfficiency\2288V6_PowerEfficiency.csv")
     if not os.path.exists(baseline):
         logging.error("Baseline file not found.")

@@ -96,7 +96,7 @@ def boot_to_dvd(ssh, dvd_option, msg_install_start):
 # OnComplete: Setup Boot Page
 def boot_device_type_001():
     tc = ('151', '[TC151]UEFI模式启动类型分类测试', '启动类型分类')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         assert boot_device()
         result.log_pass()
@@ -110,7 +110,7 @@ def boot_device_type_001():
 # OnComplete: Setup Boot Page
 def boot_device_type_002():
     tc = ('152', '[TC152]Legacy模式启动类型分类测试', '启动类型分类')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         assert boot_device('Legacy Boot', '\(Bus 33 Dev 00\)PCI RAID Adapter RAID CARD',
                            'IBA XE \(X550\) Slot 3100 v2434 Port 0 SLOT1')
@@ -125,7 +125,7 @@ def boot_device_type_002():
 # OnComplete: SHELL
 def boot_order_001():
     tc = ('153', '[TC153]UEFI Setup菜单启动顺序调整测试', '启动类型分类')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         assert enabled_disable_options()
         result.log_pass()
@@ -141,7 +141,7 @@ def boot_order_001():
 # OnComplete: DVD
 def boot_order_002():
     tc = ('154', '[TC154]02 08【UEFI Legacy模式】启动顺序优先级_Setup菜单和BMC设置', '支持启动顺序设置')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     n_fail = 0
     try:
         logging.info("** Change boot order: Others->PXE->DVD-ROM Drive->Hard Disk Drive")
@@ -186,7 +186,7 @@ def boot_order_002():
 # OnComplete: PXE
 def boot_order_003():
     tc = ('155', '[TC155]03 【UEFI模式】启动顺序优先级_Setup菜单和BMC设置', '支持启动顺序设置')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     cmds = ['ipmcset -d bootdevice -v 1\n', 'ipmcget -d bootdevice\n']
     rets = ['successfully', 'Force PXE']
     try:
@@ -206,7 +206,7 @@ def boot_order_003():
 # OnComplete: DVD
 def boot_order_004():
     tc = ('156', '[TC156]04【UEFI模式】启动顺序优先级_Setup菜单和BMC设置', '支持启动顺序设置')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     if not PlatMisc.dvd_verify():
         result.log_skip()
         return
@@ -225,7 +225,7 @@ def boot_order_004():
 # OnComplete: PXE
 def boot_order_005():
     tc = ('157', '[TC157]05 11【UEFI Legacy模式】启动顺序优先级_Setup菜单和BMC设置', '支持启动顺序设置')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     cmds = ['ipmcset -d bootdevice -v 5\n', 'ipmcget -d bootdevice\n']
     rets = ['successfully', 'Force boot from default CD/DVD']
     try:
@@ -244,7 +244,7 @@ def boot_order_005():
 # OnComplete: SHELL
 def boot_order_007():
     tc = ('158', '[TC158]07 【Legacy模式】默认启动顺序测试', '支持启动顺序设置')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         assert enabled_disable_options(PXE_OPTION='PXE Boot to LAN')
         result.log_pass()
@@ -260,7 +260,7 @@ def boot_order_007():
 # OnComplete: DVD
 def boot_order_010():
     tc = ('159', '[TC159]10 [Legacy模式] 启动顺序优先级_BMC设置和F11热键', '支持启动顺序设置')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     if not PlatMisc.dvd_verify():
         result.log_skip()
         return
@@ -280,7 +280,7 @@ def boot_order_010():
 # OnComplete: SP
 def sp_boot_001():
     tc = ('160', '[TC160]01 SP开关默认状态测试', '支持SP启动')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         # assert SetUpLib.boot_to_page(Msg.PAGE_BOOT)
         assert SetUpLib.verify_options(Key.DOWN, [['SP Boot', '<Enabled>']], 12)
@@ -297,7 +297,7 @@ def sp_boot_001():
 # OnComplete: SP
 def sp_boot_002():
     tc = ('161', '[TC161]02 SP开关功能测试', '支持SP启动')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_BOOT)
         assert SetUpLib.verify_options(Key.DOWN, [['SP Boot', '<Enabled>']], 12)
