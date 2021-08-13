@@ -676,3 +676,45 @@ def cpu_SpreadSpectrum_001():
         result.log_fail(capture=True)
     finally:
         BmcLib.clear_cmos()
+
+
+# Author: Fubaolin
+# 支持APIC中CPU核数上报
+# Precondition: linux-OS
+# OnStart: NA
+# OnComplete: NA
+def cpu_ApicReport():
+    tc = ('219', '[TC219] Testcase_ApicReport_001,002,003', '支持APIC中CPU总线程数和核数上报')
+    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    Extended_APIC = ['Extended APIC', '<Disabled>']
+    Extended_APIC2 = ['Extended APIC', '<Enabled>']
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.UP, Msg.PATH_PRO_CFG, 20, Msg.EXTENDED_APIC)
+        assert SetUpLib.locate_option(Key.DOWN, Extended_APIC, 20)
+        SetUpLib.send_keys([Key.F5, Key.F10, Key.Y], 3)
+        Local_Apic_ID = acpidump().split('Raw Table Data')[0].count('Processor Local x2APIC')
+        # print("Local Apic ID= ", Local_Apic_ID)
+        if Local_Apic_ID == 112:
+            logging.info('local_APIC个数与当前CPU总线程数一致')
+        else:
+            logging.info('local_APIC个数与当前CPU总线程数不一致，需要检查')
+            return result.log_fail(capture=True)
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.UP, Msg.PATH_PRO_CFG, 20, Msg.EXTENDED_APIC)
+        assert SetUpLib.locate_option(Key.DOWN, Extended_APIC2, 20)
+        SetUpLib.send_keys([Key.F6, Key.F10, Key.Y], 3)
+        Local_Apic = acpidump().split('Raw Table Data')[0].count('Processor Local APIC')
+        # print("Local Apic = ", Local_Apic)
+        if Local_Apic == 112:
+            logging.info('local_APIC个数与平台最大支持核数一致')
+        else:
+            logging.info('local_APIC个数与平台最大支持核数不一致，需要检查')
+            return result.log_fail(capture=True)
+        SshLib.execute_command(Sut.OS_SSH, r'rm *.dat *.out *.dsl')
+        result.log_pass()
+        return True
+    except AssertionError:
+        result.log_fail(capture=True)
+    finally:
+        BmcLib.clear_cmos()
