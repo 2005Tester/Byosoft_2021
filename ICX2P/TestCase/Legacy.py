@@ -13,7 +13,7 @@ from Report import ReportGen
 
 def enable_legacy_boot():
     tc = ('500', '[TC500] Enable Legacy Boot', 'Enable Legacy Boot.')
-    result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     if not SetUpLib.enable_legacy_boot():
         result.log_fail(capture=True)
         return
@@ -23,7 +23,7 @@ def enable_legacy_boot():
 
 def disable_legacy_boot():
     tc = ('501', '[TC501] Disable Legacy Boot', 'Disable Legacy Boot.')
-    result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     if not SetUpLib.disable_legacy_boot():
         result.log_fail(capture=True)
         return
@@ -38,7 +38,7 @@ def disable_legacy_boot():
 # OnComplete: NA
 def boot_to_legacy_os():
     tc = ('502', '[TC502] Boot to legacy OS', 'Boot to legacy OS and check dmesg info')
-    result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     err_ignore = ["XFS .*?: Metadata (?:I/O|CRC) error", "ERST.*? support is initialized", "regulatory.(?:0|db)"]
     try:
         assert BmcLib.force_reset()

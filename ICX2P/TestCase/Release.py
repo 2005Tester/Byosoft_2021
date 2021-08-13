@@ -21,7 +21,7 @@ from Common.RedfishLib import Redfish
 
 def bios_parallel_flash():
     tc = ('900', '[TC900] Parallel flash', "Check BIOS version under setup and iBMC Web")
-    result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     release_branch = var.get("branch")
     try:
         img = Update.get_test_image(SutConfig.LOG_DIR, release_branch, 'debug-build')
@@ -75,7 +75,7 @@ def equip_mode_flag_check():
 # 装备模式BIOS version = 5.xx.
 def equip_mode_version_check():
     tc = ('903', '[TC903] 装备模式: Equipment mode version check', '装备模式版本号为5.xx.')
-    result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     mfg_version = ['BIOS Revision\s+5.[0-9]{2}']
     if not SetUpLib.boot_to_bios_config():
         result.log_fail(capture=True)
@@ -90,7 +90,7 @@ def equip_mode_version_check():
 
 def hpm_upgrade_test():
     tc = ('904', '[TC904] HPM升级保持配置不变', "HPM升级BIOS后，原来设置的非默认BIOS设置不变")
-    result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
 
     new_branch = var.get('branch')
     old_branch = PlatMisc.last_release(new_branch)
@@ -126,7 +126,7 @@ def hpm_upgrade_test():
 
 def hpm_downgrade_test():
     tc = ('905', '[TC905] HPM降级保持配置不变', "HPM降级BIOS后，原来设置的非默认BIOS设置不变")
-    result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
 
     new_branch = var.get('branch')
     if not ReleaseTest.new_bios:
@@ -165,7 +165,7 @@ def hpm_downgrade_test():
 # OnComplete: NA
 def compare_fdm_log():
     tc = ('906', '[TC906] Compare FDM Log Size', "Compare FDM Log size with previous BIOS version")
-    result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
 
     rfish = Redfish(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)
     new_branch = var.get('branch')
@@ -227,7 +227,7 @@ def compare_fdm_log():
 # OnComplete: NA
 def check_bmc_warning():
     tc = ('907', '[TC907] iBMC warning info in web', "Check no any warning info")
-    result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     check_result = BmcLib.bmc_warning_check().status
     if check_result is None:
         result.log_skip()
@@ -246,7 +246,7 @@ def check_bmc_warning():
 # OnComplete: NA
 def registry_check():
     tc = ('908', '[TC908] Compare registry.json file with previous version', "Compare registry.json file with previous version")
-    result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
 
     new_branch = var.get('branch')
     old_branch = PlatMisc.last_release(new_branch)
@@ -290,7 +290,7 @@ def registry_check():
 # OnComplete: NA
 def bios_downgrade_flash():
     tc = ('909', '[TC909] Downgrade flash', "Check BIOS version under setup and iBMC Web")
-    result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     new_branch = var.get("branch")
     old_branch = PlatMisc.last_release(new_branch)
     if not ReleaseTest.old_bios:
@@ -364,7 +364,7 @@ def equip_iou_not_hidden():
 # OnComplete: NA
 def equip_tool_set_and_restore():
     tc = ('912', '[TC912] Restore BIOS default setting via equipment tool', 'Restore BIOS default setting via equipment tool')
-    result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         # 抓取默认logo和bios设置
         origin_logo = PlatMisc.save_logo(SutConfig.LOG_DIR, "origin_logo")
@@ -411,7 +411,7 @@ def equip_tool_set_and_restore():
 # OnComplete: NA
 def post_logo_check():
     tc = ('913', '[TC913] POST Logo', 'Check POST Logo.')
-    result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
     try:
         default_logo = os.path.abspath(os.path.join(os.path.dirname(__file__), r"..\Tools\Logo\DefaultLogo.bmp"))
         logging.info(f"Default logo: {default_logo}")
@@ -433,7 +433,7 @@ def post_logo_check():
 # OnComplete: NA
 def chipsec_test():
     tc = ('914', '[TC914] Chipsec Test', 'The version is scanned by chipsec without warning')
-    result = ReportGen.LogHeaderResult(tc, imgdir=SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc)
 
     tme_en = [[Msg.PROCESSOR_CONFIG], "Total Memory Encryption \(TME\)", "Enabled"]
     sgx_en = [[], "SW Guard Extensions \(SGX\)", "Enabled"]
