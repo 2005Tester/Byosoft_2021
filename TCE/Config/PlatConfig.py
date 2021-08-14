@@ -50,6 +50,7 @@ class Msg:
     HOTKEY_PROMPT_F6 = 'Press F6 go to SP boot'
 
     PW_PROMPT = 'Enter Current Password'
+    PW_UPATE_PROMPT = 'The current password is the default password.Please update password!'
 
     # Home screen with 6 icons
     HOME_PAGE = '/Continue/'

@@ -82,11 +82,6 @@ class SysCfg:
         }]
 
 
-
-# defined the msg info
-pwd_info = 'The current password is the default password.Please update password!'
-
-
 # CPU, DIMM info
 CPU_TYPE = "6330"
 CPU_FREQ = "2.0"
@@ -99,15 +94,6 @@ CPU_SKU = ["Processor {0} Version \s+Intel\(R\) Xeon\(R\) Gold {1} CPU @ {2}0GHz
 DIMM_FREQ = 2933  # Mhz
 DIMM_info = ['DIMM020\(C\)\s+S0.CC.D0:2933MT/s Hynix DRx4 32GB RDIMM',
              'DIMM160\(G\)\s+S1.CG.D0:2933MT/s Hynix DRx4 32GB RDIMM']
-
-
-# Common key order
-key2Setup = [Key.RIGHT, Key.RIGHT, Key.DOWN, Key.ENTER]
-key2pwd = [Key.RIGHT, Key.RIGHT, Key.RIGHT]
-
-
-# rw os data
-CKE_POWER_DOWN = ['020f', '1100', '0080', '1000']
 
 
 # Boot Option Flag

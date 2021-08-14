@@ -82,7 +82,7 @@ def boot_to_bios_config(serial, ssh):
     if not boot_to_setup(serial, ssh):
         return
     logging.info("Move to \"BIOS Configuration\"")
-    SerialLib.send_keys_with_delay(SutConfig.key2Setup)
+    SerialLib.send_keys_with_delay([Key.RIGHT, Key.RIGHT, Key.DOWN, Key.ENTER])
     if not serial.is_msg_present('System Time'):
         logging.info("SetUpLib: Boot to BIOS Configuration Failed")
         return

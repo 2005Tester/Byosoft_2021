@@ -415,7 +415,7 @@ def Testcase_BiosPasswordSecurity_013():
                     assert SetUpLib.wait_message(Msg.PW_PROMPT, 10)
                     logging.info("input password again")
                 else:
-                    # assert (SerialLib.is_msg_present(serial, SutConfig.pwd_info))
+                    # assert (SerialLib.is_msg_present(serial, Msg.PW_UPDATE_PROMPT))
                     SetUpLib.send_key(Key.ENTER)
                     assert SetUpLib.wait_message('Continue', 60)
                     logging.info("Booting to setup successfully")
@@ -684,12 +684,12 @@ def pwd_auth_mgt_08_10():
         logging.info("Hot Key sent")
         assert SetUpLib.wait_message( Msg.PW_PROMPT, 60)
         SetUpLib.send_data_enter(user_pwd)
-        assert SetUpLib.wait_message(SutConfig.pwd_info)
+        assert SetUpLib.wait_message(Msg.PW_UPATE_PROMPT)
         SetUpLib.send_key(Key.ENTER)
         # set 5
         logging.info("Modify the login password of ordinary users with more than 16 digits")
         SetUpLib.send_keys([Key.RIGHT, Key.ENTER])
-        SetUpLib.send_keys(SutConfig.key2pwd)
+        SetUpLib.send_keys([Key.RIGHT, Key.RIGHT, Key.RIGHT]) # go to password setting
         SetUpLib.send_key(Key.ENTER)
         assert SetUpLib.wait_message("Enter New Password")
         SetUpLib.send_data_enter('Inter@4567byosoft')
