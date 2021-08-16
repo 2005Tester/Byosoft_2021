@@ -63,7 +63,7 @@ def cpu_cores_active_enable(num, set_n):
         assert SetUpLib.verify_info(SutConfig.DIMM_info, 20)
         # boot suse #
         assert BmcLib.force_reset()
-        assert SetUpLib.boot_suse_from_bm()
+        # assert SetUpLib.boot_suse_from_bm()
         # 每个CPU下只有num个core。
         res1 = SshLib.execute_command(Sut.OS_SSH, r'lscpu | grep " per socket" ')
         assert res1
@@ -80,7 +80,7 @@ def cpu_cores_active_enable(num, set_n):
         logging.info("**Core_Enabled = {}**".format(smbios4_Core_Enabled))
         smbios4_Thread_Count = SshLib.execute_command(Sut.OS_SSH, r'dmidecode -t 4 | grep "Thread Count" ').replace('\n', '').split(':')[-1].strip()
         logging.info("**Thread_Count = {}**".format(smbios4_Thread_Count))
-        if smbios4_Core_Count == '28' and smbios4_Core_Enabled == str(num) and smbios4_Thread_Count == str(num*2):
+        if smbios4_Core_Count == '32' and smbios4_Core_Enabled == str(num) and smbios4_Thread_Count == str(num*2):
             logging.info("**Core_Count pass, Core_Enabled pass,Thread_Count pass")
         else:
             logging.info("**Core eorro**")
