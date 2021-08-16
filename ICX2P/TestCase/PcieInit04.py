@@ -503,6 +503,7 @@ def sriov_global_menu():
 def sriov_enable_disable():
     tc = ('643', '[TC643] Testcase_SRIOV_002', 'SRIOV总开关测试')
     result = ReportGen.LogHeaderResult(tc)
+    validation_os = "ubuntu"  # 经验证，当SRIOV关闭时，只有ubuntu系统，才会在OS层面自动开启SRIOV
 
     def sriov_status_check(status):
         try:
@@ -536,6 +537,9 @@ def sriov_enable_disable():
             logging.error(e0)
 
     try:
+        if not re.search(validation_os, "".join(Msg.BOOT_OPTION_OS), re.I):
+            result.log_skip()
+            return
         sriov_en_check = sriov_status_check("Enabled")
         if sriov_en_check == 0:
             logging.info("No PCIE devices support SR-IOV, test skipped")
@@ -560,6 +564,7 @@ def sriov_enable_disable():
 def sriov_per_port_loop():
     tc = ('644', '[TC644] Testcase_SRIOV_003 / Testcase_SRIOV_005', '遍历Root Port SR-IOV开关测试')
     result = ReportGen.LogHeaderResult(tc)
+    validation_os = "ubuntu"  # 经验证，当SRIOV关闭时，只有ubuntu系统，才会在OS层面自动开启SRIOV
 
     def sriov_per_port_switch(value):
         try:
@@ -596,6 +601,9 @@ def sriov_per_port_loop():
             logging.error(e0)
     # main test process
     try:
+        if not re.search(validation_os, "".join(Msg.BOOT_OPTION_OS), re.I):
+            result.log_skip()
+            return
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.UP, [Msg.VIRTUAL_CFG], 5, Msg.VIRTUAL_CFG)
         assert SetUpLib.set_option_value(Msg.SRIOV_GLOBAL, "Per IIO Port", save=True)

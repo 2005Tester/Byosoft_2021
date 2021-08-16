@@ -320,7 +320,7 @@ def boot_suse_from_bm():
 def boot_option_from_bm(boot_option, comfirm_msg):
     if not boot_to_bootmanager():
         return
-    if not enter_menu(Key.DOWN, boot_option, 8, Msg.SUSE_GRUB):
+    if not enter_menu(Key.DOWN, boot_option, 10, Msg.SUSE_GRUB):
         return
     if not SerialLib.is_msg_present(Sut.BIOS_COM, comfirm_msg):
         return
@@ -332,7 +332,7 @@ def boot_option_from_bm(boot_option, comfirm_msg):
 def continue_to_boot_suse_from_bm():
     if not continue_to_bootmanager():
         return
-    if not enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 8, Msg.SUSE_GRUB):
+    if not enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 10, Msg.SUSE_GRUB):
         return
     # if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE):
     #     return
