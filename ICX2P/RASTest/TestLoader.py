@@ -48,7 +48,7 @@ def excmd(cmd, echo=True, delay=0, _halt=True, _go=True):
             itp.go()
     if delay:
         timer(delay)
-    if result.startswith("0x"):
+    if result.startswith("0x") or result.isdigit():
         return int(result, 16)
 
 
