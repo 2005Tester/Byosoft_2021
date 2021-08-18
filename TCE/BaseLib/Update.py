@@ -41,9 +41,9 @@ def upload_bios(src):
     # Upload BIOS image (.bin. .hpm) to SUT
     bin_file = 'rp001.bin'
     hpm_file = 'bios.hpm'
-    transport = paramiko.Transport(SutConfig.BMC_IP, 22)
+    transport = paramiko.Transport(SutConfig.Env.BMC_IP, 22)
     transport.banner_timeout = 90  # Increase timeout value to fix connection issue
-    transport.connect(username=SutConfig.BMC_USER, password=SutConfig.BMC_PASSWORD)
+    transport.connect(username=SutConfig.Env.BMC_USER, password=SutConfig.Env.BMC_PASSWORD)
     sftp = paramiko.SFTPClient.from_transport(transport)
     res = sftp.listdir()
     # print(res)
@@ -100,7 +100,7 @@ def upload_bios(src):
 
 def poweron_sut():
     logging.info("Power on Sut.")
-    sshconn = ssh.SshConnection(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)
+    sshconn = ssh.SshConnection(SutConfig.Env.BMC_IP, SutConfig.Env.BMC_USER, SutConfig.Env.BMC_PASSWORD)
     cmd_power_on = 'ipmcset -d powerstate -v 1\n'
     ret_power_on = 'Do you want to continue'
     cmd_confirm = 'Y\n'

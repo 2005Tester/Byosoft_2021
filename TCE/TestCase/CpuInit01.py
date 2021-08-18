@@ -60,7 +60,7 @@ def cpu_cores_active_enable(num, set_n):
         SetUpLib.send_keys([Key.ENTER])
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.MEMORY_TOP], 20, 'DIMM000')
         logging.info("**Verify Memory Information**")
-        assert SetUpLib.verify_info(SutConfig.DIMM_info, 20)
+        assert SetUpLib.verify_info(SutConfig.SysCfg.DIMM_INFO, 20)
         # boot suse #
         assert BmcLib.force_reset()
         # assert SetUpLib.boot_suse_from_bm()
@@ -181,11 +181,11 @@ def cpu_mem_info():
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PER_CPU_INFO, 20, 'BSP Revision')
         logging.info("**Verify CPU Information**")
-        assert SetUpLib.verify_info(SutConfig.CPU_info, 20)
+        assert SetUpLib.verify_info(SutConfig.SysCfg.CPU_INFO, 20)
         SetUpLib.send_keys([Key.ESC, Key.ESC])
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.MEMORY_TOP], 20, 'DIMM000')
         logging.info("**Verify Memory Information**")
-        assert SetUpLib.verify_info(SutConfig.DIMM_info, 20)
+        assert SetUpLib.verify_info(SutConfig.SysCfg.DIMM_INFO, 20)
         result.log_pass()
         return True
     except AssertionError:
@@ -478,7 +478,7 @@ def cpu_compa_02():
         assert SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 20, Msg.SUSE_GRUB)
         assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE, 170)
         logging.info("Suse_OS Boot Successful")
-        fail_dir = SutConfig.LOG_DIR + r'\TC213.log'
+        fail_dir = SutConfig.Env.LOG_DIR + r'\TC213.log'
         with open(fail_dir, 'r+',  encoding='utf-8') as f:
             line_text = f.readlines()
             for str in line_text:

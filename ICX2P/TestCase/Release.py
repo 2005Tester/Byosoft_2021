@@ -24,7 +24,7 @@ def bios_parallel_flash():
     result = ReportGen.LogHeaderResult(tc)
     release_branch = var.get("branch")
     try:
-        img = Update.get_test_image(SutConfig.LOG_DIR, release_branch, 'debug-build')
+        img = Update.get_test_image(SutConfig.Env.LOG_DIR, release_branch, 'debug-build')
         assert Update.update_bios(img)
         assert SetUpLib.update_default_password()
         assert SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5)
@@ -95,10 +95,10 @@ def hpm_upgrade_test():
     new_branch = var.get('branch')
     old_branch = PlatMisc.last_release(new_branch)
     if not ReleaseTest.old_bios:
-        ReleaseTest.old_bios = Update.get_test_image(SutConfig.LOG_DIR, old_branch, 'debug-build')
+        ReleaseTest.old_bios = Update.get_test_image(SutConfig.Env.LOG_DIR, old_branch, 'debug-build')
     if not ReleaseTest.new_bios:
-        ReleaseTest.new_bios = Update.get_test_image(SutConfig.LOG_DIR, new_branch, 'debug-build')
-    new_path_local = os.path.join(SutConfig.BIOS_PATH, new_branch)
+        ReleaseTest.new_bios = Update.get_test_image(SutConfig.Env.LOG_DIR, new_branch, 'debug-build')
+    new_path_local = os.path.join(SutConfig.Env.BIOS_PATH, new_branch)
     new_hpm_local = glob.glob(os.path.join(new_path_local, "*.hpm"))
     flash_latest = False
 
@@ -130,9 +130,9 @@ def hpm_downgrade_test():
 
     new_branch = var.get('branch')
     if not ReleaseTest.new_bios:
-        ReleaseTest.new_bios = Update.get_test_image(SutConfig.LOG_DIR, new_branch, 'debug-build')
+        ReleaseTest.new_bios = Update.get_test_image(SutConfig.Env.LOG_DIR, new_branch, 'debug-build')
     old_branch = PlatMisc.last_release(new_branch)
-    old_path_local = os.path.join(SutConfig.BIOS_PATH, old_branch)
+    old_path_local = os.path.join(SutConfig.Env.BIOS_PATH, old_branch)
     old_hpm_local = glob.glob(os.path.join(old_path_local, "*.hpm"))
     flash_latest = False
 
@@ -167,13 +167,13 @@ def compare_fdm_log():
     tc = ('906', '[TC906] Compare FDM Log Size', "Compare FDM Log size with previous BIOS version")
     result = ReportGen.LogHeaderResult(tc)
 
-    rfish = Redfish(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)
+    rfish = Redfish(SutConfig.Env.BMC_IP, SutConfig.Env.BMC_USER, SutConfig.Env.BMC_PASSWORD)
     new_branch = var.get('branch')
     old_branch = PlatMisc.last_release(new_branch)
     if not ReleaseTest.old_bios:
-        ReleaseTest.old_bios = Update.get_test_image(SutConfig.LOG_DIR, old_branch, 'debug-build')
+        ReleaseTest.old_bios = Update.get_test_image(SutConfig.Env.LOG_DIR, old_branch, 'debug-build')
     if not ReleaseTest.new_bios:
-        ReleaseTest.new_bios = Update.get_test_image(SutConfig.LOG_DIR, new_branch, 'debug-build')
+        ReleaseTest.new_bios = Update.get_test_image(SutConfig.Env.LOG_DIR, new_branch, 'debug-build')
     flash_latest = False
 
     def read_fdm(bios_img, test_flag):
@@ -181,7 +181,7 @@ def compare_fdm_log():
             assert Update.update_bios(bios_img), "update latest bios fail"
             assert SetUpLib.update_default_password(), "update_default_password fail"
             assert SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5), "move_boot_option_up fail"
-            _dump_path = os.path.join(SutConfig.LOG_DIR, f"TC{tc[0]}/{test_flag}")
+            _dump_path = os.path.join(SutConfig.Env.LOG_DIR, f"TC{tc[0]}/{test_flag}")
             _dump_dir = BmcLib.bmc_dumpinfo(path=_dump_path, name="dump", uncom=True)
             return PlatMisc.read_bmc_dump_log(_dump_dir, "dump_info/LogDump/fdm_log")
         except Exception as err:
@@ -190,7 +190,7 @@ def compare_fdm_log():
     # main test process
     try:
         # dump latest release fdmlog
-        dump_path = os.path.join(SutConfig.LOG_DIR, f"TC{tc[0]}/latest")
+        dump_path = os.path.join(SutConfig.Env.LOG_DIR, f"TC{tc[0]}/latest")
         dump_dir = BmcLib.bmc_dumpinfo(path=dump_path, name="dump", uncom=True)
         latest = PlatMisc.read_bmc_dump_log(dump_dir, "dump_info/LogDump/fdm_log")
         # Flash last release img
@@ -200,14 +200,14 @@ def compare_fdm_log():
         logging.info('Mark Downgrade Flash BIOS as already tested')
         ReleaseTest.downgrade_tested = True
         logging.info('Dump "registry.json" file for later registry compare')
-        ReleaseTest.registry_old = rfish.registry_dump(dump_json=True, path=SutConfig.LOG_DIR, name="Registry_old.json")
+        ReleaseTest.registry_old = rfish.registry_dump(dump_json=True, path=SutConfig.Env.LOG_DIR, name="Registry_old.json")
         assert latest == downgrade, "FDM LOG if different after BIOS downgrade"
         # Flash latest release img back again
         upgrade = read_fdm(ReleaseTest.new_bios, "upgrade")
         assert upgrade != 0, "Exception: Read upgrade fdmlog"
         flash_latest = True
         logging.info('Dump "registry.json" file for later registry compare')
-        ReleaseTest.registry_new = rfish.registry_dump(dump_json=True, path=SutConfig.LOG_DIR, name="Registry_new.json")
+        ReleaseTest.registry_new = rfish.registry_dump(dump_json=True, path=SutConfig.Env.LOG_DIR, name="Registry_new.json")
         assert downgrade == upgrade, "FDM LOG if different after BIOS upgrade"
         result.log_pass()
         return True
@@ -251,10 +251,10 @@ def registry_check():
     new_branch = var.get('branch')
     old_branch = PlatMisc.last_release(new_branch)
     if not ReleaseTest.old_bios:
-        ReleaseTest.old_bios = Update.get_test_image(SutConfig.LOG_DIR, old_branch, 'debug-build')
+        ReleaseTest.old_bios = Update.get_test_image(SutConfig.Env.LOG_DIR, old_branch, 'debug-build')
     if not ReleaseTest.new_bios:
-        ReleaseTest.new_bios = Update.get_test_image(SutConfig.LOG_DIR, new_branch, 'debug-build')
-    rfish = Redfish(SutConfig.BMC_IP, SutConfig.BMC_USER, SutConfig.BMC_PASSWORD)
+        ReleaseTest.new_bios = Update.get_test_image(SutConfig.Env.LOG_DIR, new_branch, 'debug-build')
+    rfish = Redfish(SutConfig.Env.BMC_IP, SutConfig.Env.BMC_USER, SutConfig.Env.BMC_PASSWORD)
     flash_latest = True
 
     try:
@@ -263,13 +263,13 @@ def registry_check():
             assert Update.update_bios(ReleaseTest.old_bios)
             flash_latest = False
             logging.info("dump old registry")
-            ReleaseTest.registry_old = rfish.registry_dump(dump_json=True, path=SutConfig.LOG_DIR, name="Registry_old.json")
+            ReleaseTest.registry_old = rfish.registry_dump(dump_json=True, path=SutConfig.Env.LOG_DIR, name="Registry_old.json")
         # new branch bios image registry dump
         if not ReleaseTest.registry_new:
             assert Update.update_bios(ReleaseTest.new_bios)
             flash_latest = True
             logging.info("dump new registry")
-            ReleaseTest.registry_new = rfish.registry_dump(dump_json=True, path=SutConfig.LOG_DIR, name="Registry_new.json")
+            ReleaseTest.registry_new = rfish.registry_dump(dump_json=True, path=SutConfig.Env.LOG_DIR, name="Registry_new.json")
         assert ReleaseTest.registry_old == ReleaseTest.registry_new, "Check old registry is different from new registry"
         logging.info("Check old registry is same with new registry")
         result.log_pass()
@@ -294,9 +294,9 @@ def bios_downgrade_flash():
     new_branch = var.get("branch")
     old_branch = PlatMisc.last_release(new_branch)
     if not ReleaseTest.old_bios:
-        ReleaseTest.old_bios = Update.get_test_image(SutConfig.LOG_DIR, old_branch, 'debug-build')
+        ReleaseTest.old_bios = Update.get_test_image(SutConfig.Env.LOG_DIR, old_branch, 'debug-build')
     if not ReleaseTest.new_bios:
-        ReleaseTest.new_bios = Update.get_test_image(SutConfig.LOG_DIR, new_branch, 'debug-build')
+        ReleaseTest.new_bios = Update.get_test_image(SutConfig.Env.LOG_DIR, new_branch, 'debug-build')
 
     try:
         if ReleaseTest.downgrade_tested:
@@ -367,7 +367,7 @@ def equip_tool_set_and_restore():
     result = ReportGen.LogHeaderResult(tc)
     try:
         # 抓取默认logo和bios设置
-        origin_logo = PlatMisc.save_logo(SutConfig.LOG_DIR, "origin_logo")
+        origin_logo = PlatMisc.save_logo(SutConfig.Env.LOG_DIR, "origin_logo")
         assert origin_logo
         assert MiscLib.ping_sut(SutConfig.OS_IP, 300)
         default_config = Sut.UNITOOL.read(*BiosCfg.HPM_KEEP)
@@ -376,23 +376,23 @@ def equip_tool_set_and_restore():
         assert PlatMisc.unipwd_tool("set", "admin@9001")
         assert PlatMisc.unilogo_update(name="CustomLogo.bmp")
         # 重启并检查修改结果
-        modify_logo = PlatMisc.save_logo(SutConfig.LOG_DIR, "modify_logo")
+        modify_logo = PlatMisc.save_logo(SutConfig.Env.LOG_DIR, "modify_logo")
         assert modify_logo
         assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
         assert Sut.UNITOOL.check(**BiosCfg.HPM_KEEP)
         assert PlatMisc.unipwd_tool("check", "admin@9001")
         # 恢复默认
-        assert "Load Default success" in SshLib.execute_command(Sut.OS_SSH, f"cd {SutConfig.UNI_PATH};./unitool -c")
+        assert "Load Default success" in SshLib.execute_command(Sut.OS_SSH, f"cd {SutConfig.Env.UNI_PATH};./unitool -c")
         logging.info("Unitool load default scuuess")
-        assert PlatMisc.unipwd_tool("set", SutConfig.BIOS_PW_DEFAULT)
+        assert PlatMisc.unipwd_tool("set", SutConfig.Env.BIOS_PW_DEFAULT)
         assert PlatMisc.unilogo_update(name=os.path.split(origin_logo)[1], path=os.path.split(origin_logo)[0])
         # 重启并检查恢复默认结果
-        restore_logo = PlatMisc.save_logo(SutConfig.LOG_DIR, "restore_logo")
+        restore_logo = PlatMisc.save_logo(SutConfig.Env.LOG_DIR, "restore_logo")
         assert restore_logo
         assert MiscLib.compare_images(origin_logo, restore_logo)
         assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
         assert Sut.UNITOOL.check(**default_config)
-        assert PlatMisc.unipwd_tool("check", SutConfig.BIOS_PW_DEFAULT)
+        assert PlatMisc.unipwd_tool("check", SutConfig.Env.BIOS_PW_DEFAULT)
         result.log_pass()
     except AssertionError:
         result.log_fail()
@@ -400,7 +400,7 @@ def equip_tool_set_and_restore():
         if not MiscLib.ping_sut(SutConfig.OS_IP, 600):
             BmcLib.force_reset()
             MiscLib.ping_sut(SutConfig.OS_IP, 600)
-        PlatMisc.unipwd_tool("set", SutConfig.BIOS_PASSWORD)
+        PlatMisc.unipwd_tool("set", SutConfig.Env.BIOS_PASSWORD)
         BmcLib.clear_cmos()
 
 
@@ -472,9 +472,9 @@ def chipsec_test():
         assert SetUpLib.locate_option(Key.DOWN, ["Attempt Secure Boot", "\[X\]"], 5)
         SetUpLib.send_keys([Key.ENTER]*2 + Key.SAVE_RESET)
         assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
-        assert SshLib.interaction(Sut.OS_SSH, [f"cd {SutConfig.CHIPSEC_PATH}\n", "python3 chipsec_main.py > chipsec_log.txt"], ["", ""])
-        chipsec_log = os.path.join(SutConfig.LOG_DIR, "chipsec_log.txt")
-        assert SshLib.sftp_download_file(Sut.OS_SFTP, f"{SutConfig.CHIPSEC_PATH}/chipsec_log.txt", chipsec_log)
+        assert SshLib.interaction(Sut.OS_SSH, [f"cd {SutConfig.Env.CHIPSEC_PATH}\n", "python3 chipsec_main.py > chipsec_log.txt"], ["", ""])
+        chipsec_log = os.path.join(SutConfig.Env.LOG_DIR, "chipsec_log.txt")
+        assert SshLib.sftp_download_file(Sut.OS_SFTP, f"{SutConfig.Env.CHIPSEC_PATH}/chipsec_log.txt", chipsec_log)
         assert os.path.exists(chipsec_log)
         with open(chipsec_log) as ch_log:
             fail_cnt = 0

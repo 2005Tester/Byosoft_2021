@@ -24,7 +24,7 @@ from Report import ReportGen
 def pcie_resource_mmiol():
     tc = ('630', '[TC630] Testcase_PCIeResource_001', 'MMIOL资源分配静态表测试')
     result = ReportGen.LogHeaderResult(tc)
-    cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
+    cpu_rsc_file = os.path.join(SutConfig.Env.LOG_DIR, "cpu_resource.csv")
     try:
         if not os.path.exists(cpu_rsc_file):
             cpu_rsc_file = PlatMisc.dump_cpu_resource()
@@ -56,7 +56,7 @@ def pcie_resource_mmioh():
     result = ReportGen.LogHeaderResult(tc)
     MMIOH = "MMIO High Base"
     MMIOH_size = "MMIO High Granularity Size"
-    cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
+    cpu_rsc_file = os.path.join(SutConfig.Env.LOG_DIR, "cpu_resource.csv")
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, "Common RefCode Configuration"], 10, "MMIO High Base")
@@ -164,7 +164,7 @@ def pcie_resource_64b():
 def pcie_resource_bus():
     tc = ('634', '[TC634] Testcase_PCIeResource_007', 'BUS资源分配静态表测试')
     result = ReportGen.LogHeaderResult(tc)
-    cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
+    cpu_rsc_file = os.path.join(SutConfig.Env.LOG_DIR, "cpu_resource.csv")
     try:
         if not os.path.exists(cpu_rsc_file):
             cpu_rsc_file = PlatMisc.dump_cpu_resource()
@@ -191,7 +191,7 @@ def pcie_resource_bus():
 def pcie_resource_legacyio():
     tc = ('635', '[TC635] Testcase_PCIeResource_008', 'Legacy IO资源分配静态表测试')
     result = ReportGen.LogHeaderResult(tc)
-    cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
+    cpu_rsc_file = os.path.join(SutConfig.Env.LOG_DIR, "cpu_resource.csv")
     try:
         if not os.path.exists(cpu_rsc_file):
             cpu_rsc_file = PlatMisc.dump_cpu_resource()
@@ -218,7 +218,7 @@ def pcie_resource_legacyio():
 def pcie_resource_ioapic():
     tc = ('636', '[TC636] Testcase_PCIeResource_009', 'IOApic资源分配静态表测试')
     result = ReportGen.LogHeaderResult(tc)
-    cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
+    cpu_rsc_file = os.path.join(SutConfig.Env.LOG_DIR, "cpu_resource.csv")
     try:
         if not os.path.exists(cpu_rsc_file):
             cpu_rsc_file = PlatMisc.dump_cpu_resource()
@@ -290,7 +290,7 @@ def pcie_resource_lspci_legacy():
     tc = ('638', '[TC638] Testcase_PCIeResource_021', '【Legacy模式】PCIe设备资源一致性测试')
     result = ReportGen.LogHeaderResult(tc)
     from Common import ssh
-    ssh_legacy_os = ssh.SshConnection(SutConfig.OS_IP_LEGACY, SutConfig.OS_USER, SutConfig.OS_PASSWORD)
+    ssh_legacy_os = ssh.SshConnection(SutConfig.Env.OS_IP_LEGACY, SutConfig.OS_USER, SutConfig.OS_PASSWORD)
     pcie_bdf = r"PCIE LINK STATUS:\s+(.+):\s+Link up as"
 
     def get_lspci_info():
@@ -301,7 +301,7 @@ def pcie_resource_lspci_legacy():
             bdf_list = re.findall(pcie_bdf, pcie_slot)
             assert bdf_list, "No PCIe Device Detected, test skipped"
             logging.info(f"Found PCie Device: {bdf_list}")
-            assert MiscLib.ping_sut(SutConfig.OS_IP_LEGACY, 600)
+            assert MiscLib.ping_sut(SutConfig.Env.OS_IP_LEGACY, 600)
             lspci_info = []
             for bdf in bdf_list:
                 pcie_cmd = f"lspci -s {bdf} -vvv"

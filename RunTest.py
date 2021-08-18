@@ -1,44 +1,18 @@
-import sys
-from Core import var
+from Core import SutInit
 from Core import TcExecutor
-
-cli = TcExecutor.CliParse()
-
-if cli.get_project() == "icx2p":
-    from ICX2P.Config import SutConfig as cfg
-    from ICX2P import Main as script
-    var.set('project', 'ICX2P')
-    
-elif cli.get_project() == "pangea":
-    from Pangea import SutConfig as cfg
-    from Pangea import Main as script
-
-elif cli.get_project() == "moc25":
-    from Moc25 import SutConfig as cfg
-    from Moc25 import Main as script
-    var.set('project', 'Moc25')
-
-elif cli.get_project() == "hygon":
-    from Hygon.Config import SutConfig as cfg
-    from Hygon import Main as script
-    var.set('project', 'Hygon')
-
-elif cli.get_project() == "tce":
-    from TCE.Config import SutConfig as cfg
-    from TCE import Main as script
-    var.set('project', 'TCE')
-
-else:
-    print("Invalid project name.")
-    sys.exit()
+from Core import var
 
 
-def run_test():
+def main():
+    cli = TcExecutor.CliParse()
+    prj_init = SutInit.ProjectInit(cli)
+    cfg, script, resources = prj_init.load_project()
     type = cli.get_execution_type()
     post_result = cli.get_post()
     test = TcExecutor.RunTest(cfg, script, type, post_result)
+    SutInit.SutInit(var.get('project'), resources)
     test.run()
 
 
 if __name__ == '__main__':
-    run_test()
+    main()

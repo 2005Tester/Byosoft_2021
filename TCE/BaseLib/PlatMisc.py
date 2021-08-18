@@ -50,7 +50,7 @@ def rw_everything(ssh, exp_res, mem_bar=None, cmd='mmr', str=' ', start=1, stop=
     org_list = []
     logging.info('Starting to rw the address...')
     for i in range(len(mem_bar)):
-        res = SshLib.execute_command(ssh, r'cd {0};./rw {1} {2} | grep {2}'.format(SutConfig.RW_PATH, cmd, mem_bar[i]))
+        res = SshLib.execute_command(ssh, r'cd {0};./rw {1} {2} | grep {2}'.format(SutConfig.Env.RW_PATH, cmd, mem_bar[i]))
         logging.debug(res)
         if len(res) == 0:
             logging.info('RW tool can not be found')
@@ -81,8 +81,8 @@ def cscripts_inband_register(cmd, exp_list, stop=-6):
     try:
         logging.info('Opening cscripts inband...')
         res_list = []
-        cmds = ['cd {0}\n'.format(SutConfig.CSCRIPTS_PATH), 'pwd\n', './openCscripts.sh\n', '{0}\n'.format(cmd)]
-        rets = ['', '{0}'.format(SutConfig.CSCRIPTS_PATH), 'Socket 0', '{0}'.format((exp_list[-1].split(':', 1)[0]).strip())]
+        cmds = ['cd {0}\n'.format(SutConfig.Env.CSCRIPTS_PATH), 'pwd\n', './openCscripts.sh\n', '{0}\n'.format(cmd)]
+        rets = ['', '{0}'.format(SutConfig.Env.CSCRIPTS_PATH), 'Socket 0', '{0}'.format((exp_list[-1].split(':', 1)[0]).strip())]
         res = SshLib.interaction(Sut.OS_SSH, cmds, rets, timeout=15)[1]
         data = res.split('\r\n')[stop:]
         for i in range(len(data)):
@@ -138,8 +138,8 @@ def dump_cpu_resource():
     result = []
     for line in lines:
         result.append(list(map(lambda x: x.strip(), line.split("|"))))
-    csv_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
-    with open(os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv"), "w", newline="") as rsc:
+    csv_file = os.path.join(SutConfig.Env.LOG_DIR, "cpu_resource.csv")
+    with open(os.path.join(SutConfig.Env.LOG_DIR, "cpu_resource.csv"), "w", newline="") as rsc:
         csv_writer = csv.writer(rsc)
         csv_writer.writerows(result)
     return csv_file
@@ -222,7 +222,7 @@ def get_dmesg_keywords(keywords: list, ignore_list=None):
 def unipwd_tool(cmd="set", password=""):
     cmd_support = ["set", "clear", "check", "sets", "checks"]
     password = "" if cmd == "clear" else password
-    cd_path = f"cd {SutConfig.UNI_PATH}"
+    cd_path = f"cd {SutConfig.Env.UNI_PATH}"
     ins_mod = f"insmod ufudev.ko"
     pwd_exec = f"./unipwd -{cmd} {password}"
     rtn_pass = f"{cmd} password success"
@@ -239,7 +239,7 @@ def unipwd_tool(cmd="set", password=""):
 # update logo with unilogo tool in linux
 # 若path参数为空，则默认刷\Tools\Logo里的logo文件
 def unilogo_update(name, path=""):
-    cd_path = f"cd {SutConfig.UNI_PATH}"
+    cd_path = f"cd {SutConfig.Env.UNI_PATH}"
     ins_mod = f"insmod ufudev.ko"
     logo_flash = f"./unilogo -logo ./{name}"
     rtn_pass = f"Update Logo.+success"
@@ -248,7 +248,7 @@ def unilogo_update(name, path=""):
             logging.info(f"Update the logo in ..Tools/Logo/{name}")
             path = os.path.join(os.path.dirname(__file__), r"..\Tools\Logo")
             assert name in os.listdir(path), f"Logo name {name} not exist in directory: Tools/Logo"  # 检查name文件是否存在
-        assert SshLib.sftp_upload_file(Sut.OS_SFTP, f"{path}/{name}", f"{SutConfig.UNI_PATH}/{name}", ret_msg="")
+        assert SshLib.sftp_upload_file(Sut.OS_SFTP, f"{path}/{name}", f"{SutConfig.Env.UNI_PATH}/{name}", ret_msg="")
         rtn = SshLib.execute_command(Sut.OS_SSH, f"{cd_path};{ins_mod};{logo_flash}")
         assert rtn, f"execute_command for flash logo error: {rtn}"
         assert re.search(rtn_pass, rtn.lower(), re.I), f"Unilogo update logo failed:\n{rtn}"
@@ -259,13 +259,13 @@ def unilogo_update(name, path=""):
 
 
 # 保存logo图片, 默认格式为bmp
-def save_logo(path=SutConfig.LOG_DIR, name="logo", logo_loc=(88, 160, 248, 320)):
+def save_logo(path=SutConfig.Env.LOG_DIR, name="logo", logo_loc=(88, 160, 248, 320)):
     now = time.strftime("%Y%m%d_%H%M%S", time.localtime())
     try:
         assert BmcLib.force_reset()
         SerialLib.clean_buffer(Sut.BIOS_COM)
         assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.LOGO_SHOW, 120)
-        img_file = BmcLib.capture_kvm_screen(SutConfig.LOG_DIR, f"Screen_{now}")
+        img_file = BmcLib.capture_kvm_screen(SutConfig.Env.LOG_DIR, f"Screen_{now}")
         img_open = Image.open(img_file)  # 打开图片
         cut_logo = img_open.crop(logo_loc)  # logo裁剪
         cut_logo = cut_logo.convert("P", palette=Image.ADAPTIVE, colors=256)

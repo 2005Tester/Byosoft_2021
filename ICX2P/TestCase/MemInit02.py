@@ -220,7 +220,7 @@ def dimm_power_mgt_012():
     tc = ('707', '[TC707]Testcase_MemPower_012', '内存省电模式使能时更改定时器选项测试')
     result = ReportGen.LogHeaderResult(tc)
     cke_idle_set_value = 255
-    cke_idle_timer = hex(int((1 / (SutConfig.DIMM_FREQ / 2) * 1000) * cke_idle_set_value))[2:]
+    cke_idle_timer = hex(int((1 / (SutConfig.SysCfg.DIMM_FREQ / 2) * 1000) * cke_idle_set_value))[2:]
     exp_list = ['0x00000001:ddrt_cke_en(24:24)', '0x00000001:ppd_en(09:09)', '0x00000000:apd_en(08:08)', f'0x000000{cke_idle_timer:0>2}:cke_idle_timer(07:00)']
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
@@ -302,7 +302,7 @@ def memory_compa_001():
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED), "boot_to_page -> fail"
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, Msg.MEMORY_TOP], 15,
                                    'DIMM000\(A\)'), "enter_menu >> fail"
-        assert SetUpLib.verify_info(SutConfig.DIMM_info, 20)
+        assert SetUpLib.verify_info(SutConfig.SysCfg.DIMM_INFO, 20)
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)

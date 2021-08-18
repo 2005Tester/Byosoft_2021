@@ -20,7 +20,7 @@ from TCE.BaseLib import BmcLib
 TYPES = [0, 1, 2, 3, 4, 7, 9, 13, 16, 17, 19, 38, 39, 41, 127]
 
 # LogAnalyzer
-P = LogAnalyzer(SutConfig.LOG_DIR)
+P = LogAnalyzer(SutConfig.Env.LOG_DIR)
 
 # signals in rmt result
 SIGNALS = "RxDqs- RxDqs+  RxV-  RxV+  TxDq-  TxDq+  TxV-  TxV+  Cmd-  Cmd+  CmdV-  CmdV+  Ctl-  Ctl+"
@@ -55,7 +55,7 @@ class Type128Test:
 
     def read_rmt_mem(self, ssh_os, base, size=0x2000):
         # return {addr: value}
-        cmd = f'cd {SutConfig.RW_PATH} &&./rw mmr {hex(base)} {hex(size)}'
+        cmd = f'cd {SutConfig.Env.RW_PATH} &&./rw mmr {hex(base)} {hex(size)}'
         origin_data = SshLib.execute_command(ssh_os, cmd)
         pat = "([0-9a-f]{8}):((?:\s[0-9a-f]{4}){8})"
         patten = re.compile(pat)

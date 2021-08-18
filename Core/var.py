@@ -8,7 +8,8 @@ _global_var = {
     'num_fail': 0,
     'num_skip': 0,
     'log_dir': '.',
-    'serial_log': ''
+    'serial_log': '',
+    'SutCfg': ''
 }
 
 
@@ -17,7 +18,7 @@ def _init():
 
 
 def set(key, value):
-    logging.debug("Setting \"{0}\" to \"{1}\"".format(key, value))
+    logging.info("Setting \"{0}\" to \"{1}\"".format(key, value))
     if key in _global_var:
         _global_var[key] = value
         return True

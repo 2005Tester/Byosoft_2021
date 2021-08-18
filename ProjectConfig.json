@@ -24,5 +24,13 @@
     "ConfigMapping": {
         "Sut01": "Sut01Config"
         }
-    }
+    },
+
+    {
+        "ProjectName": "Hygon",
+        "Resources": ["BIOS_COM", "BMC_SSH", "BMC_SFTP", "OS_SSH", "OS_SFTP"],
+        "ConfigMapping": {
+            "Sut01": "Sut01Config"
+            }
+        }
 ]

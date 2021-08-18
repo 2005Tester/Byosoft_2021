@@ -317,7 +317,7 @@ def memory_compa_001():
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED), "boot_to_page -> fail"
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, Msg.MEMORY_TOP], 15,
                                    'DIMM000\(A\)'), "enter_menu >> fail"
-        assert SetUpLib.verify_info(SutConfig.DIMM_info, 20)
+        assert SetUpLib.verify_info(SutConfig.SysCfg.DIMM_INFO, 20)
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)

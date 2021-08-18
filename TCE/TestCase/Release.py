@@ -20,7 +20,7 @@ def bios_parallel_flash():
     result = ReportGen.LogHeaderResult(tc)
     release_branch = var.get("branch")
     try:
-        img = Update.get_test_image(SutConfig.LOG_DIR, release_branch, 'debug-build')
+        img = Update.get_test_image(SutConfig.Env.LOG_DIR, release_branch, 'debug-build')
         assert Update.update_bios(img)
         assert SetUpLib.update_default_password()
         assert SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5)
@@ -152,7 +152,7 @@ def equip_tool_set_and_restore():
     result = ReportGen.LogHeaderResult(tc)
     try:
         # 抓取默认logo和bios设置
-        origin_logo = PlatMisc.save_logo(SutConfig.LOG_DIR, "origin_logo")
+        origin_logo = PlatMisc.save_logo(SutConfig.Env.LOG_DIR, "origin_logo")
         assert origin_logo
         assert MiscLib.ping_sut(SutConfig.OS_IP, 300)
         default_config = Sut.UNITOOL.read(*BiosCfg.HPM_KEEP)
@@ -161,23 +161,23 @@ def equip_tool_set_and_restore():
         assert PlatMisc.unipwd_tool("set", "admin@9001")
         assert PlatMisc.unilogo_update(name="CustomLogo.bmp")
         # 重启并检查修改结果
-        modify_logo = PlatMisc.save_logo(SutConfig.LOG_DIR, "modify_logo")
+        modify_logo = PlatMisc.save_logo(SutConfig.Env.LOG_DIR, "modify_logo")
         assert modify_logo
         assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
         assert Sut.UNITOOL.check(**BiosCfg.HPM_KEEP)
         assert PlatMisc.unipwd_tool("check", "admin@9001")
         # 恢复默认
-        assert "Load Default success" in SshLib.execute_command(Sut.OS_SSH, f"cd {SutConfig.UNI_PATH};./unitool -c")
+        assert "Load Default success" in SshLib.execute_command(Sut.OS_SSH, f"cd {SutConfig.Env.UNI_PATH};./unitool -c")
         logging.info("Unitool load default scuuess")
-        assert PlatMisc.unipwd_tool("set", SutConfig.BIOS_PW_DEFAULT)
+        assert PlatMisc.unipwd_tool("set", SutConfig.Env.BIOS_PW_DEFAULT)
         assert PlatMisc.unilogo_update(name=os.path.split(origin_logo)[1], path=os.path.split(origin_logo)[0])
         # 重启并检查恢复默认结果
-        restore_logo = PlatMisc.save_logo(SutConfig.LOG_DIR, "restore_logo")
+        restore_logo = PlatMisc.save_logo(SutConfig.Env.LOG_DIR, "restore_logo")
         assert restore_logo
         assert MiscLib.compare_images(origin_logo, restore_logo)
         assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
         assert Sut.UNITOOL.check(**default_config)
-        assert PlatMisc.unipwd_tool("check", SutConfig.BIOS_PW_DEFAULT)
+        assert PlatMisc.unipwd_tool("check", SutConfig.Env.BIOS_PW_DEFAULT)
         result.log_pass()
     except AssertionError:
         result.log_fail()
@@ -185,7 +185,7 @@ def equip_tool_set_and_restore():
         if not MiscLib.ping_sut(SutConfig.OS_IP, 600):
             BmcLib.force_reset()
             MiscLib.ping_sut(SutConfig.OS_IP, 600)
-        PlatMisc.unipwd_tool("set", SutConfig.BIOS_PASSWORD)
+        PlatMisc.unipwd_tool("set", SutConfig.Env.BIOS_PASSWORD)
         BmcLib.clear_cmos()
 
 
@@ -257,9 +257,9 @@ def chipsec_test():
         assert SetUpLib.locate_option(Key.DOWN, ["Attempt Secure Boot", "\[X\]"], 5)
         SetUpLib.send_keys([Key.ENTER]*2 + Key.SAVE_RESET)
         assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
-        assert SshLib.interaction(Sut.OS_SSH, [f"cd {SutConfig.CHIPSEC_PATH}\n", "python3 chipsec_main.py > chipsec_log.txt"], ["", ""])
-        chipsec_log = os.path.join(SutConfig.LOG_DIR, "chipsec_log.txt")
-        assert SshLib.sftp_download_file(Sut.OS_SFTP, f"{SutConfig.CHIPSEC_PATH}/chipsec_log.txt", chipsec_log)
+        assert SshLib.interaction(Sut.OS_SSH, [f"cd {SutConfig.Env.CHIPSEC_PATH}\n", "python3 chipsec_main.py > chipsec_log.txt"], ["", ""])
+        chipsec_log = os.path.join(SutConfig.Env.LOG_DIR, "chipsec_log.txt")
+        assert SshLib.sftp_download_file(Sut.OS_SFTP, f"{SutConfig.Env.CHIPSEC_PATH}/chipsec_log.txt", chipsec_log)
         assert os.path.exists(chipsec_log)
         with open(chipsec_log) as ch_log:
             fail_cnt = 0

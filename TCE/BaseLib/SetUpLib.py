@@ -100,7 +100,7 @@ def continue_to_setup():
 def boot_with_hotkey(key, msg, timeout):
     hotkey_prompt = Msg.HOTKEY_PROMPT_DEL
     pw_prompt = Msg.PW_PROMPT
-    password = SutConfig.BIOS_PASSWORD
+    password = SutConfig.Env.BIOS_PASSWORD
     if not BmcLib.force_reset():
         return
     if not Sut.BIOS_COM.boot_with_hotkey(key, msg, timeout, hotkey_prompt, pw_prompt, password):
@@ -112,7 +112,7 @@ def boot_with_hotkey(key, msg, timeout):
 def continue_boot_with_hotkey(key, msg, timeout):
     hotkey_prompt = Msg.HOTKEY_PROMPT_DEL
     pw_prompt = Msg.PW_PROMPT
-    password = SutConfig.BIOS_PASSWORD
+    password = SutConfig.Env.BIOS_PASSWORD
     if not Sut.BIOS_COM.boot_with_hotkey(key, msg, timeout, hotkey_prompt, pw_prompt, password):
         return
     logging.info("Boot with hotkey successfully.")
@@ -300,9 +300,9 @@ def update_default_password():
     send_key(Key.ENTER)
     if not SerialLib.is_msg_present(Sut.BIOS_COM, "Enter New Password"):
         return
-    send_data(SutConfig.BIOS_PASSWORD)
+    send_data(SutConfig.Env.BIOS_PASSWORD)
     send_key(Key.ENTER)
-    send_data(SutConfig.BIOS_PASSWORD)
+    send_data(SutConfig.Env.BIOS_PASSWORD)
     send_key(Key.ENTER)
     if not SerialLib.is_msg_present(Sut.BIOS_COM, "Change password success"):
         return

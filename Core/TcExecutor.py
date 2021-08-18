@@ -21,11 +21,13 @@ class CliParse:
     def __init__(self):
         my_parser = argparse.ArgumentParser()
         my_parser.add_argument("ProjectName", help="Supported projects: ICX2P, Pangea, Hygon, TCE")
+        my_parser.add_argument("SutName", help="Specify a rut to run the test, for example: sut01")
         my_parser.add_argument("ExecutionType", help="Supported Execution Type: daily, release, weekly, debug, checkcsv")
         my_parser.add_argument("-p", "--post", action="store_true", help="Opional: Post test resul to web portl")
         args = my_parser.parse_args()
         self.project = args.ProjectName
         self.execution_type = args.ExecutionType
+        self.sut_name = args.SutName
         if args.post:
             self.post = args.post
         else:
@@ -33,6 +35,9 @@ class CliParse:
 
     def get_project(self):
         return self.project.lower()
+
+    def get_sutname(self):
+        return self.sut_name.lower()
 
     def get_execution_type(self):
         return self.execution_type.lower()
@@ -47,20 +52,21 @@ class RunTest:
         self.script = script
         self.execution_type = execution_type
         self.post = post
+        self.logdir = self.init_log()
 
     def init_log(self):
-        log_dir = self.config.LOG_DIR
+        log_dir = self.config.Env.LOG_DIR
         log_format = LogConfig.gen_config(log_dir)
         logging.config.dictConfig(log_format)
         logging.getLogger("paramiko").setLevel(logging.WARNING)
         logging.info("Initializing test...")
-        logging.info("Test Project: {0}".format(self.config.PROJECT_NAME))
-        logging.info("SUT Configuration: {0}".format(self.config.SUT_CONFIG))
+        logging.info("Test Project: {0}".format(self.config.Env.PROJECT_NAME))
+        logging.info("SUT Configuration: {0}".format(self.config.Env.SUT_CONFIG))
         return log_dir
 
     def gen_report(self, log_dir):
         logging.info("Generating report...")
-        template = self.config.REPORT_TEMPLATE
+        template = self.config.Env.REPORT_TEMPLATE
         report = ReportGenerator(template, os.path.join(log_dir, "test.log"), os.path.join(log_dir, "report.html"))
         report.write_to_html()
         if self.post:
@@ -71,7 +77,7 @@ class RunTest:
         if self.execution_type not in ["daily", "release", "debug", "weekly", "checkcsv"]:
             print("Option: \"{0}\" not supported".format(self.execution_type))
             return
-        logdir = self.init_log()
+#        logdir = self.init_log()
         if self.execution_type == "checkcsv":
             try:
                 self.script.CheckCsv()
@@ -97,7 +103,7 @@ class RunTest:
                 self.script.Debug()
             except Exception as e:
                 logging.error("Exception: {0}".format(e))
-        self.gen_report(logdir)
+        self.gen_report(self.logdir)
 
 
 EXEC_TYPE = ['Release', 'Daily', 'Weekly']

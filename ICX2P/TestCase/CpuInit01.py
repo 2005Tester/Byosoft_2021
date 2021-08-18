@@ -62,7 +62,7 @@ def cpu_cores_active_enable(num, set_n):
         SetUpLib.send_keys([Key.ENTER])
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.MEMORY_TOP], 20, 'DIMM000')
         logging.info("**Verify Memory Information**")
-        assert SetUpLib.verify_info(SutConfig.DIMM_info, 20)
+        assert SetUpLib.verify_info(SutConfig.SysCfg.DIMM_INFO, 20)
         # boot suse #
         assert BmcLib.force_reset()
         # 每个CPU下只有num个core。
@@ -182,11 +182,11 @@ def cpu_mem_info():
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PER_CPU_INFO, 20, 'BSP Revision')
         logging.info("**Verify CPU Information**")
-        assert SetUpLib.verify_info(SutConfig.CPU_info, 20)
+        assert SetUpLib.verify_info(SutConfig.SysCfg.CPU_INFO, 20)
         SetUpLib.send_keys([Key.ESC, Key.ESC])
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.MEMORY_TOP], 20, 'DIMM000')
         logging.info("**Verify Memory Information**")
-        assert SetUpLib.verify_info(SutConfig.DIMM_info, 20)
+        assert SetUpLib.verify_info(SutConfig.SysCfg.DIMM_INFO, 20)
         result.log_pass()
         return True
     except AssertionError:
@@ -479,7 +479,7 @@ def cpu_compa_02():
         assert SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 20, Msg.SUSE_GRUB)
         assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE, 170)
         logging.info("Suse_OS Boot Successful")
-        fail_dir = SutConfig.LOG_DIR + r'\TC213.log'
+        fail_dir = SutConfig.Env.LOG_DIR + r'\TC213.log'
         with open(fail_dir, 'r+',  encoding='utf-8') as f:
             line_text = f.readlines()
             for str in line_text:
@@ -592,11 +592,11 @@ def cpu_compa_06():
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.UP, Msg.PATH_PER_CPU_INFO, 20, Msg.PER_CPU)
-        assert SetUpLib.verify_info(SutConfig.CPU_info, 20)
-        assert SetUpLib.verify_info(SutConfig.CPU_SKU, 20)
+        assert SetUpLib.verify_info(SutConfig.SysCfg.CPU_INFO, 20)
+        assert SetUpLib.verify_info(SutConfig.SysCfg.CPU_SKU, 20)
         assert BmcLib.force_reset()
         # 在smbios4中检查：cpu型号，频率，个数
-        expect_cpu_type = f'Intel\(R\) Xeon\(R\) Gold {SutConfig.CPU_TYPE} CPU @ {SutConfig.CPU_FREQ}0GHz'
+        expect_cpu_type = f'Intel\(R\) Xeon\(R\) Gold {SutConfig.SysCfg.CPU_TYPE} CPU @ {SutConfig.SysCfg.CPU_FREQ}0GHz'
         res = SshLib.execute_command(Sut.OS_SSH, r'dmidecode -t 4 | grep "Version:" ')
         assert res, "Get invalid data of dmidecode -t4"
         os_cpu_list = re.findall(expect_cpu_type, res)
@@ -685,7 +685,7 @@ def cpu_SpreadSpectrum_001():
 # OnComplete: NA
 def cpu_ApicReport():
     tc = ('219', '[TC219] Testcase_ApicReport_001,002,003', '支持APIC中CPU总线程数和核数上报')
-    result = ReportGen.LogHeaderResult(tc, SutConfig.LOG_DIR)
+    result = ReportGen.LogHeaderResult(tc, SutConfig.Env.LOG_DIR)
     Extended_APIC = ['Extended APIC', '<Disabled>']
     Extended_APIC2 = ['Extended APIC', '<Enabled>']
     try:

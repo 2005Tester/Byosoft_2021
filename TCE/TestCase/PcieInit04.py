@@ -24,7 +24,7 @@ from Report import ReportGen
 def pcie_resource_mmiol():
     tc = ('630', '[TC630] Testcase_PCIeResource_001', 'MMIOL资源分配静态表测试')
     result = ReportGen.LogHeaderResult(tc)
-    cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
+    cpu_rsc_file = os.path.join(SutConfig.Env.LOG_DIR, "cpu_resource.csv")
     try:
         if not os.path.exists(cpu_rsc_file):
             cpu_rsc_file = PlatMisc.dump_cpu_resource()
@@ -56,7 +56,7 @@ def pcie_resource_mmioh():
     result = ReportGen.LogHeaderResult(tc)
     MMIOH = "MMIO High Base"
     MMIOH_size = "MMIO High Granularity Size"
-    cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
+    cpu_rsc_file = os.path.join(SutConfig.Env.LOG_DIR, "cpu_resource.csv")
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, "Common RefCode Configuration"], 10, "MMIO High Base")
@@ -164,7 +164,7 @@ def pcie_resource_64b():
 def pcie_resource_bus():
     tc = ('634', '[TC634] Testcase_PCIeResource_007', 'BUS资源分配静态表测试')
     result = ReportGen.LogHeaderResult(tc)
-    cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
+    cpu_rsc_file = os.path.join(SutConfig.Env.LOG_DIR, "cpu_resource.csv")
     try:
         if not os.path.exists(cpu_rsc_file):
             cpu_rsc_file = PlatMisc.dump_cpu_resource()
@@ -191,7 +191,7 @@ def pcie_resource_bus():
 def pcie_resource_ioapic():
     tc = ('636', '[TC636] Testcase_PCIeResource_009', 'IOApic资源分配静态表测试')
     result = ReportGen.LogHeaderResult(tc)
-    cpu_rsc_file = os.path.join(SutConfig.LOG_DIR, "cpu_resource.csv")
+    cpu_rsc_file = os.path.join(SutConfig.Env.LOG_DIR, "cpu_resource.csv")
     try:
         if not os.path.exists(cpu_rsc_file):
             cpu_rsc_file = PlatMisc.dump_cpu_resource()

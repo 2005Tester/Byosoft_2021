@@ -48,7 +48,7 @@ invalid_info = 'Invalid Password'
 error_info = 'Enter incorrect password 3 times,System Locked'
 enable_simple_pwd = 'Enabling simple password poses security risks.'
 simple_pwd_warning = 'The password fails the dictionary check - it is too simplistic/systematic'
-log_dir = SutConfig.LOG_DIR
+log_dir = SutConfig.Env.LOG_DIR
 
 
 # change password
@@ -117,7 +117,7 @@ def checkPWD(pwd1, pwd2):
         return
     SetUpLib.send_key(Key.ENTER)
     logging.info("Check default password, should be rejected.")
-    SetUpLib.send_data_enter(SutConfig.BIOS_PASSWORD)
+    SetUpLib.send_data_enter(SutConfig.Env.BIOS_PASSWORD)
     if not SetUpLib.wait_message(invalid_info):
         return
     SetUpLib.send_key(Key.ENTER)
@@ -158,9 +158,9 @@ def reset_password_by_unipwd():
     if not MiscLib.ping_sut(SutConfig.OS_IP, 600):
         logging.info("Ping SUT fail.")
         return restore_env(log_dir)
-    SshLib.execute_command(Sut.OS_SSH, r'cd {0};insmod ufudev.ko'.format(SutConfig.UNI_PATH))
+    SshLib.execute_command(Sut.OS_SSH, r'cd {0};insmod ufudev.ko'.format(SutConfig.Env.UNI_PATH))
     res = SshLib.execute_command(Sut.OS_SSH,
-                                 r'cd {0};./unipwd -set {1}'.format(SutConfig.UNI_PATH, SutConfig.BIOS_PASSWORD))
+                                 r'cd {0};./unipwd -set {1}'.format(SutConfig.Env.UNI_PATH, SutConfig.Env.BIOS_PASSWORD))
     logging.info(res)
     if len(res) == 0:
         logging.info('blank, maybe the ko module failed')
@@ -183,9 +183,9 @@ def simplePWDTest():
     try:
         assert locate_option_simplepw()
         assert SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20)
-        assert change_password_negtive(SutConfig.BIOS_PASSWORD, '11111111')
+        assert change_password_negtive(SutConfig.Env.BIOS_PASSWORD, '11111111')
         time.sleep(1)
-        assert change_password(SutConfig.BIOS_PASSWORD, 'Admin@9001Admin@')
+        assert change_password(SutConfig.Env.BIOS_PASSWORD, 'Admin@9001Admin@')
         SetUpLib.send_keys(Key.SAVE_RESET)
         assert checkPWD('Admin@9001Admin@', '11111111')
         result.log_pass()
@@ -203,9 +203,9 @@ def Simple_password_validity():
         logging.info("**Enable Simple Password.")
         SetUpLib.send_keys([Key.F5, Key.ENTER])
         assert SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20)
-        assert change_password_negtive(SutConfig.BIOS_PASSWORD, '333333')
+        assert change_password_negtive(SutConfig.Env.BIOS_PASSWORD, '333333')
         time.sleep(1)
-        assert change_password(SutConfig.BIOS_PASSWORD, '22222222')
+        assert change_password(SutConfig.Env.BIOS_PASSWORD, '22222222')
         SetUpLib.send_keys(Key.SAVE_RESET)
         assert checkPWD('22222222', '333333')
         result.log_pass()
@@ -223,7 +223,7 @@ def Simple_password_disenable():  # 异常待处理
         logging.info("**Enable Simple Password.")
         SetUpLib.send_keys([Key.F5, Key.ENTER])
         assert SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20)
-        assert change_password(SutConfig.BIOS_PASSWORD, '44444444')
+        assert change_password(SutConfig.Env.BIOS_PASSWORD, '44444444')
         logging.info("Save and reboot.")
         SetUpLib.send_keys(Key.SAVE_RESET)
         assert checkPWD('44444444', '333333')
@@ -259,7 +259,7 @@ def Simple_password_save_enable():
     # 以上，为前置条件-简易密码开关打开#
     try:
         assert SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20)
-        assert change_password(SutConfig.BIOS_PASSWORD, '55555555')
+        assert change_password(SutConfig.Env.BIOS_PASSWORD, '55555555')
         SetUpLib.send_keys(Key.SAVE_RESET)
         assert checkPWD('55555555', "")
         SetUpLib.send_key(Key.CTRL_ALT_DELETE)
@@ -282,7 +282,7 @@ def Simple_password_save_disable():
         SetUpLib.send_keys([Key.F5, Key.ENTER])
         # 以上，为前置条件-简易密码开关打开#
         assert SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20)
-        assert change_password(SutConfig.BIOS_PASSWORD, '66666666')
+        assert change_password(SutConfig.Env.BIOS_PASSWORD, '66666666')
         SetUpLib.send_key(Key.CTRL_ALT_DELETE)
         assert SetUpLib.continue_to_pw_prompt(Key.DEL)
         SetUpLib.send_keys("")
@@ -314,7 +314,7 @@ def Testcase_BiosPasswordSecurity_002():
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_SECURITY)
         assert SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20)
-        assert change_password_negtive(SutConfig.BIOS_PASSWORD, 'Ad@90')
+        assert change_password_negtive(SutConfig.Env.BIOS_PASSWORD, 'Ad@90')
         logging.info("show invalid_password")
         assert SetUpLib.boot_to_setup()
         result.log_pass()
@@ -330,7 +330,7 @@ def Testcase_BiosPasswordSecurity_003():
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_SECURITY)
         assert (SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
-        assert (change_password(SutConfig.BIOS_PASSWORD, 'Admin@9!'))
+        assert (change_password(SutConfig.Env.BIOS_PASSWORD, 'Admin@9!'))
         SetUpLib.send_keys([Key.F10, Key.Y])
         logging.info("Changes have been saved after press")
         assert (checkPWD('Admin@9!', '11111111'))
@@ -347,7 +347,7 @@ def Testcase_BiosPasswordSecurity_004():
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_SECURITY)
         assert (SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
-        assert (change_password(SutConfig.BIOS_PASSWORD, 'Admin@9003'))
+        assert (change_password(SutConfig.Env.BIOS_PASSWORD, 'Admin@9003'))
         SetUpLib.send_keys([Key.F10, Key.Y])
         logging.info("Changes have been saved after press")
         assert (checkPWD('Admin@9003', '11111111'))
@@ -366,7 +366,7 @@ def Testcase_BiosPasswordSecurity_005_019_021():
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_SECURITY)
         assert (SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
-        assert (change_password(SutConfig.BIOS_PASSWORD, 'Admin@9001Admin@'))
+        assert (change_password(SutConfig.Env.BIOS_PASSWORD, 'Admin@9001Admin@'))
         SetUpLib.send_keys([Key.F10, Key.Y])
         logging.info("Changes have been saved after press")
         assert (checkPWD('Admin@9001Admin@', '11111111'))
@@ -383,7 +383,7 @@ def Testcase_BiosPasswordSecurity_006():
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_SECURITY)
         assert SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 10)
-        assert change_password(SutConfig.BIOS_PASSWORD, 'Byosoft@5000soft')
+        assert change_password(SutConfig.Env.BIOS_PASSWORD, 'Byosoft@5000soft')
         logging.info("Save and reboot.")
         SetUpLib.send_keys(Key.SAVE_RESET)
         assert checkPWD('Byosoft@5000soft', '11111111')
@@ -412,7 +412,7 @@ def Testcase_BiosPasswordSecurity_007():
         assert (SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
         for i in pwd_list:
             try:
-                assert (change_password_negtive(SutConfig.BIOS_PASSWORD, i))
+                assert (change_password_negtive(SutConfig.Env.BIOS_PASSWORD, i))
             except Exception:
                 logging.info("error password :", format(i))
         assert SetUpLib.boot_to_setup()
@@ -430,7 +430,7 @@ def Testcase_BiosPasswordSecurity_008():
         assert (SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
         for j in pwd_list1:
             try:
-                assert (change_password_negtive(SutConfig.BIOS_PASSWORD, j))
+                assert (change_password_negtive(SutConfig.Env.BIOS_PASSWORD, j))
             except Exception:
                 logging.info("error password :", format(j))
         assert SetUpLib.boot_to_setup()
@@ -489,7 +489,7 @@ def Testcase_BiosPasswordSecurity_010():
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_SECURITY)
         assert (SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
-        assert (change_password(SutConfig.BIOS_PASSWORD, 'Admin@6789'))
+        assert (change_password(SutConfig.Env.BIOS_PASSWORD, 'Admin@6789'))
         SetUpLib.send_keys([Key.F10, Key.Y])
         logging.info("Changes have been saved after press")
         assert (checkPWD('Admin@6789', 'Admin6789admin'))
@@ -532,7 +532,7 @@ def Testcase_BiosPasswordSecurity_011_012_014():
 def Testcase_BiosPasswordSecurity_013():
     tc = ('046', '[TC046]BiosPasswordSecurity_013', '输入错误密码次数测试_阈值内连续输入错误密码后输入正确密码测试')
     result = ReportGen.LogHeaderResult(tc)
-    pwd_error = ['Admin@9876', 'Da@89', SutConfig.BIOS_PASSWORD]
+    pwd_error = ['Admin@9876', 'Da@89', SutConfig.Env.BIOS_PASSWORD]
     try:
         assert (SetUpLib.boot_to_pw_prompt(Key.DEL))
         for list_error in pwd_error:
@@ -594,7 +594,7 @@ def Testcase_BiosPasswordSecurity_016_017():
     result = ReportGen.LogHeaderResult(tc)
     try:
         assert SetUpLib.boot_to_pw_prompt(Key.DEL)
-        SetUpLib.send_data(SutConfig.BIOS_PW_DEFAULT)
+        SetUpLib.send_data(SutConfig.Env.BIOS_PW_DEFAULT)
         time.sleep(1)
         try:
             result.capture_screen()
@@ -635,7 +635,7 @@ def Testcase_BiosPasswordSecurity_022():
         assert (SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
         SetUpLib.send_key(Key.ENTER)
         assert (SetUpLib.wait_message(pwd_info_1))
-        SetUpLib.send_key(SutConfig.BIOS_PASSWORD)
+        SetUpLib.send_key(SutConfig.Env.BIOS_PASSWORD)
         logging.info("input default_pwd")
         SetUpLib.send_key(Key.ENTER)
         assert (SetUpLib.wait_message(pwd_info_2))
@@ -711,7 +711,7 @@ def Testcase_BiosPasswordSecurity_028():
         SetUpLib.send_keys([Key.F5, Key.F10, Key.Y])
         logging.info("set Power on Password Enable")
         assert SetUpLib.wait_message('Enter Current Password:')
-        SetUpLib.send_data_enter(SutConfig.BIOS_PASSWORD)
+        SetUpLib.send_data_enter(SutConfig.Env.BIOS_PASSWORD)
         logging.info("reboot ,input BIOS_PASSWORD ")
         time.sleep(30)
         assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
@@ -792,7 +792,7 @@ def pwd_auth_mgt_08_10():
         # set 3
         logging.info("change administrator login password more than 16 digits")
         assert (SetUpLib.locate_option(Key.UP, ["Manage Supervisor Password"], 20))
-        assert (change_password(SutConfig.BIOS_PASSWORD, admin_pwd_17))
+        assert (change_password(SutConfig.Env.BIOS_PASSWORD, admin_pwd_17))
         SetUpLib.send_keys([Key.F10, Key.Y])
         assert (checkPWD(admin_pwd_16, 'Am@23'))
         # set 4 前置条件

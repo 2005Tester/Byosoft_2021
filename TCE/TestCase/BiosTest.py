@@ -20,7 +20,7 @@ from TCE.BaseLib import BmcLib, PlatMisc, SetUpLib
 from Report import ReportGen
 from Common.LogAnalyzer import LogAnalyzer
 
-P = LogAnalyzer(SutConfig.LOG_DIR)
+P = LogAnalyzer(SutConfig.Env.LOG_DIR)
 
 
 # POST, Boot, Setup, OS Installation, PM, Device, Chipsec Test and Source code cons.
@@ -47,7 +47,7 @@ def warm_reboot(count=5):
     reboot_fail = 0
     try:
         assert BmcLib.enable_fdmlog_dump()
-        tc_dir = os.path.join(SutConfig.LOG_DIR, f"TC{tc[0]}")  # check fdmlog
+        tc_dir = os.path.join(SutConfig.Env.LOG_DIR, f"TC{tc[0]}")  # check fdmlog
         dump_dir_b = BmcLib.bmc_dumpinfo(tc_dir, "dump_before", uncom=True)
         fdmlog_b = PlatMisc.read_bmc_dump_log(dump_dir_b, "dump_info/LogDump/fdm_log")
         bmc_event_b = BmcLib.bmc_warning_check().message  # check bmc warning
@@ -78,7 +78,7 @@ def cold_reboot(count=5):
     reboot_fail = 0
     try:
         assert BmcLib.enable_fdmlog_dump()
-        tc_dir = os.path.join(SutConfig.LOG_DIR, f"TC{tc[0]}")  # check fdmlog
+        tc_dir = os.path.join(SutConfig.Env.LOG_DIR, f"TC{tc[0]}")  # check fdmlog
         dump_dir_b = BmcLib.bmc_dumpinfo(tc_dir, "dump_before", uncom=True)
         fdmlog_b = PlatMisc.read_bmc_dump_log(dump_dir_b, "dump_info/LogDump/fdm_log")
         bmc_event_b = BmcLib.bmc_warning_check().message  # check bmc warning
@@ -152,7 +152,7 @@ def press_f2():
         SetUpLib.send_key(Key.F2)
         assert SerialLib.is_msg_present(Sut.BIOS_COM, 'en-US')
         logging.info("Send password...")
-        SetUpLib.send_data(SutConfig.BIOS_PASSWORD)
+        SetUpLib.send_data(SutConfig.Env.BIOS_PASSWORD)
         SetUpLib.send_key(Key.ENTER)
         assert SerialLib.is_msg_present(Sut.BIOS_COM, 'Continue', 30)
         result.log_pass()
@@ -391,7 +391,7 @@ def power_efficiency_mode_loop():
                     continue
                 data[row_index + 1].insert(result_index, "pass")
         # Gen test report csv file
-        report_path = os.path.join(SutConfig.LOG_DIR, f"TC{tc[0]}")
+        report_path = os.path.join(SutConfig.Env.LOG_DIR, f"TC{tc[0]}")
         if not os.path.exists(report_path):
             os.makedirs(report_path)
         report_file = os.path.join(report_path, "power_efficiency_test_report.csv")

@@ -112,7 +112,7 @@ def boot_device_type_002():
     tc = ('152', '[TC152]Legacy模式启动类型分类测试', '启动类型分类')
     result = ReportGen.LogHeaderResult(tc)
     try:
-        assert boot_device('Legacy Boot', SutConfig.Legacy_OS, SutConfig.Legacy_PXE)
+        assert boot_device('Legacy Boot', SutConfig.SysCfg.Legacy_OS, SutConfig.SysCfg.Legacy_PXE)
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
