@@ -81,11 +81,13 @@ class SysCfg:
     # CPU, DIMM info
     CPU_TYPE = "6330"
     CPU_FREQ = "2.0"
-    CPU_INFO = [r'Processor ID\s+000606A6', r'Processor Frequency\s+2.000GHz']
-    CPU_SKU = [
+    CPU_INFO = [
+        'Processor ID\s+000606A6', 
+        'Processor Frequency\s+2.000GHz',
         "Processor 1 Version \s+Intel\(R\) Xeon\(R\) Gold 6\s+330 CPU @ 2.00GHz",
         "Processor 2 Version \s+Intel\(R\) Xeon\(R\) Gold 6\s+330 CPU @ 2.00GHz"
-    ]
+        ]
+
     DIMM_FREQ = 2933  # Mhz
     DIMM_INFO = ['DIMM020\(C\)\s+S0.CC.D0:2933MT/s Hynix DRx4 32GB RDIMM',
                  'DIMM160\(G\)\s+S1.CG.D0:2933MT/s Hynix DRx4 32GB RDIMM']

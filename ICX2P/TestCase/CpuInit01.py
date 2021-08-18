@@ -593,7 +593,6 @@ def cpu_compa_06():
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.UP, Msg.PATH_PER_CPU_INFO, 20, Msg.PER_CPU)
         assert SetUpLib.verify_info(SutConfig.SysCfg.CPU_INFO, 20)
-        assert SetUpLib.verify_info(SutConfig.SysCfg.CPU_SKU, 20)
         assert BmcLib.force_reset()
         # 在smbios4中检查：cpu型号，频率，个数
         expect_cpu_type = f'Intel\(R\) Xeon\(R\) Gold {SutConfig.SysCfg.CPU_TYPE} CPU @ {SutConfig.SysCfg.CPU_FREQ}0GHz'
