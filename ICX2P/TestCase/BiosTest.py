@@ -153,7 +153,7 @@ def press_f2():
         SetUpLib.send_key(Key.F2)
         assert SerialLib.is_msg_present(Sut.BIOS_COM, 'en-US')
         logging.info("Send password...")
-        SetUpLib.send_data(SutConfig.Env.BIOS_PASSWORD)
+        SetUpLib.send_data(Msg.BIOS_PASSWORD)
         SetUpLib.send_key(Key.ENTER)
         assert SerialLib.is_msg_present(Sut.BIOS_COM, 'Continue', 30)
         result.log_pass()

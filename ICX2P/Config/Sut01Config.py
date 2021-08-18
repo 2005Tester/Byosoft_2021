@@ -48,10 +48,6 @@ class Env:
     CSCRIPTS_PATH = '/root/Cscripts'
     CHIPSEC_PATH = "/root/chipsec"
 
-    # BIOS Configuration
-    BIOS_PW_DEFAULT = "Admin@9000"
-    BIOS_PASSWORD = 'Admin@9009'
-
     # BIOS Firmware Directory, Must manual copy image files to the directory before test
     BIOS_PATH = r"\\ByoDiskStation1\PublicRW\QA\Firmware\2288V6\BIOS"
 

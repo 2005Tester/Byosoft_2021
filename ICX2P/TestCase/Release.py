@@ -384,7 +384,7 @@ def equip_tool_set_and_restore():
         # 恢复默认
         assert "Load Default success" in SshLib.execute_command(Sut.OS_SSH, f"cd {SutConfig.Env.UNI_PATH};./unitool -c")
         logging.info("Unitool load default scuuess")
-        assert PlatMisc.unipwd_tool("set", SutConfig.Env.BIOS_PW_DEFAULT)
+        assert PlatMisc.unipwd_tool("set", Msg.BIOS_PW_DEFAULT)
         assert PlatMisc.unilogo_update(name=os.path.split(origin_logo)[1], path=os.path.split(origin_logo)[0])
         # 重启并检查恢复默认结果
         restore_logo = PlatMisc.save_logo(SutConfig.Env.LOG_DIR, "restore_logo")
@@ -392,7 +392,7 @@ def equip_tool_set_and_restore():
         assert MiscLib.compare_images(origin_logo, restore_logo)
         assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
         assert Sut.UNITOOL.check(**default_config)
-        assert PlatMisc.unipwd_tool("check", SutConfig.Env.BIOS_PW_DEFAULT)
+        assert PlatMisc.unipwd_tool("check", Msg.BIOS_PW_DEFAULT)
         result.log_pass()
     except AssertionError:
         result.log_fail()
@@ -400,7 +400,7 @@ def equip_tool_set_and_restore():
         if not MiscLib.ping_sut(SutConfig.OS_IP, 600):
             BmcLib.force_reset()
             MiscLib.ping_sut(SutConfig.OS_IP, 600)
-        PlatMisc.unipwd_tool("set", SutConfig.Env.BIOS_PASSWORD)
+        PlatMisc.unipwd_tool("set", Msg.BIOS_PASSWORD)
         BmcLib.clear_cmos()
 
 

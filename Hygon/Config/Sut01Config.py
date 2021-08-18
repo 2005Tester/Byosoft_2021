@@ -31,10 +31,6 @@ class Env:
     BMC_USER = 'Administrator'
     BMC_PASSWORD = 'Admin@9001'
 
-    # BIOS Configuration
-    BIOS_PW_DEFAULT = "Admin@9000"
-    BIOS_PASSWORD = 'Admin@9009'
-
     # OS Configuration
     OS_IP = '192.168.3.200'
     OS_USER = 'root'

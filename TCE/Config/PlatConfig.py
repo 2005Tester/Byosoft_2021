@@ -44,6 +44,9 @@ class BootOS:
 
 # Messages to identify a specific boot option, page, menu or system status
 class Msg:
+    BIOS_PW_DEFAULT = "Admin@9000"
+    BIOS_PASSWORD = 'Admin@9009'
+    
     HOTKEY_PROMPT_DEL = 'Press Del go to Setup Utility'
     HOTKEY_PROMPT_F11 = 'Press F11 go to BootManager'
     HOTKEY_PROMPT_F12 = 'Press F12 go to PXE boot'
