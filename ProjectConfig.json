@@ -14,7 +14,9 @@
     "Resources": ["BIOS_COM", "BMC_SSH", "BMC_SFTP", "BMC_RFISH", "OS_SSH", "OS_SFTP", "UNITOOL"],
     "ConfigMapping": {
         "Sut01": "Sut01Config",
-        "Sut02": "Sut02Config"
+        "Sut02": "Sut02Config",
+        "Sut03": "Sut03Config",
+        "Sut04": "Sut04Config"
         }
     },
 

@@ -17,7 +17,7 @@ class Env:
 
     # Report Setting
     PROJECT_NAME = "TCE"
-    SUT_CONFIG = "SUT1-2U-2-DIMM"
+    SUT_CONFIG = "SUT1-4U-2-DIMM"
     REPORT_TEMPLATE = "TCE\\Report\\template"
     RELEASE_BRANCH = "TCE4UV6_009_TCE2UV6_006"
 
@@ -28,15 +28,15 @@ class Env:
         os.makedirs(LOG_DIR)
 
     # BIOS Serial setting
-    BIOS_SERIAL = "com4"  # rdp hostname: nuc3
+    BIOS_SERIAL = "com5"  # rdp hostname: desktop-ft2tm75
 
     # BMC Configuration
-    BMC_IP = '192.168.1.111'
+    BMC_IP = '192.168.1.22'
     BMC_USER = 'Administrator'
     BMC_PASSWORD = 'Admin@9000'
 
     # OS Configuration
-    OS_IP = '192.168.1.91'
+    OS_IP = '192.168.1.87'
     OS_USER = 'root'
     OS_PASSWORD = '1'
 
@@ -61,24 +61,21 @@ class SysCfg:
 
     PCIE_MAP = [
         {  # cpu0
-            "dmi": "x4",  # GENZ 4C+(修改为Slimline)
-            "0a": "x8",  # CX4 0
-            "0c": "x8",  # Slimline X8连接器-卧式
-            "1a": "x16",  # Riser 1-slot1
-            "2a": "x4",  # NVME0
-            "2b": "x4",  # NVME1
-            "2c": "x4",  # CX4 1
-            "2d": "x4",  # CX4 2
-            "3a": "x8",  # Slimline X8连接器 单P场景RISER2应用
-            "3c": "x8",  # NA/默认关闭
+            "dmi": "x4",  # PCH_DMI[3:0]
+            "0a": "x16",  # RISER4-slot1 2
+            "1a": "x16",  # RISER4-slot5
+            "2a": "x16",  # RISER2-slot6
+            "3a": "x8",  # NC
+            "3c": "x4",  # CX4
+            "3d": "x4",  # I350
         },
         {  # cpu1
-            # "0a": "x8",  # NA/默认关闭
-            # "0c": "x8",  # NA/默认关闭
-            "1a": "x8",  # NA/默认关闭
-            "1c": "x8",  # 预留（BIOS默认关闭）
-            "2a": "x16",  # Riser 2-slot2
-            "3a": "x16",  # NA/默认关闭
+            "0a": "x16",  # CX5/CX6
+            "1a": "x4",  # NVME0
+            "1b": "x4",  # NVME1
+            "1c": "x8",  # Riser1-slot8
+            "2a": "x16",  # Riser1-slot7
+            "3a": "x16",  # NC
         }]
 
     # CPU, DIMM info

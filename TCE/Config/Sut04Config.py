@@ -17,7 +17,7 @@ class Env:
 
     # Report Setting
     PROJECT_NAME = "TCE"
-    SUT_CONFIG = "SUT1-2U-2-DIMM"
+    SUT_CONFIG = "SUT2-4U-4-DIMM"
     REPORT_TEMPLATE = "TCE\\Report\\template"
     RELEASE_BRANCH = "TCE4UV6_009_TCE2UV6_006"
 
@@ -28,15 +28,15 @@ class Env:
         os.makedirs(LOG_DIR)
 
     # BIOS Serial setting
-    BIOS_SERIAL = "com4"  # rdp hostname: nuc3
+    BIOS_SERIAL = "com5"  # rdp hostname: desktop-go80pcl
 
     # BMC Configuration
-    BMC_IP = '192.168.1.111'
-    BMC_USER = 'Administrator'
+    BMC_IP = '192.168.1.21'
+    BMC_USER = 'Admin#'
     BMC_PASSWORD = 'Admin@9000'
 
     # OS Configuration
-    OS_IP = '192.168.1.91'
+    OS_IP = '192.168.1.xx'
     OS_USER = 'root'
     OS_PASSWORD = '1'
 
@@ -56,29 +56,26 @@ class SysCfg:
     CPU_CNT = 2  # cpu socket count
     REAR_USB_CNT = 2
     BUILDIN_USB_CNT = 1
-    DIMM_SIZE = 64  # /GB
+    DIMM_SIZE = 128  # /GB
     USB_Storage = 0  # usb disk inserted
 
     PCIE_MAP = [
         {  # cpu0
-            "dmi": "x4",  # GENZ 4C+(修改为Slimline)
-            "0a": "x8",  # CX4 0
-            "0c": "x8",  # Slimline X8连接器-卧式
-            "1a": "x16",  # Riser 1-slot1
-            "2a": "x4",  # NVME0
-            "2b": "x4",  # NVME1
-            "2c": "x4",  # CX4 1
-            "2d": "x4",  # CX4 2
-            "3a": "x8",  # Slimline X8连接器 单P场景RISER2应用
-            "3c": "x8",  # NA/默认关闭
+            "dmi": "x4",  # PCH_DMI[3:0]
+            "0a": "x16",  # RISER4-slot1 2
+            "1a": "x16",  # RISER4-slot5
+            "2a": "x16",  # RISER2-slot6
+            "3a": "x8",  # NC
+            "3c": "x4",  # CX4
+            "3d": "x4",  # I350
         },
         {  # cpu1
-            # "0a": "x8",  # NA/默认关闭
-            # "0c": "x8",  # NA/默认关闭
-            "1a": "x8",  # NA/默认关闭
-            "1c": "x8",  # 预留（BIOS默认关闭）
-            "2a": "x16",  # Riser 2-slot2
-            "3a": "x16",  # NA/默认关闭
+            "0a": "x16",  # CX5/CX6
+            "1a": "x4",  # NVME0
+            "1b": "x4",  # NVME1
+            "1c": "x8",  # Riser1-slot8
+            "2a": "x16",  # Riser1-slot7
+            "3a": "x16",  # NC
         }]
 
     # CPU, DIMM info
@@ -89,4 +86,6 @@ class SysCfg:
                'Processor 2 Version \s+Intel\(R\) Xeon\(R\) Gold 6 \s+338N CPU @ 2.20GHz']
     DIMM_FREQ = 2933  # Mhz
     DIMM_INFO = ['DIMM000\(A\)\s+S0.CA.D0:2933MT/s Hynix DRx4 32GB RDIMM',
-                 'DIMM100\(A\)\s+S1.CA.D0:2933MT/s Hynix DRx4 32GB RDIMM']
+                 'DIMM010\(B\)\s+S0.CB.D0:2933MT/s Hynix DRx4 32GB RDIMM',
+                 'DIMM040\(E\)\s+S0.CE.D0:2933MT/s Hynix DRx4 32GB RDIMM',
+                 'DIMM050\(F\)\s+S0.CF.D0:2933MT/s Hynix DRx4 32GB RDIMM']
