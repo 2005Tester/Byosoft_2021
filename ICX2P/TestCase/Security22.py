@@ -155,7 +155,7 @@ def reset_password_by_unipwd():
     if not BmcLib.force_reset():
         logging.info("Boot to boot manager fail.")
         return restore_env(log_dir)
-    if not MiscLib.ping_sut(SutConfig.OS_IP, 600):
+    if not MiscLib.ping_sut(SutConfig.Env.OS_IP, 600):
         logging.info("Ping SUT fail.")
         return restore_env(log_dir)
     SshLib.execute_command(Sut.OS_SSH, r'cd {0};insmod ufudev.ko'.format(SutConfig.Env.UNI_PATH))
