@@ -81,15 +81,20 @@ class Gitlab:
         self.print_msg(job)
 
         artifact_url = self.jobs_url + '/' + str(job['id']) + '/artifacts'
-        cmd = "curl --output {0} --header \"PRIVATE-TOKEN: {1}\" {2}".format(img_zip, self.access_token, artifact_url)      
-        if os.system(cmd) == 0:
-            logging.info("Download image successfully")
-            image_path = self.unzip(img_zip, dir, img_name)
-            logging.info("Remove artifacts zip file.")
-            os.remove(img_zip)
-            return image_path
-        else:
-            logging.info("Download image fail")
+        cmd = "curl --output {0} --header \"PRIVATE-TOKEN: {1}\" {2}".format(img_zip, self.access_token, artifact_url)  
+        retry = 3
+        while retry:    
+            if os.system(cmd) == 0:
+                logging.info("Download image successfully")
+                image_path = self.unzip(img_zip, dir, img_name)
+                logging.info("Remove artifacts zip file.")
+                os.remove(img_zip)
+                return image_path
+            else:
+                logging.info("Download image fail")
+                retry -= 1
+                if retry > 0:
+                    logging.info("Retry download image.")
 
     # Download latest image from gitlab, img_name is a regular expression whcih matches targer image for test
     def download_latest_image_master(self, dir, img_name):
