@@ -95,7 +95,7 @@ def change_password_negtive(old_pw, new_pw):
     return True
 
 
-#Locate option ["Simple Password", "<Disabled>"]
+# Locate option ["Simple Password", "<Disabled>"]
 # OnStart: N/A
 # OnComplete: Stop at option Simple password
 def locate_option_simplepw():
@@ -125,7 +125,7 @@ def checkPWD(pwd1, pwd2):
     logging.info("Check password positive: {0}".format(pwd1))
     SetUpLib.send_data_enter(pwd1)
     time.sleep(1)
-#    SetUpLib.send_keys([Key.RIGHT, Key.LEFT])
+    #    SetUpLib.send_keys([Key.RIGHT, Key.LEFT])
     if not SetUpLib.wait_message('Continue'):
         return
     return True
@@ -155,7 +155,7 @@ def reset_password_by_unipwd():
     if not BmcLib.force_reset():
         logging.info("Boot to boot manager fail.")
         return restore_env(log_dir)
-    if not MiscLib.ping_sut(SutConfig.OS_IP, 600):
+    if not MiscLib.ping_sut(SutConfig.Env.OS_IP, 600):
         logging.info("Ping SUT fail.")
         return restore_env(log_dir)
     SshLib.execute_command(Sut.OS_SSH, r'cd {0};insmod ufudev.ko'.format(SutConfig.Env.UNI_PATH))
@@ -372,7 +372,7 @@ def Testcase_BiosPasswordSecurity_010():
 
 def Testcase_BiosPasswordSecurity_011_012_014():
     tc = (
-    '045', '[TC045]BiosPasswordSecurity_011,012,014', '输入错误密码次3次内，提示报错，并可以再次输入测试；输错3次后不允许再输入密码测试；输入错误密码超出阈值测试')
+        '045', '[TC045]BiosPasswordSecurity_011,012,014', '输入错误密码次3次内，提示报错，并可以再次输入测试；输错3次后不允许再输入密码测试；输入错误密码超出阈值测试')
     result = ReportGen.LogHeaderResult(tc)
     pwd_error = ['Admin@7890', 'Ad@90', '555555']
     try:
@@ -630,12 +630,11 @@ def pwd_auth_mgt_07():
 
 def pwd_auth_mgt_08_10():
     tc = ('055', '[TC055]AuthenticationManagement_008_010',
-          '管理员登录密码大于16位字符无法输入,普通用户登录密码大于16位无法输入;修改管理员密码界面需要先输入旧密码，再输入两次新密码')
+          '管理员登录密码大于16位字符无法输入;修改管理员密码界面需要先输入旧密码，再输入两次新密码')
     result = ReportGen.LogHeaderResult(tc)
     pwd_error = ['Admin@3456', 'Pw@99', '666666']
     admin_pwd_17 = 'Admin@6789byosoft'
     admin_pwd_16 = 'Admin@6789byosof'
-    user_pwd = 'Inter@4567'
     try:
         assert SetUpLib.boot_to_pw_prompt(Key.DEL)
         logging.info("input 3 times error pwd,System Locked")
@@ -665,36 +664,6 @@ def pwd_auth_mgt_08_10():
         assert (change_password(Msg.BIOS_PASSWORD, admin_pwd_17))
         SetUpLib.send_keys([Key.F10, Key.Y])
         assert (checkPWD(admin_pwd_16, 'Am@23'))
-        # set 4 前置条件
-        logging.info("Set step 4 preconditions")
-        assert SetUpLib.move_to_page(Msg.PAGE_SECURITY)
-        assert (SetUpLib.locate_option(Key.DOWN, ["Manage User Password"], 5))
-        SetUpLib.send_key(Key.ENTER)
-        assert SetUpLib.wait_message(pwd_info_2)
-        SetUpLib.send_data_enter(user_pwd)
-        assert SetUpLib.wait_message(pwd_info_3)
-        SetUpLib.send_data_enter(user_pwd)
-        assert SetUpLib.wait_message(pwd_info_4)
-        SetUpLib.send_key(Key.ENTER)
-        SetUpLib.send_keys([Key.F10, Key.Y])
-        # set 4
-        logging.info("Enter the correct login password for ordinary users and log in to the setup menu")
-        assert SetUpLib.wait_message(Msg.HOTKEY_PROMPT_DEL)
-        SetUpLib.send_key(Key.DEL)
-        logging.info("Hot Key sent")
-        assert SetUpLib.wait_message( Msg.PW_PROMPT, 60)
-        SetUpLib.send_data_enter(user_pwd)
-        assert SetUpLib.wait_message(Msg.PW_UPATE_PROMPT)
-        SetUpLib.send_key(Key.ENTER)
-        # set 5
-        logging.info("Modify the login password of ordinary users with more than 16 digits")
-        SetUpLib.send_keys([Key.RIGHT, Key.ENTER])
-        SetUpLib.send_keys([Key.RIGHT, Key.RIGHT, Key.RIGHT]) # go to password setting
-        SetUpLib.send_key(Key.ENTER)
-        assert SetUpLib.wait_message("Enter New Password")
-        SetUpLib.send_data_enter('Inter@4567byosoft')
-        logging.info('input User_Password invalid ')
-        assert SetUpLib.wait_message(invalid_info)
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
