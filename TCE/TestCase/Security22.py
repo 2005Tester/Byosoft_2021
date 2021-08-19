@@ -584,7 +584,7 @@ def Testcase_BiosPasswordSecurity_028():
         SetUpLib.send_data_enter(Msg.BIOS_PASSWORD)
         logging.info("reboot ,input BIOS_PASSWORD ")
         time.sleep(30)
-        assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 600)
         logging.info("正常恢复")
         result.log_pass()
     except AssertionError:

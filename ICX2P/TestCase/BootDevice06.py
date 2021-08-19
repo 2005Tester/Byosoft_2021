@@ -39,7 +39,7 @@ def enabled_disable_options(PXE_OPTION='IPv4 PXE'):
         assert SetUpLib.enter_menu(Key.DOWN, ['Boot Type Order'], 12, 'Hard Disk Drive')
         assert SetUpLib.verify_info(['DVD-ROM Drive', 'PXE', 'Others'], 7)
         SetUpLib.send_key(Key.CTRL_ALT_DELETE)  # this case should be run before suse os is the first boot opt,
-        if not MiscLib.ping_sut(SutConfig.OS_IP, 600):
+        if not MiscLib.ping_sut(SutConfig.Env.OS_IP, 600):
             result_list.append('0')
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, ['PCH Configuration', 'PCH SATA Configuration'], 12, 'SATA Controller')

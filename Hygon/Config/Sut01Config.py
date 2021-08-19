@@ -42,6 +42,7 @@ class Env:
 
     # BIOS Firmware Directory, Must manual copy image files to the directory before test
     BIOS_PATH = r"\\ByoDiskStation1\PublicRW\QA\Firmware\2288V6\BIOS"
+    IPMITOOL = ''
 
 
 # The SUT physical system configuration

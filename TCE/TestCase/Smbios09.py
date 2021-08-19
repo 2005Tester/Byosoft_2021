@@ -152,7 +152,7 @@ def smbios_test(ssh, type):
 
 # Test all types defined in list TYPES
 def smbios_test_all():
-    if not MiscLib.ping_sut(SutConfig.OS_IP, 60):
+    if not MiscLib.ping_sut(SutConfig.Env.OS_IP, 60):
         logging.info("Skip SMBIOS test.")
         return
     for typeid in TYPES:
@@ -168,16 +168,16 @@ def smbios_type128():
     result = ReportGen.LogHeaderResult(tc)
     logging.info("Change setup option to enable RMT")
     try:
-        if not MiscLib.ping_sut(SutConfig.OS_IP, 5):  # avoid reboot if boot in os
+        if not MiscLib.ping_sut(SutConfig.Env.OS_IP, 5):  # avoid reboot if boot in os
             assert BmcLib.force_reset()
             assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE)
-            assert MiscLib.ping_sut(SutConfig.OS_IP, 300)
+            assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
         assert Sut.UNITOOL.set_config(BiosCfg.MFG_RMT), "Change setup by unitool failed."
         logging.info("Reboot SUT to Linux")
         assert BmcLib.force_reset()
         ser_rmt_data = SerialLib.cut_log(Sut.BIOS_COM, "START_BSSA_RMT", "Lane Margin", duration=15, timeout=600)
         assert ser_rmt_data, "Invalid RMT data"
-        assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 600)
         type128data = SshLib.execute_command(Sut.OS_SSH, "dmidecode -t 128")
         assert type128data, "Unable to read type128 data"
         logging.debug(type128data)

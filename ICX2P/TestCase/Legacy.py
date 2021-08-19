@@ -44,7 +44,7 @@ def boot_to_legacy_os():
         assert BmcLib.force_reset()
         if not SetUpLib.wait_message('Start of legacy boot', 600):
             assert SetUpLib.enable_legacy_boot()
-        assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP_LEGACY, 600)
         assert not PlatMisc.get_dmesg_keywords(["error", "fail"], err_ignore)
         result.log_pass()
     except Exception as e:

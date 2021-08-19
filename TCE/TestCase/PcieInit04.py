@@ -229,7 +229,7 @@ def pcie_resource_lspci_uefi():
             assert bdf_list, "No PCIe Device Detected, test skipped"
             logging.info(f"Found PCie Device: {bdf_list}")
             assert SetUpLib.boot_suse_from_bm([Msg.UBUNTU], Msg.BIOS_BOOT_COMPLETE)
-            assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
+            assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 600)
             lspci_info = []
             for bdf in bdf_list:
                 pcie_cmd = f"lspci -s {bdf} -vvv"
@@ -313,7 +313,7 @@ def aspm_global_disable_l1only():
                 SetUpLib.send_keys([Key.ESC])
             SetUpLib.send_keys([Key.F10, Key.Y])  # 检查完毕保存设置重启进OS检查状态
             assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE)
-            assert MiscLib.ping_sut(SutConfig.OS_IP, 300)
+            assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
             rtn_data = SshLib.execute_command(Sut.OS_SSH, 'lspci |grep "PCI bridge"')  # 进入系统检查 Root Port ASPM 状态
             os_ports_bdf = re.findall("([0-9a-f]{2}:0[2-5].0)", rtn_data)
             assert os_ports_bdf, "Failed to find root ports BDF"
@@ -370,7 +370,7 @@ def aspm_per_port_loop():
             SetUpLib.send_keys(Key.SAVE_RESET)  # per port 遍历修改完成，保存设置重启进OS检查状态
             save_value = value
             assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE)
-            assert MiscLib.ping_sut(SutConfig.OS_IP, 300)
+            assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
             rtn_data = SshLib.execute_command(Sut.OS_SSH, 'lspci |grep "PCI bridge"')  # 进入系统检查 Root Port ASPM 状态
             os_ports_bdf = re.findall("([0-9a-f]{2}:0[2-5].0)", rtn_data)
             assert os_ports_bdf, "Failed to find root ports BDF"
@@ -440,7 +440,7 @@ def sriov_enable_disable():
             assert bdf_list, "Invalid BDF"
             logging.info(f"PCIE Bus: {bdf_list}")
             assert SetUpLib.boot_suse_from_bm([Msg.UBUNTU], Msg.BIOS_BOOT_COMPLETE)
-            assert MiscLib.ping_sut(SutConfig.OS_IP, 300)
+            assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
             sriov_sup_port = {}
             for port in bdf_list:
                 port_info = SshLib.execute_command(Sut.OS_SSH, f"lspci -s {port} -vvv")
@@ -501,7 +501,7 @@ def sriov_per_port_loop():
             assert bdf_list, "Invalid BDF"
             logging.info(f"PCIE Bus: {bdf_list}")
             assert SetUpLib.boot_suse_from_bm([Msg.UBUNTU], Msg.BIOS_BOOT_COMPLETE)
-            MiscLib.ping_sut(SutConfig.OS_IP, 300)
+            MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
             sriov_sup_port = {}
             for port in bdf_list:
                 port_info = SshLib.execute_command(Sut.OS_SSH, f"lspci -s {port} -vvv")

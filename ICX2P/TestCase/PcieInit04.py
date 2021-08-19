@@ -255,7 +255,7 @@ def pcie_resource_lspci_uefi():
             bdf_list = re.findall(pcie_bdf, pcie_slot)
             assert bdf_list, "No PCIe Device Detected, test skipped"
             logging.info(f"Found PCie Device: {bdf_list}")
-            assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
+            assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 600)
             lspci_info = []
             for bdf in bdf_list:
                 pcie_cmd = f"lspci -s {bdf} -vvv"
@@ -290,7 +290,7 @@ def pcie_resource_lspci_legacy():
     tc = ('638', '[TC638] Testcase_PCIeResource_021', '【Legacy模式】PCIe设备资源一致性测试')
     result = ReportGen.LogHeaderResult(tc)
     from Common import ssh
-    ssh_legacy_os = ssh.SshConnection(SutConfig.Env.OS_IP_LEGACY, SutConfig.OS_USER, SutConfig.OS_PASSWORD)
+    ssh_legacy_os = ssh.SshConnection(SutConfig.Env.OS_IP_LEGACY, SutConfig.Env.OS_USER, SutConfig.Env.OS_PASSWORD)
     pcie_bdf = r"PCIE LINK STATUS:\s+(.+):\s+Link up as"
 
     def get_lspci_info():
@@ -389,7 +389,7 @@ def aspm_global_disable_l1only():
                 SetUpLib.send_keys([Key.ESC])
             SetUpLib.send_keys([Key.F10, Key.Y])  # 检查完毕保存设置重启进OS检查状态
             assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE)
-            assert MiscLib.ping_sut(SutConfig.OS_IP, 300)
+            assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
             rtn_data = SshLib.execute_command(Sut.OS_SSH, 'lspci |grep "PCI bridge"')  # 进入系统检查 Root Port ASPM 状态
             os_ports_bdf = re.findall("([0-9a-f]{2}:0[2-5].0)", rtn_data)
             assert os_ports_bdf, "Failed to find root ports BDF"
@@ -446,7 +446,7 @@ def aspm_per_port_loop():
             SetUpLib.send_keys(Key.SAVE_RESET)  # per port 遍历修改完成，保存设置重启进OS检查状态
             save_value = value
             assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE)
-            assert MiscLib.ping_sut(SutConfig.OS_IP, 300)
+            assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
             rtn_data = SshLib.execute_command(Sut.OS_SSH, 'lspci |grep "PCI bridge"')  # 进入系统检查 Root Port ASPM 状态
             os_ports_bdf = re.findall("([0-9a-f]{2}:0[2-5].0)", rtn_data)
             assert os_ports_bdf, "Failed to find root ports BDF"
@@ -515,7 +515,7 @@ def sriov_enable_disable():
             bdf_list = re.findall("PCIE LINK STATUS: ([0-9a-fA-F]+:[0-4]+\.[0-9a-fA-F])", pcie_bdf)
             assert bdf_list, "Invalid BDF"
             logging.info(f"PCIE Bus: {bdf_list}")
-            assert MiscLib.ping_sut(SutConfig.OS_IP, 300)
+            assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
             sriov_sup_port = {}
             for port in bdf_list:
                 port_info = SshLib.execute_command(Sut.OS_SSH, f"lspci -s {port} -vvv")
@@ -579,7 +579,7 @@ def sriov_per_port_loop():
             bdf_list = re.findall("PCIE LINK STATUS: ([0-9a-fA-F]+:[0-4]+\.[0-9a-fA-F])", link_sts)
             assert bdf_list, "Invalid BDF"
             logging.info(f"PCIE Bus: {bdf_list}")
-            MiscLib.ping_sut(SutConfig.OS_IP, 300)
+            MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
             sriov_sup_port = {}
             for port in bdf_list:
                 port_info = SshLib.execute_command(Sut.OS_SSH, f"lspci -s {port} -vvv")

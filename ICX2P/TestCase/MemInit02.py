@@ -119,7 +119,7 @@ def dimm_power_mgt_05():
         assert navigate_to_cke(), 'navigate to mem cke power page -> fail'
         assert SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7)
         assert SetUpLib.boot_option_from_bm(Msg.BOOT_OPTION_SUSE, Msg.BIOS_BOOT_COMPLETE)
-        assert (MiscLib.ping_sut(SutConfig.OS_IP, 600))
+        assert (MiscLib.ping_sut(SutConfig.Env.OS_IP, 600))
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
@@ -328,7 +328,7 @@ def memory_compa_006(n=1):
             assert SetUpLib.back_to_front_page("Boot Manager")
             SetUpLib.send_key(Key.ENTER)
             assert SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 5, Msg.BIOS_BOOT_COMPLETE)
-            assert MiscLib.ping_sut(SutConfig.OS_IP, 200)
+            assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 200)
             res = SshLib.execute_command(Sut.OS_SSH, 'dmesg | grep -i e820')
             for j in res.split('\n'):
                 if 'BIOS-e820' in j and 'ACPI' not in j:
@@ -405,7 +405,7 @@ def rmt_equip_test():
     try:
         assert BmcLib.force_reset()
         assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE)
-        assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 600)
         assert Sut.UNITOOL.set_config(BiosCfg.MFG_RMT), "Change setup by unitool failed."
         logging.info("Reboot SUT to Linux")
         assert BmcLib.force_reset()
@@ -465,7 +465,7 @@ def set_mem_freq_001_006(n=1):
                 if freq == "3200":
                     assert boot_freq == default_freq, f"Current DDR Freq: {boot_freq} not match with default memory frequency"
                 logging.info(f"Check memory freuency match with {freq} Mhz")
-                assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
+                assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 600)
         result.log_pass()
         return True
     except Exception as e:

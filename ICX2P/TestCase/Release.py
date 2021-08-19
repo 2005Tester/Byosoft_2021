@@ -58,9 +58,9 @@ def me_version_status():
 def equip_mode_flag_check():
     tc = ('902', '[TC902] Equipment mode flag check', '非装备模式BIOS设置装备模式flag, 预期设置不成功.')
     result = ReportGen.LogHeaderResult(tc)
-    if not MiscLib.ping_sut(SutConfig.OS_IP, 10):
+    if not MiscLib.ping_sut(SutConfig.Env.OS_IP, 10):
         BmcLib.force_reset()
-        if not MiscLib.ping_sut(SutConfig.OS_IP, 300):
+        if not MiscLib.ping_sut(SutConfig.Env.OS_IP, 300):
             result.log_skip()
             return
     res = Sut.UNITOOL.set_config(BiosCfg.EQUIP_FLAG)
@@ -107,11 +107,11 @@ def hpm_upgrade_test():
         flash_latest = False
         SetUpLib.update_default_password()
         SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5)
-        assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 600)
         assert Sut.UNITOOL.write(**BiosCfg.HPM_KEEP)
         assert Update.flash_local_hpm(new_hpm_local[0])
         flash_latest = True
-        assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 600)
         assert Sut.UNITOOL.check(**BiosCfg.HPM_KEEP)
         result.log_pass()
         return True
@@ -141,11 +141,11 @@ def hpm_downgrade_test():
         flash_latest = True
         assert SetUpLib.update_default_password()
         assert SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5)
-        assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 600)
         assert Sut.UNITOOL.write(**BiosCfg.HPM_KEEP)
         assert Update.flash_local_hpm(old_hpm_local[0])
         flash_latest = False
-        assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 600)
         assert Sut.UNITOOL.check(**BiosCfg.HPM_KEEP)
         result.log_pass()
         return True
@@ -329,7 +329,7 @@ def boot_to_uefi_os():
     try:
         assert SetUpLib.boot_to_bootmanager()
         assert SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_OS, 20, Msg.BIOS_BOOT_COMPLETE)
-        assert MiscLib.ping_sut(SutConfig.OS_IP, 300)
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
         assert not PlatMisc.get_dmesg_keywords(["error", "fail"], err_ignore)
         result.log_pass()
     except Exception as e:
@@ -369,7 +369,7 @@ def equip_tool_set_and_restore():
         # 抓取默认logo和bios设置
         origin_logo = PlatMisc.save_logo(SutConfig.Env.LOG_DIR, "origin_logo")
         assert origin_logo
-        assert MiscLib.ping_sut(SutConfig.OS_IP, 300)
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
         default_config = Sut.UNITOOL.read(*BiosCfg.HPM_KEEP)
         # # 修改为非默认
         assert Sut.UNITOOL.write(**BiosCfg.HPM_KEEP)
@@ -378,7 +378,7 @@ def equip_tool_set_and_restore():
         # 重启并检查修改结果
         modify_logo = PlatMisc.save_logo(SutConfig.Env.LOG_DIR, "modify_logo")
         assert modify_logo
-        assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 600)
         assert Sut.UNITOOL.check(**BiosCfg.HPM_KEEP)
         assert PlatMisc.unipwd_tool("check", "admin@9001")
         # 恢复默认
@@ -390,16 +390,16 @@ def equip_tool_set_and_restore():
         restore_logo = PlatMisc.save_logo(SutConfig.Env.LOG_DIR, "restore_logo")
         assert restore_logo
         assert MiscLib.compare_images(origin_logo, restore_logo)
-        assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 600)
         assert Sut.UNITOOL.check(**default_config)
         assert PlatMisc.unipwd_tool("check", Msg.BIOS_PW_DEFAULT)
         result.log_pass()
     except AssertionError:
         result.log_fail()
     finally:
-        if not MiscLib.ping_sut(SutConfig.OS_IP, 600):
+        if not MiscLib.ping_sut(SutConfig.Env.OS_IP, 600):
             BmcLib.force_reset()
-            MiscLib.ping_sut(SutConfig.OS_IP, 600)
+            MiscLib.ping_sut(SutConfig.Env.OS_IP, 600)
         PlatMisc.unipwd_tool("set", Msg.BIOS_PASSWORD)
         BmcLib.clear_cmos()
 
@@ -471,7 +471,7 @@ def chipsec_test():
         SetUpLib.send_keys([Key.ESC])
         assert SetUpLib.locate_option(Key.DOWN, ["Attempt Secure Boot", "\[X\]"], 5)
         SetUpLib.send_keys([Key.ENTER]*2 + Key.SAVE_RESET)
-        assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 600)
         assert SshLib.interaction(Sut.OS_SSH, [f"cd {SutConfig.Env.CHIPSEC_PATH}\n", "python3 chipsec_main.py > chipsec_log.txt"], ["", ""])
         chipsec_log = os.path.join(SutConfig.Env.LOG_DIR, "chipsec_log.txt")
         assert SshLib.sftp_download_file(Sut.OS_SFTP, f"{SutConfig.Env.CHIPSEC_PATH}/chipsec_log.txt", chipsec_log)

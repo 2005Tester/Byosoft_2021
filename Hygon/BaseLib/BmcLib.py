@@ -28,25 +28,25 @@ def interaction(cmd, exp, timeout=5):
 # updated by arthur,
 def is_power_on():
     logging.info("Check power status...")
-    ret_cmd = '{0} chassis power status'.format(SutConfig.IPMITOOL)
+    ret_cmd = '{0} chassis power status'.format(SutConfig.Env.IPMITOOL)
     return interaction(ret_cmd, 'Chassis Power is on')
 
 
 def is_power_off():
     logging.info("Check power status...")
-    ret_cmd = '{0} chassis power status'.format(SutConfig.IPMITOOL)
+    ret_cmd = '{0} chassis power status'.format(SutConfig.Env.IPMITOOL)
     return interaction(ret_cmd, 'Chassis Power is off')
 
 
 def power_off():
     logging.info("Starting to power off the SUT.")
-    ret_cmd = '{0} chassis power off'.format(SutConfig.IPMITOOL)
+    ret_cmd = '{0} chassis power off'.format(SutConfig.Env.IPMITOOL)
     return interaction(ret_cmd, 'Chassis Power Control: Down/Off')
 
 
 def power_on():
     logging.info("Starting to power on the SUT.")
-    ret_cmd = '{0} chassis power on'.format(SutConfig.IPMITOOL)
+    ret_cmd = '{0} chassis power on'.format(SutConfig.Env.IPMITOOL)
     return interaction(ret_cmd, 'Chassis Power Control: Up/On')
 
 
@@ -65,23 +65,23 @@ def init_sut():
 
 def power_reset():
     logging.info("Starting to power reset the SUT.")
-    ret_cmd = '{0} chassis power reset'.format(SutConfig.IPMITOOL)
+    ret_cmd = '{0} chassis power reset'.format(SutConfig.Env.IPMITOOL)
     return interaction(ret_cmd, 'Chassis Power Control: Reset')
 
 
 def power_cycle():
     logging.info("Starting to power cycle the SUT.")
-    ret_cmd = '{0} chassis power cycle'.format(SutConfig.IPMITOOL)
+    ret_cmd = '{0} chassis power cycle'.format(SutConfig.Env.IPMITOOL)
     return interaction(ret_cmd, 'Chassis Power Control: Cycle')
 
 
 def set_language_to_eng():
     logging.info("Starting to set the default language to english.")
-    ret_cmd = '{0} raw raw 0x3e 0xc3 0x01 0x0d 0 0x02 0x20 0x34 0x15 0x13 0x77 0x07 0x09 0x05 0 0x66'.format(SutConfig.IPMITOOL)
+    ret_cmd = '{0} raw raw 0x3e 0xc3 0x01 0x0d 0 0x02 0x20 0x34 0x15 0x13 0x77 0x07 0x09 0x05 0 0x66'.format(SutConfig.Env.IPMITOOL)
     return interaction(ret_cmd, "")
 
 
 def enable_console_direction():
     logging.info("Starting to enable console direction.")
-    ret_cmd = '{0} raw raw 0x3e 0xc3 0x01 0x0d 0 0x02 0x20 0x34 0x15 0x12 0x77 0x07 0x09 0x05 0 0x66'.format(SutConfig.IPMITOOL)
+    ret_cmd = '{0} raw raw 0x3e 0xc3 0x01 0x0d 0 0x02 0x20 0x34 0x15 0x12 0x77 0x07 0x09 0x05 0 0x66'.format(SutConfig.Env.IPMITOOL)
     return interaction(ret_cmd, "")

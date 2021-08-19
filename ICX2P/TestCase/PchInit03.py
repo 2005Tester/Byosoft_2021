@@ -107,7 +107,7 @@ def testcase_spin_up_001():
     result = ReportGen.LogHeaderResult(tc)
     try:
         assert SetUpLib.boot_suse_from_bm()
-        assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 600)
         assert Sut.UNITOOL.check(SataSpinUp=1)
         result.log_pass()
         return True

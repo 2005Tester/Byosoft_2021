@@ -428,7 +428,7 @@ def power_efficiency_mode_loop():
             assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_ADV_PM_CFG, 15, "Performance Profile")
             SetUpLib.send_keys([Key.UP])
             assert SetUpLib.set_option_value(option, to_mode, Key.DOWN, 10, save=True)
-            assert MiscLib.ping_sut(SutConfig.OS_IP, 600)
+            assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 600)
             # Check each mode BMC warning info
             healthy_state[to_mode] = BmcLib.bmc_warning_check().message
             # Check each Attribute's value
