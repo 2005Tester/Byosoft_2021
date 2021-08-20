@@ -39,6 +39,7 @@ CpuInit01.cpu_compa_05(),,,Yes,Yes
 CpuInit01.cpu_compa_06(),,,Yes,Yes
 CpuInit01.cpu_compa_017(),,,Yes,Yes
 CpuInit01.cpu_SpreadSpectrum_001(),,,Yes,Yes
+CpuInit01.cpu_ApicReport(),,,Yes,Yes
 Security22.pwd_test_all(),,,Yes,Yes
 MemInit02.dimm_power_mgt_01(),,,Yes,Yes
 MemInit02.dimm_power_mgt_02(),,,Yes,Yes
@@ -57,6 +58,7 @@ MemInit02.mtrr_max_range(),,,Yes,Yes
 MemInit02.mtrr_fixed_range(),,,Yes,Yes
 Io05.system_info_001(),,,Yes,Yes
 Io05.system_info_003(),,,Yes,Yes
+Io05.log_Time(),,,Yes,Yes
 MemInit02.rmt_menu_test(),fulldebug,,Yes,Yes
 PchInit03.usb_default_enable_check(),,,Yes,Yes
 PchInit03.post_gpio_error_check(),fulldebug,,Yes,Yes

@@ -1,5 +1,7 @@
 # this script just for hotkey related function test
 import logging
+import os
+import re
 
 from Report import ReportGen
 from ICX2P.Config import SutConfig
@@ -125,3 +127,37 @@ def system_info_004():
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
+
+
+# Author: Fubaolin
+# Testcase_LogTime_001, 003 串口日志打印
+# Precondition: linux-OS
+# OnStart: NA
+# OnComplete: NA
+def log_Time():
+    tc = ('804', '串口日志打印测试', '支持BIOS启动开始和结束信息打印及上报')
+    result =  ReportGen.LogHeaderResult(tc)
+    try:
+        assert SetUpLib.boot_with_hotkey(Key.F11, "Boot Manager Menu", 300)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 20, Msg.SUSE_GRUB)
+        assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE, 170)
+        logging.info("Suse_OS Boot Successful")
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 600)
+        SERIAL_LOG = os.path.join(SutConfig.Env.LOG_DIR, 'TC804.log')
+        b = [x.strip() for x in open(SERIAL_LOG , 'r').readlines() if x.strip() != '']
+        s_cont = 0
+        with open('b.txt', 'w+') as f:
+            f.writelines(b)
+            # print("b = ", b)
+            for s_str in SutConfig.Env.LogTime_Dedicated + Msg.LogTime_common:
+                logging.info('check ： {}'.format(s_str))
+                if not s_str in str(b):
+                    if not re.search(r"\d+",s_str):
+                        s_cont = s_cont + 1
+                        logging.info('**{} ---- no found--fail**'.format(s_str))
+                        result.log_fail()
+                        return
+            if s_cont == 0:
+                result.log_pass()
+    except AssertionError:
+        result.log_fail()

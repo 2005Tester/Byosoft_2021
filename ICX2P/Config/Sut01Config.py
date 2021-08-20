@@ -51,6 +51,20 @@ class Env:
     # BIOS Firmware Directory, Must manual copy image files to the directory before test
     BIOS_PATH = r"\\ByoDiskStation1\PublicRW\QA\Firmware\2288V6\BIOS"
 
+    # 精简打印，华为要求 LogTime_check_list
+    LogTime_Dedicated = [
+        'iBMC IP : 192.168.2.102',
+        'START_SOCKET_1_DIMMINFO_TABLE',
+        'STOP_SOCKET_1_DIMMINFO_TABLE',
+        'START_SOCKET_0_DIMMINFO_TABLE',
+        'STOP_SOCKET_0_DIMMINFO_TABLE',
+        'START_DIMMINFO_SYSTEM_TABLE',
+        'STOP_DIMMINFO_SYSTEM_TABLE',
+        'CPU type : Ice Lake',
+        'Total Memory : 65536MB',
+        "PCIE LINK STATUS: \\d+:\\d+.\\d+: Link up as x08 Gen\\d+!",
+        "PCIE LINK STATUS: \\d+:\\d+.\\d+: Link up as x08 Gen\\d+!",
+        "PCIE LINK STATUS: \\d+:\\d+.\\d+: Link up as x08 Gen\\d+!"]
 
 # The SUT physical system configuration
 class SysCfg:

@@ -161,6 +161,22 @@ class Msg:
     # show logo flag
     LOGO_SHOW = "BootType :"
 
+    # 精简打印，华为要求 LogTime_check_list
+    LogTime_common = [
+    'BootType',
+    'RC Version',
+    'BIOS Revision',
+    'BIOS Date',
+    'iBMC Version',
+    'R_PCH_TCO2_STS = 0x0',
+    'The Box has NOT been opened.',
+    'EFI1711 V1.00.05',
+    'Press Del go to Setup Utility',
+    'Press F11 go to BootManager',
+    'Press F12 go to PXE boot',
+    'Press F6 go to SP boot',
+    'BGRT BmpToGop Unsupported',
+    'BIOS boot completed.']
 
 # BIOS configuration to be set by unitool
 class BiosCfg:
