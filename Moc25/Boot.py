@@ -7,17 +7,18 @@
 #  means without the express written consent of Byosoft Corporation.
 
 import logging
+from Core.SutInit import Sut
 from Report import ReportGen
 from Moc25 import Moc25TcLib
-from Moc25.SutConfig import Key
-from Moc25.SutConfig import Msg
+from Moc25.Config.SutConfig import Key
+from Moc25.Config.SutConfig import Msg
 from Moc25 import SetUp
 
 
-def boot_AliOS(sut):
-    serial = sut.bios_serial
+def boot_AliOS():
+    serial = Sut.BIOS_COM
     tc = ('001', 'Boot to AliOS', 'Boot to AliOS')
-    result = ReportGen.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc)
 
     if not Moc25TcLib.force_reset(serial):
         logging.info("Rebooting SUT Failed.")
@@ -32,10 +33,10 @@ def boot_AliOS(sut):
     return True
 
 # Boot to UEFI Shell
-def boot_uefi_shell(sut):
-    serial = sut.bios_serial
+def boot_uefi_shell():
+    serial = Sut.BIOS_COM
     tc = ('002', 'Boot to UEFI Shell', 'Boot to UEFI Shell')
-    result = ReportGen.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc)
 
     if not SetUp.boot_manager(serial):
         result.log_fail()

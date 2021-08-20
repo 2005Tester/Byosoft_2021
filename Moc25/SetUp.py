@@ -9,11 +9,10 @@
 import logging
 import time
 import os
-import re
 from Moc25 import Moc25TcLib
-from Moc25 import SutConfig
+from Core.SutInit import Sut
 from Common.LogAnalyzer import LogAnalyzer
-from Moc25.SutConfig import Msg
+from Moc25.Config.SutConfig import Msg
 from Report import ReportGen
 
 # Key mapping
@@ -373,11 +372,11 @@ def change_shell_timeout(serial):
 
 
 # def init enviroment for automation test
-def init_test(sut):
-    serial = sut.bios_serial
-    bmc_serial = sut.bmc_serial
+def init_test():
+    serial = Sut.BIOS_COM
+    bmc_serial = Sut.BMC_COM
     tc = ('000', 'Init Test Enviroment', 'Intilize test enviroment for auotmation test execution')
-    result = ReportGen.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc)
     logging.info("Reset BIOS default")
     if not reset_default(serial):
         result.log_fail()

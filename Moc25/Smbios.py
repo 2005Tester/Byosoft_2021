@@ -7,7 +7,8 @@
 #  means without the express written consent of Byosoft Corporation.
 
 
-from Moc25 import SutConfig
+from Core.SutInit import Sut
+from Moc25.Config import SutConfig
 from Report import ReportGen
 import logging
 import re
@@ -43,10 +44,10 @@ def verify_bmc_ch_init(sut):
     return True    
 
 
-def type0(sut):
-    serial = sut.bios_serial
+def type0():
+    serial = Sut.BIOS_COM
     tc = ('120', 'SMBIOS Type 0', 'Verify info mation of SMBIOS type0 is correct')
-    result = ReportGen.LogHeaderResult(tc, serial)
+    result = ReportGen.LogHeaderResult(tc)
     msgs = ["Vendor: Byosoft", "Version: {0}".format(SutConfig.BIOS_VERSION)]
     serial.send_data("dmidecode -t 0\n")
     if not serial.waitStrings(msgs):
@@ -56,8 +57,8 @@ def type0(sut):
     return True
 
 
-def type1(sut):
-    ssh = sut.os_ssh
+def type1():
+    ssh = Sut.OS_SSH
     tc = ('121', 'SMBIOS Type 1', 'Verify information of SMBIOS type1 is correct')
     result = ReportGen.LogHeaderResult(tc)
     if not ssh.login():
