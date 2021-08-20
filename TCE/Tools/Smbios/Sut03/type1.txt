@@ -7,10 +7,10 @@ SMBIOS 3.3.0 present.
 Handle 0x0001, DMI type 1, 27 bytes
 System Information
 	Manufacturer: Huawei
-	Product Name: CN221SV2
+	Product Name: CN221V2
 	Version: Whitley
 	Serial Number: To be filled by O.E.M.
-	UUID: 00000000-0000-9ad8-b211-d21d0a3c2b22
+	UUID: 00000000-0000-8cec-d911-c9d50814f9f1
 	Wake-up Type: Power Switch
 	SKU Number: Whitley
 	Family: Whitley

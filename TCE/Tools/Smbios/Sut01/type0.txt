@@ -7,8 +7,8 @@ SMBIOS 3.3.0 present.
 Handle 0x0000, DMI type 0, 26 bytes
 BIOS Information
 	Vendor: Byosoft Corporation
-	Version: 0.04
-	Release Date: 07/29/2021
+	Version: 0.06
+	Release Date: 08/18/2021
 	Address: 0xF0000
 	Runtime Size: 64 kB
 	ROM Size: 64 MB

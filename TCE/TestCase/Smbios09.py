@@ -138,11 +138,11 @@ class Type128Test:
 
 
 # Function to test a single type
-def smbios_test(ssh, type):
+def smbios_test(ssh, type, sut):
     tcid = str(400 + type)
     tc = (tcid, '[TC{0}]SMBIOS Type {1}'.format(tcid, type), '检查SMBIOS Type {0}信息'.format(type))
     result = ReportGen.LogHeaderResult(tc)
-    expted_log = 'TCE\\Tools\\Smbios\\type{0}.txt'.format(type)
+    expted_log = 'TCE\\Tools\\Smbios\\{0}\\type{1}.txt'.format(sut, type)
     if not P.dump_and_verify(ssh, 'dmidecode -t {0}'.format(type), expted_log):
         result.log_fail()
         return
@@ -156,7 +156,7 @@ def smbios_test_all():
         logging.info("Skip SMBIOS test.")
         return
     for typeid in TYPES:
-        smbios_test(Sut.OS_SSH, typeid)
+        smbios_test(Sut.OS_SSH, typeid, SutConfig.Env.SUT_CONFIG)
 
 
 # 打开装备模式并开启RMT， 重启对比Smbios128和串口RMT数据是否匹配

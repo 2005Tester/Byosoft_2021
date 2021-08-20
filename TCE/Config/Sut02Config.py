@@ -17,7 +17,7 @@ class Env:
 
     # Report Setting
     PROJECT_NAME = "TCE"
-    SUT_CONFIG = "SUT2-2U-16-DIMM"
+    SUT_CONFIG = "Sut02"
     REPORT_TEMPLATE = "TCE\\Report\\template"
     RELEASE_BRANCH = "TCE4UV6_009_TCE2UV6_006"
 
@@ -28,7 +28,7 @@ class Env:
         os.makedirs(LOG_DIR)
 
     # BIOS Serial setting
-    BIOS_SERIAL = "com5"  # rdp hostname: desktop-1iu38oo
+    BIOS_SERIAL = "com4"  # rdp hostname: desktop-1iu38oo
 
     # BMC Configuration
     BMC_IP = '192.168.1.111'
@@ -54,8 +54,6 @@ class Env:
 # The SUT physical system configuration
 class SysCfg:
     CPU_CNT = 2  # cpu socket count
-    REAR_USB_CNT = 2
-    BUILDIN_USB_CNT = 1
     DIMM_SIZE = 512  # /GB
     USB_Storage = 0  # usb disk inserted
 
@@ -84,7 +82,7 @@ class SysCfg:
     # CPU, DIMM info
     CPU_TYPE = "6338N"
     CPU_FREQ = "2.2"
-    CPU_info = ['Processor ID\s+000606A6', 'Processor Frequency\s+2.200GHz']
+    CPU_INFO = ['Processor ID\s+000606A6', 'Processor Frequency\s+2.200GHz']
     CPU_SKU = ['Processor 1 Version \s+Intel\(R\) Xeon\(R\) Gold 6 \s+338N CPU @ 2.20GHz',
                'Processor 2 Version \s+Intel\(R\) Xeon\(R\) Gold 6 \s+338N CPU @ 2.20GHz']
     DIMM_FREQ = 2933  # Mhz
