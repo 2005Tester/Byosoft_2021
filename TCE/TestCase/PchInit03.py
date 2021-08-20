@@ -43,35 +43,6 @@ def post_gpio_error_check():
         BmcLib.clear_cmos()
 
 
-# 检查确认USB每个分组下面的Port默认为Enable
-# Precondition: BIOS默认密码
-# OnStart: NA
-# OnComplete: NA
-def usb_default_enable_check():
-    tc = ('601', '[TC601] Testcase_USB_Port_001', '01 Setup菜单默认打开USB Port选项测试')
-    result = ReportGen.LogHeaderResult(tc)
-    rear_usb = rf"Rear USB Control(?:\s+<Enabled>\s+USB Physical Port\d+){{{SysCfg.REAR_USB_CNT}}}"
-    buildin_usb = rf"Built-in USB Control(?:\s+<Enabled>\s+USB Physical Port\d+){{{SysCfg.BUILDIN_USB_CNT}}}"
-    key_words = f"{rear_usb}.+{buildin_usb}"
-    try:
-        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
-        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_USB_CFG, 6, "USB")
-        if SetUpLib.verify_info([rear_usb, buildin_usb], 10):
-            result.log_pass()  # return pass if verify_info match
-            return True
-        assert os.path.isfile(var.get('serial_log')), "Invalid serial log"
-        logging.info(f"Check local serial log: {var.get('serial_log')}")
-        with open(var.get('serial_log'), 'r') as ser_log:  # check serial log in case of no enough temporary read buffer
-            ser_data = ser_log.read()
-        assert re.search(key_words, ser_data), "USB strings not match, test fail"
-        logging.info("USB key words found in local serial log, test pass")
-        result.log_pass()
-        return True
-    except AssertionError as e:
-        logging.info(e)
-        result.log_fail()
-
-
 # Testcase_SATA_Hot_Plug_001 检查SATA与sSATA的所有Port中的Hot Plug选项都为Enable
 # Precondition:
 # OnStart:

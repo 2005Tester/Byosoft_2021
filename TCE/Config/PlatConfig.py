@@ -144,10 +144,8 @@ class Msg:
     # Firmware version info
     ME_VERSION = '0F:4.4.4.56'
     RC_VERSION = '0.2.2.0030'
-    BIOS_REVISION = '0.04'
-    BIOS_DATE = '07/29/2021'
+    BIOS_DATE = '08/18/2021'
     iBMC_VERSION = '3.02.01.03'
-    iBMC_IP = '0.0.0.0'
     CPU_TYPE = 'Ice Lake'
     TOTAL_MEMORY = '65536MB'
 

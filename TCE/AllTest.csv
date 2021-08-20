@@ -52,7 +52,6 @@ MemInit02.mtrr_fixed_range(),,Yes
 Io05.system_info_001(),,Yes
 Io05.system_info_003(),,Yes
 MemInit02.rmt_menu_test(),fulldebug,Yes
-PchInit03.usb_default_enable_check(),,Yes
 PchInit03.post_gpio_error_check(),fulldebug,Yes
 DefaultValueTest.pcie_port_bandwidth_check(),,Yes
 BiosTest.serial_print_keywords(),fulldebug,Yes
