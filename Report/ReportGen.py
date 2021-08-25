@@ -87,20 +87,20 @@ class LogHeaderResult:
         else:
             logging.error("Screen Capture Failed: Image path not set.")
             return
-        if os.path.exists(file_path):
+        if os.path.exists(file_path + '.jpeg'):
             self.suffix += 1
             filename = 'TC' + self.tc[0] + '_' + str(self.suffix)
             file_path = os.path.join(self.imgdir, filename)
         try:
             bmc = importlib.import_module(name='.BaseLib.BmcLib', package=var.get('project'))
             bmc.capture_kvm_screen(self.imgdir, filename)
-            logging.info("Screen captured by BMC: {0}".format(filename))
+            logging.info("Screen captured by BMC:\n<img src=\"{0}.jpeg\">".format(filename))
         except Exception as e:
             logging.error("Failed to capture screen by bmc.")
             logging.error(e)
             try:
                 screen = pyautogui.screenshot()
-                screen.save(file_path + '.jpg')
+                screen.save(file_path + '.jpeg')
                 logging.info("Screen captured by host: {0}".format(filename))
             except Exception as e:
                 logging.info("Failed to capture screen.")
