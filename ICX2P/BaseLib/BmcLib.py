@@ -8,16 +8,16 @@ from Core import SshLib, MiscLib
 
 # update by arthur,
 def is_power_off():
-    logging.info("Check power status...")
+    logging.debug("Check power status...")
     cmd_on = 'ipmcget -d powerstate\n'
     ret_confirm = 'Off'
     if Sut.BMC_SSH.login():
         ret = Sut.BMC_SSH.execute_command_interaction(cmd_on)
         if ret_confirm in ret.decode():
-            logging.info('Current power state is Off')
+            logging.debug('Current power state is Off')
             return True
         else:
-            logging.info('Current power state is On')
+            logging.debug('Current power state is On')
             return
 
 

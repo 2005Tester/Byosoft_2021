@@ -182,9 +182,9 @@ class SshConnection:
             start_time = time.time()
             while not re.search(strs[i], res.decode('utf-8')):
                 if op.recv_ready():
-                    logging.info("Checking command status...")
+                    logging.debug("Checking command status...")
                     res = op.recv(1024)
-                    logging.info(res.decode('utf-8'))
+                    logging.debug(res.decode('utf-8'))
                 now = time.time()
                 if re.search(strs[i], res.decode('utf-8')):
                     # Will reach here if command returns result after a while
