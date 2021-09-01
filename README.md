@@ -7,6 +7,15 @@
 
 or Run pip install -r requirements.txt  
 
+## Run Test  
+python RunTest.py ProjectName SutName ExecutionType  
+For example: python RunTest.py -p icx2p Sut01 daily   
+ProjectName: Moc25, ICX2P, Hygon  
+SutName: Defined in ProjectConfig.json, For example sut01    
+Execution: Release, daily, debug  
+-p: post result to web portal   
+-h: Help info
+
 
 ## Coding Style
 * 类名: 驼峰式, 如ClassName  
