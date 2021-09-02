@@ -717,3 +717,71 @@ def cpu_ApicReport():
         result.log_fail(capture=True)
     finally:
         BmcLib.clear_cmos()
+
+
+# function Module  for cpu_compa_011:
+def cpu_compa_pc6():
+    assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
+    SshLib.execute_command(Sut.OS_SSH, r'timeout 15s turbostat --show Pkg%pc6 > tc220.txt')
+    res = SshLib.execute_command(Sut.OS_SSH, r'cat tc220.txt').replace('Pkg%pc6/n', '')
+    if '0.00' not in res:
+        logging.info('**set C6 --- Pkg%pc6 test pass')
+        return True
+    else:
+        logging.info('**set C6 ---Pkg%pc6 test  fail')
+        return False
+
+# Author: Fubaolin
+# Package C-state特性测试
+# Precondition: linux-OS
+# OnStart: NA
+# OnComplete: NA
+def cpu_compa_011():
+    tc = ('220', '[TC220] Testcase_CPU_COMPA_011', 'Package C-state特性测试')
+    result = ReportGen.LogHeaderResult(tc)
+    MONI_MWAIT_DIS = ['MONITOR\/MWAIT', '<Disabled>']
+    CPU_C6_RPT_DIS = ['CPU C6 report', '<Disabled>' ]
+    EHS_C1E_DIS = ['Enhanced Halt State \(C1E\)', '<Disabled>']
+    EHS_C1E_ENABLE = ['Enhanced Halt State \(C1E\)', '<Enabled>']
+    try:
+        #前置条件
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.UP, Msg.PATH_CSTATE_CTL, 20, Msg.CPU_C_STATE)
+        assert SetUpLib.locate_option(Key.DOWN, MONI_MWAIT_DIS, 10)
+        SetUpLib.send_key(Key.F5)
+        assert SetUpLib.locate_option(Key.DOWN, CPU_C6_RPT_DIS, 10)
+        SetUpLib.send_key(Key.F5)
+
+        # 设置 C1E=Enable,Package C State Control=Auto， 进os验证 PC6状态
+        assert SetUpLib.locate_option(Key.DOWN, EHS_C1E_DIS, 5)
+        SetUpLib.send_keys([Key.F5, Key.F10, Key.Y], 3)
+        logging.info('第1次验证pc6状态 ')
+        assert cpu_compa_pc6(), "**C1E=Enable,Package_C_State =Auto fail"
+
+        # 设置 C1E=Enable,Package C State Control=c6， 进os验证 PC6状态
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PCSC_CTL, 20, Msg.PKG_C_STATE_CONTROL)
+        SetUpLib.send_keys([Key.F6, Key.F10, Key.Y], 3)
+        logging.info('第2次验证pc6状态 ')
+        assert cpu_compa_pc6(), "**C1E=Enable,Package_C_State =C6 fail"
+
+        # 设置 C1E=Disable,Package_C_State_Control=C6 进os验证 PC6状态
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.UP, Msg.PATH_CSTATE_CTL, 20, Msg.CPU_C_STATE)
+        assert SetUpLib.locate_option(Key.DOWN, EHS_C1E_ENABLE, 5)
+        SetUpLib.send_keys([Key.F6, Key.F10, Key.Y], 3)
+        logging.info('第3次验证pc6状态 ')
+        assert cpu_compa_pc6(), "**C1E=Disable,Package_C_State =C6 fail"
+
+        # 设置 C1E=Disable, package C State =Auto ,进os验证 PC6状态
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.UP, Msg.PATH_PCSC_CTL, 20, Msg.PKG_C_STATE_CONTROL)
+        SetUpLib.send_keys([Key.F5, Key.F10, Key.Y], 3)
+        logging.info('第4次验证pc6状态 ')
+        assert cpu_compa_pc6(), "**C1E=Disable,Package_C_State =Auto fail"
+
+        result.log_pass()
+    except AssertionError:
+        result.log_fail(capture=True)
+    finally:
+        BmcLib.clear_cmos()

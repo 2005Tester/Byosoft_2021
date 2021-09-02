@@ -81,6 +81,8 @@ class Msg:
     MEM2X_REFRESH = 'Refresh Options'
     PFM_PRO = 'Performance Profile'
     CPU_P_STATE = 'CPU P State Control'
+    CPU_C_STATE = 'CPU C State Control'
+    PKG_C_STATE_CONTROL = 'Package C State Control'
     PER_CPU = 'Per-CPU Information'
     MEM_POWER_THER_CONFIG = 'Memory Power & Thermal Configuration'
     DRAM_RAPL_CONFIG = 'DRAM RAPL Configuration'
@@ -124,6 +126,8 @@ class Msg:
     PATH_MEM_CONFIG = [CPU_CONFIG, MEMORY_CONFIG]
     PATH_MEM_POWER_ADV = [CPU_CONFIG, ADV_POWER_MGF_CONFIG, MEM_POWER_THER_CONFIG, MEM_POWER_ADV]
     PATH_SPREAD_SPECTRUM = [MISC_CONFIG]
+    PATH_CSTATE_CTL = [CPU_CONFIG, ADV_POWER_MGF_CONFIG, CPU_C_STATE]
+    PATH_PCSC_CTL = [CPU_CONFIG, ADV_POWER_MGF_CONFIG, PKG_C_STATE_CONTROL]
 
     # Menu in Boot page
     MENU_BOOT_ORDER = 'UEFI Boot'

@@ -135,7 +135,7 @@ def system_info_004():
 # OnStart: NA
 # OnComplete: NA
 def log_Time():
-    tc = ('804', '串口日志打印测试', '支持BIOS启动开始和结束信息打印及上报')
+    tc = ('804', '[804]串口日志打印测试', '支持BIOS启动开始和结束信息打印及上报')
     result =  ReportGen.LogHeaderResult(tc)
     try:
         assert SetUpLib.boot_with_hotkey(Key.F11, "Boot Manager Menu", 300)

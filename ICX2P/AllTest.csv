@@ -37,6 +37,7 @@ CpuInit01.cpu_compa_02(),,,Yes,Yes
 CpuInit01.cpu_compa_03(),,,Yes,Yes
 CpuInit01.cpu_compa_05(),,,Yes,Yes
 CpuInit01.cpu_compa_06(),,,Yes,Yes
+CpuInit01.cpu_compa_011(),,,Yes,Yes
 CpuInit01.cpu_compa_017(),,,Yes,Yes
 CpuInit01.cpu_SpreadSpectrum_001(),,,Yes,Yes
 CpuInit01.cpu_ApicReport(),,,Yes,Yes
