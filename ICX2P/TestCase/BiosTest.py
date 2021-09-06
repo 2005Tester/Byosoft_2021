@@ -18,7 +18,7 @@ from ICX2P.Config.PlatConfig import Msg, Key
 from ICX2P.Config import SutConfig
 from ICX2P.BaseLib import BmcLib, PlatMisc, SetUpLib
 from ICX2P.BaseLib.PlatMisc import ReleaseTest
-from Report import ReportGen
+from Report import ReportGen, stylelog
 from Common.LogAnalyzer import LogAnalyzer
 
 P = LogAnalyzer(SutConfig.Env.LOG_DIR)
@@ -452,7 +452,7 @@ def power_efficiency_mode_loop():
         if not os.path.exists(report_path):
             os.makedirs(report_path)
         report_file = os.path.join(report_path, "power_efficiency_test_report.csv")
-        logging.info(f"Detail test report saved at {report_file}")
+        stylelog.info(f"Detail test report saved at {report_file}")
         with open(report_file, "w", newline="") as report:
             report_writer = csv.writer(report)
             report_writer.writerows(data)
@@ -462,9 +462,9 @@ def power_efficiency_mode_loop():
         logging.info(f"Test result: {test_result}")
         for mode, attr_kv in failed_items.items():
             for att_k, att_v in attr_kv.items():
-                logging.info(f"{mode}={att_k}, Read Value={att_v} failed")
+                stylelog.fail(f"{mode}={att_k}, Read Value={att_v} failed")
         for warn_mode in warning_fail_modes:
-            logging.info(f'[Warning] Power efficiency = {warn_mode}: BMC warning detected')
+            stylelog.warning(f'[Warning] Power efficiency = {warn_mode}: BMC warning detected')
         # Result summary
         assert (not failed_items) and (not warning_fail_modes)
         result.log_pass()
