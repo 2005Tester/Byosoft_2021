@@ -3,7 +3,7 @@ import logging
 # add html style in logging message, style is defined in html report template
 
 
-def formatter(text, type):
+def _formatter(text, type):
     if type == "fail":
         return "<span class=\"text-danger\">{0}</span>".format(text)
     elif type == "success":
@@ -17,16 +17,16 @@ def formatter(text, type):
 
 
 def fail(text):
-    logging.info(formatter(text, "fail"))
+    logging.info(_formatter(text, "fail"))
 
 
 def success(text):
-    logging.info(formatter(text, "success"))
+    logging.info(_formatter(text, "success"))
 
 
 def warning(text):
-    logging.info(formatter(text, "warning"))
+    logging.info(_formatter(text, "warning"))
 
 
 def info(text):
-    logging.info(formatter(text, "info"))
+    logging.info(_formatter(text, "info"))
