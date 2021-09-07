@@ -168,7 +168,7 @@ def static_turbo_default():
         result.log_pass()
         return True
     except AssertionError:
-        result.log_fail(capture=True)
+        result.log_fail()
 
 
 # Verify CPU and DIMM information
@@ -190,7 +190,7 @@ def cpu_mem_info():
         result.log_pass()
         return True
     except AssertionError:
-        result.log_fail(capture=True)
+        result.log_fail()
 
 
 # Verify CPU Active Processor Cores information
@@ -212,7 +212,7 @@ def cpu_cores_active():
         result.log_pass()
         return True
     except AssertionError:
-        result.log_fail(capture=True)
+        result.log_fail()
 
 
 # Verify CPU Active Processor Cores information
@@ -227,8 +227,9 @@ def cpu_cores_active_enable_1():
     try:
         assert cpu_cores_active_enable(num, set_n)
         result.log_pass()
+        return True
     except AssertionError:
-        result.log_fail(capture=True)
+        result.log_fail()
     finally:
         reset_cpu_setting(BiosCfg.ActiveCpuCores_Default)
 
@@ -241,8 +242,9 @@ def cpu_cores_active_enable_middle():
     try:
         assert cpu_cores_active_enable(num, set_n)
         result.log_pass()
+        return True
     except AssertionError:
-        result.log_fail(capture=True)
+        result.log_fail()
     finally:
         reset_cpu_setting(BiosCfg.ActiveCpuCores_Default)
 
@@ -255,8 +257,9 @@ def cpu_cores_active_enable_max():
     try:
         assert cpu_cores_active_enable(num, set_n)
         result.log_pass()
+        return True
     except AssertionError:
-        result.log_fail(capture=True)
+        result.log_fail()
     finally:
         reset_cpu_setting(BiosCfg.ActiveCpuCores_Default)
 
@@ -288,9 +291,10 @@ def cpu_cores_disable_sys_normally():
         # 还原系统设置
         logging.info("正常还原")
         result.log_pass()
+        return True
     except AssertionError:
         logging.info("异常还原")
-        result.log_fail(capture=True)
+        result.log_fail()
     finally:
         BmcLib.clear_cmos()
 
@@ -324,13 +328,15 @@ def cores_customized_by_unitool():
             logging.info('checkin cpu_core - pass')
         else:
             logging.info('checkin cpu_core - fail')
+            result.log_fail()
             return
         # 还原系统设置
         logging.info("正常还原")
         result.log_pass()
+        return True
     except AssertionError:
         logging.info("异常还原")
-        result.log_fail(capture=True)
+        result.log_fail()
     finally:
         BmcLib.clear_cmos()
 
@@ -385,19 +391,22 @@ def numa_01():
             logging.info('numa_disabled pass')
         else:
             logging.info('numa_disabled fail')
-            return result.log_fail(capture=True)
+            result.log_fail()
+            return
         assert numa_enabled_verify()
         nodes_enab = SshLib.execute_command(Sut.OS_SSH, Num_cmd).split('nodes')[0].split(':')[1]
         if int(nodes_enab) == 2:
             logging.info('numa_enabled pass')
         else:
             logging.info('numa_enabled fail')
-            return result.log_fail(capture=True)
+            result.log_fail()
+            return
         logging.info("正常还原")
         result.log_pass()
+        return True
     except AssertionError:
         logging.info("异常还原")
-        result.log_fail(capture=True)
+        result.log_fail()
     finally:
         BmcLib.clear_cmos()
 
@@ -431,11 +440,14 @@ def numa_02():
                         logging.info("外部CPU距离正常")
                     else:
                         logging.info('外部CPU距离-fail')
-                        return result.log_fail(capture=True)
+                        result.log_fail()
+                        return
             else:
                 logging.info("内部CPU距离-fail")
-                return result.log_fail(capture=True)
+                result.log_fail()
+                return
         result.log_pass()
+        return True
     except AssertionError:
         result.log_fail()
 
@@ -459,9 +471,10 @@ def numa_03():
         # 还原系统设置
         logging.info("正常还原")
         result.log_pass()
+        return True
     except AssertionError:
         logging.info("异常还原")
-        result.log_fail(capture=True)
+        result.log_fail()
     finally:
         BmcLib.clear_cmos()
 
@@ -485,10 +498,12 @@ def cpu_compa_02():
             for str in line_text:
                 if 'bist' in str:
                     logging.info('found "bist", fail')
-                    return result.log_fail(capture=True)
+                    result.log_fail()
+                    return
                 else:
                     logging.info('not found "bist",pass ')
         result.log_pass()
+        return True
     except AssertionError:
         result.log_fail()
 
@@ -519,7 +534,8 @@ def cpu_compa_03():
             logging.info("**Core_Count pass, Logical_CPU pass**")
         else:
             logging.info("**Core eorro**")
-            return False
+            result.log_fail()
+            return
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.PROCESSOR_CONFIG)
         assert SetUpLib.verify_info(ht_bef, 2)
@@ -538,7 +554,8 @@ def cpu_compa_03():
             logging.info("**Core_Count pass, Logical_CPU pass**")
         else:
             logging.info("**Core eorro**")
-            return False
+            result.log_fail()
+            return
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.PROCESSOR_CONFIG)
         assert SetUpLib.verify_info(ht_aft, 2)
@@ -546,7 +563,7 @@ def cpu_compa_03():
         return True
     except AssertionError:
         logging.info("异常还原")
-        result.log_fail(capture=True)
+        result.log_fail()
     finally:
         BmcLib.clear_cmos()
 
@@ -574,11 +591,12 @@ def cpu_compa_05():
             logging.info("The microcode-version in OS is the same as that in BIOS")
         else:
             logging.info("Different, please check")
-            return result.log_fail(capture=True)
+            result.log_fail()
+            return
         result.log_pass()
         return True
     except AssertionError:
-        result.log_fail(capture=True)
+        result.log_fail()
 
 
 # Author: Fubaolin
@@ -607,7 +625,7 @@ def cpu_compa_06():
         return True
     except Exception as e:
         logging.error(e)
-        result.log_fail(capture=True)
+        result.log_fail()
 
 
 # Author: Fubaolin
@@ -630,7 +648,8 @@ def cpu_compa_017():
             logging.info('X2APIC个数与当前CPU总线程数一致')
         else:
             logging.info('X2APIC个数与当前CPU总线程数不一致，需要检查')
-            return result.log_fail(capture=True)
+            result.log_fail()
+            return
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.PROCESSOR_CONFIG)
         assert SetUpLib.locate_option(Key.DOWN, ht_bef, 20)
@@ -640,12 +659,13 @@ def cpu_compa_017():
             logging.info('X2APIC个数与当前CPU总核数一致')
         else:
             logging.info('X2APIC个数与当前CPU总核数不一致，需要检查')
-            return result.log_fail(capture=True)
+            result.log_fail()
+            return
         SshLib.execute_command(Sut.OS_SSH, r'rm *.dat *.out *.dsl')
         result.log_pass()
         return True
     except AssertionError:
-        result.log_fail(capture=True)
+        result.log_fail()
     finally:
         BmcLib.clear_cmos()
 
@@ -671,8 +691,9 @@ def cpu_SpreadSpectrum_001():
         assert Sut.UNITOOL.write(**BiosCfg.Spread_Spectrum_aft)
         assert Sut.UNITOOL.check(**BiosCfg.Spread_Spectrum_aft)
         result.log_pass()
+        return True
     except AssertionError:
-        result.log_fail(capture=True)
+        result.log_fail()
     finally:
         BmcLib.clear_cmos()
 
@@ -698,7 +719,8 @@ def cpu_ApicReport():
             logging.info('local_APIC个数与当前CPU总线程数一致')
         else:
             logging.info('local_APIC个数与当前CPU总线程数不一致，需要检查')
-            return result.log_fail(capture=True)
+            result.log_fail()
+            return
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.UP, Msg.PATH_PRO_CFG, 20, Msg.EXTENDED_APIC)
         assert SetUpLib.locate_option(Key.DOWN, Extended_APIC2, 20)
@@ -709,12 +731,13 @@ def cpu_ApicReport():
             logging.info('local_APIC个数与平台最大支持核数一致')
         else:
             logging.info('local_APIC个数与平台最大支持核数不一致，需要检查')
-            return result.log_fail(capture=True)
+            result.log_fail()
+            return
         SshLib.execute_command(Sut.OS_SSH, r'rm *.dat *.out *.dsl')
         result.log_pass()
         return True
     except AssertionError:
-        result.log_fail(capture=True)
+        result.log_fail()
     finally:
         BmcLib.clear_cmos()
 
@@ -779,9 +802,9 @@ def cpu_compa_011():
         SetUpLib.send_keys([Key.F5, Key.F10, Key.Y], 3)
         logging.info('第4次验证pc6状态 ')
         assert cpu_compa_pc6(), "**C1E=Disable,Package_C_State =Auto fail"
-
         result.log_pass()
+        return True
     except AssertionError:
-        result.log_fail(capture=True)
+        result.log_fail()
     finally:
         BmcLib.clear_cmos()
