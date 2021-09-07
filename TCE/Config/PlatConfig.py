@@ -171,7 +171,7 @@ class BiosCfg:
     }
 
     EQUIP_FLAG = {
-        "EquipmentModeFlag": 1
+        "EquipMentModeFlag": 1
     }
 
     # HPM Upgrade/Downgrade keep BIOS Setting unchanged setting
