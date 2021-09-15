@@ -383,7 +383,7 @@ class ReportGenerator:
             "total_time": result['totalTime'],
         }
 
-        resp = requests.post(url='http://192.168.100.162/api/v1/report',
+        resp = requests.post(url='http://192.168.112.11/api/v1/report',
                              params=report_params,
                              data=report_data,
                              files=report_files)
