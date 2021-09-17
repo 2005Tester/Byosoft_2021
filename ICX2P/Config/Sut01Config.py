@@ -11,7 +11,7 @@ import os
 import datetime
 
 
-# Sut01: Host IP 192.168.100.126
+# Sut01: Host IP 192.168.111.93
 class Env:
     # Define test plan
     TESTCASE_CSV = "ICX2P\\AllTest.csv"
@@ -32,13 +32,13 @@ class Env:
     BIOS_SERIAL = "com3"
 
     # BMC Configuration
-    BMC_IP = '192.168.2.102'
+    BMC_IP = '192.168.111.192'
     BMC_USER = 'Administrator'
     BMC_PASSWORD = 'Admin@9001'
 
     # OS Configuration
-    OS_IP_LEGACY = '192.168.1.198'
-    OS_IP = '192.168.1.98'
+    OS_IP_LEGACY = '192.168.111.194'
+    OS_IP = '192.168.111.194'
     OS_USER = 'root'
     OS_PASSWORD = '1'
 
@@ -53,7 +53,7 @@ class Env:
 
     # 精简打印，华为要求 LogTime_check_list
     LogTime_Dedicated = [
-        'iBMC IP : 192.168.2.102',
+        'iBMC IP : 192.168.111.192',
         'START_SOCKET_1_DIMMINFO_TABLE',
         'STOP_SOCKET_1_DIMMINFO_TABLE',
         'START_SOCKET_0_DIMMINFO_TABLE',
