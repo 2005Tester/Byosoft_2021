@@ -19,7 +19,7 @@ class Env:
     PROJECT_NAME = "TCE"
     SUT_CONFIG = "Sut03"
     REPORT_TEMPLATE = "TCE\\Report\\template"
-    RELEASE_BRANCH = "TCE4UV6_009_TCE2UV6_006"
+    RELEASE_BRANCH = "TCEV6_014"
 
     # Log settings
     timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
@@ -28,15 +28,16 @@ class Env:
         os.makedirs(LOG_DIR)
 
     # BIOS Serial setting
-    BIOS_SERIAL = "com4"  # rdp hostname: desktop-ft2tm75
+    BIOS_SERIAL = "com5"  # rdp hostname: desktop-ft2tm75
 
     # BMC Configuration
-    BMC_IP = '192.168.1.22'
+    BMC_IP = '192.168.111.113'
     BMC_USER = 'Administrator'
     BMC_PASSWORD = 'Admin@9000'
 
     # OS Configuration
-    OS_IP = '192.168.1.87'
+    OS_IP = '192.168.111.116'
+    OS_IP_UBUNTU = '192.168.111.21'
     OS_USER = 'root'
     OS_PASSWORD = '1'
 
@@ -54,7 +55,7 @@ class Env:
 # The SUT physical system configuration
 class SysCfg:
     CPU_CNT = 2  # cpu socket count
-    DIMM_SIZE = 320  # /GB
+    DIMM_SIZE = 512  # /GB
     USB_Storage = 0  # usb disk inserted
 
     PCIE_MAP = [
@@ -63,7 +64,7 @@ class SysCfg:
             "0a": "x16",  # RISER4-slot1 2
             "1a": "x16",  # RISER4-slot5
             "2a": "x16",  # RISER2-slot6
-            "3a": "x8",  # NC
+            # "3a": "x8",  # NC
             "3c": "x4",  # CX4
             "3d": "x4",  # I350
         },
@@ -73,7 +74,7 @@ class SysCfg:
             "1b": "x4",  # NVME1
             "1c": "x8",  # Riser1-slot8
             "2a": "x16",  # Riser1-slot7
-            "3a": "x16",  # NC
+            # "3a": "x16",  # NC
         }]
 
     # CPU, DIMM info
@@ -83,5 +84,4 @@ class SysCfg:
     CPU_SKU = ['Processor 1 Version \s+Intel\(R\) Xeon\(R\) Gold 6 \s+338N CPU @ 2.20GHz',
                'Processor 2 Version \s+Intel\(R\) Xeon\(R\) Gold 6 \s+338N CPU @ 2.20GHz']
     DIMM_FREQ = 2933  # Mhz
-    DIMM_INFO = ['DIMM000\(A\)\s+S0.CA.D0:2933MT/s Hynix DRx4 32GB RDIMM',
-                 'DIMM100\(A\)\s+S1.CA.D0:2933MT/s Hynix DRx4 32GB RDIMM']
+    DIMM_INFO = ['DIMM000\(A\)\s+S0.CA.D0:2933MT/s Hynix DRx4 32GB RDIMM']

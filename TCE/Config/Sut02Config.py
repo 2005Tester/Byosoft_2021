@@ -19,7 +19,7 @@ class Env:
     PROJECT_NAME = "TCE"
     SUT_CONFIG = "Sut02"
     REPORT_TEMPLATE = "TCE\\Report\\template"
-    RELEASE_BRANCH = "TCE4UV6_009_TCE2UV6_006"
+    RELEASE_BRANCH = "TCEV6_014"
 
     # Log settings
     timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
@@ -31,12 +31,13 @@ class Env:
     BIOS_SERIAL = "com4"  # rdp hostname: desktop-1iu38oo
 
     # BMC Configuration
-    BMC_IP = '192.168.1.111'
+    BMC_IP = '192.168.111.30'
     BMC_USER = 'Administrator'
     BMC_PASSWORD = 'Admin@9000'
 
     # OS Configuration
-    OS_IP = '192.168.1.72'
+    OS_IP = '192.168.111.31'
+    OS_IP_UBUNTU = '192.168.111.51'
     OS_USER = 'root'
     OS_PASSWORD = '1'
 
@@ -61,22 +62,22 @@ class SysCfg:
         {  # cpu0
             "dmi": "x4",  # GENZ 4C+(修改为Slimline)
             "0a": "x8",  # CX4 0
-            "0c": "x8",  # Slimline X8连接器-卧式
+            # "0c": "x8",  # Slimline X8连接器-卧式
             "1a": "x16",  # Riser 1-slot1
             "2a": "x4",  # NVME0
             "2b": "x4",  # NVME1
             "2c": "x4",  # CX4 1
             "2d": "x4",  # CX4 2
-            "3a": "x8",  # Slimline X8连接器 单P场景RISER2应用
-            "3c": "x8",  # NA/默认关闭
+            # "3a": "x8",  # Slimline X8连接器 单P场景RISER2应用
+            # "3c": "x8",  # NA/默认关闭
         },
         {  # cpu1
             # "0a": "x8",  # NA/默认关闭
             # "0c": "x8",  # NA/默认关闭
-            "1a": "x8",  # NA/默认关闭
-            "1c": "x8",  # 预留（BIOS默认关闭）
+            # "1a": "x8",  # NA/默认关闭
+            # "1c": "x8",  # 预留（BIOS默认关闭）
             "2a": "x16",  # Riser 2-slot2
-            "3a": "x16",  # NA/默认关闭
+            # "3a": "x16",  # NA/默认关闭
         }]
 
     # CPU, DIMM info
@@ -86,5 +87,4 @@ class SysCfg:
     CPU_SKU = ['Processor 1 Version \s+Intel\(R\) Xeon\(R\) Gold 6 \s+338N CPU @ 2.20GHz',
                'Processor 2 Version \s+Intel\(R\) Xeon\(R\) Gold 6 \s+338N CPU @ 2.20GHz']
     DIMM_FREQ = 2933  # Mhz
-    DIMM_INFO = ['DIMM000\(A\)\s+S0.CA.D0:2933MT/s Hynix DRx4 32GB RDIMM',
-                 'DIMM100\(A\)\s+S1.CA.D0:2933MT/s Hynix DRx4 32GB RDIMM']
+    DIMM_INFO = ['DIMM000\(A\)\s+S0.CA.D0:2933MT/s Hynix DRx4 32GB RDIMM']

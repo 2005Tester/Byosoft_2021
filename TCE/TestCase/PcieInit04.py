@@ -16,6 +16,10 @@ from Report import ReportGen
 #           PCIe Test Cases              #
 ##########################################
 
+from Common import ssh
+ssh_ubuntu_os = ssh.SshConnection(SutConfig.Env.OS_IP_UBUNTU, SutConfig.Env.OS_USER, SutConfig.Env.OS_PASSWORD)
+
+
 # Author: WangQingshan
 # MMIOL资源分配静态表测试
 # Precondition: BIOS默认密码
@@ -229,11 +233,11 @@ def pcie_resource_lspci_uefi():
             assert bdf_list, "No PCIe Device Detected, test skipped"
             logging.info(f"Found PCie Device: {bdf_list}")
             assert SetUpLib.boot_suse_from_bm([Msg.UBUNTU], Msg.BIOS_BOOT_COMPLETE)
-            assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 600)
+            assert MiscLib.ping_sut(SutConfig.Env.OS_IP_UBUNTU, 600)
             lspci_info = []
             for bdf in bdf_list:
                 pcie_cmd = f"lspci -s {bdf} -vvv"
-                pci_info = SshLib.execute_command(Sut.OS_SSH, pcie_cmd)
+                pci_info = SshLib.execute_command(ssh_ubuntu_os, pcie_cmd)
                 lspci_info.append(pci_info)
             return lspci_info
         except Exception as e0:
@@ -440,10 +444,10 @@ def sriov_enable_disable():
             assert bdf_list, "Invalid BDF"
             logging.info(f"PCIE Bus: {bdf_list}")
             assert SetUpLib.boot_suse_from_bm([Msg.UBUNTU], Msg.BIOS_BOOT_COMPLETE)
-            assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
+            assert MiscLib.ping_sut(SutConfig.Env.OS_IP_UBUNTU, 300)
             sriov_sup_port = {}
             for port in bdf_list:
-                port_info = SshLib.execute_command(Sut.OS_SSH, f"lspci -s {port} -vvv")
+                port_info = SshLib.execute_command(ssh_ubuntu_os, f"lspci -s {port} -vvv")
                 if "SR-IOV" in port_info:
                     logging.info(f"{port} support SR-IOV, start to check BAR resource")
                     sriov_sup_port[port] = port_info
@@ -501,10 +505,10 @@ def sriov_per_port_loop():
             assert bdf_list, "Invalid BDF"
             logging.info(f"PCIE Bus: {bdf_list}")
             assert SetUpLib.boot_suse_from_bm([Msg.UBUNTU], Msg.BIOS_BOOT_COMPLETE)
-            MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
+            MiscLib.ping_sut(SutConfig.Env.OS_IP_UBUNTU, 300)
             sriov_sup_port = {}
             for port in bdf_list:
-                port_info = SshLib.execute_command(Sut.OS_SSH, f"lspci -s {port} -vvv")
+                port_info = SshLib.execute_command(ssh_ubuntu_os, f"lspci -s {port} -vvv")
                 if "SR-IOV" in port_info:
                     logging.info(f"{port} support SR-IOV, start to check BAR resource")
                     sriov_sup_port[port] = port_info
