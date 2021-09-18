@@ -252,7 +252,6 @@ def vtd():
         return
     logging.info("Save and reboot")
     SetUpLib.send_keys([Key.F10, Key.Y])
-    assert SetUpLib.continue_to_boot_suse_from_bm()
     logging.info("Verify OS boot with VT-D disabled.")
     if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE):
         logging.info("OS boot failed")

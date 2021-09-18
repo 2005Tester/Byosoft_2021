@@ -249,8 +249,8 @@ def boot_suse_from_bm(os=Msg.BOOT_OPTION_SUSE, msg=Msg.SUSE_GRUB):
         return
     if not enter_menu(Key.DOWN, os, 8, msg):
         return
-    if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE):
-        return
+    # if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE):
+    #     return
     logging.info("OS Boot Successful")
     return True
 
