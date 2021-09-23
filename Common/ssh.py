@@ -68,8 +68,9 @@ class sftp:
         try:
             logging.debug("Uploading file to sftp")
             res = self.sftp.put(src_file, dst_file)
-        except OSError:
-            logging.error("Skip due to SSH connection error.")
+        except Exception as e:
+            logging.error(e)
+            logging.error("Connection error, failed to upload file.")
             return
         if re.search(ret_msg, str(res)):
             logging.info("File uploaded to SFTP successfully.")

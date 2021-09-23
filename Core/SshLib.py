@@ -78,10 +78,10 @@ def sftp_remove_file(sftp, file_re, dir='.'):
 # upload a file to sftp,ret_msg is used to verify result, can use file size 
 def sftp_upload_file(sftp, src_file, dst_file, ret_msg=None):
     if sftp.login():
-        logging.info("Uploading: {0}".format(src_file))
-        sftp.upload_file(src_file, dst_file, ret_msg)
+        logging.info("Uploading {0} to {1}".format(src_file, dst_file))
+        res = sftp.upload_file(src_file, dst_file, ret_msg)
         sftp.close_session()
-        return True
+        return res
     else:
         logging.info("SFTP login fail.")
 
