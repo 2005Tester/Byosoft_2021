@@ -21,7 +21,7 @@ function module, do not call, only used below,
 
 def check_info():
     FW_VER = BmcLib.firmware_version_check()
-    check_list = [Msg.RC_VERSION, Msg.BIOS_REVISION, Msg.BIOS_DATE, FW_VER.BMC, Msg.iBMC_IP, Msg.CPU_TYPE,
+    check_list = [Msg.RC_VERSION, Msg.BIOS_REVISION, Msg.BIOS_DATE, FW_VER.BMC, SutConfig.Env.BMC_IP, Msg.CPU_TYPE,
                   Msg.TOTAL_MEMORY, Msg.HOTKEY_PROMPT_DEL, Msg.HOTKEY_PROMPT_F6, Msg.HOTKEY_PROMPT_F11, Msg.HOTKEY_PROMPT_F12]
     capture_start = "STOP_DIMMINFO_SYSTEM_TABLE"
     capture_end = "Press F6 go to SP boot"
