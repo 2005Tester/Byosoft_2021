@@ -16,17 +16,21 @@ def _formatter(text, type):
         return text
 
 
+# Red text in html report for test failures
 def fail(text):
     logging.info(_formatter(text, "fail"))
 
 
+# Green text in html report for passed tests
 def success(text):
     logging.info(_formatter(text, "success"))
 
 
+# Yellow text in html report for warnings
 def warning(text):
     logging.info(_formatter(text, "warning"))
 
 
+# Blue text in html report for information
 def info(text):
     logging.info(_formatter(text, "info"))

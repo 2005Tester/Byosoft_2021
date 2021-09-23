@@ -97,7 +97,7 @@ def dimm_power_mgt_04():
         assert SetUpLib.boot_to_page(Msg.PAGE_INFO)
         assert navigate_to_cke(), 'navigate to mem cke power page -> fail'
         assert SetUpLib.verify_options(Key.DOWN, [[Msg.LPASR_MODE, '<Auto SR>']], 7)
-        assert SetUpLib.boot_option_from_bm(Msg.BOOT_OPTION_SUSE, Msg.BIOS_BOOT_COMPLETE)
+        assert SetUpLib.boot_suse_from_bm()
         result.log_pass()
         return True
     except AssertionError:
@@ -118,7 +118,7 @@ def dimm_power_mgt_05():
         assert SetUpLib.continue_to_page(Msg.PAGE_INFO)
         assert navigate_to_cke(), 'navigate to mem cke power page -> fail'
         assert SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7)
-        assert SetUpLib.boot_option_from_bm(Msg.BOOT_OPTION_SUSE, Msg.BIOS_BOOT_COMPLETE)
+        assert SetUpLib.boot_suse_from_bm()
         assert (MiscLib.ping_sut(SutConfig.Env.OS_IP, 600))
         result.log_pass()
     except AssertionError:
@@ -168,7 +168,7 @@ def dimm_power_mgt_010():
         assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.MEM_POWER_ADV)
         assert (SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
-        assert SetUpLib.boot_option_from_bm(Msg.BOOT_OPTION_SUSE, Msg.BIOS_BOOT_COMPLETE)
+        assert SetUpLib.boot_suse_from_bm()
         assert (PlatMisc.cscripts_inband_register(cscripts_cmd_cke, exp_list))
         result.log_pass()
     except AssertionError:
@@ -204,7 +204,7 @@ def dimm_power_mgt_011():
             assert (SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
             assert (SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
             assert (SetUpLib.verify_options(Key.DOWN, [['APD', '<Enabled>']], 3))
-            assert SetUpLib.boot_option_from_bm(Msg.BOOT_OPTION_SUSE, Msg.BIOS_BOOT_COMPLETE)
+            assert SetUpLib.boot_suse_from_bm()
             assert (PlatMisc.cscripts_inband_register(cscripts_cmd_cke, exp_list))
         result.log_pass()
     except AssertionError:
@@ -366,7 +366,7 @@ def mem_refresh_001():
         assert SetUpLib.boot_to_page(Msg.CPU_CONFIG), "boot_to_page -> fail"
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, Msg.MEMORY_CONFIG], 10, Msg.MEM_FRE), "enter_menu -> fail"
         assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM2X_REFRESH, '<Dynamic Mode>'], 10), "locate_option -> fail"
-        assert SetUpLib.boot_option_from_bm(Msg.BOOT_OPTION_SUSE, Msg.BIOS_BOOT_COMPLETE)
+        assert SetUpLib.boot_suse_from_bm()
         assert (PlatMisc.cscripts_inband_register(cscripts_cmd_refresh, exp_list))
         result.log_pass()
     except AssertionError:
@@ -507,7 +507,7 @@ def mtrr_fixed_range():
     try:
         assert BmcLib.force_reset(), 'reset_system -> fail'
         assert not SetUpLib.wait_message('0xa0300', 60), 'find 0xa0300 string'
-        assert SetUpLib.boot_option_from_bm(Msg.BOOT_OPTION_SUSE, Msg.BIOS_BOOT_COMPLETE)
+        assert SetUpLib.boot_suse_from_bm()
         res = SshLib.execute_command(Sut.OS_SSH, 'dmesg | grep MTRR')
         assert res
         if 'MTRR fixed ranges enabled' in res:
