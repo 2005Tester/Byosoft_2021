@@ -195,14 +195,16 @@ def bmc_warning_check():
         status = None  #
         message = None
 
-    cmd = ["ipmcget -d healthevents"]
-    res = SshLib.interaction(Sut.BMC_SSH, cmd, [''])[1]
+    cmd = "ipmcget -d healthevents"
+    res = SshLib.execute_command(Sut.BMC_SSH, cmd)
     if not res:
         logging.error(f'Run cmd "{cmd}" error')
         return
     if "System in health state" in res:
         logging.info("[BMC Warning Check] Current system in health state")
         Result.status = True
+	elif 'Low voltage of RTC battery on the mainboard' in res:
+        logging.info("Low battery, check the CMOS, if not exist, pass - health state")
     else:
         logging.info("[BMC Warning Check] Alarms/Events detected")
         Result.status = False
