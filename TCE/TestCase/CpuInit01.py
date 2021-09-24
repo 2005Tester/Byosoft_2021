@@ -49,7 +49,7 @@ def cpu_cores_active_enable(num, set_n):
     ACT_CPU_CORES = ['Active Processor Cores', '<All>']
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
-        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.ACT_CPU_CORES)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.PROCESSOR_CONFIG)
         assert SetUpLib.locate_option(Key.DOWN, ACT_CPU_CORES, 20)
         SetUpLib.send_keys([Key.F6]*set_n)
         logging.info("**Active Processor Cores**")
@@ -203,7 +203,7 @@ def cpu_cores_active():
     list_info = ['All', '27', '26', '25', '24', '23', '22', '21', '20', '19', '18', '17', '16', '15', '14', '13', '12', '11', '10', '9', '8', '7', '6', '5', '4', '3', '2', '1']
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
-        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.ACT_CPU_CORES)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.PROCESSOR_CONFIG)
         assert SetUpLib.locate_option(Key.DOWN, ACT_CPU_CORES, 20)
         SetUpLib.send_key(Key.ENTER)
         logging.info("**Active Processor Cores**")
@@ -271,7 +271,7 @@ def cpu_cores_disable_sys_normally():
     n = 1
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
-        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.ACT_CPU_CORES)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.PROCESSOR_CONFIG)
         assert SetUpLib.locate_option(Key.DOWN, ACT_CPU_CORES, 20)
         SetUpLib.send_keys([Key.F6]*31)
         logging.info("**Active Processor Cores**")
@@ -312,7 +312,7 @@ def cores_customized_by_unitool():
         SshLib.execute_command(Sut.OS_SSH, r'reboot')
         # 进入Bios ，验证 unitool修改是否成功
         assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
-        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.ACT_CPU_CORES)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.PROCESSOR_CONFIG)
         assert SetUpLib.verify_info(ACT_CPU_CORES, 20)
         logging.info("bios setting checkin")
         # 进入 OS，验证 unitool修改是否成功

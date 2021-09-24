@@ -51,20 +51,19 @@ def cpu_cores_active_enable(num, set_n):
     ACT_CPU_CORES = ['Active Processor Cores', '<All>']
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
-        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.ACT_CPU_CORES)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.PROCESSOR_CONFIG)
         assert SetUpLib.locate_option(Key.DOWN, ACT_CPU_CORES, 20)
-        SetUpLib.send_keys([Key.F6]*set_n)
-        logging.info("**Active Processor Cores**")
+        SetUpLib.send_keys([Key.F6] * set_n)
+        stylelog.info("Core counts changed to {0}, save and reboot.".format(set_n))
         SetUpLib.send_keys([Key.F10, Key.Y], 5)
-        logging.info("**reboot**")
         assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
         # assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         SetUpLib.send_keys([Key.ENTER])
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.MEMORY_TOP], 20, 'DIMM000')
-        logging.info("**Verify Memory Information**")
+        stylelog.info("Verify Memory Information")
         assert SetUpLib.verify_info(SutConfig.SysCfg.DIMM_INFO, 20)
         # boot suse #
-        assert BmcLib.force_reset()
+        assert SetUpLib.boot_suse_from_bm()
         # 每个CPU下只有num个core。
         res1 = SshLib.execute_command(Sut.OS_SSH, r'lscpu | grep " per socket" ')
         assert res1
@@ -204,7 +203,7 @@ def cpu_cores_active():
     list_info = ['All', '27', '26', '25', '24', '23', '22', '21', '20', '19', '18', '17', '16', '15', '14', '13', '12', '11', '10', '9', '8', '7', '6', '5', '4', '3', '2', '1']
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
-        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.ACT_CPU_CORES)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.PROCESSOR_CONFIG)
         assert SetUpLib.locate_option(Key.DOWN, ACT_CPU_CORES, 20)
         SetUpLib.send_key(Key.ENTER)
         logging.info("**Active Processor Cores**")
@@ -275,7 +274,7 @@ def cpu_cores_disable_sys_normally():
     n = 1
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
-        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.ACT_CPU_CORES)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.PROCESSOR_CONFIG)
         assert SetUpLib.locate_option(Key.DOWN, ACT_CPU_CORES, 20)
         SetUpLib.send_keys([Key.F6]*28)
         logging.info("**Active Processor Cores**")
@@ -316,7 +315,7 @@ def cores_customized_by_unitool():
         # 进入Bios ，验证 unitool修改是否成功
         stylelog.info("Verify processor counts in Setup.")
         assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
-        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.ACT_CPU_CORES)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.PROCESSOR_CONFIG)
         assert SetUpLib.verify_info(ACT_CPU_CORES, 20)
         stylelog.success("bios setting verified")
         # 进入 OS，验证 unitool修改是否成功
