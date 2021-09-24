@@ -203,8 +203,9 @@ def bmc_warning_check():
     if "System in health state" in res:
         logging.info("[BMC Warning Check] Current system in health state")
         Result.status = True
-	elif 'Low voltage of RTC battery on the mainboard' in res:
+    elif 'Low voltage of RTC battery on the mainboard' in res:
         logging.info("Low battery, check the CMOS, if not exist, pass - health state")
+        Result.status = True
     else:
         logging.info("[BMC Warning Check] Alarms/Events detected")
         Result.status = False
