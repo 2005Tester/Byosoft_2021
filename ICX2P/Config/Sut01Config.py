@@ -37,7 +37,7 @@ class Env:
     BMC_PASSWORD = 'Admin@9001'
 
     # OS Configuration
-    OS_IP_LEGACY = '192.168.111.194'
+    OS_IP_LEGACY = '192.168.111.195'
     OS_IP = '192.168.111.194'
     OS_USER = 'root'
     OS_PASSWORD = '1'

@@ -68,11 +68,11 @@ Handle 0x0047, DMI type 9, 24 bytes
 System Slot Information
 	Designation: SLOT4
 	Type: x16 PCI Express 3 x16
-	Current Usage: Available
+	Current Usage: In Use
 	Length: Other
 	ID: 4
 	Characteristics:
 		PME signal is supported
 		Hot-plug devices are supported
-	Bus Address: 0000:b0:02.0
+	Bus Address: 0000:b1:00.0
 
