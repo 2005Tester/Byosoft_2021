@@ -135,12 +135,10 @@ def system_info_004():
 # OnStart: NA
 # OnComplete: NA
 def log_Time():
-    tc = ('804', '[804]串口日志打印测试', '支持BIOS启动开始和结束信息打印及上报')
+    tc = ('TC804', '[804]串口日志打印测试', '支持BIOS启动开始和结束信息打印及上报')
     result =  ReportGen.LogHeaderResult(tc)
     try:
-        assert SetUpLib.boot_with_hotkey(Key.F11, "Boot Manager Menu", 300)
-        assert SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 20, Msg.SUSE_GRUB)
-        assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE, 170)
+        assert SetUpLib.boot_suse_from_bm()
         logging.info("Suse_OS Boot Successful")
         assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 600)
         SERIAL_LOG = os.path.join(SutConfig.Env.LOG_DIR, 'TC804.log')
