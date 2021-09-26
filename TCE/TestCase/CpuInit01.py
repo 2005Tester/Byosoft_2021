@@ -303,33 +303,34 @@ def cores_customized_by_unitool():
     result = ReportGen.LogHeaderResult(tc)
     ACT_CPU_CORES = ['Active Processor Cores', '<20>']
     try:
-        assert SetUpLib.boot_with_hotkey(Key.F11, "Boot Manager Menu", 300)
-        assert SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 20, Msg.SUSE_GRUB)
-        assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE, 170)
-        logging.info("Suse_OS Boot Successful")
+        assert SetUpLib.boot_suse_from_bm()
+        stylelog.info("Suse_OS Boot Successful")
         MiscLib.ping_sut(SutConfig.Env.OS_IP, 600)
         assert Sut.UNITOOL.write(ActiveCpuCores=20)
         SshLib.execute_command(Sut.OS_SSH, r'reboot')
         # 进入Bios ，验证 unitool修改是否成功
+        stylelog.info("Verify processor counts in Setup.")
         assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.PROCESSOR_CONFIG)
         assert SetUpLib.verify_info(ACT_CPU_CORES, 20)
-        logging.info("bios setting checkin")
+        stylelog.success("bios setting verified")
         # 进入 OS，验证 unitool修改是否成功
-        assert BmcLib.force_reset()
+        assert SetUpLib.boot_suse_from_bm()
         res = SshLib.execute_command(Sut.OS_SSH, r'lscpu | grep " per socket" ').replace('\n', '').split(':')[-1].strip()
         assert res
         if int(res) == 20:
-            logging.info('checkin cpu_core - pass')
+            stylelog.success('Verify cpu cores - pass')
         else:
-            logging.info('checkin cpu_core - fail')
+            stylelog.fail('Verify cpu cores - fail')
+            result.log_fail()
             return
         # 还原系统设置
-        logging.info("正常还原")
+        stylelog.success("正常还原")
         result.log_pass()
+        return True
     except AssertionError:
-        logging.info("异常还原")
-        result.log_fail(capture=True)
+        stylelog.fail("异常还原")
+        result.log_fail()
     finally:
         BmcLib.clear_cmos()
 
@@ -472,20 +473,20 @@ def cpu_compa_02():
     tc = ('213', '[TC213] Testcase_CPU_COMPA_002', 'CPU BIST自检結果测试')
     result = ReportGen.LogHeaderResult(tc)
     try:
-        assert SetUpLib.boot_with_hotkey(Key.F11, "Boot Manager Menu", 300)
-        assert SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 20, Msg.SUSE_GRUB)
-        assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE, 170)
-        logging.info("Suse_OS Boot Successful")
+        assert SetUpLib.boot_suse_from_bm()
+        stylelog.info("Suse_OS Boot Successful")
         fail_dir = SutConfig.Env.LOG_DIR + r'\TC213.log'
         with open(fail_dir, 'r+',  encoding='utf-8') as f:
             line_text = f.readlines()
             for str in line_text:
                 if 'bist' in str:
                     logging.info('found "bist", fail')
-                    return result.log_fail(capture=True)
+                    result.log_fail()
+                    return
                 else:
                     logging.info('not found "bist",pass ')
         result.log_pass()
+        return True
     except AssertionError:
         result.log_fail()
 
