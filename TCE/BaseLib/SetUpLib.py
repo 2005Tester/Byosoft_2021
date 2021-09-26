@@ -161,7 +161,7 @@ def move_to_bios_config():
         logging.info("Legacy boot mode detected")
         send_key(Key.RIGHT)
     send_key(Key.ENTER)
-    if not SerialLib.is_msg_present(Sut.BIOS_COM, 'System Time'):
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.PAGE_INFO):
         logging.info("SetUpLib: Boot to BIOS Configuration Failed")
         return
     logging.info("SetUpLib: Boot to BIOS Configuration successfully")
