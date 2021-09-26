@@ -6,6 +6,22 @@ SMBIOS 3.3.0 present.
 
 Handle 0x000B, DMI type 39, 22 bytes
 System Power Supply
+	Location: chassis
+	Name: INA220
+	Manufacturer: Huawei
+	Serial Number: N/A
+	Asset Tag: Not Specified
+	Model Part Number: Unknown
+	Revision: N/A
+	Max Power Capacity: 850 W
+	Status: Not Present
+	Type: Switching
+	Input Voltage Range Switching: Auto-switch
+	Plugged: No
+	Hot Replaceable: Yes
+
+Handle 0x0027, DMI type 39, 22 bytes
+System Power Supply
 	Location: Unknown
 	Name: Unknown
 	Manufacturer: Unknown
@@ -19,20 +35,4 @@ System Power Supply
 	Input Voltage Range Switching: Unknown
 	Plugged: No
 	Hot Replaceable: No
-
-Handle 0x0027, DMI type 39, 22 bytes
-System Power Supply
-	Location: chassis
-	Name: Unknown
-	Manufacturer: Unknown
-	Serial Number: N/A
-	Asset Tag: Not Specified
-	Model Part Number: Unknown
-	Revision: Unknown
-	Max Power Capacity: 0 W
-	Status: Present, OK
-	Type: Switching
-	Input Voltage Range Switching: Auto-switch
-	Plugged: Yes
-	Hot Replaceable: Yes
 

@@ -4,21 +4,9 @@ SMBIOS 3.3.0 present.
 # SMBIOS implementations newer than version 3.2.0 are not
 # fully supported by this version of dmidecode.
 
-Handle 0x003E, DMI type 9, 24 bytes
+Handle 0x003D, DMI type 9, 24 bytes
 System Slot Information
-	Designation: SLOT1
-	Type: x16 PCI Express 4 x16
-	Current Usage: Available
-	Length: Other
-	ID: 1
-	Characteristics:
-		PME signal is supported
-		Hot-plug devices are supported
-	Bus Address: 0000:30:02.0
-
-Handle 0x003F, DMI type 9, 24 bytes
-System Slot Information
-	Designation: NVME0
+	Designation: 0
 	Type: x4 PCI Express 4 x4
 	Current Usage: Available
 	Length: Other
@@ -28,9 +16,9 @@ System Slot Information
 		Hot-plug devices are supported
 	Bus Address: 0000:4a:02.0
 
-Handle 0x0040, DMI type 9, 24 bytes
+Handle 0x003E, DMI type 9, 24 bytes
 System Slot Information
-	Designation: NVME1
+	Designation: 1
 	Type: x4 PCI Express 4 x4
 	Current Usage: In Use
 	Length: Other
@@ -40,7 +28,19 @@ System Slot Information
 		Hot-plug devices are supported
 	Bus Address: 0000:4c:00.0
 
-Handle 0x0041, DMI type 9, 24 bytes
+Handle 0x003F, DMI type 9, 24 bytes
+System Slot Information
+	Designation: SLOT1
+	Type: x16 PCI Express 4 x16
+	Current Usage: Available
+	Length: Other
+	ID: 1
+	Characteristics:
+		PME signal is supported
+		Hot-plug devices are supported
+	Bus Address: 0000:ff:1f.7
+
+Handle 0x0040, DMI type 9, 24 bytes
 System Slot Information
 	Designation: SLOT2
 	Type: x16 PCI Express 4 x16
@@ -50,5 +50,5 @@ System Slot Information
 	Characteristics:
 		PME signal is supported
 		Hot-plug devices are supported
-	Bus Address: 0000:c9:02.0
+	Bus Address: 0000:ff:1f.7
 

@@ -18,10 +18,10 @@ Memory Device
 	Type: DDR4
 	Type Detail: Synchronous Registered (Buffered)
 	Speed: 2933 MT/s
-	Manufacturer: Hynix
-	Serial Number: 20388372
-	Asset Tag: 1945 
-	Part Number: HMA84GR7CJR4N-WM    
+	Manufacturer: Samsung
+	Serial Number: 35327875
+	Asset Tag: 1946 
+	Part Number: M393A4K40CB2-CVF    
 	Rank: 2
 	Configured Memory Speed: 2666 MT/s
 	Minimum Voltage: 1.2 V
@@ -30,7 +30,7 @@ Memory Device
 	Memory Technology: DRAM
 	Memory Operating Mode Capability: Volatile memory
 	Firmware Version: 0000 
-	Module Manufacturer ID: Bank 1, Hex 0xAD
+	Module Manufacturer ID: Bank 1, Hex 0xCE
 	Module Product ID: Unknown
 	Memory Subsystem Controller Manufacturer ID: Unknown
 	Memory Subsystem Controller Product ID: Unknown

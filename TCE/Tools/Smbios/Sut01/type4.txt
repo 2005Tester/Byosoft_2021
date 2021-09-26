@@ -51,7 +51,7 @@ Processor Information
 	L1 Cache Handle: 0x000D
 	L2 Cache Handle: 0x000E
 	L3 Cache Handle: 0x000F
-	Serial Number: D50F33E0CD3F592B
+	Serial Number: 3C8947E87434E93D
 	Asset Tag: UNKNOWN
 	Part Number: Not Specified
 	Core Count: 32
@@ -112,7 +112,7 @@ Processor Information
 	L1 Cache Handle: 0x0011
 	L2 Cache Handle: 0x0012
 	L3 Cache Handle: 0x0013
-	Serial Number: 1CF25EE88C4DBA89
+	Serial Number: 3C9945E8EE731979
 	Asset Tag: UNKNOWN
 	Part Number: Not Specified
 	Core Count: 32

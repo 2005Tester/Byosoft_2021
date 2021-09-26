@@ -17,7 +17,7 @@ class Env:
 
     # Report Setting
     PROJECT_NAME = "TCE"
-    SUT_CONFIG = "Sut02"
+    SUT_CONFIG = "Sut02"  # 2U-Full-DIMM
     REPORT_TEMPLATE = "TCE\\Report\\template"
     RELEASE_BRANCH = "TCEV6_014"
 

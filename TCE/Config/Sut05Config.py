@@ -17,7 +17,7 @@ class Env:
 
     # Report Setting
     PROJECT_NAME = "TCE"
-    SUT_CONFIG = "Sut03"  # 4U-Full-DIMM
+    SUT_CONFIG = "Sut05"  # 4U-1-DIMM
     REPORT_TEMPLATE = "TCE\\Report\\template"
     RELEASE_BRANCH = "TCEV6_014"
 
@@ -28,16 +28,16 @@ class Env:
         os.makedirs(LOG_DIR)
 
     # BIOS Serial setting
-    BIOS_SERIAL = "com5"  # rdp hostname: desktop-ft2tm75
+    BIOS_SERIAL = "com10"  # rdp hostname: desktop-go80pcl
 
     # BMC Configuration
-    BMC_IP = '192.168.111.113'
+    BMC_IP = '192.168.111.118'
     BMC_USER = 'Administrator'
     BMC_PASSWORD = 'Admin@9000'
 
     # OS Configuration
-    OS_IP = '192.168.111.116'
-    OS_IP_UBUNTU = '192.168.111.21'
+    OS_IP = '192.168.111.119'
+    OS_IP_UBUNTU = '192.168.111.120'
     OS_USER = 'root'
     OS_PASSWORD = '1'
 
@@ -55,7 +55,7 @@ class Env:
 # The SUT physical system configuration
 class SysCfg:
     CPU_CNT = 2  # cpu socket count
-    DIMM_SIZE = 512  # /GB
+    DIMM_SIZE = 32  # /GB
     USB_Storage = 0  # usb disk inserted
 
     PCIE_MAP = [

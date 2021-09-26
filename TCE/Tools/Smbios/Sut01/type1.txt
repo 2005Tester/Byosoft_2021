@@ -10,7 +10,7 @@ System Information
 	Product Name: CN221SV2
 	Version: Whitley
 	Serial Number: To be filled by O.E.M.
-	UUID: 825683c9-0018-8f8d-b211-d21d087b6f2d
+	UUID: 821531d5-0018-96fc-b211-d21d5861702d
 	Wake-up Type: Power Switch
 	SKU Number: Whitley
 	Family: Whitley
