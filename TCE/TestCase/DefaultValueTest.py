@@ -57,7 +57,7 @@ def pcie_port_bandwidth_check():
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_IIO_CONFIG, 15, Msg.IIO_CONFIG)
         for cpu in range(SysCfg.CPU_CNT):  # loop cpu
             cpu_menu = f"CPU {cpu + 1} Configuration"
-            assert SetUpLib.enter_menu(Key.DOWN, [cpu_menu], 15, "Port 1A")
+            assert SetUpLib.enter_menu(Key.DOWN, [cpu_menu], 15, "PCIe Completion Timeout")
             for port, bwidth in SysCfg.PCIE_MAP[cpu].items():  # loop root port
                 port_menu = f"Port {port.upper()}"
                 assert SetUpLib.enter_menu(Key.DOWN, [port_menu], 15, "PCIe Port")

@@ -7,7 +7,7 @@
 #  means without the express written consent of Byosoft Corporation.
 
 # -*- encoding=utf8 -*-
-
+from TCE.Config import SutConfig
 
 # Key mapping
 class Key:
@@ -144,10 +144,10 @@ class Msg:
     # Firmware version info
     ME_VERSION = '0F:4.4.4.56'
     RC_VERSION = '0.2.2.0030'
-    BIOS_DATE = '08/18/2021'
-    iBMC_VERSION = '3.02.01.03'
+    BIOS_DATE = '09/18/2021'
+    iBMC_VERSION = '3.02.01.04'
     CPU_TYPE = 'Ice Lake'
-    TOTAL_MEMORY = '65536MB'
+    TOTAL_MEMORY = '{0}MB'.format(SutConfig.SysCfg.DIMM_SIZE * 1024)
 
     # POST GPIO ERROR Keywords print in serial log
     GPIO_ERR = "GPIO ERROR"
