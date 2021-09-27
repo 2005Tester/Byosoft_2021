@@ -342,7 +342,7 @@ def move_boot_option_up(boot_option, count):
     logging.info("Move: {0} {1} times".format(boot_option, count))
     if not boot_to_page(Msg.PAGE_BOOT):
         return
-    if not enter_menu(Key.UP, hdd_group, 25, boot_option[0]):
+    if not enter_menu(Key.UP, hdd_group, 25, Msg.MENU_HDD_BOOT):
         return
     if not locate_option(Key.UP, boot_option, 10):
         return
