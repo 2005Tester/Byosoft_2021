@@ -14,6 +14,10 @@ from Core import var
 SutCfgMde = importlib.import_module(var.get('SutCfg'), var.get('project'))
 
 
+class BootOS(SutCfgMde.BootOS):
+    pass
+
+
 class Env(SutCfgMde.Env):
     pass
 

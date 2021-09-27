@@ -11,6 +11,12 @@ import os
 import datetime
 
 
+# OS Boot Option Keywords
+class BootOS:
+    SLES = "SATA P1-SUSE Linux Enterprise"
+    Ubuntu = "SATA P1-ubuntu"
+
+
 class Env:
     # Define test plan
     TESTCASE_CSV = "TCE\\AllTest.csv"

@@ -23,7 +23,7 @@ def bios_parallel_flash():
         img = Update.get_test_image(SutConfig.Env.LOG_DIR, release_branch, 'debug-build')
         assert Update.update_bios(img)
         assert SetUpLib.update_default_password()
-        assert SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5)
+        assert SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_SUSE, 5)
         result.log_pass()
     except Exception as e:
         logging.error(e)
@@ -113,7 +113,7 @@ def boot_to_uefi_os():
     err_ignore = ["XFS .*?: Metadata (?:I/O|CRC) error", "ERST.*? support is initialized", "regulatory.(?:0|db)"]
     try:
         assert SetUpLib.boot_to_bootmanager()
-        assert SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_OS, 20, Msg.BIOS_BOOT_COMPLETE)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 20, Msg.BIOS_BOOT_COMPLETE)
         assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
         assert not PlatMisc.get_dmesg_keywords(["error", "fail"], err_ignore)
         result.log_pass()

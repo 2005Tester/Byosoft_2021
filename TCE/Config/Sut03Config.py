@@ -11,6 +11,13 @@ import os
 import datetime
 
 
+# OS Boot Option Keywords
+class BootOS:
+    name_ruler = r"RAID CARD|HDD\s*\d+|NVME\s*\d+|SLOT\s*\d+"
+    SLES = "sled-secureboot"
+    Ubuntu = f"ubuntu.*?(?:{name_ruler})"
+
+
 class Env:
     # Define test plan
     TESTCASE_CSV = "TCE\\AllTest.csv"

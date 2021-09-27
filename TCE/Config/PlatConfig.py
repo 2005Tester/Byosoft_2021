@@ -9,6 +9,7 @@
 # -*- encoding=utf8 -*-
 from TCE.Config import SutConfig
 
+
 # Key mapping
 class Key:
     ENTER = [chr(0x0D)]
@@ -30,16 +31,6 @@ class Key:
     DISCARD_CHANGES = ['N']
     RESET_DEFAULT = [F9, Y, F10, Y]
     SAVE_RESET = [F10, Y]
-
-
-# OS Boot Option Keywords
-class BootOS:
-    name_ruler = r"RAID CARD|HDD\s*\d+|NVME\s*\d+|SLOT\s*\d+"
-    SLES = f"SUSE Linux Enterprise.*?(?:{name_ruler})"
-    Ubuntu = f"ubuntu.*?(?:{name_ruler})"
-    CentOS = f"CentOS Linux.*?(?:{name_ruler})"
-    Windows = f"Windows Boot Manager.*?(?:{name_ruler})"
-    VMware = f"VMware ESXi.*?(?:{name_ruler})"
 
 
 # Messages to identify a specific boot option, page, menu or system status
@@ -127,10 +118,9 @@ class Msg:
     # Menu in Boot page
     MENU_BOOT_ORDER = 'UEFI Boot'
     MENU_HDD_BOOT = 'HDD Device'
-    BOOT_OPTION_SUSE = [BootOS.SLES]
-    BOOT_OPTION_OS = [BootOS.SLES]
+    BOOT_OPTION_SUSE = [SutConfig.BootOS.SLES]
     PXE_OPT = 'UEFI PXEv4:\(00-17-02-9F-DC-B2\) - Port00'
-    UBUNTU = BootOS.Ubuntu
+    UBUNTU = SutConfig.BootOS.Ubuntu
     SUSE_GRUB = 'Welcome to GRUB'
 
     # Menus in Exit
