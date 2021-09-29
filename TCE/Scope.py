@@ -1,6 +1,7 @@
 from Core.TcExecutor import TestScope
 from TCE.Config import SutConfig
 from TCE.TestCase import UpdateBIOS, Os
+from TCE.BaseLib import PlatMisc
 
 
 # Supported type (case senstive): Release, Daily, Weekly
@@ -25,6 +26,8 @@ def daily_scope():
 def check_csv():
     test_scope = TestScope(SutConfig.Env.TESTCASE_CSV, "Daily")
     test_scope.check_csv()
+    # init sut,
+    assert PlatMisc.init_tce_sut(), 'bmc ssh -> failed'
 
 
 def debug_scope():

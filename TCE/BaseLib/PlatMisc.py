@@ -276,3 +276,11 @@ def save_logo(path=SutConfig.Env.LOG_DIR, name="logo", logo_loc=(88, 160, 248, 3
         return save_img
     except Exception as e:
         logging.error(e)
+
+
+def init_tce_sut():
+    # kill mobaxterm
+    os.system("taskkill /F /IM MobaXterm.exe")
+    time.sleep(2)
+    # set boot device to none,
+    return SshLib.execute_command(Sut.BMC_SSH, 'ipmcset -d bootdevice -v 0 permanent')

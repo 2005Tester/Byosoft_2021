@@ -7,6 +7,7 @@ import tarfile
 from collections import Counter
 from PIL import Image, ImageChops
 
+
 # function library to hold platform indepedent operations, to simplify test case developemnt.
 
 
@@ -88,3 +89,30 @@ def same_values(item_a, item_b):
         return False
     except Exception as e:
         logging.error(e)
+
+
+# Avoid the serial port being occupied,
+def kill_progress(com_port):
+    """
+    com_port: serial port num,
+    """
+    pid_id = []
+    cmd = "tasklist /V /FI \"WINDOWTITLE eq {}*\" /FO CSV".format(com_port)
+    try:
+        print(os.system(cmd))
+        if os.system(cmd) == 1:
+            logging.info('Not matched port, sys exit.')
+            return
+        else:
+            res = os.popen(cmd.format(com_port))
+            text = res.read()
+            for i in text.splitlines():
+                for j in i.split(','):
+                    if j.strip('""').isdigit():
+                        pid_id.append(j)
+            res.close()
+            os.system("taskkill /F /IM {0}".format(pid_id[0]))
+            time.sleep(2)
+    except Exception as err:
+        logging.error(err)
+        return

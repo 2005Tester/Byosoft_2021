@@ -12,7 +12,7 @@ import time
 import re
 import sys
 import logging
-from Core import var
+from Core import var, MiscLib
 
 ENTER = [chr(0x0D)]
 UP = [chr(0x1b), chr(0x5b), chr(0x41)]
@@ -37,8 +37,10 @@ class SutControl:
                 logging.info("Serial port opened.")               
         except Exception as e:
             logging.error(e)
-            logging.info("SutControl: init failed.")
-            sys.exit()
+            logging.info("SutControl: init failed, try to kill the com pid.")
+            MiscLib.kill_progress(self.port)
+            if not self.open_session():
+                sys.exit()
 
     def open_session(self):
         self.session.open()
