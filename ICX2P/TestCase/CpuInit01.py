@@ -230,7 +230,7 @@ def cpu_cores_active_enable_1():
     except AssertionError:
         result.log_fail()
     finally:
-        reset_cpu_setting(BiosCfg.ActiveCpuCores_Default)
+        BmcLib.clear_cmos()
 
 
 def cpu_cores_active_enable_middle():
@@ -245,7 +245,7 @@ def cpu_cores_active_enable_middle():
     except AssertionError:
         result.log_fail()
     finally:
-        reset_cpu_setting(BiosCfg.ActiveCpuCores_Default)
+        BmcLib.clear_cmos()
 
 
 def cpu_cores_active_enable_max():
@@ -260,7 +260,7 @@ def cpu_cores_active_enable_max():
     except AssertionError:
         result.log_fail()
     finally:
-        reset_cpu_setting(BiosCfg.ActiveCpuCores_Default)
+        BmcLib.clear_cmos()
 
 
 # Verify CPU disable Processor Cores,the system runs normally

@@ -72,7 +72,7 @@ class SysCfg:
     REAR_USB_CNT = 2
     BUILDIN_USB_CNT = 1
     DIMM_SIZE = 64  # /GB
-    USB_Storage = 3  # usb disk inserted
+    USB_Storage = 2  # usb disk inserted
 
     PCIE_MAP = [
         {  # cpu0

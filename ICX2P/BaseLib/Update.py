@@ -117,7 +117,7 @@ def update_specific_img(bios):
 
 
 def update_bios(bios_img):
-    target_bin = "rp001.bin"
+    target_bin = "/tmp/rp001.bin"
     logging.info("Remove existing BIOS image from BMC")
     SshLib.sftp_remove_file(Sut.BMC_SFTP, target_bin)
     if not SshLib.sftp_upload_file(Sut.BMC_SFTP, bios_img, target_bin, '67108864'):
