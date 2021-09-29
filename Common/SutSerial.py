@@ -38,9 +38,13 @@ class SutControl:
         except Exception as e:
             logging.error(e)
             logging.info("SutControl: init failed, try to kill the com pid.")
-            MiscLib.kill_progress(self.port)
-            if not self.open_session():
-                sys.exit()
+            if MiscLib.kill_progress(self.port):
+                if not self.open_session():
+                    logging.info('Try to open serial com ->failed, sys exit.')
+                    sys.exit(1)
+            else:
+                logging.info('Kill serial port ->failed, terminated the automation.')
+                sys.exit(2)
 
     def open_session(self):
         self.session.open()

@@ -98,21 +98,25 @@ def kill_progress(com_port):
     """
     pid_id = []
     cmd = "tasklist /V /FI \"WINDOWTITLE eq {}*\" /FO CSV".format(com_port)
+    res = os.popen(cmd.format(com_port))
+    text = res.read()
     try:
-        print(os.system(cmd))
         if os.system(cmd) == 1:
             logging.info('Not matched port, sys exit.')
             return
+        elif os.system(cmd) == 0 and len(text.splitlines()) <= 1:
+            logging.info('Other serial app occupied, kill the apps on specify platform.')
+            raise Exception
         else:
-            res = os.popen(cmd.format(com_port))
-            text = res.read()
             for i in text.splitlines():
                 for j in i.split(','):
                     if j.strip('""').isdigit():
                         pid_id.append(j)
-            res.close()
             os.system("taskkill /F /IM {0}".format(pid_id[0]))
-            time.sleep(2)
+            time.sleep(5)
+        return True
     except Exception as err:
         logging.error(err)
         return
+    finally:
+        res.close()
