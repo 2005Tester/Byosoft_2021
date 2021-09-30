@@ -103,5 +103,5 @@ class SysCfg:
                  'DIMM160\(G\)\s+S1.CG.D0:2933MT/s Hynix DRx4 32GB RDIMM']
 
     # Boot Option Flag
-    Legacy_OS = '\(Bus 32 Dev 00\)PCI RAID Adapter RAID CARD'
-    Legacy_PXE = 'IBA XE Slot 4B00 v2358 Port 0 SLOT2'
+    Legacy_OS = '\(Bus 33 Dev 00\)PCI RAID Adapter RAID CARD'
+    Legacy_PXE = 'IBA XE Slot 3100 v2358 Port 0 SLOT1'
