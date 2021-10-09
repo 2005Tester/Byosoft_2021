@@ -162,7 +162,7 @@ def program_flash():
     ret_load = 'load bios succefully'
     cmds = [cmd_shutdown, cmd_confirm, cmd_maint_mode, cmd_upgrade_mode, cmd_load]
     rets = [ret_shutdown, ret_confirm, ret_maint_mode, ret_upgrade_mode, ret_load]
-    return SshLib.interaction(Sut.BMC_SSH, cmds, rets)
+    return SshLib.interaction(Sut.BMC_SSH, cmds, rets, 400)
 
 
 # BMC一键收集
@@ -247,11 +247,11 @@ def get_productname():
     logging.info("Return product name to fetch the right bios...")
     cmd = ['ipmcget -d ver\n']
     ret = ['Mainboard']
-    prd = []  # product name list
+    prd = []  # board id list
     data = SshLib.interaction(Sut.BMC_SSH, cmd, ret)[1]
-    if 'CN221V2' in data:  # 4U product name
+    if '0x0055' in data:  # 4U board id
         prd.append('4U')
-    elif 'CN221SV2' in data:  # 2U product name
+    elif '0x0056' in data:  # 2U board id
         prd.append('2U')
     else:
         print('No action.')
