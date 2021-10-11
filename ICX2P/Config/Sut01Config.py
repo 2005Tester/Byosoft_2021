@@ -105,3 +105,6 @@ class SysCfg:
     # Boot Option Flag
     Legacy_OS = '\(Bus 33 Dev 00\)PCI RAID Adapter RAID CARD'
     Legacy_PXE = 'IBA XE Slot 3100 v2358 Port 0 SLOT1'
+
+    # network dev list order in OS
+    device_order = ['eth7', 'eth6']

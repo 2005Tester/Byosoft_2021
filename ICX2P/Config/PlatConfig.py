@@ -104,8 +104,14 @@ class Msg:
     NETWORK_CONFIG = 'Network Configuration'
     USB_CONFIG = 'USB Configuration'
 
+    # Console Configuration Menu
+    Console_CONFIG = 'Console Redirection Configuration'
+    Console_REDIR = 'Console Redirection'
+    SPCR = 'SPCR'
+
     # Misc Configuration Menu
     MISC_CONFIG = 'Miscellaneous Configuration'
+    CDN = 'Network CDN'
     ASPM_GLOBAL = r"PCIe ASPM Support \(Global\)"
 
     # menus of Password configuration
