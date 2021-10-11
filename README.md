@@ -41,6 +41,7 @@ Execution: Release, daily, debug
 | Release | 9xx |
 | Smbios09 | 400-440, 527 reserved |
 | Security22 | 030-070 |
+| Dfx20 | 071-090 |
 
 
 ### Hygon
