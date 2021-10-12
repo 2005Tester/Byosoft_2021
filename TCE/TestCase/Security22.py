@@ -686,6 +686,62 @@ def pwd_auth_mgt_09():
         result.log_fail(capture=True)
 
 
+# 04 支持CBNT arthur - skip step3 遍历兼容性规格内的TPM型号
+# Precondition: BIOS默认密码 1、单板已插TPM卡；2、开启BIOS全打印
+# OnStart: NA
+# OnComplete: POWER OFF
+check_list = ['TPM Device', 'SHA1, SHA256, SM3_256']  # just for tpm test, capture str depends on the chip - TPM or TCM
+
+
+def tpm_001_002():
+    tc = ('057', '[TC057]Testcase_TPM_001&002', '01 BIOS初始化TPM芯片测试&02 Setup菜单提供TPM相关信息测试')
+    result = ReportGen.LogHeaderResult(tc)
+    check_item = ['DetectTpmDevice: Dtpm present', 'Tpm2GetCapabilityPcrs TempBuffer...SHA1, SHA256, SM3_256']
+
+    try:
+        assert BmcLib.debug_message()
+        assert BmcLib.force_reset()
+        log_cut = SerialLib.cut_log(Sut.BIOS_COM, 'Me\/SpsPolicy Dump End \(DXE\)', '\[ME\] Error Code: No Error', 150, 200)
+        assert MiscLib.verify_msgs_in_log(check_item, log_cut)
+        assert BmcLib.debug_message(enable=False)
+        assert SetUpLib.boot_to_page(Msg.PAGE_SECURITY)
+        SetUpLib.send_key(Key.DOWN)
+        # captured str depends on platform
+        log_cut1 = SerialLib.cut_log(Sut.BIOS_COM, 'TPM Device', 'SHA1, SHA256, SM3_256', 10, 20)
+        assert MiscLib.verify_msgs_in_log(check_list, log_cut1)
+        result.log_pass()
+        return True
+    except AssertionError:
+        result.log_fail(capture=True)
+        return
+    finally:
+        BmcLib.clear_cmos()
+
+
+# Precondition: BIOS默认密码 1、单板已插TPM卡
+# OnStart: NA
+# OnComplete: POWER OFF
+def tpm_013():
+    tc = ('058', '[TC058]Testcase_TPM_013', '13 TXT打开不影响TPM、硬盘等外设初始化')
+    result = ReportGen.LogHeaderResult(tc)
+    try:
+        assert SetUpLib.boot_to_page(Msg.CPU_CONFIG)
+        assert SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, Msg.PROCESSOR_CONFIG], 12, Msg.PER_CPU)
+        assert SetUpLib.locate_option(Key.DOWN, ['Intel\(R\) TXT', '<Enabled>'], 12)
+        assert SetUpLib.back_to_setup_toppage()
+        assert SetUpLib.locate_option(Key.RIGHT, [Msg.PAGE_SECURITY], 12)
+        SetUpLib.send_key(Key.DOWN)
+        # captured str depends on platform
+        log_cut = SerialLib.cut_log(Sut.BIOS_COM, 'TPM Device', 'SHA1, SHA256, SM3_256', 10, 20)
+        assert MiscLib.verify_msgs_in_log(check_list, log_cut)
+        assert SetUpLib.boot_suse_from_bm()
+        result.log_pass()
+        return True
+    except AssertionError:
+        result.log_fail(capture=True)
+        return
+
+
 # Main function
 def pwd_test_all():
     Testcase_BiosPasswordSecurity_002()
