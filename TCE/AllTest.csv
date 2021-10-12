@@ -34,6 +34,10 @@ CpuInit01.cpu_compa_05(),,Yes
 CpuInit01.cpu_compa_06(),,Yes
 CpuInit01.cpu_compa_017(),,Yes
 Security22.pwd_test_all(),,Yes
+Dfx20.cnd_support_test01(),,Yes
+Dfx20.cnd_support_test02(),,Yes
+Dfx20.vgaErr_to_bmc(),,Yes
+Dfx20.testcase_spcr_001(),,Yes
 MemInit02.dimm_power_mgt_01(),,Yes
 MemInit02.dimm_power_mgt_02(),,Yes
 MemInit02.dimm_power_mgt_04(),,Yes
