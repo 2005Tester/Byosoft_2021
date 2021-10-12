@@ -409,7 +409,7 @@ def rmt_equip_test():
         assert Sut.UNITOOL.set_config(BiosCfg.MFG_RMT), "Change setup by unitool failed."
         logging.info("Reboot SUT to Linux")
         assert BmcLib.force_reset()
-        ser_rmt_data = SerialLib.cut_log(Sut.BIOS_COM, "START_BSSA_RMT", "STOP_BSSA_RMT", 15, 600)
+        ser_rmt_data = SerialLib.cut_log(Sut.BIOS_COM, "START_BSSA_RMT", "STOP_BSSA_RMT", 15, 1800)
         assert ("Ctl+" in ser_rmt_data), "Invalid RMT data"
         BmcLib.clear_cmos()
         result.log_pass()
