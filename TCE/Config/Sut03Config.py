@@ -92,3 +92,5 @@ class SysCfg:
                'Processor 2 Version \s+Intel\(R\) Xeon\(R\) Gold 6 \s+338N CPU @ 2.20GHz']
     DIMM_FREQ = 2933  # Mhz
     DIMM_INFO = ['DIMM000\(A\)\s+S0.CA.D0:2933MT/s Hynix DRx4 32GB RDIMM']
+
+    device_order = ['eth4', 'eth15', 'eth5', 'eth14', 'eth12', 'eth13', 'eth10', 'eth11', 'eth6', 'eth7', 'eth8', 'eth9']
