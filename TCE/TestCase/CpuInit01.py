@@ -71,6 +71,7 @@ def cpu_cores_active_enable(num, set_n):
         if int(res1) == num:
             logging.info("**Core Enable pass**")
         else:
+            logging.debug(res1)
             logging.info("**Core Enable error**")
             return
         # 在smbios4中检查：Core数量为总数，Core Enable为num，线程数为Enabled核数的两倍 #
@@ -83,6 +84,7 @@ def cpu_cores_active_enable(num, set_n):
         if smbios4_Core_Count == '32' and smbios4_Core_Enabled == str(num) and smbios4_Thread_Count == str(num*2):
             logging.info("**Core_Count pass, Core_Enabled pass,Thread_Count pass")
         else:
+            logging.debug(smbios4_Core_Count,smbios4_Core_Enabled,smbios4_Thread_Count)
             logging.info("**Core eorro**")
             return
         # 使用 unitool 还原 'Active Processor Cores', '<All>' #
@@ -321,6 +323,7 @@ def cores_customized_by_unitool():
         if int(res) == 20:
             stylelog.success('Verify cpu cores - pass')
         else:
+            logging.debug(res)
             stylelog.fail('Verify cpu cores - fail')
             result.log_fail()
             return
@@ -391,6 +394,7 @@ def numa_01():
         if int(nodes_enab) == 2:
             logging.info('numa_enabled pass')
         else:
+            logging.debug(nodes_enab)
             logging.info('numa_enabled fail')
             return result.log_fail(capture=True)
         logging.info("正常还原")
@@ -428,9 +432,11 @@ def numa_02():
                     if numa_var[j] =='20': # CPU与其他cpu 距离为‘20’
                         logging.info("外部CPU距离正常")
                     else:
+                        logging.debug(numa_var[j])
                         logging.info('外部CPU距离-fail')
                         return result.log_fail(capture=True)
             else:
+                logging.debug(numa_var[i])
                 logging.info("内部CPU距离-fail")
                 return result.log_fail(capture=True)
         result.log_pass()
@@ -516,6 +522,7 @@ def cpu_compa_03():
         if Core_Count == '32' and Logical_CPU == '128':
             logging.info("**Core_Count pass, Logical_CPU pass**")
         else:
+            logging.debug(Core_Count, Logical_CPU)
             logging.info("**Core eorro**")
             return False
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
@@ -535,6 +542,7 @@ def cpu_compa_03():
         if Core_Count == '32' and Logical_CPU == '64':
             logging.info("**Core_Count pass, Logical_CPU pass**")
         else:
+            logging.debug(Core_Count, Logical_CPU)
             logging.info("**Core eorro**")
             return False
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
@@ -571,6 +579,7 @@ def cpu_compa_05():
         if mic_ver == '0xd0002a0':
             logging.info("The microcode-version in OS is the same as that in BIOS")
         else:
+            logging.debug(mic_ver)
             logging.info("Different, please check")
             return result.log_fail(capture=True)
         result.log_pass()
@@ -603,6 +612,7 @@ def cpu_compa_06():
         if cpu_version == 'Intel(R) Xeon(R) Gold 6338N CPU @ 2.20GHz':
             logging.info('cpu_version is ok')
         else:
+            logging.debug(cpu_version)
             logging.info('Different, please check')
             return result.log_fail(capture=True)
         cpu_num = SshLib.execute_command(Sut.OS_SSH, r'dmidecode -t 4 | grep "Socket Designation:" ')
@@ -641,6 +651,7 @@ def cpu_compa_017():
         if apic_n == 128:
             logging.info('X2APIC个数与当前CPU总线程数一致')
         else:
+            logging.debug(apic_n)
             logging.info('X2APIC个数与当前CPU总线程数不一致，需要检查')
             return result.log_fail(capture=True)
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
@@ -651,6 +662,7 @@ def cpu_compa_017():
         if apic_n == 64:
             logging.info('X2APIC个数与当前CPU总核数一致')
         else:
+            logging.debug(apic_n)
             logging.info('X2APIC个数与当前CPU总核数不一致，需要检查')
             return result.log_fail(capture=True)
         SshLib.execute_command(Sut.OS_SSH, r'rm *.dat *.out *.dsl')
