@@ -81,3 +81,4 @@ Release.equip_iou_not_hidden(),equip,Yes
 Release.equip_tool_set_and_restore(),equip,Yes
 Os.boot_to_suse_mfg(),equip,Yes
 MemInit02.rmt_equip_test(),equip,Yes
+Os.EquipmentModeFlag_test(),equip,Yes
