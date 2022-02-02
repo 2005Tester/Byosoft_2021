@@ -13,7 +13,7 @@ def scope(type, branch='master'):
         test_scope.run_test('default')
         test_scope.run_test('fulldebug')
 
-    if test_scope.equip and UpdateBIOS.update_bios_mfg(branch):
+    if test_scope.equip and UpdateBIOS.update_bios_local(flag='mfg'):
         test_scope.run_test('equip')
 
 

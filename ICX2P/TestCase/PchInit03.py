@@ -50,8 +50,8 @@ def post_gpio_error_check():
 def usb_default_enable_check():
     tc = ('601', '[TC601] Testcase_USB_Port_001', '01 Setup菜单默认打开USB Port选项测试')
     result = ReportGen.LogHeaderResult(tc)
-    rear_usb = rf"Rear USB Control(?:\s+<Enabled>\s+USB Physical Port\d+){{{SysCfg.REAR_USB_CNT}}}"
-    buildin_usb = rf"Built-in USB Control(?:\s+<Enabled>\s+USB Physical Port\d+){{{SysCfg.BUILDIN_USB_CNT}}}"
+    rear_usb = rf"Rear USB Control(?:\s+<Enabled>\s+USB Physical Port\d+){{{SysCfg.USB_REAR}}}"
+    buildin_usb = rf"Built-in USB Control(?:\s+<Enabled>\s+USB Physical Port\d+){{{SysCfg.USB_BUILD_IN}}}"
     key_words = f"{rear_usb}.+{buildin_usb}"
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
@@ -87,7 +87,7 @@ def hot_plug_sata():
         assert SetUpLib.enter_menu(Key.DOWN, PATH_SATA_CFG, 20, 'PCH SATA Configuration')
         logging.info("**Verify SATA Hot Plug Information**")
         assert not SetUpLib.verify_info(Hot_Plug_Info, 20)
-        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.back_to_setup_toppage()
         assert SetUpLib.enter_menu(Key.DOWN, PATH_sSATA_CFG, 20, 'PCH sSATA Configuration')
         logging.info("**Verify sSATA Hot Plug Information**")
         assert not SetUpLib.verify_info(Hot_Plug_Info, 20)

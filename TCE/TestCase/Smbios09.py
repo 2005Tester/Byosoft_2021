@@ -17,7 +17,7 @@ from TCE.BaseLib import BmcLib
 ##########################################
 
 # Test scope, smbios tables to be tested
-TYPES = [0, 1, 2, 3, 4, 7, 9, 13, 16, 17, 19, 38, 39, 41, 127]
+TYPES = [0, 1, 2, 3, 4, 7, 9, 13, 16, 17, 19, 38, 41, 127]
 
 # LogAnalyzer
 P = LogAnalyzer(SutConfig.Env.LOG_DIR)

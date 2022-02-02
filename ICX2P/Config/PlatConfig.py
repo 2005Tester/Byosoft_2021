@@ -7,7 +7,7 @@
 #  means without the express written consent of Byosoft Corporation.
 
 # -*- encoding=utf8 -*-
-
+from ICX2P.Config import SutConfig
 
 # Key mapping
 class Key:
@@ -35,12 +35,13 @@ class Key:
 
 # OS Boot Option Keywords
 class BootOS:
-    name_ruler = r"RAID CARD|HDD\s*\d+|NVME\s*\d+|SLOT\s*\d+"
-    SLES = f"SUSE Linux Enterprise.*?(?:{name_ruler})"
-    Ubuntu = f"ubuntu.*?(?:{name_ruler})"
-    CentOS = f"CentOS Linux.*?(?:{name_ruler})"
-    Windows = f"Windows Boot Manager.*?(?:{name_ruler})"
-    VMware = f"VMware ESXi.*?(?:{name_ruler})"
+    _name_ruler = r"RAID CARD|HDD\s*\d+|NVME\s*\d+|SLOT\s*\d+"
+    SLES = f"SUSE Linux Enterprise.*?(?:{_name_ruler})"
+    SLED = f"sled-secureboot.*?(?:{_name_ruler})"
+    UBUNTU = f"ubuntu.*?(?:{_name_ruler})"
+    CENTOS = f"CentOS Linux.*?(?:{_name_ruler})"
+    WINDOWS = f"Windows Boot Manager.*?(?:{_name_ruler})"
+    VMWARE = f"VMware ESXi.*?(?:{_name_ruler})"
 
 
 # Messages to identify a specific boot option, page, menu or system status
@@ -58,12 +59,13 @@ class Msg:
 
     # Home screen with 6 icons
     HOME_PAGE = '/Continue/'
+    SECURE_BOOT = 'Administer Secure Boot'
     BIOS_BOOT_COMPLETE = 'BIOS boot completed'
 
     # pages in bios configuration
     PAGE_INFO = "BIOS Revision"
     PAGE_ADVANCED = 'CPU Configuration'
-    PAGE_BMC = 'iBMC version'
+    PAGE_BMC = 'BMC version'
     PAGE_SECURITY = 'TPM Device'
     PAGE_BOOT = '<[UEFILegacy]{4,6}Boot>'
     PAGE_SAVE = 'Save Changes and Exit'
@@ -89,6 +91,8 @@ class Msg:
     DRAM_RAPL_CONFIG = 'DRAM RAPL Configuration'
     MEM_POWER_ADV = 'Memory Power Savings Advanced Options'
     CKE = 'CKE Power Down'
+    APD = 'APD'
+    PPD = 'PPD'
     LPASR_MODE = 'LPASR Mode'
     CKE_FEATURE = 'CKE Feature'
     CKE_IDLE_TIMER = 'CKE Idle Timer'
@@ -99,6 +103,9 @@ class Msg:
     ASPM_ROOT_PORT = "PCIe ASPM Support"
     EXTENDED_APIC = "Extended APIC"
     SYS_EVENT_LOG = "System Event Log"
+    SPD_CRC = "SPD CRC Check"
+    ATTEMPT_FAST_BOOT = "Attempt Fast Boot"
+    BMC_WDT_CONFIGURATION = 'BMC WDT Configuration'
 
     # menus of PCH configuration
     PCH_CONFIG = 'PCH Configuration'
@@ -109,6 +116,7 @@ class Msg:
     Console_CONFIG = 'Console Redirection Configuration'
     Console_REDIR = 'Console Redirection'
     SPCR = 'SPCR'
+    BAUD_RATE = 'Baud Rate'
 
     # Misc Configuration Menu
     MISC_CONFIG = 'Miscellaneous Configuration'
@@ -138,19 +146,23 @@ class Msg:
     PATH_IIO_CONFIG = [CPU_CONFIG, IIO_CONFIG]
     PATH_MEM_CONFIG = [CPU_CONFIG, MEMORY_CONFIG]
     PATH_MEM_POWER_ADV = [CPU_CONFIG, ADV_POWER_MGF_CONFIG, MEM_POWER_THER_CONFIG, MEM_POWER_ADV]
-    PATH_SPREAD_SPECTRUM = [MISC_CONFIG]
+    PATH_MISC_CONFIG = [MISC_CONFIG]
     PATH_CSTATE_CTL = [CPU_CONFIG, ADV_POWER_MGF_CONFIG, CPU_C_STATE]
     PATH_PCSC_CTL = [CPU_CONFIG, ADV_POWER_MGF_CONFIG, PKG_C_STATE_CONTROL]
     PATH_VIRTUAL_VTD = [VIRTUAL_CFG, VIRTUAL_VTD]
+    PATH_WDT_CONFIG = [PAGE_BMC, BMC_WDT_CONFIGURATION]
 
     # Menu in Boot page
     MENU_BOOT_ORDER = 'UEFI Boot'
     MENU_HDD_BOOT = 'HDD Device'
     BOOT_OPTION_SUSE = [BootOS.SLES]
-    BOOT_OPTION_OS = [BootOS.SLES]
+    BOOT_OPTION_OS = [getattr(BootOS, SutConfig.Env.OS_NAME.upper())]
     PXE_OPT = 'UEFI HTTPSv4: Network - Port00 SLOT1'
-    UBUNTU = BootOS.Ubuntu
-    SUSE_GRUB = 'Welcome to GRUB'
+    UBUNTU = BootOS.UBUNTU
+    LINUX_GRUB = 'Welcome to'
+    PXE_BOOT_CAPABILITY = 'PXE Boot Capability'
+    BOOT_TYPE = 'Boot Type'
+    BOOT_OPTIONS = 'Boot Options'
 
     # Menus in Exit
     SAVE_WO_RESET = "Save Changes Without Exiting"
@@ -161,11 +173,11 @@ class Msg:
     # Firmware version info
     ME_VERSION = '0F:4.4.4.56'
     RC_VERSION = '0.2.2.0030'
-    BIOS_REVISION = '0.12'
-    BIOS_DATE = '05/25/2021'
-    iBMC_VERSION = '3.01.15.06'
+    BIOS_REVISION = '0.18'
+    BIOS_DATE = '09/29/2021'
+    BMC_VERSION = '3.03.07.10'
     CPU_TYPE = 'Ice Lake'
-    TOTAL_MEMORY = '65536MB'
+    TOTAL_MEMORY = '{0}MB'.format(SutConfig.SysCfg.MEM_SIZE * 1024)
 
     # POST GPIO ERROR Keywords print in serial log
     GPIO_ERR = "GPIO ERROR"
@@ -177,12 +189,12 @@ class Msg:
     LOGO_SHOW = "BootType :"
 
     # 精简打印，华为要求 LogTime_check_list
-    LogTime_common = [
+    OEM_LOG_COMMON = [
     'BootType',
     'RC Version',
     'BIOS Revision',
     'BIOS Date',
-    'iBMC Version',
+    'BMC Version',
     'R_PCH_TCO2_STS = 0x0',
     'The Box has NOT been opened.',
     'EFI1711 V1.00.05',
@@ -196,9 +208,9 @@ class Msg:
 # BIOS configuration to be set by unitool
 class BiosCfg:
 
-    ActiveCpuCores_Default = {
-        'ActiveCpuCores': 0
-    }
+    ActiveCpuCores_Default = {'ActiveCpuCores': 0}
+
+    ActiveCpuCores_aft = {"ActiveCpuCores": 20}
 
     MFG_RMT = {
         "EquipMentModeFlag": 1,
@@ -209,6 +221,10 @@ class BiosCfg:
 
     EQUIP_FLAG = {
         "EquipMentModeFlag": 1
+    }
+    
+    XMPMODE = {
+        "XMPMode": 0
     }
 
     # HPM Upgrade/Downgrade keep BIOS Setting unchanged setting

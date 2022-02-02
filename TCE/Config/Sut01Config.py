@@ -19,18 +19,24 @@ class BootOS:
 
 
 class Env:
+    # URL of test result database api to generate test report
+    REPORT_URL = 'http://192.168.113.234/api/v1/report'
+
     # Define test plan
     TESTCASE_CSV = "TCE\\AllTest.csv"
+    # if os.path.exists("TCE\\AllTestLocal.csv"):
+    #     TESTCASE_CSV = "TCE\\AllTestLocal.csv"
 
     # Report Setting
     PROJECT_NAME = "TCE"
     SUT_CONFIG = "Sut01"  # 2U-1-DIMM
     REPORT_TEMPLATE = "TCE\\Report\\template"
-    RELEASE_BRANCH = "TCEV6_014"
+    RELEASE_BRANCH = "TCEV6_022"
+    PREVIOUS_BRANCH = 'TCEV6_021'
 
     # Log settings
     timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    LOG_DIR = 'c:\\daily\\TCE\\{0}'.format(timestamp)
+    LOG_DIR = 'c:\\daily\\TCE_{0}\\{1}'.format(SUT_CONFIG, timestamp)
     if not os.path.exists(LOG_DIR):
         os.makedirs(LOG_DIR)
 
@@ -44,7 +50,7 @@ class Env:
 
     # OS Configuration
     OS_IP = '192.168.111.41'
-    OS_IP_UBUNTU = '192.168.111.53'
+    # OS_IP_UBUNTU = '192.168.111.53'
     OS_USER = 'root'
     OS_PASSWORD = '1'
 
@@ -69,6 +75,7 @@ class Env:
 # The SUT physical system configuration
 class SysCfg:
     CPU_CNT = 2  # cpu socket count
+    CPU_CORE = 32  # cpu core count
     DIMM_SIZE = 32  # /GB
     USB_Storage = 0  # usb disk inserted
 
@@ -97,7 +104,20 @@ class SysCfg:
     # CPU, DIMM info
     CPU_TYPE = "6338N"
     CPU_FREQ = "2.2"
-    CPU_INFO = ['Processor ID\s+000606A6', 'Processor Frequency\s+2.200GHz']
+    CPU_INFO = [
+        'Processor BSP Revision\s+606A6 \- ICX D2',
+        'Processor ID\s+000606A6',
+        'Processor Frequency\s+2.200GHz',
+        'Microcode Revision\s+0D000311',
+        'Processor Voltage\s+1.6V',
+        'Active Cores/Total Cores\s+32/32',
+        'Active Threads\s+64',
+        'L1 Cache RAM\(Per Core\)\s+80KB',
+        'L2 Cache RAM\(Per Core\)\s+1280KB',
+        'L3 Cache RAM\(Per Package\)\s+49152KB',
+        "Processor 1 Version \s+Intel\(R\) Xeon\(R\) Gold 6\s+338N CPU @ 2.20GHz",
+        "Processor 2 Version \s+Intel\(R\) Xeon\(R\) Gold 6\s+338N CPU @ 2.20GHz"
+    ]
     CPU_SKU = ['Processor 1 Version \s+Intel\(R\) Xeon\(R\) Gold 6 \s+338N CPU @ 2.20GHz',
                'Processor 2 Version \s+Intel\(R\) Xeon\(R\) Gold 6 \s+338N CPU @ 2.20GHz']
     DIMM_FREQ = 2933  # Mhz
@@ -131,10 +151,10 @@ class SysCfg:
         'Backup name:SetupBackup Restore variable Success size:0x325',
         'Backup name:PchSetupBackup Restore variable Success size:0x420',
         'Backup name:MeRcConfigurationBackup Restore variable Success size:0x55',
-        'Backup name:SocketIioConfigBackup Restore variable Success size:0x2066',
+        'Backup name:SocketIioConfigBackup Restore variable Success size:0x20BA',
         'Backup name:SocketCommonRcConfigBackup Restore variable Success size:0x3B',
         'Backup name:SocketMpLinkConfigBackup Restore variable Success size:0xAD',
-        'Backup name:SocketMemoryConfigBackup Restore variable Success size:0x329',
+        'Backup name:SocketMemoryConfigBackup Restore variable Success size:0x3EA',
         'Backup name:SocketPowerManagementConfigBackup Restore variable Success size:0x1D6',
         'Backup name:SocketProcessorCoreConfigBackup Restore variable Success size:0x14E',
         'Backup name:MemBootHealthConfigBackup Restore variable Success size:0x13',

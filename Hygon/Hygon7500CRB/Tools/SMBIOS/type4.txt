@@ -1,0 +1,68 @@
+# dmidecode 3.2
+Getting SMBIOS data from sysfs.
+SMBIOS 3.3 present.
+# SMBIOS implementations newer than version 3.2.0 are not
+# fully supported by this version of dmidecode.
+
+Handle 0x0008, DMI type 4, 48 bytes
+Processor Information
+	Socket Designation: P0
+	Type: Central Processor
+	Family: Other
+	Manufacturer: Chengdu Hygon
+	ID: 21 0F 90 00 FF FB 8B 17
+	Version: Hygon C86 7380 32-core Processor
+	Voltage: 1.0 V
+	External Clock: 100 MHz
+	Max Speed: 3000 MHz
+	Current Speed: 2000 MHz
+	Status: Populated, Enabled
+	Upgrade: Socket SP3
+	L1 Cache Handle: 0x0005
+	L2 Cache Handle: 0x0006
+	L3 Cache Handle: 0x0007
+	Serial Number: 6927-5F86433F
+	Asset Tag:  
+	Part Number:  
+	Core Count: 32
+	Core Enabled: 32
+	Thread Count: 64
+	Characteristics:
+		64-bit capable
+		Multi-Core
+		Hardware Thread
+		Execute Protection
+		Enhanced Virtualization
+		Power/Performance Control
+
+Handle 0x000C, DMI type 4, 48 bytes
+Processor Information
+	Socket Designation: P1
+	Type: Central Processor
+	Family: Other
+	Manufacturer: Chengdu Hygon
+	ID: 21 0F 90 00 FF FB 8B 17
+	Version: Hygon C86 7380 32-core Processor
+	Voltage: 1.0 V
+	External Clock: 100 MHz
+	Max Speed: 3000 MHz
+	Current Speed: 2000 MHz
+	Status: Populated, Enabled
+	Upgrade: Socket SP3
+	L1 Cache Handle: 0x0009
+	L2 Cache Handle: 0x000A
+	L3 Cache Handle: 0x000B
+	Serial Number: 6927-5F86619F
+	Asset Tag:  
+	Part Number:  
+	Core Count: 32
+	Core Enabled: 32
+	Thread Count: 64
+	Characteristics:
+		64-bit capable
+		Multi-Core
+		Hardware Thread
+		Execute Protection
+		Enhanced Virtualization
+		Power/Performance Control
+

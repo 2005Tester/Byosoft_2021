@@ -8,7 +8,7 @@ from ICX2P.Config import SutConfig
 from ICX2P.Config.SutConfig import SysCfg
 from ICX2P.Config.PlatConfig import Key, Msg, BiosCfg
 from ICX2P.BaseLib import SetUpLib, PlatMisc, BmcLib
-from batf import SerialLib, SshLib, MiscLib
+from batf import SerialLib, SshLib, MiscLib, core
 
 # Test case ID: TC700-750
 
@@ -20,12 +20,9 @@ from batf import SerialLib, SshLib, MiscLib
 function module, only used below
 '''
 
-# defined cscripts command
-cscripts_cmd_cke = 'sv.socket0.uncore.memss.mc1.ch0.cke_ll0.show()'
-cscripts_cmd_refresh = 'sv.socket0.uncore.memss.mc1.ch0.dimm_temp_th_0.show()'
 
 # go to memory frequency page
-def navigate_to_mem_fre():
+def _navigate_to_mem_fre():
     try:
         assert SetUpLib.locate_option(Key.RIGHT, [Msg.PAGE_ADVANCED], 6)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_CONFIG, 12, Msg.MEM_FRE)
@@ -35,7 +32,7 @@ def navigate_to_mem_fre():
 
 
 # go to cke power down page
-def navigate_to_cke():
+def _navigate_to_cke():
     try:
         assert SetUpLib.locate_option(Key.RIGHT, [Msg.PAGE_ADVANCED], 6)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.CKE)
@@ -54,10 +51,10 @@ def dimm_power_mgt_01():
     try:
         assert (SetUpLib.boot_to_page(Msg.PAGE_INFO))
         if SetUpLib.verify_info(['CPU Number\s+2'], 7):
-            assert navigate_to_mem_fre(), 'navigate to mem freq page -> fail'
+            assert _navigate_to_mem_fre(), 'navigate to mem freq page -> fail'
             assert (SetUpLib.verify_options(Key.DOWN, [[Msg.MEM2X_REFRESH, '<Dynamic Mode>']], 7))
         elif SetUpLib.verify_info(['CPU Number\s+4'], 7):
-            assert navigate_to_mem_fre(), 'navigate to mem freq page -> fail'
+            assert _navigate_to_mem_fre(), 'navigate to mem freq page -> fail'
             assert (SetUpLib.verify_options(Key.DOWN, [[Msg.MEM2X_REFRESH, '<Static 2X Mode>']], 7))
         else:
             logging.info('Unsupported CPU Number...')
@@ -76,7 +73,7 @@ def dimm_power_mgt_02():
     result = ReportGen.LogHeaderResult(tc)
     try:
         assert (SetUpLib.boot_to_page(Msg.PAGE_INFO))
-        assert navigate_to_mem_fre(), 'navigate to mem freq page -> fail'
+        assert _navigate_to_mem_fre(), 'navigate to mem freq page -> fail'
         SetUpLib.send_key(Key.ESC)
         assert (SetUpLib.enter_menu(Key.DOWN, [Msg.ADV_POWER_MGF_CONFIG, Msg.MEM_POWER_THER_CONFIG,
                                                Msg.MEM_POWER_ADV], 12, Msg.CKE))
@@ -95,7 +92,7 @@ def dimm_power_mgt_04():
     result = ReportGen.LogHeaderResult(tc)
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_INFO)
-        assert navigate_to_cke(), 'navigate to mem cke power page -> fail'
+        assert _navigate_to_cke(), 'navigate to mem cke power page -> fail'
         assert SetUpLib.verify_options(Key.DOWN, [[Msg.LPASR_MODE, '<Auto SR>']], 7)
         assert SetUpLib.boot_suse_from_bm()
         result.log_pass()
@@ -112,11 +109,11 @@ def dimm_power_mgt_05():
     result = ReportGen.LogHeaderResult(tc)
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_INFO)
-        assert navigate_to_cke(), 'navigate to mem cke power page -> fail'
+        assert _navigate_to_cke(), 'navigate to mem cke power page -> fail'
         assert SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7)
-        SetUpLib.send_keys([Key.F5, Key.F10, Key.Y])
+        assert SetUpLib.set_option_value(Msg.CKE, 'Enabled', save=True)
         assert SetUpLib.continue_to_page(Msg.PAGE_INFO)
-        assert navigate_to_cke(), 'navigate to mem cke power page -> fail'
+        assert _navigate_to_cke(), 'navigate to mem cke power page -> fail'
         assert SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7)
         assert SetUpLib.boot_suse_from_bm()
         assert (MiscLib.ping_sut(SutConfig.Env.OS_IP, 600))
@@ -135,15 +132,13 @@ def dimm_power_mgt_07():
     result = ReportGen.LogHeaderResult(tc)
     try:
         assert (SetUpLib.boot_to_page(Msg.PAGE_INFO))
-        assert navigate_to_cke(), 'navigate to mem cke power page -> fail'
+        assert _navigate_to_cke(), 'navigate to mem cke power page -> fail'
         assert (SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
-        SetUpLib.send_key(Key.F5)
+        assert SetUpLib.set_option_value(Msg.CKE, 'Enabled')
         assert (SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
-        assert (SetUpLib.verify_options(Key.DOWN, [['APD', '<Disabled>'], ['PPD', '<Enabled>']], 7))
-        assert (SetUpLib.verify_options(Key.DOWN, [['APD', '<Disabled>']], 7))
-        SetUpLib.send_key(Key.F5)
-        assert (SetUpLib.verify_options(Key.DOWN, [['APD', '<Enabled>']], 3))
-        if SetUpLib.verify_options(Key.DOWN, [['PPD', '<Enabled>']], 3):
+        assert (SetUpLib.verify_options(Key.DOWN, [[Msg.APD, '<Disabled>'], [Msg.PPD, '<Enabled>']], 7))
+        assert SetUpLib.set_option_value(Msg.APD, 'Enabled')
+        if SetUpLib.verify_options(Key.DOWN, [[Msg.PPD, '<Enabled>']], 3):
             raise AssertionError
         else:
             result.log_pass()  # the expected result here's that the option can not be found.
@@ -164,12 +159,12 @@ def dimm_power_mgt_010():
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.MEM_POWER_ADV)
         assert (SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
-        SetUpLib.send_keys([Key.F5, Key.F10, Key.Y])
+        assert SetUpLib.set_option_value(Msg.CKE, 'Enabled', save=True)
         assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.MEM_POWER_ADV)
         assert (SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
         assert SetUpLib.boot_suse_from_bm()
-        assert (PlatMisc.cscripts_inband_register(cscripts_cmd_cke, exp_list))
+        assert (PlatMisc.cscripts_inband_register(SutConfig.SysCfg.cscripts_cmd_cke, exp_list))
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
@@ -188,24 +183,22 @@ def dimm_power_mgt_011():
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.MEM_POWER_ADV)
         assert (SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
-        SetUpLib.send_key(Key.F5)
+        assert SetUpLib.set_option_value(Msg.CKE, 'Enabled')
         assert (SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
-        assert (SetUpLib.verify_options(Key.DOWN, [['APD', '<Disabled>'], ['PPD', '<Enabled>']], 7))
-        assert (SetUpLib.verify_options(Key.DOWN, [['APD', '<Disabled>']], 7))
-        SetUpLib.send_key(Key.F5)
-        assert (SetUpLib.verify_options(Key.DOWN, [['APD', '<Enabled>']], 3))
+        assert (SetUpLib.verify_options(Key.DOWN, [[Msg.APD, '<Disabled>'], [Msg.PPD, '<Enabled>']], 7))
+        assert SetUpLib.set_option_value(Msg.APD, 'Enabled')
         # the expected result here's that the option can not be found.
-        if SetUpLib.verify_options(Key.DOWN, [['PPD', '<Enabled>']], 3):
+        if SetUpLib.verify_options(Key.DOWN, [[Msg.PPD, '<Enabled>']], 3):
             raise AssertionError
         else:
-            SetUpLib.send_keys(Key.SAVE_RESET)
+            SetUpLib.send_keys(Key.SAVE_RESET, 2)
             assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
             assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.MEM_POWER_ADV)
             assert (SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
             assert (SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
-            assert (SetUpLib.verify_options(Key.DOWN, [['APD', '<Enabled>']], 3))
+            assert (SetUpLib.verify_options(Key.DOWN, [[Msg.APD, '<Enabled>']], 3))
             assert SetUpLib.boot_suse_from_bm()
-            assert (PlatMisc.cscripts_inband_register(cscripts_cmd_cke, exp_list))
+            assert (PlatMisc.cscripts_inband_register(SutConfig.SysCfg.cscripts_cmd_cke, exp_list))
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
@@ -226,19 +219,19 @@ def dimm_power_mgt_012():
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.MEM_POWER_ADV)
         assert (SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Disabled>']], 7))
-        SetUpLib.send_key(Key.F5)
+        assert SetUpLib.set_option_value(Msg.CKE, 'Enabled')
         assert (SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
         assert (SetUpLib.verify_options(Key.DOWN, [['CKE Idle Timer', '\[20\]']], 7))
         SetUpLib.send_key(Key.ENTER)  # Send Enter
         SetUpLib.send_data_enter(f'{cke_idle_set_value}')  # set 255
-        SetUpLib.send_keys(Key.SAVE_RESET)
+        SetUpLib.send_keys(Key.SAVE_RESET, 2)
         assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_POWER_ADV, 12, Msg.MEM_POWER_ADV)
         assert (SetUpLib.verify_options(Key.DOWN, [[Msg.CKE, '<Enabled>']], 7))
         assert (SetUpLib.enter_menu(Key.DOWN, [Msg.CKE_FEATURE], 12, Msg.CKE_IDLE_TIMER))
         assert (SetUpLib.verify_options(Key.DOWN, [['CKE Idle Timer', f'\[{cke_idle_set_value}\]']], 7))
         assert (SetUpLib.boot_suse_from_bm())
-        assert (PlatMisc.cscripts_inband_register(cscripts_cmd_cke, exp_list))
+        assert (PlatMisc.cscripts_inband_register(SutConfig.SysCfg.cscripts_cmd_cke, exp_list))
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
@@ -277,7 +270,7 @@ def rmt_menu_test():
         logging.info(f"{BSSA_RMT_FAST} -> Enabled")
         # Serial Debug Message: Enable
         assert BmcLib.debug_message(enable=True), "bmc_debug_message >> fail"
-        SetUpLib.send_keys(Key.SAVE_RESET)
+        SetUpLib.send_keys(Key.SAVE_RESET, 2)
         key_str = SerialLib.cut_log(Sut.BIOS_COM, SERIAL_RMT_FLAG[0], "Lane Margin", 20, 1200)  # full dimm population delay
         logging.debug(key_str)
         assert (SERIAL_RMT_FLAG[0] in key_str)
@@ -327,7 +320,7 @@ def memory_compa_006(n=1):
             assert SetUpLib.verify_info([f'Total Memory\s+{mem_size_ser} MB'], 20), "dimm_size_verify -> fail"
             assert SetUpLib.back_to_front_page("Boot Manager")
             SetUpLib.send_key(Key.ENTER)
-            assert SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 5, Msg.BIOS_BOOT_COMPLETE)
+            assert SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_OS, 5, Msg.BIOS_BOOT_COMPLETE)
             assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 200)
             res = SshLib.execute_command(Sut.OS_SSH, 'dmesg | grep -i e820')
             for j in res.split('\n'):
@@ -367,7 +360,7 @@ def mem_refresh_001():
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, Msg.MEMORY_CONFIG], 10, Msg.MEM_FRE), "enter_menu -> fail"
         assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM2X_REFRESH, '<Dynamic Mode>'], 10), "locate_option -> fail"
         assert SetUpLib.boot_suse_from_bm()
-        assert (PlatMisc.cscripts_inband_register(cscripts_cmd_refresh, exp_list))
+        assert (PlatMisc.cscripts_inband_register(SutConfig.SysCfg.cscripts_cmd_refresh, exp_list))
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
@@ -387,7 +380,7 @@ def mem_refresh_002():
         assert SetUpLib.locate_option(Key.DOWN, [Msg.MEM2X_REFRESH, '<Dynamic Mode>'], 10), "locate_option -> fail"
         SetUpLib.send_keys([Key.F5, Key.F10, Key.Y])
         assert SetUpLib.continue_to_boot_suse_from_bm(), "boot_to_os -> fail"
-        assert (PlatMisc.cscripts_inband_register(cscripts_cmd_refresh, exp_list))
+        assert (PlatMisc.cscripts_inband_register(SutConfig.SysCfg.cscripts_cmd_refresh, exp_list))
         result.log_pass()
     except AssertionError:
         result.log_fail(capture=True)
@@ -488,7 +481,7 @@ def mtrr_max_range():
         assert res
         mem_size = re.findall(r"\d+\.?\d*", res.split('=')[2])
         for i in mem_size:
-            if int(i) / 1024 == SysCfg.DIMM_SIZE * 2:
+            if int(i) / 1024 == SysCfg.DIMM_SIZE:
                 logging.info('MTRR MAX DIMM SIZE Pass')
         result.log_pass()
     except AssertionError:
@@ -540,13 +533,12 @@ def mtrr_fixed_range():
 def testcase_memoryCompa_001():
     tc = ('717', '[TC717] 01 内存初始化测试', '内存兼容性需求')
     result = ReportGen.LogHeaderResult(tc)
-    verify_list = ['DIMM: Hynix', 'DRAM: Hynix', '32GB\(  8Gbx4   DR', 'DDR4 RDIMM  R/C-B', '2933 21-21-21']
     capture_start = "START_SOCKET_0_DIMMINFO_TABLE"
     capture_end = "STOP_DIMMINFO_SYSTEM_TABLE"
     try:
         assert BmcLib.force_reset()
         log_cut = SerialLib.cut_log(Sut.BIOS_COM, capture_start, capture_end, 60, 100)
-        assert MiscLib.verify_msgs_in_log(verify_list, log_cut)
+        assert MiscLib.verify_msgs_in_log(SutConfig.SysCfg.MEM_POST_INFO, log_cut)
         assert SetUpLib.continue_to_page(Msg.CPU_CONFIG)
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, Msg.MEMORY_TOP], 20, 'DIMM000')
         assert SetUpLib.verify_info(SutConfig.SysCfg.DIMM_INFO, 20)
@@ -554,3 +546,44 @@ def testcase_memoryCompa_001():
         return True
     except AssertionError:
         result.log_fail()
+
+
+# Testcase_MemRefresh_003
+# Precondition: '1、系统已安装；2、单板已插入内存条。
+# OnStart: 'UEFI'模式
+# Steps:
+# 1、进入Setup菜单，分别设置两种内存刷新模式；
+# 2、登录BMC Web查看内存告警门限是否正确，有结果A。
+# A：BMC中内存告警门限统一为95。
+# OnCompleted: Off
+@core.test_case(('718', '[TC718] 03 BMC中内存告警门限测试', '支持刷新模式配置'))
+def testcase_memRefresh_003():
+    # default is auto mode,
+    set_value = ['Dynamic Mode', 'Static 2X Mode']
+    # used to record the result,
+    res_lst = []
+    # the uc value read by bmc, the top title of 95.000 is uc.
+    mem_uc = '95.000'
+    try:
+        for i in range(0, len(set_value)):
+            assert SetUpLib.boot_to_page(Msg.CPU_CONFIG), "boot_to_page -> fail"
+            assert SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, Msg.MEMORY_CONFIG], 10,
+                                       Msg.MEM_FRE), "enter_menu -> fail"
+            if SetUpLib.locate_option(Key.DOWN, [Msg.MEM2X_REFRESH, '<{0}>'.format(set_value[i])], 10):
+                pass
+            else:
+                assert SetUpLib.set_option_value(Msg.MEM2X_REFRESH, set_value[i], save=True)
+                assert SetUpLib.continue_to_setup()
+            res = SshLib.execute_command(Sut.BMC_SSH, 'ipmcget -t sensor -d list')
+            for j in res.split('\n'):
+                if 'MEM Temp' in j:
+                    if mem_uc not in j:
+                        res_lst.append('{0} - Fail'.format(set_value[i]))
+            # check the final result,
+        assert len(res_lst) == 0, 'tc718 test failed'
+        return core.Status.Pass
+    except AssertionError:
+        logging.debug(res_lst)
+        return core.Status.Fail
+    finally:
+        BmcLib.clear_cmos()

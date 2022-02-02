@@ -1,9 +1,10 @@
 import logging
 import time
-from batf import SerialLib
+from batf import SerialLib, MiscLib
 from batf.SutInit import Sut
 from TCE.Config.PlatConfig import Key, Msg
 from TCE.BaseLib import BmcLib
+from TCE.Config import SutConfig
 
 
 # Send a single key, e.g. ENTER, DOWN, UP
@@ -267,7 +268,7 @@ def continue_to_boot_suse_from_bm(os=Msg.BOOT_OPTION_SUSE, msg=Msg.SUSE_GRUB):
 
 
 # Move a specific boot option up
-def move_boot_option_up(boot_option, count):
+def move_boot_option_up(boot_option, count, ip=SutConfig.Env.OS_IP):
     hdd_group = [Msg.MENU_BOOT_ORDER, Msg.MENU_HDD_BOOT]
     logging.info("Move: {0} {1} times".format(boot_option, count))
     if not boot_to_page(Msg.PAGE_BOOT):
@@ -281,7 +282,7 @@ def move_boot_option_up(boot_option, count):
         send_key(Key.F6)
     logging.info("Save and reboot.")
     send_keys([Key.F10, Key.Y])
-    if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE, delay=600):
+    if not MiscLib.ping_sut(ip, 600):
         return
     return True
 
@@ -315,7 +316,7 @@ def update_default_password():
 # get value of a setupoption
 # option_patten: [name, patten of value] e.g. ["MMIO High Base", "<.+>"]
 def get_option_value(option_patten, key, try_counts):
-    value_patten = "H<([\w \:]+)>\x1B"  # some value contains white space
+    value_patten = "H<([\w \:\/]+)>\x1B"  # some value contains white space
     return Sut.BIOS_COM.get_option_value(option_patten, value_patten, key, try_counts)
 
 
@@ -390,7 +391,7 @@ def set_option_value(option, value, key=Key.DOWN, loc_cnt=15, save=False):
         send_keys(Key.ENTER)
         if save:
             logging.info(f'Save configuration and reset')
-            send_keys(Key.SAVE_RESET)
+            send_keys(Key.SAVE_RESET, 2)
         logging.info(f'Set {option} to {value} pass')
         return True
 

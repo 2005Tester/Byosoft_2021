@@ -7,139 +7,103 @@
 #  means without the express written consent of Byosoft Corporation.
 
 # -*- encoding=utf8 -*-
-import os
-import datetime
+from ICX2P.Tools.Material.CPU import Icx6330 as CPU
 
 
-# Sut01: Host IP 192.168.111.93
 class Env:
-    # Define test plan
-    TESTCASE_CSV = "ICX2P\\AllTest.csv"
+    """Environment Configuration"""
 
     # Report Setting
-    PROJECT_NAME = "2288V6"
-    SUT_CONFIG = "SUT1-Full-DIMM"
-    REPORT_TEMPLATE = "ICX2P\\Report\\template"
-    RELEASE_BRANCH = "2288V6_016"
+    SUT_CONFIG = "SUT1-Full-DIMM"  # SUT名称 (batf)
 
     # Log settings
-    timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    LOG_DIR = 'c:\\daily\\ICX2P\\{0}'.format(timestamp)
-    if not os.path.exists(LOG_DIR):
-        os.makedirs(LOG_DIR)
+    LOG_DIR = 'c:\\daily\\ICX2P_Sut01'
 
     # BIOS Serial setting
-    BIOS_SERIAL = "com3"
+    BIOS_SERIAL = "com5"
 
     # BMC Configuration
     BMC_IP = '192.168.111.192'
     BMC_USER = 'Administrator'
     BMC_PASSWORD = 'Admin@9001'
 
-    # OS Configuration
-    OS_IP_LEGACY = '192.168.111.195'
-    OS_USER_LEGACY = 'root'
-    OS_PASSWORD_LEGACY = '1'
-
+    # UEFI OS
     OS_IP = '192.168.111.194'
     OS_USER = 'root'
     OS_PASSWORD = '1'
 
-    # Tool definition
+    # UEFI OS名称：PlatConfig.BootOS中定义的OS名称
+    OS_NAME = "SLES"
+
+    # Legacy OS
+    OS_IP_LEGACY = '192.168.111.195'
+    OS_USER_LEGACY = 'root'
+    OS_PASSWORD_LEGACY = '1'
+
+    # 系统开机时间(s)
+    BOOT_DELAY = 300
+
+    # Smbios Path
+    Smbios_PATH = 'ICX2P\\Tools\\Smbios\\Sut01\\'
+
+    # OS Tools Path
     UNI_PATH = "/root/flashtool/unitool"
     RW_PATH = '/root/rw'
     CSCRIPTS_PATH = '/root/Cscripts'
     CHIPSEC_PATH = "/root/chipsec"
 
-    # Redfish configuration
-    REDFISH_API = {
-        "SYSTEM": "/redfish/v1/Systems/1",
-        "CHASSIS": "/redfish/v1/Chassis/1",
-        "MANAGER": "/redfish/v1/Managers/1"
-    }
 
-    # BIOS Firmware Directory, Must manual copy image files to the directory before test
-    BIOS_PATH = r"\\ByoDiskStation1\PublicRW\QA\Firmware\2288V6\BIOS"
-
-    # 精简打印，华为要求 LogTime_check_list
-    LogTime_Dedicated = [
-        'iBMC IP : 192.168.111.192',
-        'START_SOCKET_1_DIMMINFO_TABLE',
-        'STOP_SOCKET_1_DIMMINFO_TABLE',
-        'START_SOCKET_0_DIMMINFO_TABLE',
-        'STOP_SOCKET_0_DIMMINFO_TABLE',
-        'START_DIMMINFO_SYSTEM_TABLE',
-        'STOP_DIMMINFO_SYSTEM_TABLE',
-        'CPU type : Ice Lake',
-        'Total Memory : 65536MB',
-        "PCIE LINK STATUS: \\d+:\\d+.\\d+: Link up as x08 Gen\\d+!",
-        "PCIE LINK STATUS: \\d+:\\d+.\\d+: Link up as x08 Gen\\d+!",
-        "PCIE LINK STATUS: \\d+:\\d+.\\d+: Link up as x08 Gen\\d+!"]
-
-
-# The SUT physical system configuration
+# SUT Physical Components Config
 class SysCfg:
-    CPU_CNT = 2  # cpu socket count
-    REAR_USB_CNT = 2
-    BUILDIN_USB_CNT = 1
-    DIMM_SIZE = 64  # /GB
-    USB_Storage = 2  # usb disk inserted
+    # CPU型号
+    CPU_TYPE: str = CPU.Type            # CPU Production Name
+    CPU_CODE: str = CPU.Code            # CPU Code Name
+    CPU_CODE_L: str = CPU.CodeLong      # CPU Long Code Name
+    CPU_BASE: int = CPU.BaseFreq        # CPU Base Frequency
+    CPU_TURBO: int = CPU.TurboFreq      # CPU Turbo Frequency
+    CPU_CORES: int = CPU.Cores          # CPU Physical Cores
+    CPU_STEP: str = CPU.Stepping        # CPU Stepping
+    CPU_L1: int = CPU.L1_Cache          # CPU L1 Cache(KB)
+    CPU_L2: int = CPU.L2_Cache          # CPU L2 Cache(KB)
+    CPU_L3: int = CPU.L3_Cache          # CPU L3 Cache(KB)
+    CPU_M_FREQ: int = CPU.Max_Mem_Freq  # CPU Max Supported DDR Frequency(MHz)
+    CPU_TDP: int = CPU.TDP              # CPU Thermal Design Power(W)
+    CPU_ID: str = CPU.CPUID             # CPU ProcessorID
 
-    PCIE_MAP = [
-        {  # cpu0
-            "0a": "x16",  # ocp
-            "1a": "x8",  # slot1
-            "1c": "x8",  # build-in raid
-            "2a": "x16",  # slot2
-            "3a": "x16"  # slot7
-        },
-        {  # cpu1
-            "0a": "x16",  # slot3
-            "1a": "x16",  # slot4
-            # "2a": "x8",  # Slimline3
-            # "2c": "x8",  # Slimline4
-        }]
+    # DIMM型号
+    DIMM_SIZE = 32                      # 单根内存条容量
+    DIMM_VENDOR = "Hynix"               # DIMM条 厂商
+    DIMM_FREQ = 2933                    # MHz
+    DIMM_RANK_BW = "DRx4"               # Rank & BandWidth
+    DIMM_TYPE = "RDIMM"                 # DIMM Type
 
-    # CPU, DIMM info
-    CPU_TYPE = "6330"
-    CPU_FREQ = "2.0"
-    CPU_INFO = [
-        'Processor ID\s+000606A6',
-        'Processor Frequency\s+2.000GHz',
-        "Processor 1 Version \s+Intel\(R\) Xeon\(R\) Gold 6\s+330 CPU @ 2.00GHz",
-        "Processor 2 Version \s+Intel\(R\) Xeon\(R\) Gold 6\s+330 CPU @ 2.00GHz"
-    ]
-    DIMM_FREQ = 2933  # Mhz
-    DIMM_INFO = ['DIMM020\(C\)\s+S0.CC.D0:2933MT/s Hynix DRx4 32GB RDIMM',
-                 'DIMM160\(G\)\s+S1.CG.D0:2933MT/s Hynix DRx4 32GB RDIMM']
+    # CPU安装位置
+    CPU_POP = [0, 1]
+
+    # DIMM 安装位置 ("{socket}{channel}{dimm}")
+    DIMM_POP = ["020", "160"]
+
+    # PCIE 设备安装位置  "Bus:Dev.Fun": {"BandWidth": "x**", "Speed": "Gen*"}
+    PCIE_POP = {"31:00.0": {"BandWidth": "x08", "Speed": "Gen2"},
+                "31:00.1": {"BandWidth": "x08", "Speed": "Gen2"},
+                "33:00.0": {"BandWidth": "x08", "Speed": "Gen3"},
+                }
+
+    # USB Info
+    USB_REAR = 2  # Rear USB Ports
+    USB_BUILD_IN = 1  # Build-in USB Ports
+    USB_DISK = 2  # USB Disk Inserted
+
+    # PXE Info
+    PXE_UEFI = r'UEFI PXEv4:\([0-9A-Z\-]{17}\) - Port00 SLOT1'
+    PXE_LEGACY = 'IBA XE Slot 3100 v2358 Port 0 SLOT1'
+
+    # Legacy OptionROM Info
+    Option_Rom_Start = "Initializing Intel\(R\) Boot Agent XE v2.3.58"
+    Option_Rom_End = "PXE 2.1 Build 092 \(WfM 2.0\)"
 
     # Boot Option Flag
-    Legacy_OS = '\(Bus 33 Dev 00\)PCI RAID Adapter RAID CARD'
-    Legacy_PXE = 'IBA XE Slot 3100 v2358 Port 0 SLOT1'
+    LEGACY_OS = '\(Bus 33 Dev 00\)PCI RAID Adapter RAID CARD'
 
     # network dev list order in OS
-    device_order = ['eth7', 'eth6']
-
-    # hidden items list, 目前以下选项已与byo开发团队确认, 暂不建议设置, 可根据不同平台BIOS设计优化, 单独修改或手动设置验证
-    TBD_items = 'IODC|PciePhyTestMode|ConfigIOU|DdrFreqLimit|DfxSocketDevFuncHide|' \
-                'AllowMixedPowerOnCpuRatio|mrcRepeatTest|LegacyRmt|EccEnable|ValidationBreakpointType|' \
-                'dfxHighAddressStartBitPosition|MmcfgBase|MmcfgSize|MemTestLoops|MemChannelEnable|' \
-                'DdrMemoryType|UefiOptimizedBootToggle|RmtOnAdvancedTraining|DfxB2PMailboxCmdEnMask|' \
-                'memFlows|memFlowsExt|memFlowsExt2|memFlowsExt3|DfxRstCplBitsEn|' \
-                'EnablePkgCCriteriaKti[1]|UefiOcpPxe|LegacyOcpPxe|PcieAerEcrcEn'
-
-
-    Unitool_Backup_Name = [
-        'Backup name:SetupBackup Restore variable Success size:0x325',
-        'Backup name:PchSetupBackup Restore variable Success size:0x420',
-        'Backup name:MeRcConfigurationBackup Restore variable Success size:0x55',
-        'Backup name:SocketIioConfigBackup Restore variable Success size:0x2066',
-        'Backup name:SocketCommonRcConfigBackup Restore variable Success size:0x3B',
-        'Backup name:SocketMpLinkConfigBackup Restore variable Success size:0xAD',
-        'Backup name:SocketMemoryConfigBackup Restore variable Success size:0x3E9',
-        'Backup name:SocketPowerManagementConfigBackup Restore variable Success size:0x1D6',
-        'Backup name:SocketProcessorCoreConfigBackup Restore variable Success size:0x14E',
-        'Backup name:MemBootHealthConfigBackup Restore variable Success size:0x13',
-        'Backup name:BootClassOrderBackup Restore variable Success size:0x4',
-        'Backup name:SetupBackup Restore variable Success size:0x18',
-    ]
+    ETH_OS = ['eth7', 'eth6']

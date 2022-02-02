@@ -7,113 +7,105 @@
 #  means without the express written consent of Byosoft Corporation.
 
 # -*- encoding=utf8 -*-
-import os
-import datetime
-from ICX2P.Config.PlatConfig import Key
 
-# Sut01: Host IP 192.168.111.15
+from ICX2P.Tools.Material.CPU import Icx6330 as CPU
+
+
 class Env:
-    # Define test plan
-    TESTCASE_CSV = "ICX2P\\AllTest.csv"
-    RELEASE_BRANCH = "2288V6_017"
+    """Environment Configuration"""
 
     # Report Setting
-    PROJECT_NAME = "2288V6"
-    SUT_CONFIG = "SUT03"
-    REPORT_TEMPLATE = "ICX2P\\Report\\template"
+    SUT_CONFIG = "SUT03"  # SUT名称 (batf)
 
-    # Environment settings
-    timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    LOG_DIR = 'c:\\daily\\ICX2P\\{0}'.format(timestamp)
-    if not os.path.exists(LOG_DIR):
-        os.makedirs(LOG_DIR)
+    # Log settings
+    LOG_DIR = 'c:\\daily\\ICX2P_Sut03'
 
-    HPM_DIR = ''
-    INI_DIR = ''
-    SHAR_DIR = '\\\\byodiskstation1\\PublicRW\\QA\\AT Report\\2288V6\\{0}'.format(timestamp)
-
-    # Serial Port Configuration
-    BIOS_SERIAL = "com5"
+    # BIOS Serial setting
+    BIOS_SERIAL = "com8"
 
     # BMC Configuration
-    BMC_IP = '192.168.111.16'
+    BMC_IP = '192.168.111.7'
     BMC_USER = 'Administrator'
-    BMC_PASSWORD = 'Admin@9001'
-    PORT = 22
+    BMC_PASSWORD = 'Admin@9999'
 
-    # BIOS Configuration
-    BIOS_PW_DEFAULT = "Admin@9000"
-    BIOS_PASSWORD = 'Admin@9009'
-
-    # OS Configuration
-    OS_IP = '192.168.111.17'
+    # UEFI OS
+    OS_IP = '192.168.1.7'
     OS_USER = 'root'
-    OS_PASSWORD = 'root'
+    OS_PASSWORD = '1'
 
-    OS_IP_LEGACY = "192.168.111.17"
+    # Legacy OS
+    OS_IP_LEGACY = '192.168.1.9'
+    OS_USER_LEGACY = 'root'
+    OS_PASSWORD_LEGACY = '1'
 
-    # Tool definition
+    # UEFI OS名称：PlatConfig.BootOS中定义的OS名称
+    OS_NAME = "SLES"
+
+    # 系统开机时间(s)
+    BOOT_DELAY = 300
+
+    # Smbios Path
+    Smbios_PATH = 'ICX2P\\Tools\\Smbios\\Sut03\\'
+
+    # OS Tools Path
     UNI_PATH = "/root/flashtool/unitool"
     RW_PATH = '/root/rw'
     CSCRIPTS_PATH = '/root/Cscripts'
     CHIPSEC_PATH = "/root/chipsec"
 
-    # BIOS Firmware Directory, Must manual copy image files to the directory before test
-    BIOS_PATH = r"\\ByoDiskStation1\PublicRW\QA\Firmware\2288V6\BIOS"
 
-
-# The SUT physical system configuration
+# SUT Physical Components Config
 class SysCfg:
-    CPU_CNT = 2  # cpu socket count
-    REAR_USB_CNT = 2
-    BUILDIN_USB_CNT = 1
-    DIMM_SIZE = 96  # /GB
-    USB_Storage = 0  # usb disk inserted
+    # CPU型号
+    CPU_TYPE:   str = CPU.Type          # CPU Production Name
+    CPU_CODE:   str = CPU.Code          # CPU Code Name
+    CPU_CODE_L: str = CPU.CodeLong      # CPU Long Code Name
+    CPU_BASE:   str = CPU.BaseFreq      # CPU Base Frequency
+    CPU_TURBO:  str = CPU.TurboFreq     # CPU Turbo Frequency
+    CPU_CORES:  int = CPU.Cores         # CPU Physical Cores
+    CPU_STEP:   str = CPU.Stepping      # CPU Stepping
+    CPU_L1:     int = CPU.L1_Cache      # CPU L1 Cache(KB)
+    CPU_L2:     int = CPU.L2_Cache      # CPU L2 Cache(KB)
+    CPU_L3:     int = CPU.L3_Cache      # CPU L3 Cache(KB)
+    CPU_M_FREQ: int = CPU.Max_Mem_Freq  # CPU Max Supported DDR Frequency(MHz)
+    CPU_TDP:    int = CPU.TDP           # CPU Thermal Design Power(W)
+    CPU_ID:     str = CPU.CPUID         # CPU ProcessorID
 
-    PCIE_MAP = [
-        {  # cpu0
-            "0a": "x16",  # ocp
-            "1a": "x8",  # slot1
-            "1c": "x8",  # build-in raid
-            "2a": "x16",  # slot2
-            "3a": "x16"  # slot7
-        },
-        {  # cpu1
-            "0a": "x16",  # slot3
-            "1a": "x16",  # slot4
-            # "2a": "x8",  # Slimline3
-            # "2c": "x8",  # Slimline4
-        }]
+    # DIMM型号
+    DIMM_SIZE = 64                      # 单根内存条容量
+    DIMM_VENDOR = "Hynix"             # DIMM厂商
+    DIMM_FREQ = 3200                    # MHz
+    DIMM_RANK_BW = "DRx4"               # Rank & BandWidth
+    DIMM_TYPE = "RDIMM"                 # DIMM Type
 
+    # CPU安装位置
+    CPU_POP = [0]
 
-    # CPU, DIMM info
-    CPU_TYPE = "6348"
-    CPU_FREQ = "2.6"
-    PRO_ID = "000606A6"
-    CPU_info = [f'Processor ID\s+{PRO_ID}', f'Processor Frequency\s+(?:{CPU_FREQ}00GHz.*){CPU_CNT}']
-    # CPU_SKU = ["Processor {0} Version \s+Intel\(R\) Xeon\(R\) Gold {1} CPU @ {2}0GHz"
-    #            .format(cpu + 1, "\s*".join(CPU_TYPE), CPU_FREQ) for cpu in range(CPU_CNT)]
+    # DIMM安装位置 ("{socket}{channel}{dimm}")
+    DIMM_POP = ["000", "010"]
 
-    DIMM_FREQ = 3200  # Mhz
-    DIMM_info = [
-        'DIMM000\(A\)\s+S0.CA.D0:3200MT/s Hynix DRx4 64GB RDIMM',
-        'DIMM010\(B\)\s+S0.CB.D0:3200MT/s Hynix DRx4 64GB RDIMM',
-        'DIMM020\(C\)\s+S0.CC.D0:3200MT/s Hynix DRx4 64GB RDIMM',
-        'DIMM030\(D\)\s+S0.CD.D0:3200MT/s Hynix DRx4 64GB RDIMM',
-        'DIMM040\(E\)\s+S0.CE.D0:3200MT/s Hynix DRx4 64GB RDIMM',
-        'DIMM050\(F\)\s+S0.CF.D0:3200MT/s Hynix DRx4 64GB RDIMM',
-        'DIMM060\(G\)\s+S0.CG.D0:3200MT/s Hynix DRx4 64GB RDIMM',
-        'DIMM070\(H\)\s+S0.CH.D0:3200MT/s Hynix DRx4 64GB RDIMM',
-        'DIMM100\(A\)\s+S1.CA.D0:3200MT/s Hynix DRx4 64GB RDIMM',
-        'DIMM110\(B\)\s+S1.CB.D0:3200MT/s Hynix DRx4 64GB RDIMM',
-        'DIMM120\(C\)\s+S1.CC.D0:3200MT/s Hynix DRx4 64GB RDIMM',
-        'DIMM130\(D\)\s+S1.CD.D0:3200MT/s Hynix DRx4 64GB RDIMM',
-        'DIMM140\(E\)\s+S1.CE.D0:3200MT/s Hynix DRx4 64GB RDIMM',
-        'DIMM150\(F\)\s+S1.CF.D0:3200MT/s Hynix DRx4 64GB RDIMM',
-        'DIMM160\(G\)\s+S1.CG.D0:3200MT/s Hynix DRx4 64GB RDIMM',
-        'DIMM170\(H\)\s+S1.CH.D0:3200MT/s Hynix DRx4 64GB RDIMM',
-    ]
+    # PCIE设备安装位置  "Bus:Dev.Fun": {"BandWidth": "x**", "Speed": "Gen*"}
+    PCIE_POP = {"C3:00.0": {"BandWidth": "x04", "Speed": "Gen2"},
+                "C3:00.1": {"BandWidth": "x04", "Speed": "Gen2"},
+                "C3:00.2": {"BandWidth": "x04", "Speed": "Gen2"},
+                "C3:00.3": {"BandWidth": "x04", "Speed": "Gen2"},
+                }
+
+    # USB Info
+    USB_REAR = 2  # Rear USB Ports
+    USB_BUILD_IN = 1  # Build-in USB Ports
+    USB_DISK = 2  # USB Disk Inserted
+
+    # PXE Info
+    PXE_UEFI = r'UEFI PXEv4:\([0-9A-Z\-]{17}\) - Port00 SLOT7'
+    PXE_LEGACY = 'IBA GE Slot C300 v1381 Port 0 SLOT7'
+
+    # Legacy OptionROM Info
+    Option_Rom_Start = "Initializing Intel\(R\) Boot Agent XE v2.3.58"
+    Option_Rom_End = "PXE 2.1 Build 092 \(WfM 2.0\)"
 
     # Boot Option Flag
-    Legacy_OS = 'P4-MG05ACA800E SATA- HDD 8'
-    Legacy_PXE = 'IBA XE Slot 3101 v2358 Port 1 SLOT1'
+    LEGACY_OS = 'P4-SAMSUNG MZ7LH480HAHQ-00005 SATA- HDD 8'
+
+    # network dev list order in OS
+    ETH_OS = ['eth7', 'eth6']

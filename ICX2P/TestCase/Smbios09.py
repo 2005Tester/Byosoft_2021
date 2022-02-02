@@ -1,6 +1,5 @@
 # -*- encoding=utf8 -*-
 import re
-from os.path import dirname
 import logging
 from batf.SutInit import Sut
 from batf.Report import ReportGen
@@ -9,7 +8,6 @@ from batf.Common.LogAnalyzer import LogAnalyzer
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import BiosCfg, Msg
 from ICX2P.BaseLib import BmcLib
-
 
 # Test case ID: 400-440, 527 reserved
 ##########################################
@@ -26,7 +24,7 @@ P = LogAnalyzer(SutConfig.Env.LOG_DIR)
 SIGNALS = "RxDqs- RxDqs+  RxV-  RxV+  TxDq-  TxDq+  TxV-  TxV+  Cmd-  Cmd+  CmdV-  CmdV+  Ctl-  Ctl+"
 
 
-class Type128Test:
+class _Type128Test:
     def __init__(self, data_t128, data_ser, ssh_os):
         self.type128data = data_t128
         self.ssh_os = ssh_os
@@ -142,7 +140,7 @@ def smbios_test(ssh, type):
     tcid = str(400 + type)
     tc = (tcid, '[TC{0}]SMBIOS Type {1}'.format(tcid, type), '检查SMBIOS Type {0}信息'.format(type))
     result = ReportGen.LogHeaderResult(tc)
-    expted_log = 'ICX2P\\Tools\\Smbios\\type{0}.txt'.format(type)
+    expted_log = SutConfig.Env.Smbios_PATH+'type{0}.txt'.format(type)
     if not P.dump_and_verify(ssh, 'dmidecode -t {0}'.format(type), expted_log):
         result.log_fail()
         return
@@ -152,7 +150,7 @@ def smbios_test(ssh, type):
 
 # Test all types defined in list TYPES
 def smbios_test_all():
-    if not MiscLib.ping_sut(SutConfig.Env.OS_IP, 60):
+    if not MiscLib.ping_sut(SutConfig.Env.OS_IP, 300):
         logging.info("Skip SMBIOS test.")
         return
     for typeid in TYPES:
@@ -181,7 +179,7 @@ def smbios_type128():
         type128data = SshLib.execute_command(Sut.OS_SSH, "dmidecode -t 128")
         assert type128data, "Unable to read type128 data"
         logging.debug(type128data)
-        test = Type128Test(type128data, ser_rmt_data, Sut.OS_SSH)
+        test = _Type128Test(type128data, ser_rmt_data, Sut.OS_SSH)
         assert test.run_test(), "SMBIOS Type128 test failed"
         BmcLib.clear_cmos()
         result.log_pass()

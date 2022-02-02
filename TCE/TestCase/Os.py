@@ -158,8 +158,8 @@ def EquipmentModeFlag_Valid_Recovery():
         assert BmcLib.force_reset()
         assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
         assert Sut.UNITOOL.set_config(BiosCfg.EQUIP_FLAG), "**set equipment_mode_flag fail."
-        assert PlatMisc.unitool_command('b'), '** unitool backup fail'
-        assert PlatMisc.unitool_command('setCustomDefault'), '** unitool setCustomDefault fail'
+        assert PlatMisc.unitool_command('b', Sut.OS_SSH), '** unitool backup fail'
+        assert PlatMisc.unitool_command('setCustomDefault', Sut.OS_SSH), '** unitool setCustomDefault fail'
         assert Sut.UNITOOL.set_config(ActiveCpuCores)
         assert BmcLib.debug_message(enable=True), "debug message enable fail"  # 開啓全打印
         # set--3, results--A
@@ -206,7 +206,7 @@ def EquipmentModeFlag_Valid_Recovery():
 @core.test_case(('307', '[TC307] Testcase_Equipment_Tools_002_003', '【Equipment模式】unitool方式定制化菜单测试'))
 def EquipmentMode_Custom():
     custom_set = {"ActiveCpuCores": 20, "StaticTurbo": 2, "SPBoot": 0}
-    verify_list = [['Active Processor Cores', '<20>'], ['Static Turbo', '<Auto>'], ['SP Boot', '<Disabled>']]
+    verify_list = [['Active Processor Cores', '<20>'], ['Static Turbo', '<Auto>'], ['SP Boot', Msg.DISABLED_VAL]]
     load_cst_def = ['Load Custom Defaults']
     try:
         assert BmcLib.force_reset()
@@ -229,7 +229,7 @@ def EquipmentMode_Custom():
         assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
         assert Sut.BIOS_COM.locate_setup_option(Key.RIGHT, [Msg.PAGE_BOOT], 10)
         assert SetUpLib.locate_option(Key.UP, verify_list[2], 10), '** SP Boot not found'
-        assert SetUpLib.set_option_value('SP Boot', 'Enabled', Key.DOWN, 1, save=True), 'set verify_list[2] ->failed'
+        assert SetUpLib.set_option_value('SP Boot', Msg.ENABLED, Key.DOWN, 1, save=True), 'set verify_list[2] ->failed'
         # verify 存在"Load Custom default"选项,功能正常
         assert SetUpLib.continue_to_page(Msg.PAGE_SAVE)
         assert SetUpLib.locate_option(Key.DOWN, load_cst_def, 10), '** Load Custom default not found'  #验证LOAD_CST_DEF 选项存在

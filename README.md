@@ -20,11 +20,34 @@ Execution: Release, daily, debug
 
 
 ## Coding Style
-* 类名: 驼峰式, 如ClassName  
-* 模块名: 驼峰式, 如ModuleName.py()  
-* 包名: 驼峰式, 如PakcageName  
-* 方法名：全小写加下划线, 如methot_name()  
 
+|      | 格式    | 示例                  |
+|------|-------|---------------------|
+| 包名   | 驼峰式   | PackageName         |
+| 模块名  | 驼峰式   | ModuleName.py       |
+| 类名   | 驼峰式   | class PackageName   |
+| 函数名  | 小写加下划线 | def method_name()   |
+| 私有函数 | 下划线开头 | def _sub_function() |
+
+
+
+## Commit Merge Check Point  
+1. 通用方法:
+   * 目的: 代码能否达到设计目的  
+   * 异常: 代码出现异常如何处理  
+   * 注释: 重要的地方是否有注释  
+   * 命名: 使用**有明确意义**的函数/变量名，尽量做到代码即注释  
+  
+  
+2. 测试用例:
+   * 流程: 测试流程是否符合测试用例要求  
+   * 异常: 发生异常是否会影响后续测试  
+   * 日志: 重要节点、异常节点打印日志，避免冗余日志  
+   * 命名: 函数命名是否规范, 尽量使用有明确意义的变量名  
+   * 整洁: 合理分段或加入注释，保证代码清晰易读  
+   * 易用: 是否有一定的可移植性  
+  
+  
 ## Test Case ID 分配
 ### 2288V6
 | Module | ID Range |

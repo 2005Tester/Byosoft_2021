@@ -12,10 +12,11 @@ import re
 import datetime
 import logging
 import time
+import difflib
 from PIL import Image
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Msg, Key
-from ICX2P.BaseLib import BmcLib, SetUpLib
+from ICX2P.BaseLib import SetUpLib, BmcLib
 from batf.SutInit import Sut
 from batf import SerialLib, SshLib
 
@@ -111,23 +112,11 @@ def dcCycle():
     return True
 
 
-def last_release(current_branch, step=1):
-    skip_num = "4"
-    latest_int = int(current_branch[-3:])
-    last_str = "{:03}".format(latest_int - step)
-    if skip_num in last_str:
-        last_ver = "{:03}".format(latest_int - step - (10**(2-last_str.find(skip_num))))
-    else:
-        last_ver = "{:03}".format(latest_int - step)
-    last_branch = Msg.RELEASE_BRANCH.format(last_ver)
-    return last_branch
-
-
 # sub function for dump cpu resource allocation table
 def dump_cpu_resource():
     if not SetUpLib.boot_to_setup():
         return
-    SetUpLib.send_keys(Key.CTRL_ALT_DELETE)  # BMC force_reset 4s delay may cause the serial log miss the desired section
+    SetUpLib.send_key(Key.CTRL_ALT_DELETE)  # BMC force_reset 4s delay may cause the serial log miss the desired section
     resource = SerialLib.cut_log(Sut.BIOS_COM, "CPU Resource Allocation", "START_SOCKET_0_DIMMINFO_TABLE", 10, 120)
     if not resource:
         return
@@ -260,12 +249,12 @@ def unilogo_update(name, path=""):
 
 
 # 保存logo图片, 默认格式为bmp
-def save_logo(path=SutConfig.Env.LOG_DIR, name="logo", logo_loc=(88, 160, 248, 320)):
+def save_logo(path=SutConfig.Env.LOG_DIR, cut_str=Msg.LOGO_SHOW, name="logo", logo_loc=(88, 160, 248, 320)):
     now = time.strftime("%Y%m%d_%H%M%S", time.localtime())
     try:
         assert BmcLib.force_reset()
         SerialLib.clean_buffer(Sut.BIOS_COM)
-        assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.LOGO_SHOW, 120)
+        assert SerialLib.is_msg_present(Sut.BIOS_COM, cut_str, 120)
         img_file = BmcLib.capture_kvm_screen(SutConfig.Env.LOG_DIR, f"Screen_{now}")
         img_open = Image.open(img_file)  # 打开图片
         cut_logo = img_open.crop(logo_loc)  # logo裁剪
@@ -279,7 +268,7 @@ def save_logo(path=SutConfig.Env.LOG_DIR, name="logo", logo_loc=(88, 160, 248, 3
         logging.error(e)
 
 
-# unitool 無參數 如 -b -c -setCustomDefault
+# unitool 無參數 如 -b -c -setCustomDefault, 及ini脚本
 def unitool_command(cmd, ssh_type=Sut.OS_SSH):     #默认Sut.OS_SSH 为uefi模式下os
     cd_path = f"cd {SutConfig.Env.UNI_PATH}"
     unitool = "./unitool"
@@ -288,8 +277,63 @@ def unitool_command(cmd, ssh_type=Sut.OS_SSH):     #默认Sut.OS_SSH 为uefi模�
     SshLib.execute_command(ssh_type, f"{cd_path};{ins_mod}")
     logging.info(f"Unitool {ins_mod} success")
     try:
-        rcmd= SshLib.execute_command(ssh_type, f"{cd_path};{unitool} -{cmd}")
-        assert success in rcmd.lower(), f"Unitool {cmd} set failed"
+        if '.ini'and ' ' not in cmd :
+            rcmd= SshLib.execute_command(ssh_type, f"{cd_path};{unitool} -{cmd}")
+            assert success in rcmd.lower(), f"Unitool {cmd} set failed"
+        else:
+            cmd_mode = str(cmd.split(' ')[0])
+            # logging.info("cmd_mode= {}".format(cmd_mode))
+            ini_file = str(cmd.split(' ')[1])
+            # logging.info('ini_file= {}'.format(ini_file))
+            rcmd= SshLib.execute_command(ssh_type, f"{cd_path};{unitool} -{cmd_mode} {ini_file}")
+            assert 'error' not in rcmd.lower(), f"./Unitool -{cmd} --> set failed"
         return True
     except Exception as e:
         logging.error(e)
+        return False
+
+
+def read_file(file: str) -> str:
+    """
+    Easy to open and read file
+    Parameters
+    ----------
+    file:str        file object to be read
+
+    Returns
+    -------
+    str             return strings of file's content
+    """
+
+    if not os.path.exists(file):
+        logging.error(f"File not exist: {file}")
+        return ""
+    with open(file, "r", encoding="utf-8") as f:
+        return f.read()
+
+
+def check_differ(object1: str, object2: str) -> list:
+    """
+    Compare the differences line by line for two object
+    Parameters
+    ----------
+    object1: str    file path or text strings
+    object2: str    file path or text strings
+
+    Returns
+    -------
+    str            if two object have any difference, return list of different strings
+                   if two object have no difference, return empty list
+    """
+
+    diff = difflib.Differ()
+    text1 = read_file(object1) if os.path.isfile(object1) else object1
+    text2 = read_file(object2) if os.path.isfile(object2) else object2
+    check_diff = diff.compare(text1.splitlines(), text2.splitlines())
+    difference = []
+    for d in check_diff:
+        if not d.startswith(" "):
+            logging.warning(d)
+            difference.append(d)
+    return difference
+

@@ -224,7 +224,7 @@ def firmware_version_check():
         return
     bios_ver = "".join(re.findall("\nActive\s+BIOS\s+Version:\s+.*?\)([.\d]+)", info))
     BmcInfo.BIOS = bios_ver
-    bmc_ver = "".join(re.findall("\nActive\s+iBMC\s+Version:\s+.*?\)([.\d]+)", info))
+    bmc_ver = "".join(re.findall("\nActive\s+BMC\s+Version:\s+.*?\)([.\d]+)", info))
     BmcInfo.BMC = bmc_ver
     cpld_ver = "".join(re.findall("\nCPLD\s+Version:\s+.*?\)([.\d]+)", info))
     BmcInfo.CPLD = cpld_ver
@@ -242,7 +242,7 @@ def enable_fdmlog_dump():
 def capture_kvm_screen(path, name):
     save_screen = SshLib.interaction(Sut.BMC_SSH, ["ipmcset -d printscreen\n"], ["successfully"], 15)
     if not save_screen:
-        logging.info("BMC dump screen run command failed")
+        logging.info("please confirm the KVM is open as share mode, not private mode")
         return
     save_path = "".join(re.findall("Download print screen image to (.+) successfully.", save_screen[1]))
     img_file = os.path.join(path, f"{name}.jpeg")
@@ -322,13 +322,12 @@ def read_bt_data(key_str, timeout=5):
                         if (now - start_time) > timeout:
                             logging.info('Grab bt data timeout, close the session')
                             op.close()
-                            return
-                        # print(res)
+                            raise Exception
                         time.sleep(0.1)
                 else:
                     pass  # skip invalid data,
             op.close()
-        return True
+        return True, res
     except Exception as e:
         logging.error(e)
     finally:

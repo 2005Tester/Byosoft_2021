@@ -1,0 +1,17 @@
+# dmidecode 3.2
+Getting SMBIOS data from sysfs.
+SMBIOS 3.3.0 present.
+# SMBIOS implementations newer than version 3.2.0 are not
+# fully supported by this version of dmidecode.
+
+Handle 0x0001, DMI type 1, 27 bytes
+System Information
+	Manufacturer: Huawei
+	Product Name: 2488H V6
+	Version: Cedar Island
+	Serial Number: To be filled by O.E.M.
+	UUID: e1c5d866-0018-a0f6-b211-d21d9a5dd223
+	Wake-up Type: Power Switch
+	SKU Number: Cedar Island
+	Family: Cedar Island
+

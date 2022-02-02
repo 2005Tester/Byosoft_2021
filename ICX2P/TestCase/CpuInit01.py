@@ -1,6 +1,5 @@
 import logging
 import re
-
 from batf import SerialLib, SshLib, MiscLib, core
 from batf.SutInit import Sut
 from ICX2P.Config import SutConfig
@@ -8,6 +7,9 @@ from ICX2P.Config.PlatConfig import BiosCfg, Key, Msg
 from ICX2P.BaseLib import SetUpLib, BmcLib
 from batf.Report import ReportGen, stylelog
 
+lowest_frequency = 800  # Mhz
+min_cpu_base = int(SutConfig.SysCfg.CPU_BASE * 1000) - int(SutConfig.SysCfg.CPU_BASE * 1000 * 0.1)
+max_cpu_base = int(SutConfig.SysCfg.CPU_BASE * 1000) + int(SutConfig.SysCfg.CPU_BASE * 1000 * 0.1)
 
 # Cpu Related Test case, test case ID, TC200-299
 
@@ -15,7 +17,7 @@ from batf.Report import ReportGen, stylelog
 #              CPU Test Cases            #
 ##########################################
 # function Module : acpidump验证X2APIC
-def acpidump():
+def _acpidump():
     local_list = []
     assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
     SshLib.execute_command(Sut.OS_SSH, r'rm *.dat *.out *.dsl')  # 清理
@@ -48,7 +50,7 @@ def acpidump():
 
 
 # function Module : 使用unitool还原bios setting
-def reset_cpu_setting(cmd_var):
+def _reset_cpu_setting(cmd_var):
     logging.info("Reseting CPU settings.")
     if not MiscLib.ping_sut(SutConfig.Env.OS_IP, 60):
         SetUpLib.boot_suse_from_bm()
@@ -66,37 +68,107 @@ def reset_cpu_setting(cmd_var):
 
 
 #  function Module, TC205,TC206,TC207 调用
-def cpu_cores_active_enable(num, set_n):
-    ACT_CPU_CORES = ['Active Processor Cores', '<All>']
+def _cpu_cores_active_enable(num):
+    res_lst = []  # restore the res result
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.PROCESSOR_CONFIG)
-        assert SetUpLib.locate_option(Key.DOWN, ACT_CPU_CORES, 20)
-        SetUpLib.send_keys([Key.F6] * set_n)
-        stylelog.info("Core counts changed to {0}, save and reboot.".format(set_n))
-        SetUpLib.send_keys([Key.F10, Key.Y], 5)
+        assert SetUpLib.set_option_value('Active Processor Cores', '{0}'.format(num), save=True)
+        stylelog.info("Core counts changed to {0}, save and reboot.".format(num))
         assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
-        SetUpLib.send_keys([Key.ENTER])
+        SetUpLib.send_key(Key.ENTER)
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.MEMORY_TOP], 20, 'DIMM000')
         stylelog.info("Verify Memory Information")
         assert SetUpLib.verify_info(SutConfig.SysCfg.DIMM_INFO, 20)
         assert SetUpLib.boot_suse_from_bm()
         # 每个CPU下只有num个core。
-        res = SshLib.execute_command(Sut.OS_SSH, r'lscpu | grep "per socket" ')
+        res = SshLib.execute_command(Sut.OS_SSH, r'lscpu | grep "per socket"')
         res1 = res.replace('\n', '').split(':')[-1].strip()
-        assert int(res1) == num, ("**Core Enable error = {}".fotmat(res1))
+        assert int(res1) == num, ("**Core Enable error = {}".format(res1))
         # 在smbios4中检查：Core数量为总数，Core Enable为num，线程数为Enabled核数的两倍 #
         res2 = SshLib.execute_command(Sut.OS_SSH, r'dmidecode -t 4 | egrep -m 3 "Core Count|Core Enabled|Thread Count"')
         Core_Count = res2.splitlines()[0].split(':')[-1].strip()
         Core_Enabled = res2.splitlines()[1].split(':')[-1].strip()
         Thread_Count = res2.splitlines()[2].split(':')[-1].strip()
-        assert Core_Count == '28' and Core_Enabled == str(num) and Thread_Count == str(num * 2), \
-            '**Core or Thread eorro:{},{},{}**'.format(Core_Count, Core_Enabled, Thread_Count)
+        res_lst.extend([Core_Count, Core_Enabled, Thread_Count])
+        assert ['28', str(num), str(num * 2)] == res_lst, '**Core or Thread err:{0}**'.format(res_lst)
         logging.info('All check pass')
         return True
     except AssertionError:
         return False
 
+
+# stress tools， 配置参看 “Byo AT测试开发进度表- TC229”
+def _cpu_stress_tool(command1, command2, succe_flag, ssh_type=Sut.OS_SSH):
+    assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
+    get_cpu = SshLib.execute_command(ssh_type, f"{command1} & {command2}")
+    if succe_flag not in get_cpu:
+        logging.debug('** check linux_command ')
+        return
+    return get_cpu
+
+
+def _cpu_to_c6(command1, flag_c6):
+    try:
+        # 空载时,CPU进入到C6
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
+        SshLib.execute_command(Sut.OS_SSH, f"cpupower frequency-set -g ondemand")  # 关闭OS自动调频功能避免OS能效策略影响
+        cpu_c6 = SshLib.execute_command(Sut.OS_SSH, command1)
+        logging.debug(cpu_c6)
+        assert cpu_c6 is not None and flag_c6 in cpu_c6, '** linux_OS command --> fail'
+        pkg_6 = []  # cpu 整体状态，根据cpu个数显示
+        cpu_6 = []  # cpu_core 状态，根据每个cpu_core数量显示
+        for i in cpu_c6.split('\n')[2:-1]:
+            if len(i.split()) == 3:
+                cpu_6.append(i)
+            if len(i.split()) == 4:
+                pkg_6.append(i)
+        pkg_flag = 0
+        cpu_core = 0
+        for k in pkg_6:
+            if k[3] == 0:
+                logging.debug('** No. {0}_cpu, C6 = {1}'.format(k.split()[0], k.split()[3]))
+                pkg_flag += 1
+        for j in cpu_6:
+            if j[2] == 0:
+                logging.debug('** No. {0}_cpu_{1} core, C6 = {2}'.format(j.split()[0], j.split()[1], j.split()[2]))
+                cpu_core += 1
+        assert pkg_flag == 0 and cpu_core == 0, "**cpu空载时，进入C6 --> fail"
+        logging.info('空载时 C6 --- pass')
+        return True
+    except Exception as e:
+        logging.error(e)
+        return False
+
+
+def _cpu_to_c0(command1, command2, succ_flag):
+    try:
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
+        SshLib.execute_command(Sut.OS_SSH, f"cpupower frequency-set -g ondemand")  # 关闭OS自动调频功能避免OS能效策略影响
+        cpu_c0 = _cpu_stress_tool(command1, command2, succ_flag)
+        logging.debug(cpu_c0)
+        assert cpu_c0 is not None, '** linux_OS command --> fail'
+        assert float(cpu_c0.split('\n')[2].strip()) > 45, '**加载时进入C0 --> fail'
+        logging.info('加压后 C0 --- pass')
+        return True
+    except Exception as e:
+        logging.error(e)
+        return False
+
+
+def _cpu_to_c1(command1, flag_c1):
+    try:
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
+        SshLib.execute_command(Sut.OS_SSH, f"cpupower frequency-set -g ondemand")  # 关闭OS自动调频功能避免OS能效策略影响
+        cpu_c1 = SshLib.execute_command(Sut.OS_SSH, command1)
+        logging.debug(cpu_c1)
+        assert cpu_c1 is not None and flag_c1 in cpu_c1, '** linux_OS command --> fail'
+        assert float(cpu_c1.split('\n')[2].strip()) > 95, '**空闲时进入C1 --> fail'
+        logging.info('空闲时 C1 --- pass')
+        return True
+    except Exception as e:
+        logging.error(e)
+        return False
 
 
 # Testcase_CPU_COMPA_015, 016 - TBD
@@ -106,16 +178,17 @@ def cpu_cores_active_enable(num, set_n):
 def upi_link_status():
     tc = ('200', '[TC200]UPI link链路检测测试', 'CPU兼容性测试')
     result = ReportGen.LogHeaderResult(tc)
-    upi_state = ['Current UPI Link Speed\s+Fast', 'Current UPI Link Frequency\s+11\.2\s+GT\/s']
+    if SutConfig.SysCfg.CPU_CNT < 2:
+        logging.info("UPI must be tested on 2-way or more system")
+        result.log_skip()
+        return
     if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED):
         result.log_fail()
         return
-
     if not SetUpLib.enter_menu(Key.DOWN, Msg.PATH_UNCORE_STATUS, 22, 'Uncore Status'):
         result.log_fail()
         return
-
-    if not SetUpLib.verify_info(upi_state, 4):
+    if not SetUpLib.verify_info(SutConfig.SysCfg.upi_state, 4):
         result.log_fail()
         return
     logging.info("**UPI Link speed and frequency verified.")
@@ -229,10 +302,8 @@ def cpu_cores_active():
 def cpu_cores_active_enable_1():
     tc = ('205', '[TC205] Testcase_CoreDisable_002', 'Enable 1 CPU core test')
     result = ReportGen.LogHeaderResult(tc)
-    num = 1
-    set_n = 28
     try:
-        assert cpu_cores_active_enable(num, set_n)
+        assert _cpu_cores_active_enable(1)
         result.log_pass()
         return True
     except AssertionError:
@@ -244,10 +315,8 @@ def cpu_cores_active_enable_1():
 def cpu_cores_active_enable_middle():
     tc = ('206', '[TC206] Testcase_CoreDisable_003', 'Enable middle-num CPU core test')
     result = ReportGen.LogHeaderResult(tc)
-    num = 14
-    set_n = 14
     try:
-        assert cpu_cores_active_enable(num, set_n)
+        assert _cpu_cores_active_enable(14)
         result.log_pass()
         return True
     except AssertionError:
@@ -259,10 +328,8 @@ def cpu_cores_active_enable_middle():
 def cpu_cores_active_enable_max():
     tc = ('207', '[TC207] Testcase_CoreDisable_004', 'Enable max-1 CPU core test')
     result = ReportGen.LogHeaderResult(tc)
-    num = 27
-    set_n = 1
     try:
-        assert cpu_cores_active_enable(num, set_n)
+        assert _cpu_cores_active_enable(27)
         result.log_pass()
         return True
     except AssertionError:
@@ -355,7 +422,7 @@ def cores_customized_by_unitool():
 
 
 # function Module
-def numa_disabled_verify():  # 进入 Numa page，设置 Numa 为 Disabled,到 suse中验证
+def _numa_disabled_verify():  # 进入 Numa page，设置 Numa 为 Disabled,到 suse中验证
     numa_bef = ['NUMA', '<Enabled>']
     if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED):
         return False
@@ -369,7 +436,7 @@ def numa_disabled_verify():  # 进入 Numa page，设置 Numa 为 Disabled,到 s
     return True
 
 
-def numa_enabled_verify():  # 进入 Numa page，设置 Numa 为 Enabled，到 suse中验证
+def _numa_enabled_verify():  # 进入 Numa page，设置 Numa 为 Enabled，到 suse中验证
     numa_aft = ['NUMA', '<Disabled>']
     if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED):
         return False
@@ -393,7 +460,7 @@ def numa_01():
     result = ReportGen.LogHeaderResult(tc)
     Num_cmd = r'numactl --hardware'
     try:
-        assert numa_disabled_verify()
+        assert _numa_disabled_verify()
         nodes_dis = SshLib.execute_command(Sut.OS_SSH, Num_cmd).split('nodes')[0].split(':')[1]
         if int(nodes_dis) == 1:
             logging.info('numa_disabled pass')
@@ -401,7 +468,7 @@ def numa_01():
             logging.info('numa_disabled fail')
             result.log_fail()
             return
-        assert numa_enabled_verify()
+        assert _numa_enabled_verify()
         nodes_enab = SshLib.execute_command(Sut.OS_SSH, Num_cmd).split('nodes')[0].split(':')[1]
         if int(nodes_enab) == 2:
             logging.info('numa_enabled pass')
@@ -470,7 +537,7 @@ def numa_03():
     result = ReportGen.LogHeaderResult(tc)
     n = 1
     try:
-        assert numa_disabled_verify()
+        assert _numa_disabled_verify()
         while n < 5:  # 系统反复复位，暂定4次
             res = SshLib.execute_command(Sut.OS_SSH, r'date')
             logging.info("system reboot pass, system-Time is : {} ".format(res))
@@ -507,7 +574,8 @@ def cpu_compa_02():
                     result.log_fail()
                     return
                 else:
-                    logging.info('not found "bist",pass ')
+                    continue
+        logging.info('not found "bist",pass ')
         result.log_pass()
         return True
     except AssertionError:
@@ -529,14 +597,14 @@ def cpu_compa_03():
         # HT-enabled查看物理CPU中core数量
         res = SshLib.execute_command(Sut.OS_SSH, r'cat /proc/cpuinfo| grep "cpu cores"| uniq')
         assert res
-        Core_Count = res.split(':')[1].replace(' ', '').strip('\n')
+        Core_Count = int(res.split(':')[1].replace(' ', '').strip('\n'))
         logging.info("**Core_Count = {}".format(Core_Count))
         # 查看逻辑CPU的个数
         res = SshLib.execute_command(Sut.OS_SSH, r'cat /proc/cpuinfo| grep "processor"| wc -l')
         assert res
-        Logical_CPU = res.strip('\n')
+        Logical_CPU = int(res.strip('\n'))
         logging.info("**Core_Enabled = {}".format(Logical_CPU))
-        if Core_Count == '28' and Logical_CPU == '112':
+        if Core_Count == SutConfig.SysCfg.CPU_CORES and Logical_CPU == SutConfig.SysCfg.CPU_CNT*SutConfig.SysCfg.CPU_CORES*2:
             logging.info("**Core_Count pass, Logical_CPU pass**")
         else:
             logging.info("**Core eorro**")
@@ -549,14 +617,14 @@ def cpu_compa_03():
         # HT-disabled 查看物理CPU中core数量
         res = SshLib.execute_command(Sut.OS_SSH, r'cat /proc/cpuinfo| grep "cpu cores"| uniq')
         assert res
-        Core_Count = res.split(':')[1].replace(' ', '').strip('\n')
+        Core_Count = int(res.split(':')[1].replace(' ', '').strip('\n'))
         logging.info("**Core_Count = {}**".format(Core_Count))
         # 查看逻辑CPU的个数
         res = SshLib.execute_command(Sut.OS_SSH, r'cat /proc/cpuinfo| grep "processor"| wc -l')
         assert res
-        Logical_CPU = res.strip('\n')
+        Logical_CPU = int(res.strip('\n'))
         logging.info("**Core_Enabled = {}**".format(Logical_CPU))
-        if Core_Count == '28' and Logical_CPU == '56':
+        if Core_Count == SutConfig.SysCfg.CPU_CORES and Logical_CPU == SutConfig.SysCfg.CPU_CNT*SutConfig.SysCfg.CPU_CORES:
             logging.info("**Core_Count pass, Logical_CPU pass**")
         else:
             logging.info("**Core eorro**")
@@ -570,8 +638,8 @@ def cpu_compa_03():
     except AssertionError:
         logging.info("异常还原")
         result.log_fail()
-    finally:
-        BmcLib.clear_cmos()
+    # finally:
+    #     BmcLib.clear_cmos()
 
 
 # Author: Fubaolin
@@ -582,26 +650,22 @@ def cpu_compa_03():
 def cpu_compa_05():
     tc = ('216', '[TC216] Testcase_CPU_COMPA_005', 'CPU微码测试')
     result = ReportGen.LogHeaderResult(tc)
-    mic_version = ['Microcode Revision\s+0D0002A0\s+|\s+0D0002A0']
+    mic_rev = 'Microcode Revision\s+0D0002A0'
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.UP, Msg.PATH_PER_CPU_INFO, 20, Msg.PER_CPU)
-        assert SetUpLib.verify_info(mic_version, 6)
+        assert SetUpLib.verify_info([mic_rev], 10)
         assert BmcLib.force_reset()
         # OS中 查看CPU微码
         res = SshLib.execute_command(Sut.OS_SSH, r'cat /sys/devices/system/cpu/cpu0/microcode/version')
-        assert res
-        mic_ver = res.strip('\n')
-        logging.info("**mic_ver = {}**".format(mic_ver))
-        if mic_ver == '0xd0002a0':
-            logging.info("The microcode-version in OS is the same as that in BIOS")
-        else:
-            logging.info("Different, please check")
-            result.log_fail()
-            return
+        assert '0x' in res, "command return err"
+        mic_ver = res.strip('\n').replace('0x', '0', 1)
+        assert mic_ver == mic_rev.split('+')[1].lower(), "res is blank, check it"
+        logging.info("The microcode-version in OS is the same as that in BIOS")
         result.log_pass()
         return True
-    except AssertionError:
+    except Exception as err:
+        logging.error(err)
         result.log_fail()
 
 
@@ -619,7 +683,7 @@ def cpu_compa_06():
         assert SetUpLib.verify_info(SutConfig.SysCfg.CPU_INFO, 20)
         assert BmcLib.force_reset()
         # 在smbios4中检查：cpu型号，频率，个数
-        expect_cpu_type = f'Intel\(R\) Xeon\(R\) Gold {SutConfig.SysCfg.CPU_TYPE} CPU @ {SutConfig.SysCfg.CPU_FREQ}0GHz'
+        expect_cpu_type = f'Intel\(R\) Xeon\(R\) Gold {SutConfig.SysCfg.CPU_TYPE} CPU @ {SutConfig.SysCfg.CPU_BASE}0GHz'
         res = SshLib.execute_command(Sut.OS_SSH, r'dmidecode -t 4 | grep "Version:" ')
         assert res, "Get invalid data of dmidecode -t4"
         os_cpu_list = re.findall(expect_cpu_type, res)
@@ -652,28 +716,28 @@ def cpu_compa_017():
         assert SetUpLib.enter_menu(Key.UP, Msg.PATH_PRO_CFG, 20, Msg.EXTENDED_APIC)
         assert SetUpLib.locate_option(Key.DOWN, Extended_APIC, 20)
         SetUpLib.send_keys([Key.F5, Key.F10, Key.Y], 3)
-        acpi_list_bf= acpidump()
+        acpi_list_bf= _acpidump()
 
         apic_n = acpi_list_bf[0].split(date_1)[0].count(data_2)
         srat_n = acpi_list_bf[3].split(date_1)[0].count(data_3)
         logging.info("当前实际核数：{0}, {1}".format(apic_n, srat_n))
-        assert apic_n == 112, '在apic文件中，X2APIC个数与当前CPU总线程数不一致，需要检查'
+        assert apic_n == SutConfig.SysCfg.CPU_CNT*56, '在apic文件中，X2APIC个数与当前CPU总线程数不一致，需要检查'
         logging.info('在apic文件中，X2APIC个数与当前CPU总线程数一致')
-        assert srat_n == 112, '在srat文件中，X2APIC个数与当前CPU总线程数不一致，需要检查'
+        assert srat_n == SutConfig.SysCfg.CPU_CNT*56, '在srat文件中，X2APIC个数与当前CPU总线程数不一致，需要检查'
         logging.info('在srat文件中，X2APIC个数与当前CPU总线程数一致')
 
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.PROCESSOR_CONFIG)
         assert SetUpLib.locate_option(Key.DOWN, ht_bef, 20)
         SetUpLib.send_keys([Key.F6, Key.F10, Key.Y], 3)
-        acpi_list_af = acpidump()
+        acpi_list_af = _acpidump()
 
         apic_m = acpi_list_af[0].split(date_1)[0].count(data_2)
         srat_m = acpi_list_af[3].split(date_1)[0].count(data_3)
         logging.info("当前实际核数：{0}, {1}".format(apic_m, srat_m))
-        assert apic_m == 56, '在apic文件中，X2APIC个数与当前CPU总线程数不一致，需要检查'
+        assert apic_m == SutConfig.SysCfg.CPU_CNT*28, '在apic文件中，X2APIC个数与当前CPU总线程数不一致，需要检查'
         logging.info('在apic文件中，X2APIC个数与当前CPU总线程数一致')
-        assert srat_m == 56, '在srat文件中，X2APIC个数与当前CPU总线程数不一致，需要检查'
+        assert srat_m == SutConfig.SysCfg.CPU_CNT*28, '在srat文件中，X2APIC个数与当前CPU总线程数不一致，需要检查'
         logging.info('在srat文件中，X2APIC个数与当前CPU总线程数一致')
 
         SshLib.execute_command(Sut.OS_SSH, r'rm *.dat *.out *.dsl')
@@ -683,10 +747,10 @@ def cpu_compa_017():
         result.log_fail()
     finally:
         BmcLib.clear_cmos()
-        
+
 # cpu_compa_024
 # Author: Lupeipei
-@core.test_case(('227', '[227] cpu_compa_024', 'OS下X2APIC开关状态测试'))
+@core.test_case(('227', '[TC227] cpu_compa_024', 'OS下X2APIC开关状态测试'))
 def cpu_compa_024():
     Extended_APIC = ['Extended APIC', '<Disabled>']
     try:
@@ -709,7 +773,7 @@ def cpu_compa_024():
     except AssertionError as e:
         logging.error(e)
     finally:
-        BmcLib.clear_cmos()       
+        BmcLib.clear_cmos()
 
 
 # Author: Fubaolin
@@ -723,7 +787,7 @@ def cpu_SpreadSpectrum_001():
     Spread_Spectrum = ['Spread Spectrum', '<Disabled>']
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
-        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_SPREAD_SPECTRUM, 20, 'Spread Spectrum')
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MISC_CONFIG, 20, 'Spread Spectrum')
         assert SetUpLib.verify_info(Spread_Spectrum, 10)
         # boot to suse,use unitool  verify_info
         assert SetUpLib.boot_suse_from_bm()
@@ -755,8 +819,8 @@ def cpu_ApicReport():
         assert SetUpLib.enter_menu(Key.UP, Msg.PATH_PRO_CFG, 20, Msg.EXTENDED_APIC)
         assert SetUpLib.locate_option(Key.DOWN, Extended_APIC, 20)
         SetUpLib.send_keys([Key.F5, Key.F10, Key.Y], 3)
-        Local_Apic_ID = acpidump()[0].split('Raw Table Data')[0].count('Processor Local x2APIC')
-        assert Local_Apic_ID == 112, '在apic文件中，Local x2APIC个数与当前CPU总线程数不一致，需要检查'
+        Local_Apic_ID = _acpidump()[0].split('Raw Table Data')[0].count('Processor Local x2APIC')
+        assert Local_Apic_ID == SutConfig.SysCfg.CPU_CNT*56, '在apic文件中，Local x2APIC个数与当前CPU总线程数不一致，需要检查'
         logging.debug("当前实际核数：{}".format(Local_Apic_ID))
         logging.info('在apic文件中，Local x2APIC个数与当前CPU总线程数一致')
 
@@ -764,8 +828,8 @@ def cpu_ApicReport():
         assert SetUpLib.enter_menu(Key.UP, Msg.PATH_PRO_CFG, 20, Msg.EXTENDED_APIC)
         assert SetUpLib.locate_option(Key.DOWN, Extended_APIC2, 20)
         SetUpLib.send_keys([Key.F6, Key.F10, Key.Y], 3)
-        Local_Apic = acpidump()[0].split('Raw Table Data')[0].count('Processor Local APIC')
-        assert Local_Apic_ID == 112, '在apic文件中，Local x2APIC个数与当前CPU总线程数不一致，需要检查'
+        Local_Apic = _acpidump()[0].split('Raw Table Data')[0].count('Processor Local APIC')
+        assert Local_Apic_ID == SutConfig.SysCfg.CPU_CNT*56, '在apic文件中，Local x2APIC个数与当前CPU总线程数不一致，需要检查'
         logging.debug("当前实际核数：{}".format(Local_Apic))
         logging.info('在apic文件中，Local APIC个数与当前CPU总线程数一致')
 
@@ -779,7 +843,7 @@ def cpu_ApicReport():
 
 
 # function Module  for cpu_compa_011:
-def cpu_compa_pc6():
+def _cpu_compa_pc6():
     assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
     SshLib.execute_command(Sut.OS_SSH, r'timeout 15s turbostat --show Pkg%pc6 > tc220.txt')
     res = SshLib.execute_command(Sut.OS_SSH, r'cat tc220.txt').replace('Pkg%pc6/n', '')
@@ -816,14 +880,14 @@ def cpu_compa_011():
         assert SetUpLib.locate_option(Key.DOWN, EHS_C1E_DIS, 5)
         SetUpLib.send_keys([Key.F5, Key.F10, Key.Y], 3)
         logging.info('第1次验证pc6状态 ')
-        assert cpu_compa_pc6(), "**C1E=Enable,Package_C_State =Auto fail"
+        assert _cpu_compa_pc6(), "**C1E=Enable,Package_C_State =Auto fail"
 
         # 设置 C1E=Enable,Package C State Control=c6， 进os验证 PC6状态
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PCSC_CTL, 20, Msg.PKG_C_STATE_CONTROL)
         SetUpLib.send_keys([Key.F6, Key.F10, Key.Y], 3)
         logging.info('第2次验证pc6状态 ')
-        assert cpu_compa_pc6(), "**C1E=Enable,Package_C_State =C6 fail"
+        assert _cpu_compa_pc6(), "**C1E=Enable,Package_C_State =C6 fail"
 
         # 设置 C1E=Disable,Package_C_State_Control=C6 进os验证 PC6状态
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
@@ -831,14 +895,14 @@ def cpu_compa_011():
         assert SetUpLib.locate_option(Key.DOWN, EHS_C1E_ENABLE, 5)
         SetUpLib.send_keys([Key.F6, Key.F10, Key.Y], 3)
         logging.info('第3次验证pc6状态 ')
-        assert cpu_compa_pc6(), "**C1E=Disable,Package_C_State =C6 fail"
+        assert _cpu_compa_pc6(), "**C1E=Disable,Package_C_State =C6 fail"
 
         # 设置 C1E=Disable, package C State =Auto ,进os验证 PC6状态
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.UP, Msg.PATH_PCSC_CTL, 20, Msg.PKG_C_STATE_CONTROL)
         SetUpLib.send_keys([Key.F5, Key.F10, Key.Y], 3)
         logging.info('第4次验证pc6状态 ')
-        assert cpu_compa_pc6(), "**C1E=Disable,Package_C_State =Auto fail"
+        assert _cpu_compa_pc6(), "**C1E=Disable,Package_C_State =Auto fail"
         result.log_pass()
         return True
     except AssertionError:
@@ -917,7 +981,7 @@ def testcase_coreDisable_008():
 # A：命令下发正常，无报错；
 # B：CPU使能核数显示为1。
 # OnCompleted: SETUP
-def set_core_redfish(tc, set_data, exp_data):  # this def used to set cpu cores via redfish,
+def _set_core_redfish(tc, set_data, exp_data):  # this def used to set cpu cores via redfish,
     """
     tc - report flag
     set_data: based on platform, refer to setup base line,
@@ -945,9 +1009,35 @@ def set_core_redfish(tc, set_data, exp_data):  # this def used to set cpu cores 
         BmcLib.clear_cmos()
 
 
+# Testcase_SP_Boot_010 redfish change SP boot
+# Author: OuYang
+# Precondition:Postman工具已安装
+# 1、Redfish带外关闭SP Boot选项；
+# 2、重启X86进Setup菜单，检查SP Boot选项状态，与设置值一致；
+# 3、Redfish带外打开SP Boot选项；
+# 4、重启X86进Setup菜单，检查SP Boot选项状态，与设置值一致；
+# OnStart:
+# OnComplete: SetUp
+@core.test_case(('228', '[TC228] redfish change SP boot', 'verify redfish change SP boot success'))
+def testcase_sp_boot_010():
+    logging.info("[BmcLib] Set SP boot with redfish.")
+    SP_OPTION_REDFISH = ['Disabled', 'Enabled']
+    try:
+        for i in range(2):
+            assert BmcLib.force_reset()
+            assert Sut.BMC_RFISH.set_bios_option(
+                **{'SPBoot': SP_OPTION_REDFISH[i]}).status == 200, 'status != ok, result is False'
+            logging.info("redfish设置SP boot为 '{0}' 成功".format(SP_OPTION_REDFISH[i]))
+            assert SetUpLib.continue_to_page(Msg.PAGE_BOOT)
+            assert SetUpLib.get_option_value(["SP Boot", "<.+>"], Key.UP, 10) == SP_OPTION_REDFISH[i]
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+
+
 def testcase_coreDisable_009():
     tc = ('223', '[TC223] 09 redfish带外使能1个CPU核数测试', '支持CPU关核')
-    return set_core_redfish(tc, 1, 200)
+    return _set_core_redfish(tc, 1, 200)
 
 
 # Testcase_CoreDisable_010
@@ -962,7 +1052,7 @@ def testcase_coreDisable_009():
 # OnCompleted: SETUP
 def testcase_coreDisable_010():
     tc = ('224', '[TC224] 10 redfish带外使能CPU核数最大值测试', '支持CPU关核')
-    return set_core_redfish(tc, 27, 200)
+    return _set_core_redfish(tc, 27, 200)
 
 
 # Testcase_CoreDisable_011
@@ -977,10 +1067,312 @@ def testcase_coreDisable_010():
 # OnCompleted: SETUP
 def testcase_coreDisable_011():
     tc = ('225', '[TC225] 11 redfish带外使能CPU核数超过最大值测试', '支持CPU关核')
-    return set_core_redfish(tc, 44, 400)
+    return _set_core_redfish(tc, 44, 400)
 
 
 # 1、使用Postman工具带外设置CPU使能核数，命令格式"ProcessorActiveCore":0，有结果A；
 def testcase_coreDisable_012():
     tc = ('226', '[TC226] 12 redfish带外使能CPU核数为0测试', '支持CPU关核')
-    return set_core_redfish(tc, 0, 400)
+    return _set_core_redfish(tc, 0, 400)
+
+
+# Author: Fubaolin
+# cpu锁频测试
+# Precondition:linux-OS, stress tools install  
+# OnStart:
+# Set:
+# 1、进入Setup关闭EIST(P-State)，关闭C-State（默认关闭），F10保存重启；
+# 2、进入系统，查看CPU核的运行频率，有结果A；
+# 3、使用Stress工具对所有CPU加压，检查所有CPU核运行频率，有结果A。
+# A：所有核运行在标称频率。
+@core.test_case(('229', '[TC229] Testcase_CPU_COMPA_004', 'CPU锁频测试'))
+def Cpu_Lock_Frequency():
+    speed_step = ['SpeedStep \(Pstates\)', '<Enabled>']
+    MONI_MWAIT_DIS = ['MONITOR\/MWAIT', '<Disabled>']
+    c_state = ['C\-State OS Indicator', '<Disabled>']
+    stress_command = f"stress --cpu 56 --timeout 20"
+    get_cpu_para = "timeout 10 turbostat| awk -F' ' '{print $1,$2,$7}'"
+    succe_flag = "successful run completed"
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.UP, Msg.PATH_PSTATE_CTL, 20, Msg.CPU_P_STATE)
+        assert SetUpLib.locate_option(Key.DOWN, speed_step, 10)
+        assert SetUpLib.set_option_value(str(speed_step[0]),'Disabled', Key.DOWN), '**close EIST(P-State)--> fail'
+        assert SetUpLib.back_to_setup_toppage()
+        assert SetUpLib.enter_menu(Key.UP, Msg.PATH_CSTATE_CTL, 20, Msg.CPU_C_STATE)
+        assert SetUpLib.locate_option(Key.DOWN, MONI_MWAIT_DIS, 10)
+        assert SetUpLib.set_option_value(str(MONI_MWAIT_DIS[0]),'Enabled', Key.DOWN), '**Enabled MONITOR--> fail'
+        assert SetUpLib.verify_info(c_state, 10), '**C-State check--> fail'
+        SetUpLib.send_keys(Key.SAVE_RESET, 2)
+        cpu_fre = _cpu_stress_tool(stress_command, get_cpu_para, succe_flag)
+        assert cpu_fre is not None, '**check stress_tool in linux_OS and path'
+        logging.debug(cpu_fre)
+        sta_flg = 0
+        for i in cpu_fre.split('\n')[3:-2]:
+            if not min_cpu_base <= int(i.split()[2]) <= max_cpu_base:
+                logging.debug('** No. {0}_cpu_{1} core, frequency = {2}'.format(i.split()[0], i.split()[1], i.split()[2]))
+                sta_flg += 1
+        assert sta_flg == 0, '**Get frequency after pressurize--check fail'
+        logging.info("**Get frequency after pressurize--check pass")
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+        return core.Status.Fail
+    finally:
+        BmcLib.clear_cmos()
+
+# Author: Fubaolin
+# C-state特性测试
+# Precondition:linux-OS, stress tools install
+# OnStart:
+# Set:
+# 1、进入Setup菜单CPU C-State Control页面下查看MWAIT、C6 Report、C1E默认状态，有结果A；
+# 2、Enable MWAIT、C6 Report后F10进入OS，空载时查看所有CPU核C状态；给所有CPU核加压后查看C状态，有结果B；
+# 3、进入Setup菜单Disable MWAIT、C6 Report，F10保存重启；
+# 4、进入OS，空载时查看所有CPU核C状态；给所有CPU核加压后查看C状态，有结果C；
+# 5、进入Setup菜单Enable C1E，F10保存重启；
+# 6、进入OS，空载时查看所有CPU核C状态；给所有CPU核加压后查看C状态，有结果C。
+# A：MWAIT、C6 Report、C1E默认关闭；
+# B：空闲时进入到C6，加压后进入到C0；
+# C：空闲时进入到C1，加压后进入到C0。
+@core.test_case(('230', '[TC230] Testcase_CPU_COMPA_007', 'C-state特性测试'))
+def Cpu_c_State():
+    moni_mwait_dis = ['MONITOR\/MWAIT', '<Disabled>']
+    moni_mwait_Ena = ['MONITOR\/MWAIT', '<Enabled>']
+    cpu_c6 = ['CPU C6 report', '<Disabled>']
+    cpu_c6_Ena = ['CPU C6 report', '<Enabled>']
+    c1e = ['Enhanced Halt State \(C1E\)', '<Disabled>']
+    stress_command = f"stress --cpu 56 --timeout 60"
+    get_cpu_c6 = "timeout 10 turbostat -q| awk -F' ' '{print $1,$2,$17,$21}'"
+    get_cpu_c0 = "timeout 10 turbostat -q| awk -F' ' '{print $5}'"
+    get_cpu_c1 = "timeout 10 turbostat -q| awk -F' ' '{print $10}'"
+    flag_c6 = "Pkg%pc6" and "CPU%c6"
+    flag_c0 = 'Busy%'
+    flag_c1 = 'CPU%c1'
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.UP, Msg.PATH_CSTATE_CTL, 20, Msg.CPU_C_STATE)
+        assert SetUpLib.locate_option(Key.UP, moni_mwait_dis, 10)
+        assert SetUpLib.set_option_value(str(moni_mwait_dis[0]), 'Enabled', Key.DOWN), '**Enabled MONITOR--> fail'
+        assert SetUpLib.locate_option(Key.DOWN, cpu_c6, 10)
+        assert SetUpLib.set_option_value(str(cpu_c6[0]), 'Enabled', Key.DOWN), '**Enabled MONITOR--> fail'
+        SetUpLib.send_keys(Key.SAVE_RESET, 2)
+        # 空载时,CPU进入到C6
+        assert _cpu_to_c6(get_cpu_c6, flag_c6)
+        #加压后，cpu进入C0
+        assert _cpu_to_c0(stress_command, get_cpu_c0, flag_c0)
+
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.UP, Msg.PATH_CSTATE_CTL, 20, Msg.CPU_C_STATE)
+        assert SetUpLib.locate_option(Key.UP, moni_mwait_Ena, 10)
+        assert SetUpLib.set_option_value(str(moni_mwait_Ena[0]), 'Disabled', Key.DOWN), '**Disabled MONITOR--> fail'
+        assert SetUpLib.locate_option(Key.DOWN, cpu_c6_Ena, 10)
+        assert SetUpLib.set_option_value(str(cpu_c6_Ena[0]), 'Disabled', Key.DOWN), '**Disabled MONITOR--> fail'
+        SetUpLib.send_keys(Key.SAVE_RESET, 2)
+        # 空闲时进入到C1，
+        assert _cpu_to_c1(get_cpu_c1, flag_c1)
+        # 加压后进入到C0
+        assert _cpu_to_c0(stress_command, get_cpu_c0, flag_c0)
+
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.UP, Msg.PATH_CSTATE_CTL, 20, Msg.CPU_C_STATE)
+        assert SetUpLib.locate_option(Key.DOWN, c1e, 10)
+        assert SetUpLib.set_option_value(str(c1e[0]), 'Enabled', Key.DOWN), '**Enabled C1e--> fail'
+        SetUpLib.send_keys(Key.SAVE_RESET, 2)
+        # 空闲时进入到C1，
+        assert _cpu_to_c1(get_cpu_c1, flag_c1)
+        # 加压后进入到C0
+        assert _cpu_to_c0(stress_command, get_cpu_c0, flag_c0)
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+        return core.Status.Fail
+    finally:
+        BmcLib.clear_cmos()
+
+
+# Author: Fubaolin
+# EIST特性测试
+# Precondition:linux-OS, stress tools install
+# OnStart:
+# Set:
+# 1、进入Setup，在CPU P-State Control界面Enable EIST(P-state)；
+# 2、重启进入OS，空闲状态下查看CPU核的当前频率，有结果A；
+# 3、使用stress工具给指定CPU加压，查看CPU运行频率，有结果B；
+# 4、重启系统，进入Setup，关闭EIST功能，F10后进入OS。空闲状态下查看CPU核的当前频率，有结果C；
+# 5、使用stress工具给指定CPU加压，查看CPU运行频率，有结果C。
+# A：CPU核运行在最低频率；
+# B：加压的核运行在标称频率，未加压核运行在最低频率；
+# C：所有核均运行在标称频率。
+@core.test_case(('231', '[TC231] Testcase_CPU_COMPA_012', 'EIST特性测试'))
+def eist_features_test():
+    get_cpu_para = "timeout 10 turbostat -q| awk -F' ' '{print $1,$2,$6}'"
+    pressure = int((SutConfig.SysCfg.CPU_CNT*SutConfig.SysCfg.CPU_CORES)*0.5-1)  # core序号，从0起始
+    # 加压的核数，cpu数量 乘 每个cpu的核数 乘 0.5
+    pressure_num = int((SutConfig.SysCfg.CPU_CNT*SutConfig.SysCfg.CPU_CORES)*0.5)
+    # 给序号0~{（cpu数量x核数）1/2-1}的[（cpu数量x核数）1/2 ]个核加压
+    stress_command = "taskset -c 0-{} stress -c {} --timeout 80".format(pressure, pressure_num)
+    succe_flag = 'Bzy_MHz'
+    fail_count = 0
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.UP, Msg.PATH_PSTATE_CTL, 20, Msg.CPU_P_STATE)
+        assert SetUpLib.set_option_value('Turbo Mode', 'Disabled', save=True), '**Disabled turbo_mode--> fail'
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
+        SshLib.execute_command(Sut.OS_SSH, f"cpupower frequency-set -g ondemand")  # 关闭OS自动调频功能避免OS能效策略影响
+        cpu_fre_min = SshLib.execute_command(Sut.OS_SSH, "sleep 60s;{}".format(get_cpu_para))
+        logging.debug(cpu_fre_min)
+        assert succe_flag in cpu_fre_min.split('\n')[0], "获取Cpu频率 --> fail"
+        assert int(cpu_fre_min.split('\n')[1].split()[2]) < int(SutConfig.SysCfg.CPU_BASE*1000), "**空闲状态cpu频率 --> fail"
+        cpu_fre = _cpu_stress_tool(stress_command, "sleep 60s;{}".format(get_cpu_para), succe_flag)
+        assert cpu_fre is not None, '**check stress_tool in linux_OS and path'
+        logging.debug(cpu_fre)
+        num = int((len(cpu_fre.split('\n')[3:-2]))/2)   # 全部核数对半分成2份（加压，未加压）
+        cpu_1 = cpu_fre.split('\n')[3:num+3]  # 加压核ist
+        cpu_2 = cpu_fre.split('\n')[num+3:-2]  # 未加压核list
+        for i in cpu_1:  # 获取加压的核（总核数前一半）频率
+            if not min_cpu_base < int(i.split()[2]) < max_cpu_base:   # 加压的核，频率>标准频率
+                logging.warning("**加压的核运行在标称频率, {0} core实际读取频率 = {1}".format(i.split()[1], i.split()[2]))
+                fail_count += 1
+        assert fail_count == 0, 'fail count num -> {0}'.format(fail_count)
+        for j in cpu_2:  # 获取未加压的核（总核数后一半）频率
+            if not int(lowest_frequency)-int(SutConfig.SysCfg.CPU_BASE*1000*0.1) < \
+                int(j.split()[2]) <= max_cpu_base:   # 未加压的核，频率<=标准频率
+                logging.warning("**未加压核运行在最低频率, {0} core实际读取频率 = {1}".format(j.split()[1], j.split()[2]))
+                fail_count += 1
+        assert fail_count == 0, 'fail count num -> {0}'.format(fail_count)
+        # disabled eist func,
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.UP, Msg.PATH_PSTATE_CTL, 20, Msg.CPU_P_STATE)
+        assert SetUpLib.set_option_value('SpeedStep \(Pstates\)', 'Disabled', save=True), '**Disabled eist--> fail'
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
+        SshLib.execute_command(Sut.OS_SSH, f"cpupower frequency-set -g ondemand")  # 关闭OS自动调频功能避免OS能效策略影响
+        cpu_fre_min = SshLib.execute_command(Sut.OS_SSH, "sleep 60s;{}".format(get_cpu_para))
+        logging.debug(cpu_fre_min)
+        assert succe_flag in cpu_fre_min.split('\n')[0], "获取Cpu频率 --> fail"
+        assert int(cpu_fre_min.split('\n')[1].split()[2]) < int(SutConfig.SysCfg.CPU_BASE*1000)+\
+               int(SutConfig.SysCfg.CPU_BASE*1000*0.1), "**空闲状态cpu频率 --> fail"
+        cpu_fre_2 = _cpu_stress_tool(stress_command, "sleep 40s;{}".format(get_cpu_para), succe_flag)
+        assert cpu_fre_2 is not None, '**check stress_tool in linux_OS and path'
+        logging.debug(cpu_fre_2)
+        cpu_3 = cpu_fre_2.split('\n')[3:num + 3]  # 加压核ist
+        cpu_4 = cpu_fre_2.split('\n')[num + 3:-2]  # 未加压核list
+        for k in cpu_3:  # 获取加压的核（总核数前一半）频率
+            if not max_cpu_base> int(k.split()[2]) > min_cpu_base:   # 加压的核，频率在标准频率附近振荡
+                logging.warning("**加压的核，频率在标准频率附近振荡, {0} core实际读取频率 = {1}".format(k.split()[1], k.split()[2]))
+                fail_count += 1
+        assert fail_count == 0, 'fail count num -> {0}'.format(fail_count)
+        for m in cpu_4:  # 获取未加压的核（总核数后一半）频率
+            if not max_cpu_base > int(m.split()[2]) > min_cpu_base:   # 未加压的核，频率在标准频率附近振荡
+                logging.warning("**未加压的核，频率在标准频率附近振荡, {0} core实际读取频率 = {1}".format(m.split()[1], m.split()[2]))
+                fail_count += 1
+        # if failed, check the warning msg in test log,
+        assert fail_count == 0, 'fail count num -> {0}'.format(fail_count)
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+        return core.Status.Fail
+    finally:
+        BmcLib.clear_cmos()
+
+
+# Author: Fubaolin
+# Turbo Mode特性测试
+# Precondition:linux-OS, stress tools install
+# OnStart:
+# Set:
+# 1、进入OS，使用stress工具给CPU某个核加压，使用turbostat工具查询CPU运行频率，有结果A；
+# 2、覆盖CPU0和CPU1下多个核，重复步骤1；
+# 3、重启进入Setup菜单，关闭TurboMode，保存退出；
+# 4、重复步骤1-2，有结果B。
+# A：CPU运行频率达到规格超频后的最大值；
+# B：CPU运行频率达到规格标称值。
+@core.test_case(('232', '[TC232] Testcase_CPU_COMPA_012', 'Turbo Mode特性测试'))
+def turbo_mode_test():
+    get_cpu_para = "sleep 40s;timeout 10 turbostat -q| awk -F' ' '{print $1,$2,$6}'"
+    single_command = "taskset -c 10 stress -c 28 --timeout 60"
+    more_command = "taskset -c 23-32 stress -c 28 --timeout 60" 
+    succe_flag = 'Bzy_MHz'
+    error_flag = 0
+    min_cpu_turbo = int(SutConfig.SysCfg.CPU_TURBO * 1000) - int(SutConfig.SysCfg.CPU_BASE * 1000 * 0.1)
+    max_cpu_turbo = int(SutConfig.SysCfg.CPU_TURBO * 1000) + int(SutConfig.SysCfg.CPU_BASE * 1000 * 0.1)
+    min_cpu_base = int(SutConfig.SysCfg.CPU_BASE * 1000) - int(SutConfig.SysCfg.CPU_BASE * 1000 * 0.1)
+    max_cpu_base = int(SutConfig.SysCfg.CPU_BASE * 1000) + int(SutConfig.SysCfg.CPU_BASE * 1000 * 0.1)
+    try:
+        # 默认 TurboMode_Enable
+        assert BmcLib.force_reset()
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
+        SshLib.execute_command(Sut.OS_SSH, f"cpupower frequency-set -g ondemand")  # 关闭OS自动调频功能避免OS能效策略影响
+        # 指定core 加压，并查询CPU运行频率
+        cpu_fre_single = _cpu_stress_tool(single_command, get_cpu_para, succe_flag)
+        assert cpu_fre_single is not None, '**check stress_tool in linux_OS command'
+        logging.debug(cpu_fre_single)
+        cpu_10 = cpu_fre_single.split('\n')[23:25]  # 获取指定No.10_core 加压频率
+        for i in cpu_10:
+            if not min_cpu_turbo < int(i.split()[2]) < max_cpu_turbo:   # "**单个core加压状态 cpu频率"
+                error_flag += 1
+        assert error_flag == 0, 'fail count num -> {}'.format(error_flag)
+        # # 覆盖CPU0和CPU1下多个核
+        cpu_fre_more = _cpu_stress_tool(more_command, get_cpu_para, succe_flag)
+        assert cpu_fre_more is not None, '**check stress_tool in linux_OS command'
+        logging.debug(cpu_fre_more)
+        cpu_more = cpu_fre_more.split('\n')[49:69]  # 获取more_core 加压频率
+        for j in cpu_more:
+            if not min_cpu_turbo < int(j.split()[2]) < max_cpu_turbo:   # "**多个core加压状态 cpu频率"
+                error_flag += 1
+        assert error_flag == 0, 'fail count num -> {0}'.format(error_flag)
+        # 修改 TurboMode_Disabled
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.UP, Msg.PATH_PSTATE_CTL, 20, Msg.CPU_P_STATE)
+        assert SetUpLib.set_option_value('Turbo Mode', 'Disabled', save=True), '**Disabled eist--> fail'
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
+        # 指定core 加压，并查询CPU运行频率
+        cpu_fre_single_2 = _cpu_stress_tool(single_command, get_cpu_para, succe_flag)
+        assert cpu_fre_single_2 is not None, '**check stress_tool in linux_OS command'
+        logging.debug(cpu_fre_single_2)
+        cpu_10_2 = cpu_fre_single_2.split('\n')[23:25]  # 获取指定No.10_core 加压频率
+        for k in cpu_10_2:
+            if not min_cpu_base < int(k.split()[2]) < max_cpu_base:   # "**单个core加压状态 cpu频率"
+                error_flag += 1
+        assert error_flag == 0, 'fail count num -> {0}'.format(error_flag)
+        # 覆盖CPU0和CPU1下多个核
+        cpu_fre_more_2 = _cpu_stress_tool(more_command, get_cpu_para, succe_flag)
+        assert cpu_fre_more_2 is not None, '**check stress_tool in linux_OS command'
+        logging.debug(cpu_fre_more_2)
+        cpu_more_2 = cpu_fre_more_2.split('\n')[49:69]  # 获取more_core 加压频率
+        for m in cpu_more_2:
+            if not min_cpu_base < int(m.split()[2]) < max_cpu_base:   # "**多个core加压状态 cpu频率"
+                error_flag += 1
+        assert error_flag == 0, 'fail count num -> {0}'.format(error_flag)
+        return core.Status.Pass
+    except AssertionError:
+        return core.Status.Fail
+    finally:
+        BmcLib.clear_cmos()
+
+# Testcase_BootFailPolicy_012 redfish change BootFailPolicy
+# Author: OuYang
+# Precondition:Postman工具已安装
+# 1、通过Redfish获取BIOS的Current和Registry文件信息，有结果A；
+# 2、带外配置Boot Fail Policy选项，重启系统，进入Setup菜单查看设置是否生效，有结果B。
+# A：带外配置已添加新增菜单项；
+# B：带外配置可以生效。
+# OnStart:
+# OnComplete: SetUp
+@core.test_case(('233', '[TC233] redfish change BootFailPolicy', 'verify redfish change BootFailPolicy success'))
+def testcase_BootFailPolicy_012():
+    logging.info("[BmcLib] Set BootFailPolicy with redfish.")
+    BOOT_FAIL_POLICY_REDFISH = ['None', 'Cold Boot', 'Boot Retry']
+    try:
+        for i in range(len(BOOT_FAIL_POLICY_REDFISH)):
+            assert BmcLib.force_reset()
+            assert Sut.BMC_RFISH.set_bios_option(
+                **{'BootFailPolicy': BOOT_FAIL_POLICY_REDFISH[i]}).status == 200, 'status != ok, result is False'
+            logging.info("redfish设置BootFailPolicy为 '{0}' 成功".format(BOOT_FAIL_POLICY_REDFISH[i]))
+            assert SetUpLib.continue_to_page(Msg.PAGE_BOOT)
+            logging.info(BOOT_FAIL_POLICY_REDFISH[i])
+            assert SetUpLib.get_option_value(["Boot Fail Policy", "<.+>"], Key.DOWN, 15) == BOOT_FAIL_POLICY_REDFISH[i]
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+        return core.Status.Fail

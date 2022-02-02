@@ -38,6 +38,11 @@ class Key:
 class Msg:
     BIOS_PW_DEFAULT = "Admin@9000"
     BIOS_PASSWORD = 'Admin@9009'
+
+    ENABLED_VAL = '<Enabled>'
+    DISABLED_VAL = '<Disabled>'
+    ENABLED = 'Enabled'
+    DISABLED = 'Disabled'
     
     HOTKEY_PROMPT_DEL = 'Press Del go to Setup Utility'
     HOTKEY_PROMPT_F11 = 'Press F11 go to BootManager'
@@ -73,11 +78,14 @@ class Msg:
     MEM2X_REFRESH = 'Refresh Options'
     PFM_PRO = 'Performance Profile'
     CPU_P_STATE = 'CPU P State Control'
+    CPU_C_STATE = 'CPU C State Control'
     PER_CPU = 'Per-CPU Information'
     MEM_POWER_THER_CONFIG = 'Memory Power & Thermal Configuration'
     DRAM_RAPL_CONFIG = 'DRAM RAPL Configuration'
     MEM_POWER_ADV = 'Memory Power Savings Advanced Options'
     CKE = 'CKE Power Down'
+    APD = 'APD'
+    PPD = 'PPD'
     LPASR_MODE = 'LPASR Mode'
     CKE_FEATURE = 'CKE Feature'
     CKE_IDLE_TIMER = 'CKE Idle Timer'
@@ -88,6 +96,8 @@ class Msg:
     ASPM_ROOT_PORT = "PCIe ASPM Support"
     EXTENDED_APIC = "Extended APIC"
     SYS_EVENT_LOG = "System Event Log"
+    SPD_CRC = "SPD CRC Check"
+    ATTEMPT_FAST_BOOT = "Attempt Fast Boot"
 
     # menus of PCH configuration
     PCH_CONFIG = 'PCH Configuration'
@@ -128,6 +138,7 @@ class Msg:
     PATH_MEM_CONFIG = [CPU_CONFIG, MEMORY_CONFIG]
     PATH_MEM_POWER_ADV = [CPU_CONFIG, ADV_POWER_MGF_CONFIG, MEM_POWER_THER_CONFIG, MEM_POWER_ADV]
     PATH_VIRTUAL_VTD = [VIRTUAL_CFG, VIRTUAL_VTD]
+    PATH_CSTATE_CTL = [CPU_CONFIG, ADV_POWER_MGF_CONFIG, CPU_C_STATE]
 
     # Menu in Boot page
     MENU_BOOT_ORDER = 'UEFI Boot'
@@ -142,18 +153,15 @@ class Msg:
     LOAD_CUSTOM_DEFAULT = ['Load Custom Defaults']
 
     # Firmware version info
-    ME_VERSION = '0F:4.4.4.56'
-    RC_VERSION = '0.2.2.0030'
-    BIOS_DATE = '11/02/2021'
+    ME_VERSION = '0F:4.4.4.58'
+    RC_VERSION = '0.2.2.003A'
+    BIOS_DATE = '12/08/2021'
     iBMC_VERSION = '3.02.01.05'
     CPU_TYPE = 'Ice Lake'
     TOTAL_MEMORY = '{0}MB'.format(SutConfig.SysCfg.DIMM_SIZE * 1024)
 
     # POST GPIO ERROR Keywords print in serial log
     GPIO_ERR = "GPIO ERROR"
-
-    # show logo flag
-    LOGO_SHOW = "BootType :"
 
 
 # BIOS configuration to be set by unitool

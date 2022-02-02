@@ -1,5 +1,5 @@
 # this script just for hotkey related function test
-import logging, time
+import logging, time, os, re
 
 from batf.Report import ReportGen
 from TCE.Config import SutConfig
@@ -65,17 +65,18 @@ def hotkey_press():
         logging.info("{0} test failed".format(failures))
         return False
 
+
 def log_Time(log_n):
     try:
-        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 600) #考虑全打印
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 600)  # 考虑全打印
         logging.info("Suse_OS Boot Successful")
         SERIAL_LOG = os.path.join(SutConfig.Env.LOG_DIR, 'TC{}.log'.format(log_n))
-        res = [x.strip() for x in open(SERIAL_LOG , 'r').readlines() if x.strip() != '']
+        res = [x.strip() for x in open(SERIAL_LOG, 'r').readlines() if x.strip() != '']
         s_cont = 0
         for s_str in SutConfig.Env.LogTime_Dedicated + Msg.LogTime_common:
             logging.info('check ： {}'.format(s_str))
             if not s_str in str(res):
-                if not re.search(r"\d+",s_str):
+                if not re.search(r"\d+", s_str):
                     s_cont = s_cont + 1
                     logging.info('**{} -- no found**'.format(s_str))
                     return False
@@ -133,6 +134,7 @@ def system_info_003():
     except AssertionError:
         result.log_fail(capture=True)
 
+
 # Author: Fubaolin
 # Testcase_LogTime_001, 003 串口日志打印
 # Precondition: linux-OS
@@ -147,7 +149,6 @@ def Testcase_LogTime_01_03():
     except AssertionError as e:
         logging.error(e)
         return core.Status.Fail
-
 
 
 # Author: Fubaolin
@@ -166,11 +167,12 @@ def Testcase_LogTime_02():
     except AssertionError as e:
         logging.error(e)
         return core.Status.Fail
-    finally:    
-        BmcLib.debug_message(False)        
+    finally:
+        BmcLib.debug_message(False)
+
+    # Testcase_Watch_Dog_007
 
 
-# Testcase_Watch_Dog_007
 # Precondition: Post看门狗已打开，超时动作为powercycle。
 # OnStart: 'UEFI'模式
 # Steps:
@@ -190,7 +192,7 @@ def testcase_watchdog_007():
         assert SetUpLib.locate_option(Key.DOWN, ["iBMC WDT Time Out For POST", "\[10\]"], 5)
         SetUpLib.send_key(Key.ENTER)
         SetUpLib.send_data_enter('5')
-        SetUpLib.send_keys(Key.SAVE_RESET)
+        SetUpLib.send_keys(Key.SAVE_RESET, 2)
         assert SetUpLib.continue_to_bootmanager()
         logging.info('Wait for 305s to verify watchdog time out function -  1st time')
         time.sleep(305)
@@ -271,7 +273,7 @@ def testcase_logTime_007():
 def testcase_logTime_008():
     for i in range(3):
         assert BmcLib.force_reset()
-        assert BmcLib.read_bt_data('DB 07 00 05 10 01', 10) is None  # excepted_result - can not find the data
+        assert BmcLib.read_bt_data('DB 07 00 05 10 01', 10) is False  # excepted_result - can not find the data
     logging.info('3 times force reset at post done,')
     assert BmcLib.force_reset()
     if not BmcLib.read_bt_data('DB 07 00 05 10 01', 100):
@@ -326,7 +328,177 @@ def pcie_bdf_toBMC_001():
 @core.test_case(('811', '[TC811] 02 BIOS启动阶段SOL热键显示测试', '支持热键配置'))
 def testcase_hotKey_002():
     assert BmcLib.force_reset()
-    if not BmcLib.read_sol_data([Msg.HOTKEY_PROMPT_DEL, Msg.HOTKEY_PROMPT_F11, Msg.HOTKEY_PROMPT_F6, Msg.HOTKEY_PROMPT_F12], 60):
+    if not BmcLib.read_sol_data(
+            [Msg.HOTKEY_PROMPT_DEL, Msg.HOTKEY_PROMPT_F11, Msg.HOTKEY_PROMPT_F6, Msg.HOTKEY_PROMPT_F12], 60):
         core.capture_screen()
         return core.Status.Fail
     return core.Status.Pass
+
+
+# Testcase_SsdBDFToBMC_002
+# Precondition: 开启BT通道。
+# OnStart: 'UEFI'模式
+# Steps:
+# '遍历硬盘背板：
+# 1、单板上电，检查NVMe SSD初始化情况，结果A；
+# 2、检查BMC Web界面NVMe设备所属CPU和Port信息是否正确，结果B；
+# 3、检查BT通道中，上报记录是否正确，结果C。
+# A：NVMe SSD正确初始化，Setup下识别SSD信息，OS下识别SSD；
+# B：BMC Web界面信息显示正确；
+# C：BT通道记录BIOS上报的NVMe BDF信息。
+# OnCompleted: OS
+@core.test_case(('812', '[TC812] 02 NVMe SSD BDF信息上报BMC测试 - 遍历硬盘背板', 'SSD BDF信息上报BMC'))
+def testcase_ssdbdfToBMC_002():
+    try:
+        assert BmcLib.force_reset()
+        assert BmcLib.read_bt_data('C8 01 81', 100)
+        res = SshLib.execute_command(Sut.BMC_SSH, 'ipmcget -t storage -d pdinfo -v all')
+        assert 'SSD' in res, 'can not find ssd type'
+        os_res = SshLib.execute_command(Sut.OS_SSH, 'fdisk -l')
+        assert 'Disk /dev/nvme' in os_res, 'can not find nvme ssd device'
+        return core.Status.Pass
+    except AssertionError:
+        return core.Status.Fail
+
+
+# Testcase_FDM_PostErrReport_004
+# Precondition: 开启BT通道。
+# OnStart: UEFI模式
+# Step:
+# 1、BIOS正常启动；
+# 2、BMC BT通道信息中查找"DB 07 00 17 01"字段；
+# 3、与启动日志中的CPU Stack bus信息对比，有结果A。
+# Expt_result:
+# A：正确上报CPU Stack bus信息。 01：ParaSel ；39：信息大小； 02：CPU个数； 00：Segment 后面6个字节为stack号：00 xx xx xx xx xx
+# OnCompleted: OS
+@core.test_case(('813', '[TC813]04 FDM上报CPU Stack的BUS分配', '支持Post阶段故障信息搜集上报'))
+def fdm_PostErrReport_004(start=18, end=31, flg='00'):
+    """
+    start: msg start index num,
+    end: msg end index num,
+    flg: 6个字节为stack号, 切片字符串
+    """
+    stk_bus = []
+    bt_data_bus = []
+    key_str = 'DB 07 00 17 01 39 02'  # 01：ParaSel ；39：信息大小； 02：CPU个数
+    try:
+        assert BmcLib.force_reset()
+        cpu_log = SerialLib.cut_log(Sut.BIOS_COM, "CPU Resource Allocation", "START_SOCKET_0_DIMMINFO_TABLE", 100,
+                                    120)
+        assert cpu_log is not None, 'serial -> no data output'
+        for i in cpu_log.split('\n'):
+            if 'Stk' in i:
+                for j in i.split():
+                    if '0x' in j:
+                        if len(j) == 4:  # get the stk bus addr,
+                            stk_bus.append(j.replace('0x', ''))
+        # read the bt data,
+        assert BmcLib.force_reset()
+        # 01：ParaSel ；39：信息大小； 02：CPU个数
+        res = BmcLib.read_bt_data(key_str, 100)
+        assert res, 'bt -> no data output'
+        for i_str in res[1].split('\n'):
+            if key_str in i_str:
+                # assume index 18 to 31 is sku bus num, depends on bmc bt data format.
+                for j_str in i_str.split()[start:end]:
+                    bt_data_bus.append(j_str)
+        # 6个字节为stack号
+        del_item = [key for key, x in enumerate(bt_data_bus) if x == flg]  # 00 string
+        final_lst = [bt_data_bus[k] for k in range(0, len(bt_data_bus), 1) if k not in del_item[1:len(del_item)]]
+        assert stk_bus[0::2] == final_lst, 'skt bus failed - {0}'.format(list(set(stk_bus[0::2]) - set(final_lst)))
+        return core.Status.Pass
+    except AssertionError as e:
+        logging.error(e)
+        return core.Status.Fail
+
+
+# Testcase_FDM_PostErrReport_005
+# Precondition: 开启BT通道。
+# OnStart: UEFI模式
+# Step:
+# 1、BIOS正常启动；
+# 2、BMC BT通道信息中查找"DB 07 00 17 03"字段；
+# 3、检查上报的CPU型号是否正确，有结果A。
+# Expt_result:
+# A：上报信息中可以查询到03 01 06，表示上报CPU类型正确。
+# OnCompleted: OS
+@core.test_case(('814', '[TC814]05 FDM上报CPU型号', '支持Post阶段故障信息搜集上报'))
+def fdm_PostErrReport_005():
+    assert BmcLib.force_reset()
+    if not BmcLib.read_bt_data('DB 07 00 17 03 01 06', 100):
+        return core.Status.Fail
+    return core.Status.Pass
+
+
+# Testcase_FDM_PostErrReport_006
+# Precondition: 开启BT通道。
+# OnStart: UEFI模式
+# Step:
+# 1、BIOS正常启动；
+# 2、BMC BT通道信息中查找"DB 07 00 17 02"字段；
+# 3、OS下通过uniCfg工具查询变量状态，检查上报状态是否正确，有结果A。
+# Expt_result:
+# A：FDMSupport：01  EmcaCsmiEn：02   IoMcaEn：00   ViralEn：00    PoisonEn：01  EmcaMsmiEn：02。
+# OnCompleted: OS
+@core.test_case(('815', '[TC815]06 FDM上报Setup配置信息', '支持Post阶段故障信息搜集上报'))
+def fdm_PostErrReport_006():
+    try:
+        assert BmcLib.force_reset()
+        assert BmcLib.read_bt_data("DB 07 00 17 02 08 01 02 00 00 01 02", 100)
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 150)
+        assert Sut.UNITOOL.check(**{"FDMSupport": 1, "EmcaCsmiEn": 2, "IoMcaEn": 0, "ViralEn": 0, "PoisonEn": 1,
+                                    "EmcaMsmiEn": 2})
+        return core.Status.Pass
+    except AssertionError:
+        core.capture_screen()
+        return core.Status.Fail
+
+
+# Testcase_FDM_PostErrReport_007
+# Precondition: 开启BT通道。
+# OnStart: UEFI模式
+# Step:
+# 1、BIOS正常启动；
+# 2、BMC BT通道信息中查找"DB 07 00 17 09"字段；
+# 3、打开全打印，检查CPU Thread ID信息上报是否正确，有结果A。
+# Expt_result:
+# A：正确上报CPU Thread ID信息。
+# OnCompleted: OS
+@core.test_case(('816', '[TC816]07 FDM上报Thread ID信息', '支持Post阶段故障信息搜集上报'))
+def fdm_PostErrReport_007():
+    # should confirmed with dev,
+    tread1_str = "DB 07 00 17 0B 23 00 20 01 " \
+                "00 02 04 06 08 0A 10 12 14 18 1A 1C 1E 20 22 24 28 2A 2C 2E 30 32 34 36 3A 3C 40 44 46 48 4A 4C"
+    tread2_str = "DB 07 00 17 0B 23 01 20 01 " \
+                 "00 02 04 06 08 0A 10 12 14 18 1A 1C 1E 20 22 24 28 2A 2C 2E 30 32 34 36 3A 3C 40 44 46 48 4A 4C"
+    assert BmcLib.force_reset()
+    exp_str = "{0}|{1}".format(tread1_str, tread2_str)
+    if BmcLib.read_bt_data(exp_str, 100):
+        return core.Status.Pass
+    else:
+        core.capture_screen()
+        return core.Status.Fail
+
+
+# Testcase_FDM_PostErrReport_008
+# Precondition: 开启BT通道。
+# OnStart: UEFI模式
+# Step:
+# 1、BIOS正常启动；
+# 2、BMC BT通道信息中查找"DB 07 00 17 04"字段；
+# 3、检查MCA寄存器信息上报是否正确，有结果A。
+# Expt_result:
+# A：正确上报MSR 0x178 、0x179、0x17F和0x35。
+# OnCompleted: OS
+@core.test_case(('817', '[TC817]08 FDM上报MCA寄存器', '支持Post阶段故障信息搜集上报'))
+def fdm_PostErrReport_008():
+    # should confirmed with dev,
+    msr_str = "DB 07 00 17 04 28 78 01 01 00 00 00 00 00 00 00 79 01 1C 0C 00 0F 00 00 00 00 " \
+              "7F 01 00 00 00 00 00 00 00 00 35 00 40 00 20 00 00 00 00 00 00"
+    try:
+        assert BmcLib.force_reset()
+        assert BmcLib.read_bt_data(msr_str, 100)
+        return core.Status.Pass
+    except AssertionError:
+        core.capture_screen()
+        return core.Status.Fail

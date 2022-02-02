@@ -54,12 +54,12 @@ def upload_bios(src):
                 logging.error("Skip due to SSH connection error.")
                 return
             if re.search("67108864", str(res)):
-                logging.info("BIOS image (bin) uploaded to iBMC SFTP.")
+                logging.info("BIOS image (bin) uploaded to BMC SFTP.")
                 sftp.close()
                 transport.close()
                 return True
             else:
-                print("Failed to upload BIOS image to iBMC SFTP.")
+                print("Failed to upload BIOS image to BMC SFTP.")
                 print(res)
                 sftp.close()
                 transport.close()
@@ -71,12 +71,12 @@ def upload_bios(src):
                 print("Skip due to SSH connection error.")
                 return
             if re.search("rw", str(res)):
-                print("HPM image uploaded to iBMC SFTP.")
+                print("HPM image uploaded to BMC SFTP.")
                 sftp.close()
                 transport.close()
                 return True
             else:
-                print("Failed to upload hpm image to iBMC SFTP.")
+                print("Failed to upload hpm image to BMC SFTP.")
                 print(res)
                 sftp.close()
                 transport.close()

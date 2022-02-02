@@ -7,6 +7,7 @@ BiosTest.warm_reboot(),,
 BiosTest.cold_reboot(),,
 Release.check_bmc_warning(),,Yes
 Release.me_version_status(),,Yes
+Release.kvm_logo_check(),,Yes
 BiosTest.pxe_test(),,
 BiosTest.security_boot(),,Yes
 Release.chipsec_test(),,
@@ -17,8 +18,8 @@ CpuInit01.static_turbo_default(),,Yes
 CpuInit01.ufs_default_value(),,Yes
 DefaultValueTest.rrqirq(),,Yes
 BiosTest.dram_rapl_option_check(),,Yes
-BiosTest.testcase_vtd_002(),,,Yes,Yes
-BiosTest.testcase_vtd_003(),,,Yes,Yes
+BiosTest.testcase_vtd_002(),,Yes
+BiosTest.testcase_vtd_003(),,Yes
 BiosTest.cnd_default_enable(),,Yes
 BiosTest.testcase_loadDefault_001(),,Yes
 CpuInit01.upi_link_status(),,Yes
@@ -41,11 +42,16 @@ CpuInit01.testcase_coreDisable_009(),,Yes
 CpuInit01.testcase_coreDisable_010(),,Yes
 CpuInit01.testcase_coreDisable_011(),,Yes
 CpuInit01.testcase_coreDisable_012(),,Yes
+CpuInit01.Cpu_Lock_Frequency(),,Yes
+CpuInit01.eist_features_test(),,Yes
 Security22.pwd_test_all(),,Yes
 Dfx20.cnd_support_test01(),,Yes
 Dfx20.cnd_support_test02(),,Yes
 Dfx20.vgaErr_to_bmc(),,Yes
 Dfx20.testcase_spcr_001(),,Yes
+Dfx20.testcase_ACPI_001(),,Yes
+Dfx20.testcase_ACPI_002(),,Yes
+Dfx20.testcase_DEMT_001(),,Yes
 MemInit02.dimm_power_mgt_01(),,Yes
 MemInit02.dimm_power_mgt_02(),,Yes
 MemInit02.dimm_power_mgt_04(),,Yes
@@ -62,6 +68,7 @@ MemInit02.set_mem_freq_001_006(),,Yes
 MemInit02.mtrr_max_range(),,Yes
 MemInit02.mtrr_fixed_range(),,Yes
 MemInit02.testcase_memoryCompa_001(),,Yes
+MemInit02.testcase_memRefresh_003(),,Yes
 Io05.system_info_001(),,Yes
 Io05.system_info_003(),,Yes
 Io05.testcase_watchdog_007(),,Yes
@@ -71,6 +78,12 @@ Io05.testcase_logTime_008(),,Yes
 Io05.pcie_bdf_toBMC_001(),,Yes
 Io05.report_smbios_toBMC_001(),,Yes
 Io05.testcase_hotKey_002(),,Yes
+Io05.testcase_ssdbdfToBMC_002(),,Yes
+Io05.fdm_PostErrReport_004(),,Yes
+Io05.fdm_PostErrReport_005(),,Yes
+Io05.fdm_PostErrReport_006(),,Yes
+Io05.fdm_PostErrReport_007(),,Yes
+Io05.fdm_PostErrReport_008(),,Yes
 MemInit02.rmt_menu_test(),fulldebug,Yes
 PchInit03.post_gpio_error_check(),fulldebug,Yes
 PchInit03.testcase_spin_up_001(),,Yes
@@ -81,6 +94,8 @@ DefaultValueTest.testcase_com_resource_001(),,Yes
 DefaultValueTest.testcase_serial_001(),,Yes
 DefaultValueTest.testcase_thermalPolicy_001(),,Yes
 DefaultValueTest.testcase_load_custom_defaults_001(),,Yes
+DefaultValueTest.testcase_spd_001(),,Yes
+DefaultValueTest.load_custom_defaults_verify(),,Yes
 BiosTest.serial_print_keywords(),fulldebug,Yes
 BiosTest.serial_print_error_check(),,Yes
 PcieInit04.pcie_resource_mmiol(),,Yes
@@ -97,6 +112,9 @@ PcieInit04.sriov_enable_disable(),,Yes
 PcieInit04.sriov_per_port_loop(),,Yes
 PcieInit04.root_port_switch_menu(),,Yes
 BiosTest.power_efficiency_mode_loop(),,Yes
+BootDevice06.testcase_httpboot_001(),,Yes
+BootDevice06.testcase_httpboot_002(),,Yes
+BootDevice06.testcase_NVMeSlotInfo_001(),,Yes
 BiosTest.testcase_loadDefault_002(),,Yes
 Smbios09.smbios_test_all(),os,Yes
 Release.equip_mode_flag_check(),os,Yes
@@ -108,4 +126,10 @@ MemInit02.rmt_equip_test(),equip,Yes
 Os.EquipmentModeFlag_test(),equip,Yes
 Os.EquipmentModeFlag_Valid_once(),equip,Yes
 Os.EquipmentModeFlag_Valid_Recovery(),equip,Yes
-Os.EquipmentMode_Custom(),equip,,Yes,Yes
+Os.EquipmentMode_Custom(),equip,Yes
+Release.testcase_releaseInterface_002(),,Yes
+Release.testcase_releaseInterface_005(),,Yes
+Release.testcase_releaseInterface_006(),,Yes
+Release.testcase_releaseInterface_007(),,Yes
+Release.testcase_equ_disCEStorm_001(),,Yes
+Release.registry_check(),,Yes

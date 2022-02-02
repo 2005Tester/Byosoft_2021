@@ -1,0 +1,54 @@
+# dmidecode 3.2
+Getting SMBIOS data from sysfs.
+SMBIOS 3.3 present.
+# SMBIOS implementations newer than version 3.2.0 are not
+# fully supported by this version of dmidecode.
+
+Handle 0x0005, DMI type 7, 27 bytes
+Cache Information
+	Socket Designation: L1 - Cache
+	Configuration: Enabled, Not Socketed, Level 1
+	Operational Mode: Write Back
+	Location: Internal
+	Installed Size: 768 kB
+	Maximum Size: 768 kB
+	Supported SRAM Types:
+		Pipeline Burst
+	Installed SRAM Type: Pipeline Burst
+	Speed: 1 ns
+	Error Correction Type: Multi-bit ECC
+	System Type: Unified
+	Associativity: 8-way Set-associative
+
+Handle 0x0006, DMI type 7, 27 bytes
+Cache Information
+	Socket Designation: L2 - Cache
+	Configuration: Enabled, Not Socketed, Level 2
+	Operational Mode: Write Back
+	Location: Internal
+	Installed Size: 4096 kB
+	Maximum Size: 4096 kB
+	Supported SRAM Types:
+		Pipeline Burst
+	Installed SRAM Type: Pipeline Burst
+	Speed: 1 ns
+	Error Correction Type: Multi-bit ECC
+	System Type: Unified
+	Associativity: 8-way Set-associative
+
+Handle 0x0007, DMI type 7, 27 bytes
+Cache Information
+	Socket Designation: L3 - Cache
+	Configuration: Enabled, Not Socketed, Level 3
+	Operational Mode: Write Back
+	Location: Internal
+	Installed Size: 16384 kB
+	Maximum Size: 16384 kB
+	Supported SRAM Types:
+		Pipeline Burst
+	Installed SRAM Type: Pipeline Burst
+	Speed: 1 ns
+	Error Correction Type: Multi-bit ECC
+	System Type: Unified
+	Associativity: 16-way Set-associative
+

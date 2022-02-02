@@ -1,4 +1,5 @@
 from batf.Report import ReportGen
+from batf import var
 from ICX2P.BaseLib import Update, SetUpLib
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Msg
@@ -8,6 +9,7 @@ def update_bios(branch):
     tc = ('001', '[TC001]Update BIOS', 'Update BIOS')
     result = ReportGen.LogHeaderResult(tc)
     img = Update.get_test_image(SutConfig.Env.LOG_DIR, branch, 'debug-build')
+    var.set("biosimage", img)
     if not Update.update_bios(img):
         result.log_fail()
         return

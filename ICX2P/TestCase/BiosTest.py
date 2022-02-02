@@ -13,15 +13,14 @@ import os
 import csv
 from batf import core, SerialLib, MiscLib, SshLib
 from batf.SutInit import Sut
-from ICX2P.Config.SutConfig import SysCfg, Env
-from ICX2P.Config.PlatConfig import Msg, Key
+from ICX2P.Config.SutConfig import SysCfg
+from ICX2P.Config.PlatConfig import Msg, Key, BiosCfg
 from ICX2P.Config import SutConfig
-from ICX2P.BaseLib import BmcLib, PlatMisc, SetUpLib, ParsetableLib
+from ICX2P.BaseLib import PlatMisc, SetUpLib, ParsetableLib, BmcLib
 from ICX2P.BaseLib.PlatMisc import ReleaseTest
 from batf.Report import ReportGen, stylelog
 from batf.Common.LogAnalyzer import LogAnalyzer
-from batf.Common import ssh, Unitool
-
+from ICX2P.TestCase import UpdateBIOS
 
 P = LogAnalyzer(SutConfig.Env.LOG_DIR)
 baseline = os.path.join(os.path.dirname(__file__), r"..\Tools\SetupBase\2288服务器setup菜单基线版本_Byosoft_V0.1.xlsx")
@@ -122,7 +121,7 @@ def pxe_test(n=1):
 def usb_test():
     tc = ('006', '[TC006]USB Test', 'USB Test')
     result = ReportGen.LogHeaderResult(tc)
-    msg_list = ['USB Mouse\s+1', 'USB Keyboard\s+1', f'USB Mass Storage\s+{SutConfig.SysCfg.USB_Storage}']
+    msg_list = ['USB Mouse\s+1', 'USB Keyboard\s+1', f'USB Mass Storage\s+{SutConfig.SysCfg.USB_DISK}']
     if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED):
         result.log_fail(capture=True)
         return
@@ -182,19 +181,15 @@ def load_default():
         result.log_fail(capture=True)
         return
     SetUpLib.send_key(Key.F5)
-    result.capture_screen()
 
     # change pxe option from IPV4 to IPV6
     logging.info("***change pxe option from IPV4 to IPV6")
     if not SetUpLib.locate_option(Key.DOWN, pxe_boot, 15):
         result.log_fail(capture=True)
         return
-    SetUpLib.send_key(Key.F5)
-    result.capture_screen()
 
     logging.info("***Save and reset.")
-    SetUpLib.send_keys([Key.F10, Key.Y])
-    time.sleep(15)
+    SetUpLib.send_keys([Key.F5, Key.F10, Key.Y], 3)
 
     # Verify modified options
     if not SetUpLib.boot_to_page(Msg.PAGE_BOOT):
@@ -207,9 +202,7 @@ def load_default():
     logging.info("***Modified options are verified.")
 
     logging.info("***Reset defaul by hotkey")
-    SetUpLib.send_keys([Key.F9, Key.Y, Key.F10, Key.Y], delay=5)
-    result.capture_screen()
-    time.sleep(15)
+    SetUpLib.send_keys([Key.F9, Key.Y, Key.F10, Key.Y], 2)
 
     # Verify whether options are reset to default
     logging.info("***Verify whether options are reset to default")
@@ -320,7 +313,7 @@ def testcase_vtd_003():
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_VIRTUAL_VTD, 20, Msg.VIRTUAL_VTD)
         assert SetUpLib.verify_info(['Interrupt Remapping'],4)
         assert SetUpLib.back_to_setup_toppage()
-        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.ACT_CPU_CORES)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.PROCESSOR_CONFIG)
         assert SetUpLib.verify_info(['Extended APIC'], 10)
         logging.info("VTD enable Interrupt Remapping and Extended APIC can set")
         assert SetUpLib.back_to_setup_toppage()
@@ -328,7 +321,7 @@ def testcase_vtd_003():
         assert SetUpLib.locate_option(Key.DOWN, opt_vt_enable, 4)
         assert SetUpLib.set_option_value('Intel\(R\) VT for Directed I/O', 'Disabled', Key.DOWN, 10, True)
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
-        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.ACT_CPU_CORES)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.PROCESSOR_CONFIG)
         assert SetUpLib.verify_info(['Extended APIC'], 10) is None
         assert SetUpLib.back_to_setup_toppage()
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_VIRTUAL_VTD, 20, Msg.VIRTUAL_VTD)
@@ -380,7 +373,7 @@ def serial_print_keywords():
         # Close serial debug message
         assert BmcLib.debug_message(False)
         assert SetUpLib.boot_to_bios_config()
-        SetUpLib.send_keys(Key.CTRL_ALT_DELETE)
+        SetUpLib.send_key(Key.CTRL_ALT_DELETE)
         assert check_process(timeout=200)
         result.log_pass()
     except AssertionError as e:
@@ -402,7 +395,7 @@ def serial_print_error_check():
     ignore_list = ["IdFromBmc Fail,Status: Device Error"]
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
-        SetUpLib.send_keys(Key.SAVE_RESET)  # bmc reset 4s delay may cause serial output missed the beginning part
+        SetUpLib.send_keys(Key.SAVE_RESET, 2)  # bmc reset 4s delay may cause serial output missed the beginning part
         ser_log = SerialLib.cut_log(Sut.BIOS_COM, "BIOS Log @", Msg.BIOS_BOOT_COMPLETE, 120, 120)
         assert MiscLib.verify_msgs_in_log(["BIOS Log @", Msg.BIOS_BOOT_COMPLETE], ser_log)
         for line in ser_log.split("\n"):
@@ -494,14 +487,14 @@ def power_efficiency_mode_loop():
 
 
 # used to save the unitool test result,
-def write_txt(option, data):
+def _write_txt(option, data):
     report_file = os.path.join(SutConfig.Env.LOG_DIR, "{0}_{1}_result.txt".format(SutConfig.Env.PROJECT_NAME, option))
     with open(report_file, "a+", newline="") as report:
         report.write(data)
 
 
 # BYO unitool AT test coverd,
-def auto_set_setup(option, maxvalue):
+def _auto_set_setup(option, maxvalue):
     """
     baseline: setup base line excel
     option: 3 values - ed, index, other, matched with the setup baseline excel, a word string,
@@ -538,11 +531,11 @@ def auto_set_setup(option, maxvalue):
                 if MiscLib.ping_sut(SutConfig.Env.OS_IP, 300) and \
                         SshLib.interaction(Sut.OS_SSH, ['ls\n'], ['{0}'.format(SutConfig.Env.UNI_PATH.split('/')[2])]):
                     logging.info('Boot to OS Successfully,')
-                    write_txt(option, '{0}={1} - Pass\n'.format(key, value))
+                    _write_txt(option, '{0}={1} - Pass\n'.format(key, value))
                 else:
                     check_list.append('test failed option:{0}'.format(key))
                     core.capture_screen(SutConfig.Env.LOG_DIR, key)
-                    write_txt(option, '{0}={1} - Fail\n'.format(key, value))
+                    _write_txt(option, '{0}={1} - Fail\n'.format(key, value))
                     logging.info('Clear CMOS, contionue...')
                     BmcLib.clear_cmos()
                     BmcLib.force_reset()
@@ -570,7 +563,7 @@ def auto_set_ed():
     tc = ('007', '[TC007]AUTO_TEST_SETUP_ED_VALUE', '遍历设置ENABLE/DISABLE SETUP选项值')
     result = ReportGen.LogHeaderResult(tc)
     try:
-        assert auto_set_setup('ed', 'OnDieThermalThrottling')
+        assert _auto_set_setup('ed', 'OnDieThermalThrottling')
     except AssertionError:
         result.log_fail()
         return
@@ -582,7 +575,7 @@ def auto_set_index():
     tc = ('008', '[TC008]AUTO_TEST_SETUP_INDEX_VALUE', '遍历设置INDEX SETUP选项值')
     result = ReportGen.LogHeaderResult(tc)
     try:
-        assert auto_set_setup('index', 'RstPcieStorageRemapPort')
+        assert _auto_set_setup('index', 'RstPcieStorageRemapPort')
     except AssertionError:
         result.log_fail()
         return
@@ -594,7 +587,7 @@ def auto_set_other():
     tc = ('010', '[TC010]AUTO_TEST_SETUP_OTHER_VALUE', '遍历设置OTHER SETUP选项值')
     result = ReportGen.LogHeaderResult(tc)
     try:
-        assert auto_set_setup('other', 'RstPcieStorageRemapPort[1]')
+        assert _auto_set_setup('other', 'RstPcieStorageRemapPort[1]')
     except AssertionError:
         result.log_fail()
         return
@@ -614,13 +607,13 @@ def auto_set_other():
 # Expected_Result: A：BIOS启动正常，Setup菜单恢复默认值。
 # OnComplete: PowerOff
 # set default def, used for tc032
-def set_loadDefault(set_value, os_ip, uni_type=Sut.UNITOOL, ssh_type=Sut.OS_SSH):
+def _set_loadDefault(set_value, os_ip, uni_type=Sut.UNITOOL, ssh_type=Sut.OS_SSH):
     try:
         assert MiscLib.ping_sut(os_ip, 300)
         assert SshLib.interaction(ssh_type, ['ls\n'], ['{0}'.format(SutConfig.Env.UNI_PATH.split('/')[2])])
         res = uni_type.read(*set_value)
         assert uni_type.write(**set_value)
-        assert BmcLib.force_reset() 
+        assert BmcLib.force_reset()
         time.sleep(60)  # the delay time depends on the SUT CONFIG
         logging.info('Reboot the system...')
         # 当前AT平台默认一个legacy系统，如多个系统需替换从boot manger启动指定legacy系统函数
@@ -643,7 +636,7 @@ def loadDefault_001_uefi():
     set_value = {'CoreDisableMask': '10', 'IotEn': '1', 'CompletionTimeout': '0'}  # 可根据平台设计增减设置变量
     try:
         assert BmcLib.force_reset()
-        assert set_loadDefault(set_value, SutConfig.Env.OS_IP)
+        assert _set_loadDefault(set_value, SutConfig.Env.OS_IP)
         result.log_pass()
         return True
     except Exception as e:
@@ -659,7 +652,7 @@ def loadDefault_001_legacy():
     set_value = {'CoreDisableMask': '10', 'IotEn': '1', 'CompletionTimeout': '0'}  # 可根据平台设计增减设置变量
     try:
         assert BmcLib.force_reset()
-        assert set_loadDefault(set_value, SutConfig.Env.OS_IP_LEGACY, Sut.UNITOOL_LEGACY_OS, Sut.OS_LEGACY_SSH)  # legacy mode
+        assert _set_loadDefault(set_value, SutConfig.Env.OS_IP_LEGACY, Sut.UNITOOL_LEGACY_OS, Sut.OS_LEGACY_SSH)  # legacy mode
         result.log_pass()
         return True
     except Exception as e:
@@ -670,6 +663,7 @@ def loadDefault_001_legacy():
         BmcLib.clear_cmos()
         if not SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5):
             UpdateBIOS.update_bios('master')
+        BmcLib.set_boot_mode("Legacy", once=False)
 
 
 # 02 支持恢复Setup默认值
@@ -692,3 +686,134 @@ def testcase_loadDefault_002():
         return True
     except AssertionError:
         result.log_fail()
+
+
+# Testcase_MemorySequence_001 01 内存时序参数设置测试 支持内存时序调整
+# Author: Lupeipei
+# 1、单板上电，进入到Setup菜单，查看是否存在设置调整内存时序参数的菜单，有结果A；
+# 2、退出Setup，启动到OS下，使用uniCfg工具读取内存时序参数，查看默认参数是否正确，有结果B；
+# 3、使用uniCfg工具修改内存时序参数变量为Enabled，重启进入OS，再次读取参数值，有结果C
+# A：Setup菜单隐藏调整内存时序参数选项；B：参数默认为Disabled；C：读取参数为Enabled。
+@core.test_case(("016", "[TC016] 01 内存时序参数设置测试", "支持内存时序调整"))
+def testcase_memorysequence_001():
+    CHANG_XMPMODE = {"XMPMode": 1}
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_CONFIG, 10, Msg.SPD_CRC)
+        assert SetUpLib.verify_info(['Memory Timings Override'], 10) is None
+        SetUpLib.send_key(Key.CTRL_ALT_DELETE)
+        assert SetUpLib.continue_to_boot_suse_from_bm()
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
+        res = Sut.UNITOOL.read(*BiosCfg.XMPMODE)
+        assert res.get(list(BiosCfg.XMPMODE.keys())[0]) == '0'
+        logging.info("XMPMode default value 0")
+        assert Sut.UNITOOL.set_config(CHANG_XMPMODE)
+        assert SetUpLib.boot_suse_from_bm()
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
+        res1 = Sut.UNITOOL.read(*CHANG_XMPMODE)
+        assert res1.get(list(CHANG_XMPMODE.keys())[0]) == '1'
+        return core.Status.Pass
+    except AssertionError as e:
+        logging.error(e)
+
+
+# Author: Fubaolin
+# System Debug Level日志级别测试
+# Precondition: NA
+# OnStart: NA
+# set:
+# 1、单板上电启动，进入到Setup菜单，查看System Debug Level默认值是否正确，有结果A；
+# 2、设置打印级别为debug打印，保存重启。观察串口日志打印信息，有结果B；
+# 3、单板复位，进入到Setup界面，设置打印级别为Disabled，保存重启，观察串口日志打印信息，有结果C。
+#   A：默认为Disabled；
+#   B：系统开启debug信息打印；
+#   C：除OEMlevel外的打印全部去除。
+def _check_msg_in_log(list_info, duration, timeout):
+    try:
+        resource = SerialLib.cut_log(Sut.BIOS_COM, "CPU Resource Allocation", "BIOS boot completed.", duration, timeout)
+        str_flag = 0
+        for str_info in list_info:
+            results = re.search(str_info, resource)
+            if results:
+                logging.info('checkin pass： {}'.format(str_info))
+                str_flag = str_flag + 1
+        assert str_flag != 0, "**checkin list_info fail"
+        logging.info('check_msg_in_log pass')
+        return True
+    except AssertionError as e:
+        logging.error(e)
+        return False
+
+@core.test_case(('018', '[TC018] Testcase_BugLevel_001', ' System Debug Level日志级别测试'))
+def System_Debug_Level():
+    debug_msg_disable = ['Serial Debug Message Level', '<Disabled>']
+    debug_msg_enable = ['Serial Debug Message Level', '<Enabled>']
+    full_debug_flg = 'START_MRC_RUN'
+    try:
+        # 开启全打印
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MISC_CONFIG, 20, str(debug_msg_disable[0]))
+        assert SetUpLib.locate_option(Key.DOWN, debug_msg_disable, 10), '**debug_msg_disable not found'
+        assert SetUpLib.set_option_value(str(debug_msg_enable[0]), 'Enabled', Key.DOWN, save=True), '**set debug_msg_level Enabled  -> failed'
+        assert SetUpLib.wait_message(full_debug_flg, 300), "**Booting in full debug message level --> fail"
+        assert _check_msg_in_log(SutConfig.SysCfg.OEM_LOG_SUT+Msg.OEM_LOG_COMMON, duration=320, timeout=350)
+        logging.info("**full debug message pass")
+        # 关闭全打印
+        assert BmcLib.force_reset()
+        assert SetUpLib.wait_message("BdsWait", 300)
+        SetUpLib.send_key(Key.DEL)
+        assert SetUpLib.wait_message(Msg.PW_PROMPT, 300)
+        SetUpLib.send_data_enter(Msg.BIOS_PASSWORD)
+        assert SetUpLib.move_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MISC_CONFIG, 20, str(debug_msg_enable[0]))
+        assert SetUpLib.locate_option(Key.DOWN, debug_msg_enable, 10), '**debug_msg_enable not found'
+        assert SetUpLib.set_option_value(str(debug_msg_disable[0]), 'Disabled', Key.DOWN, save=True), '**set debug_msg_level Disabled -> failed'
+        assert _check_msg_in_log(SutConfig.SysCfg.OEM_LOG_SUT+Msg.OEM_LOG_COMMON, duration=120, timeout=200)
+        assert not SetUpLib.wait_message(full_debug_flg)
+        logging.info('debug_msg_level Disabled pass')
+        return core.Status.Pass
+    except AssertionError as e:
+        logging.error(e)
+        BmcLib.debug_message(enable=False)
+        return core.Status.Fail
+    finally:
+        BmcLib.clear_cmos()
+
+# Author: Fubaolin
+# 装备模式System Debug Level日志级别测试
+# Precondition: 装备模式
+# OnStart: NA
+# set:
+# 1、单板启动进入到OS下，执行./uniCfg -r SysDbgLevel,查看默认值是否是Disabled，有结果A；
+# 2、执行./uniCfg -w SysDbgLevel:1，使能打印级别，之后reboot复位，观察串口日志打印信息，有结果B；
+# 3、进入os下，执行./uniCfg -w SysDbgLevel:0，关闭打印级别，之后reboot复位，观察串口日志打印信息，有结果C。
+# A：默认为Disabled；
+# B：系统开启debug信息打印；
+# C：除OEMlevel外的打印全部去除。
+@core.test_case(('020', '[TC020] Testcase_BugLevel_002', ' 装备使能System Debug Level级别测试'))
+def Equipment_System_Debug_Level():
+    ser_debug_def = {"serialDebugMsgLvl": 0}
+    ser_debug_mod = {"serialDebugMsgLvl": 2}
+    full_debug_flg = 'START_MRC_RUN'
+    try:
+        assert BmcLib.force_reset()
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
+        assert Sut.UNITOOL.check(**ser_debug_def), '**unitool_read ser_debug fail' 
+        assert Sut.UNITOOL.set_config(ser_debug_mod), "**full_debug Enable set fail."      # full_debug Enable
+        assert BmcLib.force_reset()
+        assert SetUpLib.wait_message(full_debug_flg, 300), "**Booting in full debug message level --> fail"
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 500)
+        assert Sut.UNITOOL.set_config(ser_debug_def), "**full_debug disable set fail."      # full_debug disable
+        
+        assert BmcLib.force_reset()
+        assert _check_msg_in_log(SutConfig.SysCfg.OEM_LOG_SUT + Msg.OEM_LOG_COMMON, duration=120, timeout=200)
+        SerialLib.clean_buffer(Sut.BIOS_COM)
+        assert not SetUpLib.wait_message(full_debug_flg)
+        logging.info('debug_msg_level Disabled pass')
+        return core.Status.Pass
+    except AssertionError as e:
+        logging.error(e)
+        BmcLib.debug_message(enable=False)
+        return core.Status.Fail
+    finally:
+        BmcLib.clear_cmos()

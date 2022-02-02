@@ -4,6 +4,9 @@ import re
 import time
 from batf.SutInit import Sut
 from batf import SshLib, MiscLib
+from TCE.Config import SutConfig
+from TCE.Config.PlatConfig import Key
+from TCE.BaseLib import SetUpLib
 
 
 # update by arthur,
@@ -215,27 +218,6 @@ def bmc_warning_check():
     return Result
 
 
-# 从BMC读取当前固件版本信息, 返回版本信息为字符串格式
-def firmware_version_check():
-    class BmcInfo:
-        BIOS = None
-        BMC = None
-        CPLD = None
-
-    cmd = "ipmcget -d v"
-    info = SshLib.execute_command(Sut.BMC_SSH, cmd)
-    if not info:
-        logging.error(f'Cmd "{cmd}" return nothing')
-        return
-    bios_ver = "".join(re.findall("\nActive\s+BIOS\s+Version:\s+.*?\)([.\d]+)", info))
-    BmcInfo.BIOS = bios_ver
-    bmc_ver = "".join(re.findall("\nActive\s+iBMC\s+Version:\s+.*?\)([.\d]+)", info))
-    BmcInfo.BMC = bmc_ver
-    cpld_ver = "".join(re.findall("\nCPLD\s+Version:\s+.*?\)([.\d]+)", info))
-    BmcInfo.CPLD = cpld_ver
-    return BmcInfo
-
-
 # Enable fdmlog
 def enable_fdmlog_dump():
     dump_cmd = ["maint_debug_cli\n", "attach diag\n", "dump_state 1\n"]
@@ -257,19 +239,6 @@ def get_productname():
         print('No action.')
         return
     return prd
-
-
-# 抓取当前KVM屏幕图像，并保存到本地
-def capture_kvm_screen(path, name):
-    save_screen = SshLib.interaction(Sut.BMC_SSH, ["ipmcset -d printscreen\n"], ["successfully"], 15)
-    if not save_screen:
-        logging.info("BMC dump screen run command failed")
-        return
-    save_path = "".join(re.findall("Download print screen image to (.+) successfully.", save_screen[1]))
-    img_file = os.path.join(path, f"{name}.jpeg")
-    if SshLib.sftp_download_file(Sut.BMC_SFTP, save_path, img_file):
-        logging.info(f"Dump current kvm screen success, save image {img_file}")
-        return img_file
 
 
 # Set fan mode by bmc
@@ -321,25 +290,58 @@ def read_bt_data(key_str, timeout=5):
                         if op.recv_ready():
                             res = op.recv(1024).decode('utf-8')
                         now = time.time()
-                        if re.search(key_str, res):
+                        if re.findall(key_str, res):
                             logging.debug('Found the msg: {0}'.format(res))
                             break
                         # timeout default is 5s,
                         if (now - start_time) > timeout:
                             logging.info('Grab bt data timeout, close the session')
                             op.close()
-                            return
+                            raise Exception
                         # print(res)
                         time.sleep(0.1)
                 else:
                     pass  # skip invalid data,
             op.close()
-        return True
+        return True, res
     except Exception as e:
         logging.error(e)
-        return
+        return False
     finally:
         Sut.BMC_SSH.ssh_client.close()
+
+
+# 抓取当前KVM屏幕图像，并保存到本地
+def capture_kvm_screen(path, name):
+    save_screen = SshLib.interaction(Sut.BMC_SSH, ["ipmcset -d printscreen\n"], ["successfully"], 15)
+    if not save_screen:
+        logging.info("BMC dump screen run command failed")
+        return
+    save_path = "".join(re.findall("Download print screen image to (.+) successfully.", save_screen[1]))
+    img_file = os.path.join(path, f"{name}.jpeg")
+    if SshLib.sftp_download_file(Sut.BMC_SFTP, save_path, img_file):
+        logging.info(f"Dump current kvm screen success, save image {img_file}")
+        return img_file
+
+
+# 从BMC读取当前固件版本信息, 返回版本信息为字符串格式
+def firmware_version_check():
+    class BmcInfo:
+        BIOS = None
+        BMC = None
+        CPLD = None
+    cmd = "ipmcget -d v"
+    info = SshLib.execute_command(Sut.BMC_SSH, cmd)
+    if not info:
+        logging.error(f'Cmd "{cmd}" return nothing')
+        return
+    bios_ver = "".join(re.findall("\nActive\s+BIOS\s+Version:\s+.*?\)([.\d]+)", info))
+    BmcInfo.BIOS = bios_ver
+    bmc_ver = "".join(re.findall("\nActive\s+iBMC\s+Version:\s+.*?\)([.\d]+)", info))
+    BmcInfo.BMC = bmc_ver
+    cpld_ver = "".join(re.findall("\nCPLD\s+Version:\s+.*?\)([.\d]+)", info))
+    BmcInfo.CPLD = cpld_ver
+    return BmcInfo
 
 
 # Grab bmc sol data, better call it before power action,

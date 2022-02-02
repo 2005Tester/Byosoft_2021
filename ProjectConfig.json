@@ -6,7 +6,8 @@
     "ConfigMapping": {
         "Sut01": "Sut01Config",
         "Sut02": "Sut02Config",
-        "Sut03": "Sut03Config"
+        "Sut03": "Sut03Config",
+        "Sut04": "Sut04Config"
         }
     },
 
@@ -15,10 +16,7 @@
     "Resources": ["BIOS_COM", "BMC_SSH", "BMC_SFTP", "BMC_RFISH", "OS_SSH", "OS_SFTP", "UNITOOL"],
     "ConfigMapping": {
         "Sut01": "Sut01Config",
-        "Sut02": "Sut02Config",
-        "Sut03": "Sut03Config",
-        "Sut04": "Sut04Config",
-        "Sut05": "Sut05Config"
+        "Sut03": "Sut03Config"
         }
     },
 
@@ -31,10 +29,27 @@
     },
 
     {
-        "ProjectName": "Hygon",
-        "Resources": ["BIOS_COM", "BMC_SSH", "BMC_SFTP", "OS_SSH", "OS_SFTP"],
-        "ConfigMapping": {
-            "Sut01": "Sut01Config"
-            }
+    "ProjectName": "Hygon",
+    "Resources": ["BIOS_COM", "BMC_SSH", "BMC_SFTP", "OS_SSH", "OS_SFTP"],
+    "ConfigMapping": {
+        "Sut01": "Sut01Config"
         }
+    },
+
+    {
+    "ProjectName": "SPR4P",
+    "Resources": ["BIOS_COM", "BMC_SSH", "BMC_SFTP", "BMC_RFISH", "OS_SSH", "OS_SFTP", "UNITOOL", "OS_LEGACY_SSH", "UNITOOL_LEGACY_OS"],
+    "ConfigMapping": {
+        "Sut01": "Sut01Config"
+        }
+    },
+	{
+    "ProjectName": "HY5",
+    "Resources": ["BIOS_COM", "BMC_SSH", "BMC_SFTP", "BMC_RFISH", "OS_SSH", "OS_SFTP", "UNITOOL", "OS_LEGACY_SSH", "UNITOOL_LEGACY_OS"],
+    "ConfigMapping": {
+        "Sut01": "Sut01Config",
+        "Sut02": "Sut02Config"
+        }
+    }
+
 ]

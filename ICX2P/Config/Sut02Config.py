@@ -7,25 +7,18 @@
 #  means without the express written consent of Byosoft Corporation.
 
 # -*- encoding=utf8 -*-
-import os
-import datetime
+
+from ICX2P.Tools.Material.CPU import Icx8352Y as CPU
 
 
 class Env:
-    # Define test plan
-    TESTCASE_CSV = "ICX2P\\AllTest.csv"
+    """Environment Configuration"""
 
     # Report Setting
-    PROJECT_NAME = "2288V6"
-    SUT_CONFIG = "SUT1-Full-DIMM"
-    REPORT_TEMPLATE = "ICX2P\\Report\\template"
-    RELEASE_BRANCH = "2288V6_016"
+    SUT_CONFIG = "SUT2-8-DIMM"  # SUT名称 (batf)
 
     # Log settings
-    timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    LOG_DIR = 'c:\\daily\\ICX2P\\{0}'.format(timestamp)
-    if not os.path.exists(LOG_DIR):
-        os.makedirs(LOG_DIR)
+    LOG_DIR = 'c:\\daily\\ICX2P_Sut02'
 
     # BIOS Serial setting
     BIOS_SERIAL = "com3"
@@ -35,62 +28,81 @@ class Env:
     BMC_USER = 'a'
     BMC_PASSWORD = 'a'
 
-    # OS Configuration
-    OS_IP_LEGACY = '192.168.111.28'
-    OS_USER_LEGACY = 'root'
-    OS_PASSWORD_LEGACY = '1'
-    
+    # UEFI OS
     OS_IP = '192.168.111.29'
     OS_USER = 'root'
     OS_PASSWORD = '1'
 
-    # Tool definition
+    # Legacy OS
+    OS_IP_LEGACY = '192.168.111.152'
+    OS_USER_LEGACY = 'root'
+    OS_PASSWORD_LEGACY = '1'
+
+    # UEFI OS名称：PlatConfig.BootOS中定义的OS名称
+    OS_NAME = "SLES"
+
+    # 系统开机时间(s)
+    BOOT_DELAY = 300
+
+    # Smbios Path
+    Smbios_PATH = 'ICX2P\\Tools\\Smbios\\Sut02\\'
+
+    # OS Tools Path
     UNI_PATH = "/root/flashtool/unitool"
     RW_PATH = '/root/rw'
     CSCRIPTS_PATH = '/root/Cscripts'
     CHIPSEC_PATH = "/root/chipsec"
 
-    # BIOS Firmware Directory, Must manual copy image files to the directory before test
-    BIOS_PATH = r"\\ByoDiskStation1\PublicRW\QA\Firmware\2288V6\BIOS"
 
-
-# The SUT physical system configuration
+# SUT Physical Components Config
 class SysCfg:
-    CPU_CNT = 2  # cpu socket count
-    REAR_USB_CNT = 2
-    BUILDIN_USB_CNT = 1
-    DIMM_SIZE = 64  # /GB
-    USB_Storage = 3  # usb disk inserted
+    # CPU型号
+    CPU_TYPE:   str = CPU.Type          # CPU Production Name
+    CPU_CODE:   str = CPU.Code          # CPU Code Name
+    CPU_CODE_L: str = CPU.CodeLong      # CPU Long Code Name
+    CPU_BASE:   str = CPU.BaseFreq      # CPU Base Frequency
+    CPU_TURBO:  str = CPU.TurboFreq     # CPU Turbo Frequency
+    CPU_CORES:  int = CPU.Cores         # CPU Physical Cores
+    CPU_STEP:   str = CPU.Stepping      # CPU Stepping
+    CPU_L1:     int = CPU.L1_Cache      # CPU L1 Cache(KB)
+    CPU_L2:     int = CPU.L2_Cache      # CPU L2 Cache(KB)
+    CPU_L3:     int = CPU.L3_Cache      # CPU L3 Cache(KB)
+    CPU_M_FREQ: int = CPU.Max_Mem_Freq  # CPU Max Supported DDR Frequency(MHz)
+    CPU_TDP:    int = CPU.TDP           # CPU Thermal Design Power(W)
+    CPU_ID:     str = CPU.CPUID         # CPU ProcessorID
 
-    PCIE_MAP = [
-        {  # cpu0
-            "0a": "x16",  # ocp
-            "1a": "x8",  # slot1
-            "1c": "x8",  # build-in raid
-            "2a": "x16",  # slot2
-            "3a": "x16"  # slot7
-        },
-        {  # cpu1
-            "0a": "x16",  # slot3
-            "1a": "x16",  # slot4
-            # "2a": "x8",  # Slimline3
-            # "2c": "x8",  # Slimline4
-        }]
+    # DIMM型号
+    DIMM_SIZE = 16                      # 单根内存条容量
+    DIMM_VENDOR = "Samsung"             # DIMM厂商
+    DIMM_FREQ = 2666                    # MHz
+    DIMM_RANK_BW = "DRx8"               # Rank & BandWidth
+    DIMM_TYPE = "RDIMM"                 # DIMM Type
 
-    # CPU, DIMM info
-    CPU_TYPE = "6330"
-    CPU_FREQ = "2.0"
-    CPU_INFO = [
-        'Processor ID\s+000606A6', 
-        'Processor Frequency\s+2.000GHz',
-        "Processor 1 Version \s+Intel\(R\) Xeon\(R\) Gold 6\s+330 CPU @ 2.00GHz",
-        "Processor 2 Version \s+Intel\(R\) Xeon\(R\) Gold 6\s+330 CPU @ 2.00GHz"
-        ]
+    # CPU安装位置
+    CPU_POP = [0, 1]
 
-    DIMM_FREQ = 2933  # Mhz
-    DIMM_INFO = ['DIMM020\(C\)\s+S0.CC.D0:2933MT/s Hynix DRx4 32GB RDIMM',
-                 'DIMM160\(G\)\s+S1.CG.D0:2933MT/s Hynix DRx4 32GB RDIMM']
+    # DIMM安装位置 ("{socket}{channel}{dimm}")
+    DIMM_POP = ["120", "130", "140", "150", "160", "170"]
+
+    # PCIE设备安装位置  "Bus:Dev.Fun": {"BandWidth": "x**", "Speed": "Gen*"}
+    PCIE_POP = {"32:00.0": {"BandWidth": "x08", "Speed": "Gen3"},
+                }
+
+    # USB Info
+    USB_REAR = 2  # Rear USB Ports
+    USB_BUILD_IN = 1  # Build-in USB Ports
+    USB_DISK = 2  # USB Disk Inserted
+
+    # PXE Info
+    PXE_UEFI = r'UEFI PXEv4:\([0-9A-Z\-]{17}\) - Port00 SLOT1'
+    PXE_LEGACY = 'IBA XE \(X550\) Slot 3100 v2434 Port 0 SLOT1'
+
+    # Legacy OptionROM Info
+    Option_Rom_Start = "Initializing Intel\(R\) Boot Agent XE v2.3.58"
+    Option_Rom_End = "PXE 2.1 Build 092 \(WfM 2.0\)"
 
     # Boot Option Flag
-    Legacy_OS = '\(Bus 33 Dev 00\)PCI RAID Adapter RAID CARD'
-    Legacy_PXE = 'IBA XE \(X550\) Slot 3100 v2434 Port 0 SLOT1'
+    LEGACY_OS = '\(Bus 33 Dev 00\)PCI RAID Adapter RAID CARD'
+
+    # network dev list order in OS
+    ETH_OS = ['eth7', 'eth6']

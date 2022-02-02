@@ -169,7 +169,7 @@ def press_f2():
 def dram_rapl_option_check():
     tc = ('015', '[TC015]Testcase_DRAM_RAPL_001, 菜单项DRAM RAPL选单检查', '支持DRAM RAPL设置')
     result = ReportGen.LogHeaderResult(tc)
-    dram_rapl = [['DRAM RAPL', '<Enabled>']]
+    dram_rapl = [['DRAM RAPL', Msg.ENABLED_VAL]]
     if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED):
         result.log_fail()
         return
@@ -198,7 +198,7 @@ def dram_rapl_option_check():
 def cnd_default_enable():
     tc = ('017', '[TC017]检查CDN开关默认值', '支持网口CDN特性开关')
     result = ReportGen.LogHeaderResult(tc)
-    cdn_status = ['Network CDN', '<Enabled>']
+    cdn_status = ['Network CDN', Msg.ENABLED_VAL]
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.MISC_CONFIG], 20, 'Miscellaneous')
@@ -232,40 +232,37 @@ def security_boot():
 # Testcase_VTD_002
 @core.test_case(('025', '[TC025] Testcase_VTD_002', '关闭VT-d功能启动测试'))
 def testcase_vtd_002():
-    vt_d_menu = ["Virtualization Configuration", "Intel\(R\) VT for Directed I/O \(VT-d\)"]
-    opt_vt = ["Intel\(R\) VT for Directed I/O", "<Enabled>"]
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
-        assert SetUpLib.enter_menu(Key.DOWN, vt_d_menu, 20, "Directed")
-        assert SetUpLib.locate_option(Key.DOWN, opt_vt, 4)
-        assert SetUpLib.set_option_value('Intel\(R\) VT for Directed I/O', 'Disabled', save=True)
-        assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE)
+        assert SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG, Msg.PROCESSOR_CONFIG], 20, Msg.PER_CPU)
+        assert SetUpLib.set_option_value('Intel\(R\) TXT', Msg.DISABLED)
+        assert SetUpLib.back_to_setup_toppage()
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_VIRTUAL_VTD, 20, Msg.VIRTUAL_VTD)
+        assert SetUpLib.set_option_value('Intel\(R\) VT for Directed I/O', Msg.DISABLED, save=True)
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
         return core.Status.Pass
     except AssertionError as e:
         logging.error(e)
     finally:
         BmcLib.clear_cmos()
-    
-   
+
+
 # testcase_VTD_003    
 def testcase_vtd_003():
     tc = ('029', '[TC029] Testcase_VID_003', 'VI-d菜单联动测试')
     result = ReportGen.LogHeaderResult(tc)
-    opt_vt_enable = ["Intel\(R\) VT for Directed I/O", "<Enabled>"]
-
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_VIRTUAL_VTD, 20, Msg.VIRTUAL_VTD)
-        assert SetUpLib.verify_info(['Interrupt Remapping'],4)
+        assert SetUpLib.verify_info(['Interrupt Remapping'], 4)
         assert SetUpLib.back_to_setup_toppage()
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.ACT_CPU_CORES)
         assert SetUpLib.verify_info(['Extended APIC'], 10)
-        logging.info("VTD enable Interrupt Remapping and Extended APIC can set")
+        assert SetUpLib.set_option_value('Intel\(R\) TXT', Msg.DISABLED)
         assert SetUpLib.back_to_setup_toppage()
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_VIRTUAL_VTD, 20, Msg.VIRTUAL_VTD)
-        assert SetUpLib.locate_option(Key.DOWN, opt_vt_enable, 4)
-        assert SetUpLib.set_option_value('Intel\(R\) VT for Directed I/O', 'Disabled', Key.DOWN, 10, True)
-        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.set_option_value('Intel\(R\) VT for Directed I/O', Msg.DISABLED, save=True)
+        assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.ACT_CPU_CORES)
         assert SetUpLib.verify_info(['Extended APIC'], 10) is None
         assert SetUpLib.back_to_setup_toppage()
@@ -318,7 +315,7 @@ def serial_print_keywords():
         # Close serial debug message
         assert BmcLib.debug_message(False)
         assert SetUpLib.boot_to_bios_config()
-        SetUpLib.send_keys(Key.CTRL_ALT_DELETE)
+        SetUpLib.send_key(Key.CTRL_ALT_DELETE)
         assert check_process(timeout=300)
         result.log_pass()
     except AssertionError as e:
@@ -340,7 +337,7 @@ def serial_print_error_check():
     ignore_list = ["IdFromBmc Fail,Status: Device Error"]
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
-        SetUpLib.send_keys(Key.SAVE_RESET)  # bmc reset 4s delay may cause serial output missed the beginning part
+        SetUpLib.send_keys(Key.SAVE_RESET, 2)  # bmc reset 4s delay may cause serial output missed the beginning part
         ser_log = SerialLib.cut_log(Sut.BIOS_COM, "BIOS Log @", Msg.BIOS_BOOT_COMPLETE, 120, 120)
         assert MiscLib.verify_msgs_in_log(["BIOS Log @", Msg.BIOS_BOOT_COMPLETE], ser_log)
         for line in ser_log.split("\n"):
@@ -489,7 +486,8 @@ def auto_set_setup(option, maxvalue):
                     BmcLib.clear_cmos()
                     BmcLib.force_reset()
                     if not MiscLib.ping_sut(SutConfig.Env.OS_IP, 300) and not \
-                            SshLib.interaction(Sut.OS_SSH, ['ls\n'], ['{0}'.format(SutConfig.Env.UNI_PATH.split('/')[2])]):
+                            SshLib.interaction(Sut.OS_SSH, ['ls\n'],
+                                               ['{0}'.format(SutConfig.Env.UNI_PATH.split('/')[2])]):
                         logging.debug('debug result - {0}'.format(check_list))
                         logging.info('Exit the loop test, check the network and SUT status,')
                         return

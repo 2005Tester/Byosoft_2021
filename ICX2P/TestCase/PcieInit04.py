@@ -4,7 +4,7 @@ import os
 import csv
 from batf import core, SerialLib, MiscLib, SshLib
 from batf.SutInit import Sut
-from ICX2P.BaseLib import SetUpLib, BmcLib, PlatMisc
+from ICX2P.BaseLib import SetUpLib, PlatMisc, BmcLib
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg
 from batf.Report import ReportGen
@@ -127,14 +127,14 @@ def pcie_resource_64b():
         logging.info('Check "PCI 64-Bit Resource Allocation" default = <Enabled> pass')
         SetUpLib.send_key(Key.F6)
         assert SetUpLib.verify_options(Key.DOWN, [["PCI 64-Bit Resource Allocation", "<Disabled>"]], 16)
-        SetUpLib.send_keys(Key.SAVE_RESET)
+        SetUpLib.send_keys(Key.SAVE_RESET, 2)
         # Check Config
         re_allocate = SerialLib.cut_log(Sut.BIOS_COM,
                                         "Resource allocation Failed. Enabling 64bit MMIO allocation and resetting the system",
                                         "START_SOCKET_0_DIMMINFO_TABLE", 10, 120)
         # 未触发资源不足正常 Disable
         if not re_allocate:
-            assert SetUpLib.continue_to_page(Msg.PAGE_ADVANCED)
+            assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
             assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_IIO_CONFIG, 10, "CPU 1 Configuration")
             assert SetUpLib.verify_options(Key.DOWN, [["PCI 64-Bit Resource Allocation", "<Disabled>"]], 16)
             logging.info('Check "PCI 64-Bit Resource Allocation" change to <Disabled> pass')
@@ -382,7 +382,7 @@ def aspm_global_disable_l1only():
                     logging.info(f'Verify pass: "{Msg.ASPM_ROOT_PORT}" is hidden')
                     SetUpLib.send_keys([Key.ESC])
                 SetUpLib.send_keys([Key.ESC])
-            SetUpLib.send_keys([Key.F10, Key.Y])  # 检查完毕保存设置重启进OS检查状态
+            SetUpLib.send_keys(Key.SAVE_RESET, 2)  # 检查完毕保存设置重启进OS检查状态
             assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE)
             assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
             rtn_data = SshLib.execute_command(Sut.OS_SSH, 'lspci |grep "PCI bridge"')  # 进入系统检查 Root Port ASPM 状态
@@ -438,7 +438,7 @@ def aspm_per_port_loop():
                     assert SetUpLib.set_option_value(Msg.ASPM_ROOT_PORT, value, key=Key.UP, loc_cnt=8)
                     SetUpLib.send_keys([Key.ESC])
                 SetUpLib.send_keys([Key.ESC])
-            SetUpLib.send_keys(Key.SAVE_RESET)  # per port 遍历修改完成，保存设置重启进OS检查状态
+            SetUpLib.send_keys(Key.SAVE_RESET, 2)  # per port 遍历修改完成，保存设置重启进OS检查状态
             save_value = value
             assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE)
             assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
@@ -568,7 +568,7 @@ def sriov_per_port_loop():
             port_list = PlatMisc.match_options(Key.DOWN, r"(CPU \d Port (?:DMI|[0-4][A-D]) SR-IOV Support)", 15)
             for port in port_list:
                 assert SetUpLib.set_option_value(port, value, save=False)
-            SetUpLib.send_keys(Key.SAVE_RESET)
+            SetUpLib.send_keys(Key.SAVE_RESET, 2)
             link_sts = SerialLib.cut_log(Sut.BIOS_COM, "PCIE LINK STATUS:.+", Msg.BIOS_BOOT_COMPLETE, 30, 300)
             assert link_sts, "Invalid PCIE LINK STATUS"
             bdf_list = re.findall("PCIE LINK STATUS: ([0-9a-fA-F]+:[0-4]+\.[0-9a-fA-F])", link_sts)

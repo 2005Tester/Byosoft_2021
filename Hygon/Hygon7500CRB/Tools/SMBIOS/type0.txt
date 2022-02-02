@@ -1,0 +1,28 @@
+# dmidecode 3.2
+Getting SMBIOS data from sysfs.
+SMBIOS 3.3 present.
+# SMBIOS implementations newer than version 3.2.0 are not
+# fully supported by this version of dmidecode.
+
+Handle 0x0030, DMI type 0, 26 bytes
+BIOS Information
+	Vendor: Byosoft
+	Version: 0107
+	Release Date: 01/24/2022
+	Address: 0xF0000
+	Runtime Size: 64 kB
+	ROM Size: 16 MB
+	Characteristics:
+		PCI is supported
+		BIOS is upgradeable
+		BIOS shadowing is allowed
+		Boot from CD is supported
+		Selectable boot is supported
+		EDD is supported
+		ACPI is supported
+		USB legacy is supported
+		BIOS boot specification is supported
+		Targeted content distribution is supported
+		UEFI is supported
+	BIOS Revision: 1.7
+

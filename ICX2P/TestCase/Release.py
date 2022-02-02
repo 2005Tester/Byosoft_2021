@@ -2,15 +2,15 @@ import os
 import re
 import glob
 import logging
-from batf import SshLib, MiscLib, var
+import filecmp
+from batf import SshLib, MiscLib, var, core
 from batf.SutInit import Sut
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg, BiosCfg
-from ICX2P.BaseLib import BmcLib, SetUpLib, Update, PlatMisc
+from ICX2P.BaseLib import SetUpLib, Update, PlatMisc, BmcLib
 from ICX2P.BaseLib.PlatMisc import ReleaseTest
 from batf.Report import ReportGen
-from batf.Common.RedfishLib import Redfish
-
+from ICX2P.TestCase import UpdateBIOS
 
 # Test case ID: 9xx
 
@@ -18,9 +18,20 @@ from batf.Common.RedfishLib import Redfish
 #            Release Test Cases          #
 ##########################################
 
+def _update_bios_img(bios_branch):
+    img = Update.get_test_image(SutConfig.Env.LOG_DIR, bios_branch, 'debug-build')
+    try:
+        assert Update.update_bios(img), 'update bios failed'
+        assert SetUpLib.update_default_password(), 'update bios pwd failed'
+        assert SetUpLib.boot_suse_from_bm(), 'boot to suse failed'
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, SutConfig.Env.BOOT_DELAY), 'ping os ip failed'
+        return True
+    except Exception as e:
+        logging.error(e)
+        return False
 
 def bios_parallel_flash():
-    tc = ('900', '[TC900] Parallel flash', "Check BIOS version under setup and iBMC Web")
+    tc = ('900', '[TC900] Parallel flash', "Check BIOS version under setup and BMC Web")
     result = ReportGen.LogHeaderResult(tc)
     release_branch = var.get("branch")
     try:
@@ -93,7 +104,7 @@ def hpm_upgrade_test():
     result = ReportGen.LogHeaderResult(tc)
 
     new_branch = var.get('branch')
-    old_branch = PlatMisc.last_release(new_branch)
+    old_branch = SutConfig.Env.PREVIOUS_BRANCH
     if not ReleaseTest.old_bios:
         ReleaseTest.old_bios = Update.get_test_image(SutConfig.Env.LOG_DIR, old_branch, 'debug-build')
     if not ReleaseTest.new_bios:
@@ -131,7 +142,7 @@ def hpm_downgrade_test():
     new_branch = var.get('branch')
     if not ReleaseTest.new_bios:
         ReleaseTest.new_bios = Update.get_test_image(SutConfig.Env.LOG_DIR, new_branch, 'debug-build')
-    old_branch = PlatMisc.last_release(new_branch)
+    old_branch = SutConfig.Env.PREVIOUS_BRANCH
     old_path_local = os.path.join(SutConfig.Env.BIOS_PATH, old_branch)
     old_hpm_local = glob.glob(os.path.join(old_path_local, "*.hpm"))
     flash_latest = False
@@ -167,9 +178,8 @@ def compare_fdm_log():
     tc = ('906', '[TC906] Compare FDM Log Size', "Compare FDM Log size with previous BIOS version")
     result = ReportGen.LogHeaderResult(tc)
 
-    rfish = Redfish(SutConfig.Env.BMC_IP, SutConfig.Env.BMC_USER, SutConfig.Env.BMC_PASSWORD)
     new_branch = var.get('branch')
-    old_branch = PlatMisc.last_release(new_branch)
+    old_branch = SutConfig.Env.PREVIOUS_BRANCH
     if not ReleaseTest.old_bios:
         ReleaseTest.old_bios = Update.get_test_image(SutConfig.Env.LOG_DIR, old_branch, 'debug-build')
     if not ReleaseTest.new_bios:
@@ -200,14 +210,14 @@ def compare_fdm_log():
         logging.info('Mark Downgrade Flash BIOS as already tested')
         ReleaseTest.downgrade_tested = True
         logging.info('Dump "registry.json" file for later registry compare')
-        ReleaseTest.registry_old = rfish.registry_dump(dump_json=True, path=SutConfig.Env.LOG_DIR, name="Registry_old.json")
+        ReleaseTest.registry_old = Sut.BMC_RFISH.registry_dump(dump_json=True, path=SutConfig.Env.LOG_DIR, name="Registry_old.json")
         assert latest == downgrade, "FDM LOG if different after BIOS downgrade"
         # Flash latest release img back again
         upgrade = read_fdm(ReleaseTest.new_bios, "upgrade")
         assert upgrade != 0, "Exception: Read upgrade fdmlog"
         flash_latest = True
         logging.info('Dump "registry.json" file for later registry compare')
-        ReleaseTest.registry_new = rfish.registry_dump(dump_json=True, path=SutConfig.Env.LOG_DIR, name="Registry_new.json")
+        ReleaseTest.registry_new = Sut.BMC_RFISH.registry_dump(dump_json=True, path=SutConfig.Env.LOG_DIR, name="Registry_new.json")
         assert downgrade == upgrade, "FDM LOG if different after BIOS upgrade"
         result.log_pass()
         return True
@@ -226,15 +236,25 @@ def compare_fdm_log():
 # OnStart: NA
 # OnComplete: NA
 def check_bmc_warning():
-    tc = ('907', '[TC907] iBMC warning info in web', "Check no any warning info")
+    tc = ('907', '[TC907] BMC warning info in web', "Check no any warning info")
     result = ReportGen.LogHeaderResult(tc)
     check_result = BmcLib.bmc_warning_check().status
+    check_res = BmcLib.bmc_warning_check().message
     if check_result is None:
         result.log_skip()
         return
+    flag_error = 0
     if not check_result:
+        for _excl in check_res.splitlines()[1:]:
+            excl = _excl.split('|')[-1]
+            if any(re.search(ex, excl) for ex in SutConfig.Env.BMC_WARN_IG):
+                continue
+            logging.debug(f"warning message: {excl}")
+            flag_error += 1
+
+    if flag_error != 0:
         result.log_fail()
-        return
+        return False
     result.log_pass()
     return True
 
@@ -244,17 +264,15 @@ def check_bmc_warning():
 # Precondition: BMC正常登录
 # OnStart: NA
 # OnComplete: NA
+@core.test_case(('908', '[TC908] Compare registry.json', "Compare registry.json file with previous version"))
 def registry_check():
-    tc = ('908', '[TC908] Compare registry.json file with previous version', "Compare registry.json file with previous version")
-    result = ReportGen.LogHeaderResult(tc)
-
     new_branch = var.get('branch')
-    old_branch = PlatMisc.last_release(new_branch)
+    old_branch = SutConfig.Env.PREVIOUS_BRANCH
+
     if not ReleaseTest.old_bios:
         ReleaseTest.old_bios = Update.get_test_image(SutConfig.Env.LOG_DIR, old_branch, 'debug-build')
     if not ReleaseTest.new_bios:
         ReleaseTest.new_bios = Update.get_test_image(SutConfig.Env.LOG_DIR, new_branch, 'debug-build')
-    rfish = Redfish(SutConfig.Env.BMC_IP, SutConfig.Env.BMC_USER, SutConfig.Env.BMC_PASSWORD)
     flash_latest = True
 
     try:
@@ -263,19 +281,21 @@ def registry_check():
             assert Update.update_bios(ReleaseTest.old_bios)
             flash_latest = False
             logging.info("dump old registry")
-            ReleaseTest.registry_old = rfish.registry_dump(dump_json=True, path=SutConfig.Env.LOG_DIR, name="Registry_old.json")
+            ReleaseTest.registry_old = Sut.BMC_RFISH.registry_dump(dump_json=True, path=SutConfig.Env.LOG_DIR, name="Registry_old.json")
         # new branch bios image registry dump
         if not ReleaseTest.registry_new:
             assert Update.update_bios(ReleaseTest.new_bios)
             flash_latest = True
             logging.info("dump new registry")
-            ReleaseTest.registry_new = rfish.registry_dump(dump_json=True, path=SutConfig.Env.LOG_DIR, name="Registry_new.json")
-        assert ReleaseTest.registry_old == ReleaseTest.registry_new, "Check old registry is different from new registry"
+            ReleaseTest.registry_new = Sut.BMC_RFISH.registry_dump(dump_json=True, path=SutConfig.Env.LOG_DIR,
+                                                                   name="Registry_new.json")
+        assert not PlatMisc.check_differ(ReleaseTest.registry_old, ReleaseTest.registry_new
+                                         ), "Check old registry is different from new registry"
         logging.info("Check old registry is same with new registry")
-        result.log_pass()
+        return core.Status.Pass
     except Exception as e:
         logging.error(e)
-        result.log_fail()
+        return core.Status.Fail
     finally:
         if not flash_latest:
             Update.update_bios(ReleaseTest.new_bios)
@@ -289,10 +309,10 @@ def registry_check():
 # OnStart: NA
 # OnComplete: NA
 def bios_downgrade_flash():
-    tc = ('909', '[TC909] Downgrade flash', "Check BIOS version under setup and iBMC Web")
+    tc = ('909', '[TC909] Downgrade flash', "Check BIOS version under setup and BMC Web")
     result = ReportGen.LogHeaderResult(tc)
     new_branch = var.get("branch")
-    old_branch = PlatMisc.last_release(new_branch)
+    old_branch = SutConfig.Env.PREVIOUS_BRANCH
     if not ReleaseTest.old_bios:
         ReleaseTest.old_bios = Update.get_test_image(SutConfig.Env.LOG_DIR, old_branch, 'debug-build')
     if not ReleaseTest.new_bios:
@@ -359,15 +379,14 @@ def equip_iou_not_hidden():
 
 # Author: WangQingshan
 # 装备模式BIOS，用装备工具设置选项/密码/Logo并恢复默认测试
-# Precondition: BMC正常登录
+# Precondition: BMC正常登录，KVM开启共享模式
 # OnStart: NA
 # OnComplete: NA
+@core.test_case(('912', '[TC912] Restore BIOS default setting via equipment tool', 'Restore BIOS default setting via equipment tool'))
 def equip_tool_set_and_restore():
-    tc = ('912', '[TC912] Restore BIOS default setting via equipment tool', 'Restore BIOS default setting via equipment tool')
-    result = ReportGen.LogHeaderResult(tc)
     try:
         # 抓取默认logo和bios设置
-        origin_logo = PlatMisc.save_logo(SutConfig.Env.LOG_DIR, "origin_logo")
+        origin_logo = PlatMisc.save_logo(SutConfig.Env.LOG_DIR, name="origin_logo")
         assert origin_logo
         assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
         default_config = Sut.UNITOOL.read(*BiosCfg.HPM_KEEP)
@@ -376,7 +395,7 @@ def equip_tool_set_and_restore():
         assert PlatMisc.unipwd_tool("set", "admin@9001")
         assert PlatMisc.unilogo_update(name="CustomLogo.bmp")
         # 重启并检查修改结果
-        modify_logo = PlatMisc.save_logo(SutConfig.Env.LOG_DIR, "modify_logo")
+        modify_logo = PlatMisc.save_logo(SutConfig.Env.LOG_DIR, name="modify_logo")
         assert modify_logo
         assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 600)
         assert Sut.UNITOOL.check(**BiosCfg.HPM_KEEP)
@@ -387,15 +406,15 @@ def equip_tool_set_and_restore():
         assert PlatMisc.unipwd_tool("set", Msg.BIOS_PW_DEFAULT)
         assert PlatMisc.unilogo_update(name=os.path.split(origin_logo)[1], path=os.path.split(origin_logo)[0])
         # 重启并检查恢复默认结果
-        restore_logo = PlatMisc.save_logo(SutConfig.Env.LOG_DIR, "restore_logo")
+        restore_logo = PlatMisc.save_logo(SutConfig.Env.LOG_DIR, name="restore_logo")
         assert restore_logo
         assert MiscLib.compare_images(origin_logo, restore_logo)
         assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 600)
         assert Sut.UNITOOL.check(**default_config)
         assert PlatMisc.unipwd_tool("check", Msg.BIOS_PW_DEFAULT)
-        result.log_pass()
+        return core.Status.Pass
     except AssertionError:
-        result.log_fail()
+        return core.Status.Fail
     finally:
         if not MiscLib.ping_sut(SutConfig.Env.OS_IP, 600):
             BmcLib.force_reset()
@@ -426,6 +445,25 @@ def post_logo_check():
         result.log_fail()
 
 
+# 1、BIOS正常启动；
+# 2、检查KVM界面显示的热键信息是否正确，有结果A。
+# A：KVM正确显示热键信息，包括DEL、F6、F11、F12。
+@core.test_case(('915', '[TC915] 01 BIOS启动阶段KVM热键显示测试', '支持热键配置'))
+def kvm_logo_check():
+    try:
+        default_logo = os.path.abspath(os.path.join(os.path.dirname(__file__), r"..\Tools\Logo\Key.bmp"))
+        logging.info(f"Default logo: {default_logo}")
+        key_logo = PlatMisc.save_logo(cut_str=Msg.HOTKEY_PROMPT_DEL, name="key_logo", logo_loc=(0, 0, 243, 78))
+        if not key_logo:
+            logging.info("Post logo can't be captured, please confirm the KVM is open as share mode, not private mode")
+            raise AssertionError
+        assert MiscLib.compare_images(default_logo, key_logo)
+        return core.Status.Pass
+    except AssertionError:
+        core.capture_screen()
+        return core.Status.Fail
+
+
 # Author: WangQingshan
 # Chipsec工具检查是否有fail或warning
 # Precondition: Linux
@@ -436,34 +474,35 @@ def chipsec_test():
     result = ReportGen.LogHeaderResult(tc)
 
     tme_en = [[Msg.PROCESSOR_CONFIG], "Total Memory Encryption \(TME\)", "Enabled"]
-    sgx_en = [[], "SW Guard Extensions \(SGX\)", "Enabled"]
+    # sgx_en = [[], "SW Guard Extensions \(SGX\)", "Enabled"]
     uma_base = [[Msg.COMMON_REF_CONFIG], "UMA-Based Clustering", "Disable (All2All)"]
     adddc_en = [[Msg.MEMORY_CONFIG, Msg.MEMORY_RAS_CFG], "ADDDC Sparing", "Disabled"]
     warnning_ignored = [
         "WARNING: chipsec.modules.biosguard",
         "WARNING: chipsec.modules.common.debugenabled",
+        "WARNING: chipsec.modules.common.sgx_check",
         "WARNING: chipsec.modules.common.uefi.access_platform",
         "WARNING: chipsec.modules.common.uefi.s3bootscript"]
 
     try:
+
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, [Msg.CPU_CONFIG], 15, Msg.PROCESSOR_CONFIG)
-
         assert SetUpLib.enter_menu(Key.DOWN, uma_base[0], 15, "MMIO High Base")
         assert SetUpLib.set_option_value(uma_base[1], uma_base[2], key=Key.UP)
         SetUpLib.send_keys([Key.ESC]*len(uma_base[0]))
-
         assert SetUpLib.enter_menu(Key.DOWN, adddc_en[0], 15, "Memory RAS Configuration Setup")
         assert SetUpLib.set_option_value(adddc_en[1], adddc_en[2], key=Key.UP)
         SetUpLib.send_keys([Key.ESC]*len(adddc_en[0]))
-
         assert SetUpLib.enter_menu(Key.DOWN, tme_en[0], 15, Msg.ACT_CPU_CORES)
         assert SetUpLib.set_option_value(tme_en[1], tme_en[2], key=Key.UP)
-        assert SetUpLib.set_option_value(sgx_en[1], sgx_en[2])
-        assert SetUpLib.save_without_reset()
+        SetUpLib.send_keys(Key.SAVE_RESET)
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
+        assert Sut.UNITOOL.read(*{"EnableSgx":1})
+        assert Sut.UNITOOL.write(EnableSgx=1)
 
-        assert SetUpLib.back_to_front_page("Administer Secure Boot")
-        SetUpLib.send_key(Key.ENTER)
+        assert SetUpLib.boot_to_setup()
+        SetUpLib.send_keys([Key.RIGHT, Key.DOWN, Key.ENTER])
         assert SetUpLib.enter_menu(Key.UP, ["Secure Boot Factory Options"], 5, "Erase all Secure Boot Settings")
         assert SetUpLib.locate_option(Key.DOWN, ["Restore Secure Boot to Factory Settings"], 3)
         SetUpLib.send_keys([Key.ENTER])
@@ -472,7 +511,7 @@ def chipsec_test():
         assert SetUpLib.locate_option(Key.DOWN, ["Attempt Secure Boot", "\[X\]"], 5)
         SetUpLib.send_keys([Key.ENTER]*2 + Key.SAVE_RESET)
         assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 600)
-        assert SshLib.interaction(Sut.OS_SSH, [f"cd {SutConfig.Env.CHIPSEC_PATH}\n", "python3 chipsec_main.py > chipsec_log.txt"], ["", ""])
+        assert SshLib.interaction(Sut.OS_SSH, [f"cd {SutConfig.Env.CHIPSEC_PATH}\n", "python3 chipsec_main.py > chipsec_log.txt\n"], ["", ""])
         chipsec_log = os.path.join(SutConfig.Env.LOG_DIR, "chipsec_log.txt")
         assert SshLib.sftp_download_file(Sut.OS_SFTP, f"{SutConfig.Env.CHIPSEC_PATH}/chipsec_log.txt", chipsec_log)
         assert os.path.exists(chipsec_log)
@@ -494,3 +533,142 @@ def chipsec_test():
         result.log_fail()
     finally:
         BmcLib.clear_cmos()
+
+# 已安装产品规划内的Linux系统；
+# 2、已安装acpidump和iasl；
+# 3、老BIOS版本已导出所有ACPI表。
+# Steps:
+# 1、升级新版本BIOS，启动进入OS；
+# 2、导出ACPI的数据：使用acpidump导出所有的ACPI表，但这些表都是二进制的
+# acpidump > acpi.dat
+# 3、分离各表格数据，会生成多个数据文件：上面的输出包含了很多个ACPI表，使用acpixtract命令将它们进行分离
+# acpixtract -a acpidump.dat
+# 4、反汇编每个表项，然后可以使用cat命令查看表信息，以facp表项为例：
+# iasl -d facp.dat，cat apic.dsl
+# 5、重复步骤4，使用diff命令对比新老BIOS版本的ACPI表项是否一致。
+# Results:
+# A：新老版本BIOS的ACPI表项一致。
+
+# defined branch name, used below case tc916 - tc919, do not call.
+lst_bios = SutConfig.Env.RELEASE_BRANCH
+pre_bios = SutConfig.Env.PREVIOUS_BRANCH
+err_msg = 'No such file or directory'
+
+
+# this def used to tc916,
+def _compare_interface_data(bios_branch, tag, ssh_type=Sut.OS_SSH):
+    dsl_path = os.path.join(SutConfig.Env.LOG_DIR, bios_branch, tag)
+    # if not os.path.exists(dsl_path):
+    #     os.makedirs(dsl_path)
+    try:
+        assert _update_bios_img(bios_branch)
+        if tag == 'acpi':
+            if not os.path.exists(dsl_path):
+                os.makedirs(dsl_path)
+            assert SshLib.execute_command(Sut.OS_SSH, 'acpidump > acpi.dat') is not None, 'msg1 none or cmd1 failed'
+            assert SshLib.execute_command(Sut.OS_SSH, 'acpixtract -a acpi.dat') is not None, 'msg2 none or cmd2 failed'
+            res_dat = SshLib.execute_command(Sut.OS_SSH, 'ls *.dat')
+            if res_dat is not None and err_msg not in res_dat:
+                for i in res_dat.split('\n'):
+                    if len(i) != 0:
+                        assert SshLib.execute_command(Sut.OS_SSH, 'iasl -d {0}'.format(i)), '{0} is blank'.format(i)
+            res_dsl = SshLib.execute_command(Sut.OS_SSH, 'ls *.dsl')
+            if res_dsl is not None and err_msg not in res_dsl:
+                for j in res_dsl.split('\n'):
+                    if len(j) != 0:
+                        assert SshLib.sftp_download_file(Sut.OS_SFTP, j, os.path.join(dsl_path, j))
+        elif tag == 'cpuinfo':
+            assert SshLib.execute_command(Sut.OS_SSH, 'cat /proc/cpuinfo |grep flags | head -n1 > {0}.txt'.format(bios_branch + tag)) == ''
+        elif tag == 'iomem':
+            assert SshLib.execute_command(ssh_type, 'cat /proc/iomem > {0}.txt'.format(bios_branch + tag)) == ''
+        elif tag == 'ioports':
+            assert SshLib.execute_command(ssh_type, 'cat /proc/ioports > {0}.txt'.format(bios_branch + tag)) == ''
+        else:
+            logging.info('Unknown tag, break')
+            raise Exception
+        return dsl_path, True
+    except Exception as e:
+        logging.error(e)
+        return dsl_path, False
+
+
+@core.test_case(('916', '[TC916]  新老版本ACPI表一致性检查', 'Compare ACPI table with previous BIOS version.'))
+def acpi_table():
+    input_tag = 'acpi'
+    try:
+        logging.info('compare the 2 versions dsl files...')
+        # assume the current bios is latest,
+        assert filecmp.dircmp(_compare_interface_data(pre_bios, input_tag)[0], _compare_interface_data(lst_bios, input_tag)[0]), 'ACPI files compare failed'
+        logging.info('ACPI files compare pass')
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+    finally:
+        SshLib.execute_command(Sut.OS_SSH, 'rm -rf *.dat *.dsl')
+        filecmp.clear_cache()
+        logging.info('Restore ENV, move suse to first boot option')
+        if not SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5):
+            UpdateBIOS.update_bios(lst_bios)
+
+
+# Precondition: EQU BIOS
+# OnStart: N/A
+# Steps:
+# '1、OS下进入装备工具路径， ./uniCfg -w DisableCESMIThrotting: 查看变量设置是否成功，有结果A。
+#  A：变量设置成功。
+# Completed: SUSE OS
+@core.test_case(('920', '[TC920] 01 DisableCESMIThrotting变量检查', '装备测试TU分解用例'))
+def testcase_equ_disCEStorm_001():
+    try:
+        assert BmcLib.force_reset()
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
+        assert Sut.UNITOOL.set_config({"DisableCESMIThrotting": 1})
+        return core.Status.Pass
+    except AssertionError:
+        return core.Status.Fail
+
+
+# Author: Fubaolin
+# Import BIOS setting under BMC Web
+# Precondition: Linux
+# OnStart: NA
+# OnComplete: NA
+# Set
+# 1. Export BIOS setting under BMC Web with older BIOS.
+# 2. Flash new BIOS.
+# 3. Power on system.
+# 4. Import BIOS setting at step1.
+# 5. Check whether normally import.
+# 6. Relogin BIOS setting without any error.
+@core.test_case(('917', '[TC917] Import BIOS setting under BMC Web', 'Check whether normally import'))
+def testcase_import_bios_setting():
+    lst_bios = SutConfig.Env.RELEASE_BRANCH
+    pre_bios = SutConfig.Env.PREVIOUS_BRANCH
+    cmd_export = f"ipmcget -t config -d export -v /tmp/config.xml"
+    cmd_import = "ipmcset -t config -d import -v /tmp/config.xml\n"
+    cmd_input ='Input your password:'
+    ret_pwd = 'Admin@9001\n'
+    ret_confirm = 'successfully'
+    cmds = [cmd_import, ret_pwd]
+    rets = [cmd_input, ret_confirm]
+    dic_cfg = {**BiosCfg.ActiveCpuCores_aft, **BiosCfg.Spread_Spectrum_aft}
+    try:
+        assert _update_bios_img(pre_bios), 'lst_bios update failed'
+        assert Sut.UNITOOL.write(**dic_cfg)
+        assert SetUpLib.boot_suse_from_bm(), 'boot to suse failed'  # 修改的参数必须重启后，在config文件中才能导出
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, SutConfig.Env.BOOT_DELAY)
+        ret = SshLib.execute_command(Sut.BMC_SSH, cmd_export)
+        assert ret_confirm in ret, '**Export BIOS setting -- fail'
+        con_xml = os.path.join(SutConfig.Env.LOG_DIR, "config.xml")
+        assert SshLib.sftp_download_file(Sut.BMC_SFTP, f"/tmp/config.xml", con_xml)
+
+        assert _update_bios_img(lst_bios), 'lst_bios update failed'
+        assert SshLib.sftp_upload_file(Sut.BMC_SFTP, "{}/config.xml".format(SutConfig.Env.LOG_DIR), "/tmp/config.xml", ret_msg="")
+        assert SshLib.interaction(Sut.BMC_SSH, cmds, rets), "import config fail"
+        assert SetUpLib.boot_suse_from_bm(), 'boot to suse failed'  # config文件导入后必须重启才生效
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, SutConfig.Env.BOOT_DELAY)
+        assert Sut.UNITOOL.check(**dic_cfg)
+        logging.info('**check parameters -- pass')
+        return core.Status.Pass
+    except AssertionError:
+        return core.Status.Fail

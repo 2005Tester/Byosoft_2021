@@ -1,0 +1,38 @@
+
+[
+    {
+    "ProjectName": "Inspur7500",
+    "Resources": ["BIOS_COM", "BMC_SSH", "BMC_SFTP", "OS_SSH", "OS_SFTP"],
+    "ConfigMapping": {
+        "Puti": "PutiConfig",
+        "Nvwa": "NvwaConfig",
+        "Huike1": "Huike1Config"
+        }
+    },
+
+    {
+    "ProjectName": "InspurStorage",
+    "Resources": ["BIOS_COM", "BMC_SSH", "BMC_SFTP", "OS_SSH", "OS_SFTP"],
+    "ConfigMapping": {
+        "2U01": "2U01Config",
+        "2U02": "2U02Config",
+        "4U": "4UConfig"
+        }
+    },
+
+    {
+    "ProjectName": "Hygon7500CRB",
+    "Resources": ["BIOS_COM", "BMC_SSH", "BMC_SFTP", "OS_SSH", "OS_SFTP"],
+    "ConfigMapping": {
+        "Sut01": "Sut01Config"
+        }
+    },
+
+    {
+    "ProjectName": "Hygon3000CRB",
+    "Resources": ["BIOS_COM", "BMC_SSH", "BMC_SFTP", "OS_SSH", "OS_SFTP"],
+    "ConfigMapping": {
+        "Sut01": "Sut01Config"
+        }
+    }
+]

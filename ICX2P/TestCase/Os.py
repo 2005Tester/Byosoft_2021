@@ -14,7 +14,7 @@ from ICX2P.TestCase import UpdateBIOS
 ##########################################
 
 # function Module : 開啓全打印重啓后，在串口中查找str_flag
-def EquipmentModeFlag_ser_log(path,str_flag):
+def _EquipmentModeFlag_ser_log(path, str_flag):
     with open(path, 'r') as r:
         lines = [line.strip('\n') for line in r.readlines() if line.strip()]    #去掉空行和換行符
         if str_flag in lines:
@@ -30,7 +30,7 @@ def boot_to_suse():
     if not SetUpLib.boot_to_bootmanager():
         result.log_fail()
         return
-    if not SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 20, Msg.SUSE_GRUB):
+    if not SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_OS, 20, Msg.LINUX_GRUB):
         result.log_fail()
         return
     # if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE):
@@ -48,8 +48,8 @@ def boot_to_suse_mfg():
     if not SetUpLib.boot_to_bootmanager():
         result.log_fail()
         return
-    msg = Msg.SUSE_GRUB
-    if not SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 20, msg):
+    msg = Msg.LINUX_GRUB
+    if not SetUpLib.enter_menu(Key.DOWN, Msg.BOOT_OPTION_OS, 20, msg):
         result.log_fail()
         return
     # if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE):
@@ -63,7 +63,7 @@ def boot_to_suse_mfg():
 def move_suse_to_first():
     tc = ('302', '[TC302] Move UEFI SUSE Linux to first boot option', 'Move UEFI SUSE Linux to first boot option')
     result = ReportGen.LogHeaderResult(tc)
-    if not SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_SUSE, 5):
+    if not SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5):
         result.log_fail(capture=True)
         return
     result.log_pass()
@@ -112,9 +112,9 @@ def EquipmentModeFlag_Valid_once():
         assert Sut.UNITOOL.set_config(BiosCfg.EQUIP_FLAG), "**set equipment_mode_flag fail."
         assert BmcLib.debug_message(enable=True), "debug message enable fail"   #開啓全打印
         assert BmcLib.force_reset()
-        assert SerialLib.is_msg_present(Sut.BIOS_COM, 'Welcome to GRUB!', delay=1200), "boot up fail"
+        assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.LINUX_GRUB, delay=1200), "boot up fail"
         ser_log = os.path.join(SutConfig.Env.LOG_DIR, 'TC304.log')
-        assert (EquipmentModeFlag_ser_log(ser_log, str_Flag)), "EquipmentEnableFlag not found"
+        assert (_EquipmentModeFlag_ser_log(ser_log, str_Flag)), "EquipmentEnableFlag not found"
         assert BmcLib.debug_message(enable=False)       #關閉全打印，減少啓動時間
         assert BmcLib.force_reset()
         assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
@@ -166,7 +166,7 @@ def EquipmentModeFlag_Valid_Recovery():
         assert BmcLib.force_reset()
         assert SerialLib.is_msg_present(Sut.BIOS_COM, "Clear EquipmentEnableFlag success", delay=600)
         ser_log = os.path.join(SutConfig.Env.LOG_DIR, 'TC305.log')
-        assert EquipmentModeFlag_ser_log(ser_log, str_Flag), "EquipmentEnableFlag_1 not found"
+        assert _EquipmentModeFlag_ser_log(ser_log, str_Flag), "EquipmentEnableFlag_1 not found"
         with open(ser_log, 'r+') as r:
             lines = [line.strip('\n') for line in r.readlines() if line.strip()]
             assert set(SutConfig.SysCfg.Unitool_Backup_Name) < set(lines), "Unitool_Backup_Name not found"
@@ -174,7 +174,7 @@ def EquipmentModeFlag_Valid_Recovery():
         # set--4, results--B
         assert BmcLib.force_reset()
         assert SerialLib.is_msg_present(Sut.BIOS_COM, "OnExitBootServices...", delay=600)
-        assert EquipmentModeFlag_ser_log(ser_log, str_Flag_Recover), "EquipmentEnableFlag_0 not found"
+        assert _EquipmentModeFlag_ser_log(ser_log, str_Flag_Recover), "EquipmentEnableFlag_0 not found"
         logging.info("second reboot,found all key")
         assert BmcLib.debug_message(enable=False)  # 關閉全打印，減少啓動時間
         # set--5, results--c
@@ -294,3 +294,67 @@ def EquipmentMode_Custom():
     finally:
         BmcLib.clear_cmos()
 
+
+# Author: Fubaolin
+# 装备模式下,装备定制化工具和脚本uniCFG能正常使用测试
+# Precondition:EquipmentMode,linux-OS,unitool
+# OnStart: EquipmentMode
+# Set:
+# 1、OS下执行./uniCFG -W X2APIC:0看能否修改变量，./uniCFG -R X2APIC看能否读取变量，有结果A；
+# 2、创建定制化配置文件customset.ini如: ActiveCpuCores:26 ,EnableClockSpreadSpec:0
+# 3、执行批量定制化命令./ uniCfg customset.ini，查看打印出的定制化信息与“customset.ini”中的配置是否一致，有结果B；
+# 4、重启系统，进入BIOS Setup查看定制化是否生效，有结果C；
+# 5、编辑“customset.ini”配置文件，设置定制项名称错误，保存退出执行定制化操作：./uniCfg customset.ini，查看是否报错，有结果D；
+# 6、执行BIOS Setup恢复默认配置命令./uniCfg -c，重启系统进入setup菜单查看之前修改的配置项是否恢复默认，有结果E。
+# A：读写X2APIC变量成功；
+# B：打印的定制化信息与customset.ini中的配置一致；                                
+# C：Setup菜单中已生效定制化配置；
+# D：“customset.ini”配置文件定制项名称错误时执行报错；
+# E：执行清除配置命令后，setup菜单配置恢复默认。
+@core.test_case(('308', '[TC308] Testcase_Equipment_Tools_018', '【Equipment模式】定制化工具和脚本uniCFG能正常使用测试'))
+def EquipmentMode_Script_tool():
+    custom_set = {"ProcessorX2apic": 1}
+    ACT_CPU_CORES = ['Active Processor Cores', '<20>']
+    ACT_CPU_CORES_def = ['Active Processor Cores', '<All>']
+    cmd = 'w ActiveCpuCores.ini'
+    cmdError = 'w ActiveError.ini'
+    try:
+        assert BmcLib.force_reset()
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
+        assert Sut.UNITOOL.set_config(custom_set), "**equipment_mode set fail."
+        assert Sut.UNITOOL.check(**custom_set), '**unitool_read X2APIC fail' 
+        assert PlatMisc.unitool_command(cmd, Sut.OS_SSH) 
+        assert Sut.UNITOOL.check(**BiosCfg.ActiveCpuCores_aft), "check ini_file message fail"
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.PROCESSOR_CONFIG)
+        assert SetUpLib.verify_info(ACT_CPU_CORES, 20), "bios setting verified --> fail"
+        assert BmcLib.force_reset()
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
+        assert not PlatMisc.unitool_command(cmdError, Sut.OS_SSH), "check Eorro_ini_file message fail"
+        assert PlatMisc.unitool_command('c', Sut.OS_SSH) 
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_PRO_CFG, 20, Msg.PROCESSOR_CONFIG)
+        assert SetUpLib.verify_info(ACT_CPU_CORES_def, 20)
+        return core.Status.Pass
+    except AssertionError as e:
+        logging.error(e)
+        return core.Status.Fail
+        
+        
+# Testcase_ReleaseBase_003 03 OS dmesg日志检查测试
+# Author: Lupeipei
+# 1、进入OS，检查dmesg信息，有结果A。
+# A：无Fail、Error等报错信息（如有，需要和开发确认是否有风险）。
+@core.test_case(('309', '[TC309] 03 OS dmesg日志检查测试', '03 OS dmesg日志检查测试'))
+def testcase_releasebase_003():
+    try:
+        assert SetUpLib.boot_suse_from_bm()
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
+        rtn_data = SshLib.execute_command(Sut.OS_SSH, 'dmesg | egrep -i "fail|error|warn"')
+        if not len(rtn_data) == 0:
+            logging.info('show error info')
+            logging.debug(rtn_data)
+            return
+        return core.Status.Pass
+    except AssertionError:
+        return core.Status.Fail

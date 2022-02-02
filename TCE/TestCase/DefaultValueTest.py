@@ -1,49 +1,41 @@
 import logging
 import time
-from TCE.Config import SutConfig
+
 from TCE.BaseLib import SetUpLib, PlatMisc, BmcLib
 from TCE.Config.PlatConfig import Key, Msg
 from TCE.Config.SutConfig import SysCfg
 from batf.Report import ReportGen
+from batf import core, MiscLib
+from batf.SutInit import Sut
+from TCE.Config import SutConfig
 
 
 # Test case ID: TC100-150
 
 ##########################################
-####        UNCORE Test Cases        #####    
+#        UNCORE Test Cases               #
 ##########################################
 
 # Testcase_RRQIRQ_001
 def rrqirq():
     tc = ('101', '[TC101] Testcase_RRQIRQ_001', 'Setup菜单RRQ和IRQ选项默认值测试')
     result = ReportGen.LogHeaderResult(tc)
-    if not SetUpLib.boot_to_page(Msg.PAGE_ADVANCED):
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_UNCORE_GENERAL, 20, 'Uncore Status')
+        logging.info("Find option and verify default value.")
+        assert SetUpLib.locate_option(Key.DOWN, ["Local/Remote Threshold", f"<.+>"], 20)
+        logging.info("Verify supported values.")
+        values = 'DisabledAutoLowMediumHighManual'
+        assert SetUpLib.verify_supported_values(values)
+        logging.info("Verify default value of RRQ and IRQ when set to manual.")
+        assert SetUpLib.set_option_value("Local/Remote Threshold", 'Manual')
+        manual_opts = [["IRQ Threshold", "\[7\]"], ["RRQ Threshold", "\[7\]"]]
+        assert SetUpLib.verify_options(Key.DOWN, manual_opts, 12)
+        result.log_pass()
+        return True
+    except AssertionError:
         result.log_fail()
-        return
-    msg = 'Uncore Status'
-    if not SetUpLib.enter_menu(Key.DOWN, Msg.PATH_UNCORE_GENERAL, 20, msg):
-        result.log_fail()
-        return
-
-    logging.info("Find option and verify default value.")
-    if not SetUpLib.locate_option(Key.DOWN, ["Local/Remote Threshold", "<Auto>"], 20):
-        result.log_fail()
-        return
-
-    logging.info("Verify supported values.")
-    values = 'DisabledAutoLowMediumHighManual'
-    if not SetUpLib.verify_supported_values(values):
-        result.log_fail()
-        return
-    logging.info("Verify default value of RRQ and IRQ when set to manual.")
-    SetUpLib.send_keys([Key.F5, Key.F5, Key.F5, Key.F5])
-    manual_opts = [["IRQ Threshold", "\[7\]"], ["RRQ Threshold", "\[7\]"]]
-    if not SetUpLib.verify_options(Key.DOWN, manual_opts, 12):
-        result.log_fail()
-        return
-
-    result.log_pass()
-    return True
 
 
 # 检查默认状态PCIE_Root_Port带宽分配是否正确（不包括插入不同Rise/Slimline/NVME,带宽可变的root port)
@@ -158,6 +150,7 @@ def testcase_thermalPolicy_001():
     except AssertionError:
         result.log_fail()
 
+
 # Testcase_LoadCustomDefaults_001&2&3&7 确认Setup菜单默认无Load Custom Defaults选项
 # Author: OuYang
 # Precondition:之前跑的case都与load custom default选项无关，且没有产生load custom default选项
@@ -166,22 +159,22 @@ def testcase_thermalPolicy_001():
 def testcase_load_custom_defaults_001():
     tc = ('109', '[TC109] 确认Setup菜单默认无Load Custom Defaults选项', 'Verify Load Custom Defaults ')
     result = ReportGen.LogHeaderResult(tc)
-    boot_fail_policy_retry = ['<Boot Retry>']
-    boot_fail_policy_cold = ['<Cold Boot>']
+    boot_retry = '<Boot Retry>'
+    boot_cold = '<Cold Boot>'
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_SAVE)
-        assert not SetUpLib.verify_info(Msg.LOAD_CUSTOM_DEFAULT, 20)
+        assert not SetUpLib.verify_info(Msg.LOAD_CUSTOM_DEFAULT, 7)
         logging.info("**Verify 默认无Load Custom Defaults选项**")
         assert SetUpLib.boot_suse_from_bm()
-        assert PlatMisc.unitool_command('w BootFailPolicy:1')
-        assert PlatMisc.unitool_command('setCustomDefault')
+        assert PlatMisc.unitool_command('w BootFailPolicy:1', Sut.OS_SSH)
+        assert PlatMisc.unitool_command('setCustomDefault', Sut.OS_SSH)
         logging.info("**使用unitool工具Load Custom Defaults选项，确认load Custom Default和F9功能的BIOS选项正确**")
         assert SetUpLib.load_custom_default()
-        assert SetUpLib.continue_to_page(Msg.PAGE_BOOT)
-        assert SetUpLib.locate_option(Key.DOWN, boot_fail_policy_retry, 20)
+        assert SetUpLib.continue_to_page(boot_retry)
+        assert SetUpLib.locate_option(Key.DOWN, [boot_retry], 20)
         SetUpLib.send_keys(Key.RESET_DEFAULT)
         assert SetUpLib.continue_to_page(Msg.PAGE_BOOT)
-        assert SetUpLib.locate_option(Key.DOWN, boot_fail_policy_cold, 20)
+        assert SetUpLib.locate_option(Key.DOWN, [boot_cold], 20)
         logging.info("**确认清楚CMOS之后，Load Custom Default项显示正常**")
         BmcLib.clear_cmos()
         assert SetUpLib.boot_to_page(Msg.PAGE_SAVE)
@@ -190,5 +183,91 @@ def testcase_load_custom_defaults_001():
         return True
     except AssertionError:
         result.log_fail(capture=True)
+    finally:
+        BmcLib.clear_cmos()
+
+
+# Testcase_SPD_001  01 内存SPD检测选项默认值测试
+# Author: Lupeipei
+@core.test_case(('110', '[TC110] 01 内存SPD检测选项默认值测试', '支持SPD可靠性'))
+def testcase_spd_001():
+    default_value = Msg.DISABLED
+    options_value = [Msg.DISABLED, Msg.ENABLED, ]
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_CONFIG, 20, Msg.SPD_CRC)
+        assert SetUpLib.get_option_value([Msg.SPD_CRC, "<.+>"], Key.DOWN, 10) == default_value
+        logging.info("SPD CRC Check 默认值是Disabled")
+        assert SetUpLib.get_all_values(Msg.SPD_CRC, Key.DOWN, 10) == options_value
+        logging.info("SPD CRC Check 选项是：Enabled，Disabled")
+        return core.Status.Pass
+    except AssertionError as e:
+        logging.error(e)
+
+
+# Testcase_LoadDefault_005  05 Load Defaults选项功能测试
+# Author: Lupeipei
+@core.test_case(('113', '[TC113] 05 Load Defaults选项功能测试', '支持恢复Setup默认值'))
+def testcase_loaddefault_005():
+    try:
+        default_value = [Msg.DISABLED, 'Dynamic Mode', Msg.ENABLED]
+        options_value = [Msg.ENABLED, 'Static 2X Mode', Msg.DISABLED]
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_CONFIG, 20, Msg.SPD_CRC)
+        assert SetUpLib.set_option_value(Msg.SPD_CRC, options_value[0], save=False)
+        assert SetUpLib.set_option_value(Msg.MEM2X_REFRESH, options_value[1], save=False)
+        assert SetUpLib.set_option_value(Msg.ATTEMPT_FAST_BOOT, options_value[2], save=False)
+        logging.info("修改SPD CRC Check, Attempt Fast Boot 和 Refresh Options 成功")
+        assert SetUpLib.back_to_setup_toppage()
+        assert Sut.BIOS_COM.locate_setup_option(Key.RIGHT, [Msg.PAGE_SAVE], 10)
+        assert SetUpLib.locate_option(Key.DOWN, ['Load Defaults'], 10)
+        SetUpLib.send_keys([Key.ENTER, Key.Y])
+        time.sleep(3)
+        assert Sut.BIOS_COM.locate_setup_option(Key.RIGHT, [Msg.PAGE_ADVANCED], 10)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_CONFIG, 20, Msg.SPD_CRC)
+        assert SetUpLib.get_option_value([Msg.SPD_CRC, "<.+>"], Key.DOWN, 10) == default_value[0]
+        assert SetUpLib.get_option_value([Msg.MEM2X_REFRESH, "<.+>"], Key.DOWN, 10) == default_value[1]
+        assert SetUpLib.get_option_value([Msg.ATTEMPT_FAST_BOOT, "<.+>"], Key.UP, 10) == default_value[2]
+        logging.info("修改的BIOS配置项都恢复默认值")
+        return core.Status.Pass
+    except AssertionError as e:
+        logging.error(e)
+
+
+# Testcase_LoadCustomDefaults_002&3&7 确认Setup菜单默认无Load Custom Defaults选项
+# Author: OuYang
+# Precondition:
+# OnStart:
+# OnComplete: SetUp
+@core.test_case(('111', '[TC111] testcase_load_custom_defaults_002', 'UEFI模式验证Load Custom Defaults选项功能正常'))
+def load_custom_defaults_verify():
+    boot_retry = ['Boot Fail Policy', '<Boot Retry>']
+    boot_cold = ['Boot Fail Policy', '<Cold Boot>']
+    boot_val = {'BootFailPolicy': 1}
+    try:
+        assert BmcLib.force_reset()
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
+        assert Sut.UNITOOL.set_config(boot_val)
+        assert PlatMisc.unitool_command('setCustomDefault', Sut.OS_SSH)
+        logging.info("**UEFI模式Load Custom Defaults功能选项设置**")
+        assert SetUpLib.boot_to_page(boot_retry[1])
+        assert SetUpLib.locate_option(Key.DOWN, boot_retry, 20), "boot_cold list num ={}".format(len(boot_retry))
+        assert SetUpLib.set_option_value(boot_retry[0], 'None', save=True)
+        assert SetUpLib.continue_to_page(Msg.PAGE_SAVE)
+        assert SetUpLib.locate_option(Key.DOWN, ['Load Custom Defaults'], 20)
+        SetUpLib.send_keys(Key.ENTER_SAVE_RESET)
+        assert SetUpLib.continue_to_page(boot_retry[1])
+        assert SetUpLib.verify_info(boot_retry, 20), "boot_cold list num ={}".format(len(boot_retry))
+        SetUpLib.send_keys(Key.RESET_DEFAULT)
+        assert SetUpLib.continue_to_page(Msg.PAGE_BOOT)
+        assert SetUpLib.verify_info(boot_cold, 20), "boot_retry list num={}".format(len(boot_cold))
+        logging.info("**确认清楚CMOS之后，Load Custom Default项显示正常**")
+        BmcLib.clear_cmos()
+        assert SetUpLib.boot_to_page(Msg.PAGE_SAVE)
+        assert SetUpLib.verify_info(['Load Custom Defaults'], 8)
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+        return core.Status.Fail
     finally:
         BmcLib.clear_cmos()

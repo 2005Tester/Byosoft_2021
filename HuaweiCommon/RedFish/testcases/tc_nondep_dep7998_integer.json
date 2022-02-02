@@ -1,0 +1,13 @@
+{
+ "Attributes": {
+  "SpsAltitude": 9000,
+  "CustomRefreshRate": 30,
+  "CkeIdleTimer": 250,
+  "NgnAveragePower": 16000,
+  "DcpmmAveragePowerLimit": 11000,
+  "BiosSsaLoopCount": 26,
+  "spareErrTh": 32767,
+  "ProchotResponseRatio": 8,
+  "TCCActivationOffset": 9
+ }
+}

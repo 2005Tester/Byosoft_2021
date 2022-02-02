@@ -50,7 +50,8 @@ def rw_everything(ssh, exp_res, mem_bar=None, cmd='mmr', str=' ', start=1, stop=
     org_list = []
     logging.info('Starting to rw the address...')
     for i in range(len(mem_bar)):
-        res = SshLib.execute_command(ssh, r'cd {0};./rw {1} {2} | grep {2}'.format(SutConfig.Env.RW_PATH, cmd, mem_bar[i]))
+        res = SshLib.execute_command(ssh,
+                                     r'cd {0};./rw {1} {2} | grep {2}'.format(SutConfig.Env.RW_PATH, cmd, mem_bar[i]))
         logging.debug(res)
         if len(res) == 0:
             logging.info('RW tool can not be found')
@@ -82,7 +83,8 @@ def cscripts_inband_register(cmd, exp_list, stop=-6):
         logging.info('Opening cscripts inband...')
         res_list = []
         cmds = ['cd {0}\n'.format(SutConfig.Env.CSCRIPTS_PATH), 'pwd\n', './openCscripts.sh\n', '{0}\n'.format(cmd)]
-        rets = ['', '{0}'.format(SutConfig.Env.CSCRIPTS_PATH), 'Socket 0', '{0}'.format((exp_list[-1].split(':', 1)[0]).strip())]
+        rets = ['', '{0}'.format(SutConfig.Env.CSCRIPTS_PATH), 'Socket 0',
+                '{0}'.format((exp_list[-1].split(':', 1)[0]).strip())]
         res = SshLib.interaction(Sut.OS_SSH, cmds, rets, timeout=15)[1]
         data = res.split('\r\n')[stop:]
         for i in range(len(data)):
@@ -116,7 +118,7 @@ def last_release(current_branch, step=1):
     latest_int = int(current_branch[-3:])
     last_str = "{:03}".format(latest_int - step)
     if skip_num in last_str:
-        last_ver = "{:03}".format(latest_int - step - (10**(2-last_str.find(skip_num))))
+        last_ver = "{:03}".format(latest_int - step - (10 ** (2 - last_str.find(skip_num))))
     else:
         last_ver = "{:03}".format(latest_int - step)
     last_branch = Msg.RELEASE_BRANCH.format(last_ver)
@@ -169,7 +171,7 @@ def dvd_verify():
     logging.info("** Verify DVD exists ")
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_BOOT)
-        assert SetUpLib.enter_menu(Key.DOWN, ['[UEFILegacy] Boot'], 23, 'HDD Device')   # , 'DVD-ROM Drive  -page'   ,
+        assert SetUpLib.enter_menu(Key.DOWN, ['[UEFILegacy] Boot'], 23, 'HDD Device')  # , 'DVD-ROM Drive  -page'   ,
         assert SetUpLib.verify_info(['DVD-ROM Device'], 4)
         logging.info(" DVD-ROM device found.")
         return True
@@ -259,12 +261,12 @@ def unilogo_update(name, path=""):
 
 
 # 保存logo图片, 默认格式为bmp
-def save_logo(path=SutConfig.Env.LOG_DIR, name="logo", logo_loc=(88, 160, 248, 320)):
+def save_logo(path=SutConfig.Env.LOG_DIR, cut_str=Msg.CPU_TYPE, name="logo", logo_loc=(88, 160, 248, 320)):
     now = time.strftime("%Y%m%d_%H%M%S", time.localtime())
     try:
         assert BmcLib.force_reset()
         SerialLib.clean_buffer(Sut.BIOS_COM)
-        assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.LOGO_SHOW, 120)
+        assert SerialLib.is_msg_present(Sut.BIOS_COM, cut_str, 120)
         img_file = BmcLib.capture_kvm_screen(SutConfig.Env.LOG_DIR, f"Screen_{now}")
         img_open = Image.open(img_file)  # 打开图片
         cut_logo = img_open.crop(logo_loc)  # logo裁剪
@@ -286,17 +288,26 @@ def init_tce_sut():
     return SshLib.execute_command(Sut.BMC_SSH, 'ipmcset -d bootdevice -v 0 permanent')
 
 
-# unitool 無參數 如 -b -c -setCustomDefault
-def unitool_command(cmd):
+# unitool 無參數 如 -b -c -setCustomDefault, 及ini脚本
+def unitool_command(cmd, ssh_type):  # 默认Sut.OS_SSH 为uefi模式下os
     cd_path = f"cd {SutConfig.Env.UNI_PATH}"
     unitool = "./unitool"
     ins_mod = f"insmod ufudev.ko"
     success = f"success"
-    SshLib.execute_command(Sut.OS_SSH, f"{cd_path};{ins_mod}")
+    SshLib.execute_command(ssh_type, f"{cd_path};{ins_mod}")
     logging.info(f"Unitool {ins_mod} success")
     try:
-        rcmd= SshLib.execute_command(Sut.OS_SSH, f"{cd_path};{unitool} -{cmd}")
-        assert success in rcmd.lower(), f"Unitool {cmd} set failed"
+        if '.ini' and ' ' not in cmd:
+            rcmd = SshLib.execute_command(ssh_type, f"{cd_path};{unitool} -{cmd}")
+            assert success in rcmd.lower(), f"Unitool {cmd} set failed"
+        else:
+            cmd_mode = str(cmd.split(' ')[0])
+            # logging.info("cmd_mode= {}".format(cmd_mode))
+            ini_file = str(cmd.split(' ')[1])
+            # logging.info('ini_file= {}'.format(ini_file))
+            rcmd = SshLib.execute_command(ssh_type, f"{cd_path};{unitool} -{cmd_mode} {ini_file}")
+            assert 'error' not in rcmd.lower(), f"./Unitool -{cmd} --> set failed"
         return True
     except Exception as e:
         logging.error(e)
+        return False

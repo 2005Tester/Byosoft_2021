@@ -2,7 +2,6 @@ import logging
 import time
 from batf import SerialLib
 from batf.SutInit import Sut
-from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg
 from ICX2P.BaseLib import BmcLib
 
@@ -58,7 +57,7 @@ def verify_options(key, options, trycounts):
 # Enter setup menu
 def enter_menu(key, option_path, try_counts, confirm_msg):
     try:
-        return Sut.BIOS_COM.enter_menu(key, option_path, try_counts, confirm_msg)
+        return Sut.BIOS_COM.enter_menu(key, option_path, try_counts, confirm_msg, timeout=60)
     except Exception as e:
         logging.error("Exception occur: {0}".format(e))
 
@@ -308,7 +307,7 @@ def disable_legacy_boot():
 def boot_suse_from_bm():
     if not boot_to_bootmanager():
         return
-    if not enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 10, Msg.SUSE_GRUB):
+    if not enter_menu(Key.DOWN, Msg.BOOT_OPTION_OS, 10, Msg.LINUX_GRUB):
         return
     logging.info("OS Boot Successful")
     return True
@@ -318,7 +317,7 @@ def boot_suse_from_bm():
 def boot_option_from_bm(boot_option, comfirm_msg):
     if not boot_to_bootmanager():
         return
-    if not enter_menu(Key.DOWN, boot_option, 10, Msg.SUSE_GRUB):
+    if not enter_menu(Key.DOWN, boot_option, 10, Msg.LINUX_GRUB):
         return
     if not SerialLib.is_msg_present(Sut.BIOS_COM, comfirm_msg):
         return
@@ -330,7 +329,7 @@ def boot_option_from_bm(boot_option, comfirm_msg):
 def continue_to_boot_suse_from_bm():
     if not continue_to_bootmanager():
         return
-    if not enter_menu(Key.DOWN, Msg.BOOT_OPTION_SUSE, 10, Msg.SUSE_GRUB):
+    if not enter_menu(Key.DOWN, Msg.BOOT_OPTION_OS, 10, Msg.LINUX_GRUB):
         return
     logging.info("OS Boot Successful")
     return True
@@ -368,7 +367,7 @@ def update_default_password():
         return
     send_data(Msg.BIOS_PW_DEFAULT)
     send_keys(Key.ENTER*2)
-    if not SerialLib.is_msg_present(Sut.BIOS_COM, "Enter a 8-16 character password"):
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, "8-16"):
         return
     send_key(Key.ENTER)
     if not SerialLib.is_msg_present(Sut.BIOS_COM, "Enter New Password"):
@@ -389,7 +388,7 @@ def update_default_password():
 # get value of a setupoption
 # option_patten: [name, patten of value] e.g. ["MMIO High Base", "<.+>"]
 def get_option_value(option_patten, key, try_counts):
-    value_patten = "H<([\w \:]+)>\x1B"  # some value contains white space
+    value_patten = "H<([\w \:\/]+)>\x1B"  # some value contains white space
     return Sut.BIOS_COM.get_option_value(option_patten, value_patten, key, try_counts)
 
 
@@ -464,7 +463,7 @@ def set_option_value(option, value, key=Key.DOWN, loc_cnt=15, save=False):
         send_keys([Key.ENTER])
         if save:
             logging.info(f'Save configuration and reset')
-            send_keys(Key.SAVE_RESET)
+            send_keys(Key.SAVE_RESET, 2)
         logging.info(f'Set {option} to {value} pass')
         return True
 
