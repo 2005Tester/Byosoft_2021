@@ -1,0 +1,110 @@
+# dmidecode 3.2
+Getting SMBIOS data from sysfs.
+SMBIOS 3.3 present.
+# SMBIOS implementations newer than version 3.2.0 are not
+# fully supported by this version of dmidecode.
+
+Handle 0x0067, DMI type 9, 28 bytes
+System Slot Information
+	Designation: M.2
+	Type: x4 PCI Express x4
+	Current Usage: Available
+	Length: Other
+	ID: 1
+	Characteristics:
+		3.3 V is provided
+		Opening is shared
+		PME signal is supported
+	Bus Address: 00ff:ff:1f.7
+
+Handle 0x0068, DMI type 9, 28 bytes
+System Slot Information
+	Designation: PCIe1
+	Type: x8 PCI Express x8
+	Current Usage: In Use
+	Length: Long
+	ID: 6
+	Characteristics:
+		3.3 V is provided
+		Opening is shared
+		PME signal is supported
+	Bus Address: 0000:10:01.2
+
+Handle 0x0069, DMI type 9, 28 bytes
+System Slot Information
+	Designation: PCIe2
+	Type: x8 PCI Express x8
+	Current Usage: Available
+	Length: Long
+	ID: 7
+	Characteristics:
+		3.3 V is provided
+		Opening is shared
+		PME signal is supported
+	Bus Address: 00ff:ff:1f.7
+
+Handle 0x006A, DMI type 9, 28 bytes
+System Slot Information
+	Designation: PCIe0
+	Type: x8 PCI Express x8
+	Current Usage: In Use
+	Length: Long
+	ID: 8
+	Characteristics:
+		3.3 V is provided
+		Opening is shared
+		PME signal is supported
+	Bus Address: 0000:20:03.2
+
+Handle 0x006B, DMI type 9, 28 bytes
+System Slot Information
+	Designation: OCP3.0
+	Type: x16 PCI Express x16
+	Current Usage: Available
+	Length: Other
+	ID: 9
+	Characteristics:
+		3.3 V is provided
+		Opening is shared
+		PME signal is supported
+	Bus Address: 00ff:ff:1f.7
+
+Handle 0x006C, DMI type 9, 28 bytes
+System Slot Information
+	Designation: PCIe3
+	Type: x8 PCI Express x8
+	Current Usage: Available
+	Length: Long
+	ID: 10
+	Characteristics:
+		3.3 V is provided
+		Opening is shared
+		PME signal is supported
+	Bus Address: 00ff:ff:1f.7
+
+Handle 0x006D, DMI type 9, 28 bytes
+System Slot Information
+	Designation: PCIe5
+	Type: x8 PCI Express x8
+	Current Usage: In Use
+	Length: Long
+	ID: 11
+	Characteristics:
+		3.3 V is provided
+		Opening is shared
+		PME signal is supported
+	Bus Address: 0000:40:01.2
+
+Handle 0x006E, DMI type 9, 28 bytes
+System Slot Information
+	Designation: PCIe4
+	Type: x16 PCI Express x16
+	Current Usage: Available
+	Length: Long
+	ID: 12
+	Characteristics:
+		3.3 V is provided
+		Opening is shared
+		PME signal is supported
+	Bus Address: 00ff:ff:1f.7
+

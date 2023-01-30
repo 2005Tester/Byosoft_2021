@@ -1,0 +1,17 @@
+# dmidecode 3.2
+Getting SMBIOS data from sysfs.
+SMBIOS 3.3 present.
+# SMBIOS implementations newer than version 3.2.0 are not
+# fully supported by this version of dmidecode.
+
+Handle 0x0038, DMI type 1, 27 bytes
+System Information
+	Manufacturer: Inspur
+	Product Name: CS5260H2
+	Version: V1
+	Serial Number: SN2022021001
+	UUID: 0a69601d-52e4-e0fe-6c91-5a8f06eff930
+	Wake-up Type: Power Switch
+	SKU Number: 0
+	Family: Hygon-C86 System
+

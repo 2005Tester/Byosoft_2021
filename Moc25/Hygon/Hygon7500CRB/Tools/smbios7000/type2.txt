@@ -1,0 +1,21 @@
+# dmidecode 3.2
+Getting SMBIOS data from sysfs.
+SMBIOS 3.3 present.
+# SMBIOS implementations newer than version 3.2.0 are not
+# fully supported by this version of dmidecode.
+
+Handle 0x0033, DMI type 2, 15 bytes
+Base Board Information
+	Manufacturer: Hygon
+	Product Name: 62DB32
+	Version:  
+	Serial Number:  
+	Asset Tag:  
+	Features:
+		Board is a hosting board
+		Board is replaceable
+	Location In Chassis: Chassis Location
+	Chassis Handle: 0x0032
+	Type: Motherboard
+	Contained Object Handles: 0
+

@@ -1,0 +1,21 @@
+# dmidecode 3.2
+Getting SMBIOS data from sysfs.
+SMBIOS 3.3.0 present.
+# SMBIOS implementations newer than version 3.2.0 are not
+# fully supported by this version of dmidecode.
+
+Handle 0x0002, DMI type 2, 17 bytes
+Base Board Information
+	Manufacturer: Huawei
+	Product Name: BC13MBSC
+	Version: V100R009
+	Serial Number: 027UDV10H2020113
+	Asset Tag: To be filled by O.E.M.
+	Features:
+		Board is a hosting board
+		Board is replaceable
+	Location In Chassis: Part Component
+	Chassis Handle: 0x0000
+	Type: Server Blade
+	Contained Object Handles: 0
+

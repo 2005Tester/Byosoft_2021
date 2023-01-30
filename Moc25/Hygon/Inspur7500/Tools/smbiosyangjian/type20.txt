@@ -1,0 +1,105 @@
+# dmidecode 3.2
+Getting SMBIOS data from sysfs.
+SMBIOS 3.3 present.
+# SMBIOS implementations newer than version 3.2.0 are not
+# fully supported by this version of dmidecode.
+
+Handle 0x0018, DMI type 20, 35 bytes
+Memory Device Mapped Address
+	Starting Address: 0x00000000000
+	Ending Address: 0x003FFFFFFFF
+	Range Size: 16 GB
+	Physical Device Handle: 0x0017
+	Memory Array Mapped Address Handle: 0x0005
+	Partition Row Position: Unknown
+	Interleave Position: Unknown
+	Interleaved Data Depth: Unknown
+
+Handle 0x001B, DMI type 20, 35 bytes
+Memory Device Mapped Address
+	Starting Address: 0x00400000000
+	Ending Address: 0x007FFFFFFFF
+	Range Size: 16 GB
+	Physical Device Handle: 0x001A
+	Memory Array Mapped Address Handle: 0x0005
+	Partition Row Position: Unknown
+	Interleave Position: Unknown
+	Interleaved Data Depth: Unknown
+
+Handle 0x001E, DMI type 20, 35 bytes
+Memory Device Mapped Address
+	Starting Address: 0x00800000000
+	Ending Address: 0x00BFFFFFFFF
+	Range Size: 16 GB
+	Physical Device Handle: 0x001D
+	Memory Array Mapped Address Handle: 0x0005
+	Partition Row Position: Unknown
+	Interleave Position: Unknown
+	Interleaved Data Depth: Unknown
+
+Handle 0x0021, DMI type 20, 35 bytes
+Memory Device Mapped Address
+	Starting Address: 0x00C00000000
+	Ending Address: 0x00FFFFFFFFF
+	Range Size: 16 GB
+	Physical Device Handle: 0x0020
+	Memory Array Mapped Address Handle: 0x0005
+	Partition Row Position: Unknown
+	Interleave Position: Unknown
+	Interleaved Data Depth: Unknown
+
+Handle 0x0028, DMI type 20, 35 bytes
+Memory Device Mapped Address
+	Starting Address: 0x01000000000
+	Ending Address: 0x013FFFFFFFF
+	Range Size: 16 GB
+	Physical Device Handle: 0x0027
+	Memory Array Mapped Address Handle: 0x0005
+	Partition Row Position: Unknown
+	Interleave Position: Unknown
+	Interleaved Data Depth: Unknown
+
+Handle 0x002B, DMI type 20, 35 bytes
+Memory Device Mapped Address
+	Starting Address: 0x01400000000
+	Ending Address: 0x017FFFFFFFF
+	Range Size: 16 GB
+	Physical Device Handle: 0x002A
+	Memory Array Mapped Address Handle: 0x0005
+	Partition Row Position: Unknown
+	Interleave Position: Unknown
+	Interleaved Data Depth: Unknown
+
+Handle 0x002E, DMI type 20, 35 bytes
+Memory Device Mapped Address
+	Starting Address: 0x01800000000
+	Ending Address: 0x01BFFFFFFFF
+	Range Size: 16 GB
+	Physical Device Handle: 0x002D
+	Memory Array Mapped Address Handle: 0x0005
+	Partition Row Position: Unknown
+	Interleave Position: Unknown
+	Interleaved Data Depth: Unknown
+
+Handle 0x0031, DMI type 20, 35 bytes
+Memory Device Mapped Address
+	Starting Address: 0x01C00000000
+	Ending Address: 0x01FFFFFFFFF
+	Range Size: 16 GB
+	Physical Device Handle: 0x0030
+	Memory Array Mapped Address Handle: 0x0005
+	Partition Row Position: Unknown
+	Interleave Position: Unknown
+	Interleaved Data Depth: Unknown
+
+Handle 0x0036, DMI type 20, 35 bytes
+Memory Device Mapped Address
+	Starting Address: 0x02000000000
+	Ending Address: 0x023FFFFFFFF
+	Range Size: 16 GB
+	Physical Device Handle: 0x0035
+	Memory Array Mapped Address Handle: 0x0005
+	Partition Row Position: Unknown
+	Interleave Position: Unknown
+	Interleaved Data Depth: Unknown
+

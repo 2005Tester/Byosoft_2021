@@ -1,0 +1,17 @@
+                          Type1 message
+-------------------------------------------------------------------------
+Number: 0
+-------------------------------------------------------------------------
+************start type show*********-----------------
+Type  :1
+Handle:15
+Manufacturer Name :Hygon
+Product Name      :HYG3000
+Version           :V1.0
+Serial Number     : 
+UUID              :69 9A 19 A7 22 E5 BF 46 BE 96 3F 49 BC 97 F7 55 
+Wake-up           :AC Power Restored
+SKU Number String :Type1Sku0
+Family String     :Type1Family
+
+

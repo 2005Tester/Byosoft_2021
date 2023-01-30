@@ -1,0 +1,94 @@
+# dmidecode 3.2
+Getting SMBIOS data from sysfs.
+SMBIOS 3.1 present.
+
+Handle 0x005F, DMI type 9, 17 bytes
+System Slot Information
+	Designation: PCIE_SLOT1
+	Type: x8 PCI Express
+	Current Usage: Available
+	Length: Long
+	ID: 1
+	Characteristics:
+		3.3 V is provided
+		Opening is shared
+		PME signal is supported
+	Bus Address: 00ff:ff:1f.7
+
+Handle 0x0060, DMI type 9, 17 bytes
+System Slot Information
+	Designation: PCIE_SLOT2
+	Type: x8 PCI Express
+	Current Usage: In Use
+	Length: Long
+	ID: 2
+	Characteristics:
+		3.3 V is provided
+		Opening is shared
+		PME signal is supported
+	Bus Address: 0000:0d:01.1
+
+Handle 0x0061, DMI type 9, 17 bytes
+System Slot Information
+	Designation: PCIE_SLOT3
+	Type: x8 PCI Express
+	Current Usage: Available
+	Length: Long
+	ID: 3
+	Characteristics:
+		3.3 V is provided
+		Opening is shared
+		PME signal is supported
+	Bus Address: 0000:3d:00.0
+
+Handle 0x0062, DMI type 9, 17 bytes
+System Slot Information
+	Designation: PCIE_SLOT4
+	Type: x8 PCI Express
+	Current Usage: Available
+	Length: Long
+	ID: 4
+	Characteristics:
+		3.3 V is provided
+		Opening is shared
+		PME signal is supported
+	Bus Address: 0000:3d:01.0
+
+Handle 0x0063, DMI type 9, 17 bytes
+System Slot Information
+	Designation: PCIE_SLOT5
+	Type: x8 PCI Express
+	Current Usage: In Use
+	Length: Long
+	ID: 5
+	Characteristics:
+		3.3 V is provided
+		Opening is shared
+		PME signal is supported
+	Bus Address: 0000:d2:01.1
+
+Handle 0x0064, DMI type 9, 17 bytes
+System Slot Information
+	Designation: PCIE_SLOT6
+	Type: x16 PCI Express
+	Current Usage: In Use
+	Length: Long
+	ID: 6
+	Characteristics:
+		3.3 V is provided
+		Opening is shared
+		PME signal is supported
+	Bus Address: 0000:ad:01.1
+
+Handle 0x0065, DMI type 9, 17 bytes
+System Slot Information
+	Designation: PCIE_SLOT7
+	Type: x16 PCI Express
+	Current Usage: Available
+	Length: Long
+	ID: 7
+	Characteristics:
+		3.3 V is provided
+		Opening is shared
+		PME signal is supported
+	Bus Address: 00ff:ff:1f.7

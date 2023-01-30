@@ -1,0 +1,57 @@
+                          Type9 message
+-------------------------------------------------------------------------
+Number: 0
+-------------------------------------------------------------------------
+************start type show*********-----------------
+Type  :9
+Handle:29
+Slot Type              :PCI Express x1 
+Slot Designation       :J31
+Slot Data Bus Width    :1x or x1  
+Current Usage          :Available
+Slot Length            :Short Length
+Slot ID                :0066h
+Slot Characteristics1  :Use param /view Type Number 6 show filed info
+Slot Characteristics2  :Use param /view Type Number 7 show filed info
+Segment Group Number   :00FFh
+Bus Number             :FFh
+Device/Function Number :Use param /view 9 29 10 show filed info
+
+                          Type9 message
+-------------------------------------------------------------------------
+Number: 1
+-------------------------------------------------------------------------
+************start type show*********-----------------
+Type  :9
+Handle:30
+Slot Type              :PCI Express x8 
+Slot Designation       :J30
+Slot Data Bus Width    :8x or x8  
+Current Usage          :Available
+Slot Length            :Long Length 
+Slot ID                :0067h
+Slot Characteristics1  :Use param /view Type Number 6 show filed info
+Slot Characteristics2  :Use param /view Type Number 7 show filed info
+Segment Group Number   :00FFh
+Bus Number             :FFh
+Device/Function Number :Use param /view 9 30 10 show filed info
+
+                          Type9 message
+-------------------------------------------------------------------------
+Number: 2
+-------------------------------------------------------------------------
+************start type show*********-----------------
+Type  :9
+Handle:31
+Slot Type              :PCI Express x16
+Slot Designation       :J84
+Slot Data Bus Width    :16x or x16
+Current Usage          :Available
+Slot Length            :Long Length 
+Slot ID                :0001h
+Slot Characteristics1  :Use param /view Type Number 6 show filed info
+Slot Characteristics2  :Use param /view Type Number 7 show filed info
+Segment Group Number   :00FFh
+Bus Number             :FFh
+Device/Function Number :Use param /view 9 31 10 show filed info
+

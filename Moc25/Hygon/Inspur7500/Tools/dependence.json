@@ -1,0 +1,20 @@
+{
+"Wake On Lan":{"Onboard Ethernet Controller":"Enabled"},
+"Net Boot IP Version":{"PXE Option Rom":"Enabled","Boot Mode":"UEFI"},
+"Select a Network to PXE":{"PXE Option Rom":"Enabled","Boot Mode":"UEFI"},
+"PXE Boot Options Retry":{"PXE Option Rom":"Enabled"},
+"PXE Boot Priority":{"PXE Option Rom":"Enabled"},
+"UEFI Network Stack":{"PXE Option Rom":"Disabled","Boot Mode":"UEFI"},
+"OPTION ROM Message":{"Boot Mode":"Legacy"},
+"CPU P-State Control":{"ENERGY_PERF_BIAS_CFG mode":"User Defined"},
+"CPU C-State Control":{"ENERGY_PERF_BIAS_CFG mode":"User Defined"},
+"Set CPU Speed":{"ENERGY_PERF_BIAS_CFG mode":"User Defined"},
+"FRB2 Watchdog Timer Policy":{"FRB2 Watchdog Timer":"Enabled"},
+"FRB2 Watchdog Timer Timeout":{"FRB2 Watchdog Timer":"Enabled"},
+"OS Watchdog Timer Policy": {"OS Watchdog Timer": "Enabled"},
+"OS Watchdog Timer Timeout": {"OS Watchdog Timer": "Enabled"},
+"MCA Error Threshold Count":{"Platform First Error Handling":"Enabled"},
+"Password Complexity":{"Custom Password Check":"Enabled"},
+"Password Length":{"Custom Password Check":"Enabled"},
+"Password Retry":{"Custom Password Check":"Enabled"}
+    }

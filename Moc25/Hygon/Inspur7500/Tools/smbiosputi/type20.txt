@@ -1,0 +1,91 @@
+# dmidecode 3.2
+Getting SMBIOS data from sysfs.
+SMBIOS 3.1 present.
+
+Handle 0x0023, DMI type 20, 35 bytes
+Memory Device Mapped Address
+	Starting Address: 0x00000000000
+	Ending Address: 0x007FFFFFFFF
+	Range Size: 32 GB
+	Physical Device Handle: 0x0022
+	Memory Array Mapped Address Handle: 0x0000
+	Partition Row Position: 1
+	Interleaved Data Depth: 1
+
+Handle 0x0027, DMI type 20, 35 bytes
+Memory Device Mapped Address
+	Starting Address: 0x00800000000
+	Ending Address: 0x00FFFFFFFFF
+	Range Size: 32 GB
+	Physical Device Handle: 0x0026
+	Memory Array Mapped Address Handle: 0x0000
+	Partition Row Position: 1
+	Interleave Position: 1
+	Interleaved Data Depth: 1
+
+Handle 0x002B, DMI type 20, 35 bytes
+Memory Device Mapped Address
+	Starting Address: 0x01000000000
+	Ending Address: 0x017FFFFFFFF
+	Range Size: 32 GB
+	Physical Device Handle: 0x002A
+	Memory Array Mapped Address Handle: 0x0000
+	Partition Row Position: 1
+	Interleave Position: 2
+	Interleaved Data Depth: 1
+
+Handle 0x002F, DMI type 20, 35 bytes
+Memory Device Mapped Address
+	Starting Address: 0x01800000000
+	Ending Address: 0x01FFFFFFFFF
+	Range Size: 32 GB
+	Physical Device Handle: 0x002E
+	Memory Array Mapped Address Handle: 0x0000
+	Partition Row Position: 1
+	Interleave Position: 3
+	Interleaved Data Depth: 1
+
+Handle 0x0033, DMI type 20, 35 bytes
+Memory Device Mapped Address
+	Starting Address: 0x02000000000
+	Ending Address: 0x027FFFFFFFF
+	Range Size: 32 GB
+	Physical Device Handle: 0x0032
+	Memory Array Mapped Address Handle: 0x0000
+	Partition Row Position: 1
+	Interleave Position: 4
+	Interleaved Data Depth: 1
+
+Handle 0x0037, DMI type 20, 35 bytes
+Memory Device Mapped Address
+	Starting Address: 0x02800000000
+	Ending Address: 0x02FFFFFFFFF
+	Range Size: 32 GB
+	Physical Device Handle: 0x0036
+	Memory Array Mapped Address Handle: 0x0000
+	Partition Row Position: 1
+	Interleave Position: 5
+	Interleaved Data Depth: 1
+
+Handle 0x003B, DMI type 20, 35 bytes
+Memory Device Mapped Address
+	Starting Address: 0x03000000000
+	Ending Address: 0x037FFFFFFFF
+	Range Size: 32 GB
+	Physical Device Handle: 0x003A
+	Memory Array Mapped Address Handle: 0x0000
+	Partition Row Position: 1
+	Interleave Position: 6
+	Interleaved Data Depth: 1
+
+Handle 0x003F, DMI type 20, 35 bytes
+Memory Device Mapped Address
+	Starting Address: 0x03800000000
+	Ending Address: 0x03FFFFFFFFF
+	Range Size: 32 GB
+	Physical Device Handle: 0x003E
+	Memory Array Mapped Address Handle: 0x0000
+	Partition Row Position: 1
+	Interleave Position: 7
+	Interleaved Data Depth: 1
+

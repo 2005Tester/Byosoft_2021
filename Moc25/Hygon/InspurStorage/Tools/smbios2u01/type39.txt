@@ -1,0 +1,38 @@
+# dmidecode 3.2
+Getting SMBIOS data from sysfs.
+SMBIOS 3.1 present.
+
+Handle 0x005B, DMI type 39, 22 bytes
+System Power Supply
+	Power Unit Group: 1
+	Location: in the back, on the left-hand side
+	Name: PSU0
+	Manufacturer: <BAD INDEX>
+	Serial Number: <BAD INDEX>
+	Asset Tag: <BAD INDEX>
+	Model Part Number: <BAD INDEX>
+	Revision: <BAD INDEX>
+	Max Power Capacity: 0 W
+	Status: Not Present
+	Type: Switching
+	Input Voltage Range Switching: Other
+	Plugged: Yes
+	Hot Replaceable: No
+
+Handle 0x005C, DMI type 39, 22 bytes
+System Power Supply
+	Power Unit Group: 2
+	Location: in the back, on the left-hand side
+	Name: PSU1
+	Manufacturer: Great Wall
+	Serial Number: 2K07C229251
+	Asset Tag: N/A
+	Model Part Number: GW-CRPS550N2W
+	Revision: PT.02.02
+	Max Power Capacity: 550 W
+	Status: Present, OK
+	Type: Switching
+	Input Voltage Range Switching: Other
+	Plugged: Yes
+	Hot Replaceable: No
+

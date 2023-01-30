@@ -1,0 +1,579 @@
+# dmidecode 3.2
+Getting SMBIOS data from sysfs.
+SMBIOS 3.1 present.
+
+Handle 0x000D, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0001
+	Error Information Handle: 0x000C
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: CPU0_C0D0:Training Success
+	Bank Locator: CPU0 CHANNEL A
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: Micron Technology
+	Serial Number: F137DFC2
+	Asset Tag: Not Specified
+	Part Number: 36ASF4G72PZ-2G9E2   
+	Rank: 2
+	Configured Memory Speed: 2133 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x0011, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0001
+	Error Information Handle: 0x0010
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: CPU0_C1D0:Training Success
+	Bank Locator: CPU0 CHANNEL B
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: Micron Technology
+	Serial Number: F137DFC1
+	Asset Tag: Not Specified
+	Part Number: 36ASF4G72PZ-2G9E2   
+	Rank: 2
+	Configured Memory Speed: 2133 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x0014, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0001
+	Error Information Handle: 0x0013
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: CPU0_C2D0:Training Success
+	Bank Locator: CPU0 CHANNEL C
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: Micron Technology
+	Serial Number: F137DFF0
+	Asset Tag: Not Specified
+	Part Number: 36ASF4G72PZ-2G9E2   
+	Rank: 2
+	Configured Memory Speed: 2133 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x0017, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0001
+	Error Information Handle: 0x0016
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: CPU0_C2D1:Training Success
+	Bank Locator: CPU0 CHANNEL C
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: Micron Technology
+	Serial Number: F13842CE
+	Asset Tag: Not Specified
+	Part Number: 36ASF4G72PZ-2G9E2   
+	Rank: 2
+	Configured Memory Speed: 2133 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x001A, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0001
+	Error Information Handle: 0x0019
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: CPU0_C3D0:Training Success
+	Bank Locator: CPU0 CHANNEL D
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: Micron Technology
+	Serial Number: F137DFE5
+	Asset Tag: Not Specified
+	Part Number: 36ASF4G72PZ-2G9E2   
+	Rank: 2
+	Configured Memory Speed: 2133 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x001D, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0001
+	Error Information Handle: 0x001C
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: CPU0_C3D1:Training Success
+	Bank Locator: CPU0 CHANNEL D
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: Micron Technology
+	Serial Number: F137E213
+	Asset Tag: Not Specified
+	Part Number: 36ASF4G72PZ-2G9E2   
+	Rank: 2
+	Configured Memory Speed: 2133 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x0020, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0001
+	Error Information Handle: 0x001F
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: CPU0_C4D0:Training Success
+	Bank Locator: CPU0 CHANNEL E
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: Micron Technology
+	Serial Number: F137DFBD
+	Asset Tag: Not Specified
+	Part Number: 36ASF4G72PZ-2G9E2   
+	Rank: 2
+	Configured Memory Speed: 2133 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x0023, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0001
+	Error Information Handle: 0x0022
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: CPU0_C5D0:Training Success
+	Bank Locator: CPU0 CHANNEL F
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: Micron Technology
+	Serial Number: F137DE5C
+	Asset Tag: Not Specified
+	Part Number: 36ASF4G72PZ-2G9E2   
+	Rank: 2
+	Configured Memory Speed: 2133 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x0026, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0001
+	Error Information Handle: 0x0025
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: CPU0_C6D0:Training Success
+	Bank Locator: CPU0 CHANNEL G
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: Micron Technology
+	Serial Number: F137DD4A
+	Asset Tag: Not Specified
+	Part Number: 36ASF4G72PZ-2G9E2   
+	Rank: 2
+	Configured Memory Speed: 2133 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x0029, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0001
+	Error Information Handle: 0x0028
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: CPU0_C6D1:Training Success
+	Bank Locator: CPU0 CHANNEL G
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: Micron Technology
+	Serial Number: F137DFD9
+	Asset Tag: Not Specified
+	Part Number: 36ASF4G72PZ-2G9E2   
+	Rank: 2
+	Configured Memory Speed: 2133 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x002C, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0001
+	Error Information Handle: 0x002B
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: CPU0_C7D0:Training Success
+	Bank Locator: CPU0 CHANNEL H
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: Micron Technology
+	Serial Number: F137E03F
+	Asset Tag: Not Specified
+	Part Number: 36ASF4G72PZ-2G9E2   
+	Rank: 2
+	Configured Memory Speed: 2133 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x002F, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0001
+	Error Information Handle: 0x002E
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: CPU0_C7D1:Training Success
+	Bank Locator: CPU0 CHANNEL H
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: Micron Technology
+	Serial Number: F137E03D
+	Asset Tag: Not Specified
+	Part Number: 36ASF4G72PZ-2G9E2   
+	Rank: 2
+	Configured Memory Speed: 2133 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x0032, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0001
+	Error Information Handle: 0x0031
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: CPU1_C0D0:Training Success
+	Bank Locator: CPU1 CHANNEL A
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: Micron Technology
+	Serial Number: F137DDC2
+	Asset Tag: Not Specified
+	Part Number: 36ASF4G72PZ-2G9E2   
+	Rank: 2
+	Configured Memory Speed: 2133 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x0035, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0001
+	Error Information Handle: 0x0034
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: CPU1_C1D0:Training Success
+	Bank Locator: CPU1 CHANNEL B
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: Micron Technology
+	Serial Number: F137DDC8
+	Asset Tag: Not Specified
+	Part Number: 36ASF4G72PZ-2G9E2   
+	Rank: 2
+	Configured Memory Speed: 2133 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x0038, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0001
+	Error Information Handle: 0x0037
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: CPU1_C2D0:Training Success
+	Bank Locator: CPU1 CHANNEL C
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: Micron Technology
+	Serial Number: F13905AE
+	Asset Tag: Not Specified
+	Part Number: 36ASF4G72PZ-2G9E2   
+	Rank: 2
+	Configured Memory Speed: 2133 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x003B, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0001
+	Error Information Handle: 0x003A
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: CPU1_C2D1:Training Success
+	Bank Locator: CPU1 CHANNEL C
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: Micron Technology
+	Serial Number: F137E0D5
+	Asset Tag: Not Specified
+	Part Number: 36ASF4G72PZ-2G9E2   
+	Rank: 2
+	Configured Memory Speed: 2133 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x003E, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0001
+	Error Information Handle: 0x003D
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: CPU1_C3D0:Training Success
+	Bank Locator: CPU1 CHANNEL D
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: Micron Technology
+	Serial Number: F137DE90
+	Asset Tag: Not Specified
+	Part Number: 36ASF4G72PZ-2G9E2   
+	Rank: 2
+	Configured Memory Speed: 2133 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x0041, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0001
+	Error Information Handle: 0x0040
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: CPU1_C3D1:Training Success
+	Bank Locator: CPU1 CHANNEL D
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: Micron Technology
+	Serial Number: F137DDB5
+	Asset Tag: Not Specified
+	Part Number: 36ASF4G72PZ-2G9E2   
+	Rank: 2
+	Configured Memory Speed: 2133 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x0044, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0001
+	Error Information Handle: 0x0043
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: No Module Installed
+	Form Factor: DIMM
+	Set: None
+	Locator: CPU1_C4D0:Training Failed
+	Bank Locator: CPU1 CHANNEL E
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: Micron Technology
+	Serial Number: F138440A
+	Asset Tag: Not Specified
+	Part Number: 36ASF4G72PZ-2G9E2   
+	Rank: 2
+	Configured Memory Speed: 2133 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x0046, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0001
+	Error Information Handle: 0x0045
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: CPU1_C5D0:Training Success
+	Bank Locator: CPU1 CHANNEL F
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: Micron Technology
+	Serial Number: F13905ED
+	Asset Tag: Not Specified
+	Part Number: 36ASF4G72PZ-2G9E2   
+	Rank: 2
+	Configured Memory Speed: 2133 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x0049, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0001
+	Error Information Handle: 0x0048
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: CPU1_C6D0:Training Success
+	Bank Locator: CPU1 CHANNEL G
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: Micron Technology
+	Serial Number: F137E049
+	Asset Tag: Not Specified
+	Part Number: 36ASF4G72PZ-2G9E2   
+	Rank: 2
+	Configured Memory Speed: 2133 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x004C, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0001
+	Error Information Handle: 0x004B
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: CPU1_C6D1:Training Success
+	Bank Locator: CPU1 CHANNEL G
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: Micron Technology
+	Serial Number: F137E03C
+	Asset Tag: Not Specified
+	Part Number: 36ASF4G72PZ-2G9E2   
+	Rank: 2
+	Configured Memory Speed: 2133 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x004F, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0001
+	Error Information Handle: 0x004E
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: CPU1_C7D0:Training Success
+	Bank Locator: CPU1 CHANNEL H
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: Micron Technology
+	Serial Number: F13842CB
+	Asset Tag: Not Specified
+	Part Number: 36ASF4G72PZ-2G9E2   
+	Rank: 2
+	Configured Memory Speed: 2133 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x0052, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0001
+	Error Information Handle: 0x0051
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: CPU1_C7D1:Training Success
+	Bank Locator: CPU1 CHANNEL H
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: Micron Technology
+	Serial Number: F137E1F4
+	Asset Tag: Not Specified
+	Part Number: 36ASF4G72PZ-2G9E2   
+	Rank: 2
+	Configured Memory Speed: 2133 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
