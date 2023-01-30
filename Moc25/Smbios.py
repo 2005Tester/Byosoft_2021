@@ -50,7 +50,7 @@ def type0():
     result = ReportGen.LogHeaderResult(tc)
     msgs = ["Vendor: Byosoft", "Version: {0}".format(SutConfig.BIOS_VERSION)]
     serial.send_data("dmidecode -t 0\n")
-    if not serial.waitStrings(msgs):
+    if not serial.wait_messages(msgs, timeout=60):
         result.log_fail()
         return
     result.log_pass()

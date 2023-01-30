@@ -1,8 +1,0 @@
-LOGO文件说明:
-
-1.  Logo.bmp -- 源码中定义的原始LOGO文件。(如果刷入此Logo, KVM截屏抓取到的图像为"PostLogo.bmp")
-2.  PostLogo.bmp -- 启动过程中，通过BMC截屏，用 BmcLib.capture_kvm_screen() 抓到的LOGO图像。
-3.  CustomLogo.bmp -- 用于Logo更新测试的第三方LOGO
-
-
-Logo文件分辨率: 160x160
