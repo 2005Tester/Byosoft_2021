@@ -1,3269 +1,656 @@
-import datetime
-from typing import Set
-import re
-import time
-import logging
-from Inspur7500.BaseLib import BmcLib, SetUpLib
-from Inspur7500.Config.PlatConfig import Key
-from Inspur7500.Config import SutConfig
-from batf.SutInit import Sut
-from batf.Report import stylelog
+# -*- encoding=utf8 -*-
+from Inspur7500.Config import *
+from Inspur7500.BaseLib import *
+
+# 硬盘顺序与设置硬盘密码时的顺序对应,每个硬盘系统对应
+HDD_NAME_01 = SutConfig.Psw.HDD_PASSWORD_NAME_01
+HDD_NAME_01_OS = SutConfig.Psw.HDD_NAME_01_OS
+
+HDD_NAME_02 = SutConfig.Psw.HDD_PASSWORD_NAME_02
+HDD_NAME_02_OS = SutConfig.Psw.HDD_NAME_02_OS
 
 
-
-#硬盘顺序与设置硬盘密码时的顺序对应,每个硬盘系统对应
-HDD_NAME_01=SutConfig.Psw.HDD_PASSWORD_NAME_01
-HDD_NAME_01_OS=SutConfig.Psw.HDD_NAME_01_OS
-
-HDD_NAME_02=SutConfig.Psw.HDD_PASSWORD_NAME_02
-HDD_NAME_02_OS=SutConfig.Psw.HDD_NAME_02_OS
-
-# HDD_NAME_03=SutConfig.Psw.HDD_PASSWORD_NAME_03
+def _set_hdd_password(hddname, password):
+    assert SetUpLib.locate_menu(Key.DOWN, SutConfig.Psw.LOC_HDD_PSW + [hddname, SutConfig.Psw.SET_HDD_PSW_OPTION], 18)
+    assert PwdLib.set_hdd_admin(password, True)
+    return True
 
 
-def _del_hdd_password(password):
-    logging.info("SetUpLib: Boot to setup main page")
-    if not BmcLib.init_sut():
-        stylelog.fail("SetUpLib: Rebooting SUT Failed.")
-        return
-    logging.info("SetUpLib: Booting to setup")
-    BmcLib.enable_serial_normal()
-    logging.info("Waiting for Hotkey message found...")
-    if not SetUpLib.boot_with_hotkey_only(Key.DEL, SutConfig.Msg.PAGE_MAIN_CN, 150, SutConfig.Msg.HOTKEY_PROMPT_DEL_CN):
-        time.sleep(2)
-        SetUpLib.send_data(password)
-        time.sleep(1)
-        if SetUpLib.wait_message_enter(SutConfig.Msg.POST_MESSAGE):
-            SetUpLib.send_key(Key.DEL)
-        else:
-            return
-        if SetUpLib.wait_message(SutConfig.Msg.PAGE_MAIN_CN,30):
-            logging.info('进入setup')
-        else:
-            return
-        assert SetUpLib.enter_menu(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-        try_counts=3
-        while try_counts:
-            time.sleep(3)
-            SetUpLib.send_key(Key.ENTER)
-            time.sleep(1)
-            if SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.DEL_HDD_PSW_OPTION],4):
-                break
-            else:
-                time.sleep(1)
-                SetUpLib.send_key(Key.ESC)
-                time.sleep(2)
-                SetUpLib.send_key(Key.DOWN)
-                try_counts-=1
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(1)
-        SetUpLib.send_data(password)
-        time.sleep(1)
-        if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS,5):
-            logging.info('密码删除')
-        else:
-            return
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(1)
-        SetUpLib.send_key(Key.ESC)
-        time.sleep(2)
-        SetUpLib.send_key(Key.ESC)
-        time.sleep(2)
-        SetUpLib.send_key(Key.RIGHT)
-        time.sleep(1)
-        return True
+def _set_hdd_password_two(password):
+    assert SetUpLib.locate_menu(Key.DOWN, SutConfig.Psw.LOC_HDD_PSW + [SutConfig.Psw.HDD_PASSWORD_NAME_01,
+                                                                       SutConfig.Psw.SET_HDD_PSW_OPTION], 18)
+    assert PwdLib.set_hdd_admin(password[0], True)
+    SetUpLib.send_key(Key.ESC)
+    assert SetUpLib.locate_menu(Key.DOWN, [SutConfig.Psw.HDD_PASSWORD_NAME_02, SutConfig.Psw.SET_HDD_PSW_OPTION], 18)
+    assert PwdLib.set_hdd_admin_another(password[1], True)
+    time.sleep(1)
+    return True
+
+
+def _del_hdd_password(hddname, password):
+    assert SetUpLib.locate_menu(Key.DOWN, SutConfig.Psw.LOC_HDD_PSW + [hddname, SutConfig.Psw.DEL_HDD_PSW_OPTION], 18)
+    assert PwdLib.del_hdd_psw(password, True)
+    return True
+
+
+def _del_hdd_password_two(password):
+    assert SetUpLib.locate_menu(Key.DOWN, SutConfig.Psw.LOC_HDD_PSW + [SutConfig.Psw.HDD_PASSWORD_NAME_01,
+                                                                       SutConfig.Psw.DEL_HDD_PSW_OPTION], 18)
+    assert PwdLib.del_hdd_psw(password[0], True)
+    SetUpLib.send_key(Key.ESC)
+    time.sleep(1)
+    assert SetUpLib.locate_menu(Key.DOWN, [SutConfig.Psw.HDD_PASSWORD_NAME_02, SutConfig.Psw.DEL_HDD_PSW_OPTION], 18)
+    assert PwdLib.del_hdd_psw(password[1], True)
+    return True
+
+
+def _boot_to_setup(is_del=True, password='admin'):
+    if password == 'admin':
+        password = PwdLib.HDD_PW.ADMIN if PwdLib.HDD_PW.ADMIN else ''
+    elif password == 'admin_another':
+        password = PwdLib.HDD_PW.ADMIN_ANOTHER if PwdLib.HDD_PW.ADMIN_ANOTHER else ''
     else:
-        logging.info("SetUpLib: Boot to setup main page successfully")
-        return True
-
-
-
-def _del_hdd_password_two():
-    logging.info("SetUpLib: Boot to setup main page")
-    if not BmcLib.init_sut():
-        stylelog.fail("SetUpLib: Rebooting SUT Failed.")
-        return
+        password = PwdLib.HDD_PW.ADMIN if PwdLib.HDD_PW.ADMIN else ''
+    BmcLib.init_sut()
     logging.info("SetUpLib: Booting to setup")
-    BmcLib.enable_serial_normal()
-    logging.info("Waiting for Hotkey message found...")
-    if not SetUpLib.boot_with_hotkey_only(Key.DEL, SutConfig.Msg.PAGE_MAIN_CN, 150, SutConfig.Msg.HOTKEY_PROMPT_DEL_CN):
-        SetUpLib.send_data('hdd12345')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-        data = SetUpLib.get_data(4)
-        if re.search(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT, data):
-            SetUpLib.send_data('hdd123456')
-            time.sleep(1)
-            if SetUpLib.wait_message_enter(SutConfig.Msg.POST_MESSAGE):
-                logging.info('两个硬盘')
-                hdd_count = 'two'
-                SetUpLib.send_key(Key.DEL)
-        elif re.search(SutConfig.Psw.LOGIN_HDD_PSW_FAIL, data):
-            SetUpLib.send_key(Key.ENTER)
-            time.sleep(1)
-            SetUpLib.send_data('hdd123456')
-            if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT, 5):
-                SetUpLib.send_data('hdd12345')
-                time.sleep(1)
-                if SetUpLib.wait_message_enter(SutConfig.Msg.POST_MESSAGE):
-                    logging.info('两个硬盘')
-                    hdd_count = 'two'
-                    SetUpLib.send_key(Key.DEL)
-            else:
-                if SetUpLib.wait_message('Press Key in \d seconds', 60):
-                    logging.info('只有一个硬盘密码')
-                    hdd_count = 'one'
-                    password = 'hdd123456'
-                    SetUpLib.send_key(Key.DEL)
-        else:
-            if SetUpLib.wait_message('Press Key in \d seconds', 60):
-                logging.info('只有一个硬盘密码')
-                hdd_count = 'one'
-                password = 'hdd12345'
-                SetUpLib.send_key(Key.DEL)
-        if SetUpLib.wait_message(SutConfig.Msg.PAGE_MAIN_CN, 30):
-            logging.info('进入setup')
-        else:
-            return
-        if hdd_count == 'two':
-            count = 0
-            assert SetUpLib.enter_menu(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-            time.sleep(3)
-            SetUpLib.send_key(Key.ENTER)
-            if SetUpLib.locate_option(Key.DOWN, [SutConfig.Psw.DEL_HDD_PSW_OPTION], 4):
-                SetUpLib.send_key(Key.ENTER)
-                time.sleep(1)
-                SetUpLib.send_data('hdd12345')
-                time.sleep(1)
-                if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-                    logging.info('第一个硬盘密码删除')
-                    count += 1
-                    time.sleep(1)
-                    SetUpLib.send_key(Key.ENTER)
-
-                else:
-                    SetUpLib.send_key(Key.ENTER)
-                    time.sleep(1)
-                    SetUpLib.send_key(Key.ENTER)
-                    time.sleep(2)
-                    SetUpLib.send_data('hdd123456')
-                    time.sleep(1)
-                    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-                        logging.info('第一个硬盘密码删除')
-                        count += 1
-                        time.sleep(1)
-                        SetUpLib.send_key(Key.ENTER)
-                    else:
-                        return
-            time.sleep(2)
-            SetUpLib.send_key(Key.ESC)
-            time.sleep(2)
-            SetUpLib.send_key(Key.DOWN)
-            time.sleep(2)
-            SetUpLib.send_key(Key.ENTER)
-            if SetUpLib.locate_option(Key.DOWN, [SutConfig.Psw.DEL_HDD_PSW_OPTION], 4):
-                SetUpLib.send_key(Key.ENTER)
-                time.sleep(1)
-                SetUpLib.send_data('hdd123456')
-                time.sleep(1)
-                if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-                    logging.info('第二个硬盘密码删除')
-                    count += 1
-                    time.sleep(1)
-                    SetUpLib.send_key(Key.ENTER)
-                else:
-                    SetUpLib.send_key(Key.ENTER)
-                    time.sleep(1)
-                    SetUpLib.send_key(Key.ENTER)
-                    time.sleep(2)
-                    SetUpLib.send_data('hdd12345')
-                    time.sleep(1)
-                    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-                        logging.info('第二个硬盘密码删除')
-                        count += 1
-                        time.sleep(1)
-                        SetUpLib.send_key(Key.ENTER)
-                    else:
-                        return
-            time.sleep(1)
-            SetUpLib.send_key(Key.ESC)
-            if count == 2:
-                time.sleep(2)
-                SetUpLib.send_key(Key.ESC)
-                time.sleep(2)
-                SetUpLib.send_key(Key.RIGHT)
-                time.sleep(1)
+    try_counts = 3
+    while try_counts:
+        BmcLib.enable_serial_normal()
+        logging.info("Waiting for Hotkey message found...")
+        result = SetUpLib.boot_with_hotkey_only(Key.DEL, SutConfig.Msg.PAGE_MAIN, 200, SutConfig.Msg.POST_MESSAGE,
+                                                SutConfig.Psw.LOGIN_HDD_PSW_PROMPT, password)
+        if result == [True, True]:
+            if is_del:
+                SetUpLib.enter_menu_change_value(Key.DOWN,
+                                                 SutConfig.Psw.LOC_HDD_PSW + [SutConfig.Psw.HDD_PASSWORD_NAME_01], 18)
+                if SetUpLib.wait_message(SutConfig.Psw.DEL_HDD_PSW_OPTION, 3):
+                    SetUpLib.locate_menu(Key.DOWN, SutConfig.Psw.DEL_HDD_PSW_OPTION, 10)
+                    PwdLib.del_hdd_psw(password, True)
+                SetUpLib.enter_menu_change_value(Key.DOWN,
+                                                 SutConfig.Psw.LOC_HDD_PSW + [SutConfig.Psw.HDD_PASSWORD_NAME_02], 18)
+                if SetUpLib.wait_message(SutConfig.Psw.DEL_HDD_PSW_OPTION, 3):
+                    SetUpLib.locate_menu(Key.DOWN, SutConfig.Psw.DEL_HDD_PSW_OPTION, 10)
+                    PwdLib.del_hdd_psw(password, True)
+                SetUpLib.back_to_setup_toppage()
                 return True
             else:
-                time.sleep(2)
-                SetUpLib.send_key(Key.DOWN)
-                time.sleep(2)
-                SetUpLib.send_key(Key.ENTER)
-                if SetUpLib.locate_option(Key.DOWN, [SutConfig.Psw.DEL_HDD_PSW_OPTION], 4):
-                    SetUpLib.send_key(Key.ENTER)
-                    time.sleep(1)
-                    SetUpLib.send_data('hdd123456')
-                    time.sleep(1)
-                    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-                        logging.info('第二个硬盘密码删除')
-                        count += 1
-                        time.sleep(1)
-                        SetUpLib.send_key(Key.ENTER)
-                    else:
-                        SetUpLib.send_key(Key.ENTER)
-                        time.sleep(1)
-                        SetUpLib.send_key(Key.ENTER)
-                        time.sleep(2)
-                        SetUpLib.send_data('hdd12345')
-                        time.sleep(1)
-                        if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-                            logging.info('第二个硬盘密码删除')
-                            count += 1
-                            time.sleep(1)
-                            SetUpLib.send_key(Key.ENTER)
-                        else:
-                            return
-                time.sleep(1)
-                SetUpLib.send_key(Key.ESC)
-                if count == 2:
-                    time.sleep(2)
-                    SetUpLib.send_key(Key.ESC)
-                    time.sleep(2)
-                    SetUpLib.send_key(Key.RIGHT)
-                    time.sleep(1)
-                    return True
-                else:
-                    return
-        else:
-            assert SetUpLib.enter_menu(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-            try_counts = 3
-            while try_counts:
-                time.sleep(3)
-                SetUpLib.send_key(Key.ENTER)
-                if SetUpLib.locate_option(Key.DOWN, [SutConfig.Psw.DEL_HDD_PSW_OPTION], 3):
-                    break
-                else:
-                    time.sleep(1)
-                    SetUpLib.send_key(Key.ESC)
-                    time.sleep(2)
-                    SetUpLib.send_key(Key.DOWN)
-                    try_counts -= 1
-            SetUpLib.send_key(Key.ENTER)
-            time.sleep(2)
-            SetUpLib.send_data(password)
-            time.sleep(1)
-            if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-                logging.info('硬盘密码删除')
-                SetUpLib.send_key(Key.ENTER)
-            else:
-                return
-            time.sleep(1)
-            SetUpLib.send_key(Key.ESC)
-            time.sleep(1)
-            SetUpLib.send_key(Key.ESC)
-            time.sleep(1)
-            SetUpLib.send_key(Key.RIGHT)
-            time.sleep(1)
+                return [True, True]
+        elif result == True:
             return True
+        else:
+            BmcLib.init_sut()
+            try_counts -= 1
+    logging.info("SetUpLib: Boot to setup main page Failed")
+    return
+
+
+def _boot_to_setup_two(is_del=True):
+    if PwdLib.HDD_PW.ADMIN and PwdLib.HDD_PW.ADMIN_ANOTHER:
+        BmcLib.init_sut()
+        BmcLib.enable_serial_normal()
+        if not SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT):
+            assert _boot_to_setup(is_del=is_del)
+            return True
+        PwdLib.check_psw_post(PwdLib.HDD_PW.ADMIN, '')
+        if not SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT):
+            assert _boot_to_setup(is_del=is_del)
+            return True
+        PwdLib.check_psw_post(PwdLib.HDD_PW.ADMIN_ANOTHER, '')
+        assert SetUpLib.boot_with_hotkey_only(Key.DEL, SutConfig.Msg.PAGE_MAIN, 200, SutConfig.Msg.POST_MESSAGE)
+        if is_del:
+            assert SetUpLib.locate_menu(Key.DOWN, SutConfig.Psw.LOC_HDD_PSW + [SutConfig.Psw.HDD_PASSWORD_NAME_01,
+                                                                               SutConfig.Psw.DEL_HDD_PSW_OPTION], 18)
+            assert PwdLib.del_hdd_psw(PwdLib.HDD_PW.ADMIN, True)
+            assert SetUpLib.locate_menu(Key.DOWN, SutConfig.Psw.LOC_HDD_PSW + [SutConfig.Psw.HDD_PASSWORD_NAME_02,
+                                                                               SutConfig.Psw.DEL_HDD_PSW_OPTION], 18)
+            assert PwdLib.del_hdd_psw(PwdLib.HDD_PW.ADMIN_ANOTHER, True)
+        return True
+    elif PwdLib.HDD_PW.ADMIN is not None and PwdLib.HDD_PW.ADMIN_ANOTHER is None:
+        assert _boot_to_setup(is_del, 'admin')
+        return True
+    elif PwdLib.HDD_PW.ADMIN is None and PwdLib.HDD_PW.ADMIN_ANOTHER is not None:
+        assert _boot_to_setup(is_del, 'admin_another')
+        return True
     else:
-        logging.info("SetUpLib: Boot to setup main page successfully")
+        assert _boot_to_setup(is_del)
         return True
 
 
-
-#设置硬盘密码长度小于最少字符数，大于最大字符，设置密码时两次输入不一致，
-#只有数字，只有字母，只有特殊符号，数字和特殊符号，字母和特殊符号设置失败测试
-def hdd_password_001(hddorder):
-    if hddorder==1:
-        hddname=HDD_NAME_01
-    elif hddorder==2:
-        hddname=HDD_NAME_02
-
-    else:
-        stylelog.fail('hddorder有误')
-        return
-    BmcLib.power_off()
-    time.sleep(5)
-    assert SetUpLib.boot_to_setup()
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[hddname],3,2):
-        if not SetUpLib.locate_option(Key.UP,[hddname],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if not SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-        if not SetUpLib.locate_option(Key.UP,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    logging.info('硬盘密码长度小于最少字符数测试,符合复杂度........')
-    
-    time.sleep(1)
-    SetUpLib.send_data_enter('hdd001')
-    time.sleep(1)
-    SetUpLib.send_data('hdd001')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.HDD_CHARACTERS_LENGTH_NOT_ENOUGH, 10):
-        logging.info('长度小于最少字符数，硬盘密码设置失败')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(2)
-    logging.info('硬盘密码长度大于最大字符数测试,符合复杂度...........')
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data_enter('hdd12345678901234567890')
-    time.sleep(1)
-    SetUpLib.send_data('hdd12345678901234567890')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.HDD_CHARACTERS_LENGTH_NOT_ENOUGH, 10):
-        logging.info('长度大于最大字符数，硬盘密码设置失败')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(2)
+# 设置硬盘密码长度小于最少字符数，大于最大字符，设置密码时两次输入不一致，
+# 只有数字，只有字母，只有特殊符号，数字和特殊符号，字母和特殊符号设置失败测试
+def hdd_password_001():
+    psw_list = [PwdLib.gen_pw(digit=3, upper=3, lower=3, symbol=3),
+                PwdLib.gen_pw(digit=3, upper=3, lower=3, symbol=3),
+                PwdLib.gen_pw(digit=1, upper=1, lower=1, symbol=1),
+                PwdLib.gen_pw(digit=3, upper=3, lower=3, symbol=3, total=PwdLib.HDD_PW.MAX + 2),
+                PwdLib.gen_pw(digit=8, upper=0, lower=0, symbol=0),
+                PwdLib.gen_pw(digit=0, upper=8, lower=0, symbol=0),
+                PwdLib.gen_pw(digit=0, upper=0, lower=8, symbol=8),
+                PwdLib.gen_pw(digit=4, upper=0, lower=0, symbol=4),
+                PwdLib.gen_pw(digit=0, upper=4, lower=0, symbol=4),
+                PwdLib.gen_pw(digit=0, upper=0, lower=4, symbol=4),
+                ]
+    hddname = SutConfig.Psw.HDD_PASSWORD_NAME_01
+    assert _boot_to_setup()
+    assert SetUpLib.locate_menu(Key.DOWN, SutConfig.Psw.LOC_HDD_PSW + [hddname, SutConfig.Psw.SET_HDD_PSW_OPTION], 18)
     logging.info('设置密码时两次输入不一致测试..........')
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data_enter('hdd12345')
-    time.sleep(2)
-    SetUpLib.send_data('hdd11111')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.HDD_NEW_OLD_PSW_DIFF, 10):
-        logging.info('设置密码时两次输入不一致,硬盘密码设置失败')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    logging.info('硬盘密码只有数字测试，符合最大长度..........')
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data_enter('12345678901234567890')
-    time.sleep(2)
-    SetUpLib.send_data('12345678901234567890')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.HDD_CHARACTERS_TYPE_NOT_ENOUGH, 10):
-        logging.info('设置密码只有数字,硬盘密码设置失败')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(2)
-    else:
-        return
-    logging.info('硬盘密码只有字母测试，符合最小长度..........')
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data_enter('abcdefgh')
-    time.sleep(2)
-    SetUpLib.send_data('abcdefgh')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.HDD_CHARACTERS_TYPE_NOT_ENOUGH, 10):
-        logging.info('设置密码只有字母,硬盘密码设置失败')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(2)
-    else:
-        return
-    logging.info('硬盘密码只有特殊字符测试..........')
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data_enter('~`"!@#$%')
-    time.sleep(2)
-    SetUpLib.send_data('~`"!@#$%')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.HDD_CHARACTERS_TYPE_NOT_ENOUGH, 10):
-        logging.info('设置密码只有特殊字符,硬盘密码设置失败')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(2)
-    else:
-        return
-    logging.info('硬盘密码只有特殊字符测试..........')
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data_enter('\:;<,>.?')
-    time.sleep(2)
-    SetUpLib.send_data('\:;<,>.?')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.HDD_CHARACTERS_TYPE_NOT_ENOUGH, 10):
-        logging.info('设置密码只有特殊字符,硬盘密码设置失败')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(2)
-    else:
-        return
-    logging.info('硬盘密码只有特殊字符测试..........')
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data_enter('?/ @#$%^')
-    time.sleep(2)
-    SetUpLib.send_data('?/ @#$%^')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.HDD_CHARACTERS_TYPE_NOT_ENOUGH, 10):
-        logging.info('设置密码只有特殊字符,硬盘密码设置失败')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(2)
-    else:
-        return
-    logging.info('硬盘密码数字和特殊字符测试..........')
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data_enter("1'^&*()_")
-    time.sleep(2)
-    SetUpLib.send_data("1'^&*()_")
-    if SetUpLib.wait_message_enter(SutConfig.Psw.HDD_CHARACTERS_TYPE_NOT_ENOUGH, 10):
-        logging.info('设置密码数字和特殊字符,硬盘密码设置失败')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(2)
-    else:
-        return
-
-    logging.info('硬盘密码字母和特殊字符测试..........')
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data_enter('a-+={[}]')
-    time.sleep(2)
-    SetUpLib.send_data('a-+={[}]')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.HDD_CHARACTERS_TYPE_NOT_ENOUGH, 10):
-        logging.info('设置密码字母和特殊字符,硬盘密码设置失败')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(2)
-    else:
-        return
+    assert PwdLib.set_hdd_admin(psw_list[0], False, expect=PwdLib.hdd_pw_not_same, confirm_pw=psw_list[1])
+    logging.info('硬盘密码长度小于最少字符数测试,符合复杂度........')
+    assert PwdLib.set_hdd_admin(psw_list[2], False, expect=PwdLib.hdd_pw_short)
+    logging.info('硬盘密码长度大于最大字符数测试,符合复杂度...........')
+    assert PwdLib.set_hdd_admin(psw_list[3], False, expect=PwdLib.hdd_pw_long)
+    logging.info('硬盘密码复杂读不符合要求，长度符合要求...........')
+    for psw in psw_list[4:]:
+        assert PwdLib.set_hdd_admin(psw, False, expect=PwdLib.hdd_pw_simple)
     return True
 
 
-
-#设置硬盘密码长度等于最小字符数，设置成功测试（测试用密码'hdd12345'）
-def hdd_password_002(hddorder):
-    if hddorder==1:
-        hddname=HDD_NAME_01
-    elif hddorder==2:
-        hddname=HDD_NAME_02
-    # elif hddorder==3:
-    #     hddname=HDD_NAME_03
-    else:
-        stylelog.fail('hddorder有误')
-        return
-    BmcLib.power_off()
-    time.sleep(5)
-    assert SetUpLib.boot_to_setup()
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[hddname],3,2):
-        if not SetUpLib.locate_option(Key.UP,[hddname],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if not SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-        if not SetUpLib.locate_option(Key.UP,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
+# 设置硬盘密码长度等于最小字符数，设置成功测试
+def hdd_password_002():
+    password = PwdLib.gen_pw(digit=1, upper=1, lower=1, symbol=1, total=PwdLib.HDD_PW.MIN)
+    hddname = SutConfig.Psw.HDD_PASSWORD_NAME_01
+    assert _boot_to_setup()
     logging.info('硬盘密码长度最小，复杂度最小测试..............')
-    
-    time.sleep(1)
-    SetUpLib.send_data_enter('hdd12345')
-    time.sleep(1)    
-    SetUpLib.send_data('hdd12345')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-        logging.info('设置硬盘密码成功')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(2)
-    SetUpLib.send_keys(Key.SAVE_RESET)
-    time.sleep(5)
-    BmcLib.power_off()
-    time.sleep(5)
-    BmcLib.power_on()
-    time.sleep(5)
-    BmcLib.enable_serial_normal()
-    if not SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        assert SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT)
-    time.sleep(3)
-    SetUpLib.send_data('hdd11111')
-    time.sleep(2)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('输入错误密码，提示密码错误')
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        logging.info('输入错误密码，没有提示密码错误')
-        return
-    time.sleep(2)
-    SetUpLib.send_data('hdd12345')
-    time.sleep(2)
-    if  SetUpLib.wait_message_enter(SutConfig.Msg.POST_MESSAGE):
-        logging.info('输入正确密码，成功进入')
-        SetUpLib.send_key(Key.DEL)
-    else:
-        return
-    if SetUpLib.wait_message(SutConfig.Msg.PAGE_MAIN_CN):
-        logging.info('进入setup')
-    else:
-        return
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[hddname],3,2):
-        if not SetUpLib.locate_option(Key.UP,[hddname],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    assert SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.DEL_HDD_PSW_OPTION],3)
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data('hdd12345')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS,5):
-        logging.info('删除密码')
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(2)
-    else:
-        return
-    SetUpLib.send_keys(Key.SAVE_RESET)
+    assert _set_hdd_password(hddname, password)
+    BmcLib.init_sut()
+    assert SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT)
+    assert PwdLib.check_psw_post('hdd111111', PwdLib.hdd_pw_incorrect), '输入错误密码，没有提示密码错误'
+    assert PwdLib.check_psw_post(password, '')
+    assert SetUpLib.boot_with_hotkey_only(Key.DEL, SutConfig.Msg.PAGE_MAIN, 250, SutConfig.Msg.POST_MESSAGE)
+    assert _del_hdd_password(hddname, password)
     return True
-    
-#设置硬盘密码长度等于最小字符数，最大复杂度，设置成功测试
-def hdd_password_003(hddorder):
-    if hddorder==1:
-        hddname=HDD_NAME_01
-    elif hddorder==2:
-        hddname=HDD_NAME_02
-    # elif hddorder==3:
-    #     hddname=HDD_NAME_03
-    else:
-        stylelog.fail('hddorder有误')
-        return
-    BmcLib.power_off()
-    time.sleep(5)
 
-    assert _del_hdd_password('hdd12345')
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[hddname],3,2):
-        if not SetUpLib.locate_option(Key.UP,[hddname],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if not SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-        if not SetUpLib.locate_option(Key.UP,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
+
+# 设置硬盘密码长度等于最小字符数，最大复杂度，设置成功测试
+def hdd_password_003():
+    hddname = SutConfig.Psw.HDD_PASSWORD_NAME_01
+    password = PwdLib.gen_pw(digit=1, upper=1, lower=1, symbol=1, total=PwdLib.HDD_PW.MIN)
+    assert _boot_to_setup()
     logging.info('硬盘密码长度最小，复杂度最大测试..............')
-    
-    time.sleep(1)
-    SetUpLib.send_data_enter('Hd1~`!@#')
-    time.sleep(1)    
-    SetUpLib.send_data('Hd1~`!@#')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-        logging.info('设置硬盘密码成功')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(2)
-    SetUpLib.send_keys(Key.SAVE_RESET)
-    time.sleep(5)
-    BmcLib.power_off()
-    time.sleep(5)
-    BmcLib.power_on()
-    BmcLib.enable_serial_normal()
-    if not SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        assert SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT)
-    time.sleep(3)
-    SetUpLib.send_data('hdd11111')
-    time.sleep(2)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('输入错误密码，提示密码错误')
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        stylelog.fail('输入错误密码，没有提示密码错误')
-        return
-    time.sleep(2)
-    SetUpLib.send_data('Hd1~`!@#')
-    time.sleep(2)
-    if  SetUpLib.wait_message_enter(SutConfig.Msg.POST_MESSAGE):
-        logging.info('输入正确密码，成功进入')
-        SetUpLib.send_key(Key.DEL)
-    else:
-        return
-    if SetUpLib.wait_message(SutConfig.Msg.PAGE_MAIN_CN):
-        logging.info('进入setup')
-    else:
-        return
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[hddname],3,2):
-        if not SetUpLib.locate_option(Key.UP,[hddname],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    assert SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.DEL_HDD_PSW_OPTION],3)
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data('Hd1~`!@#')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS,5):
-        logging.info('删除密码')
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(2)
-    else:
-        return
-    SetUpLib.send_keys(Key.SAVE_RESET)
+    assert _set_hdd_password(hddname, password)
+    assert _boot_to_setup(is_del=False) == [True, True]
+    assert _del_hdd_password(hddname, password)
     return True
 
 
-
-#设置硬盘密码长度大于最小字符数，小于最大字符数，设置成功测试（测试用密码'h1$%^&*()_-+={[}]|"'）
-def hdd_password_004(hddorder):
-    if hddorder==1:
-        hddname=HDD_NAME_01
-    elif hddorder==2:
-        hddname=HDD_NAME_02
-    # elif hddorder==3:
-    #     hddname=HDD_NAME_03
-    else:
-        stylelog.fail('hddorder有误')
-        return
-    BmcLib.power_off()
-    time.sleep(5)
-
-    assert _del_hdd_password('Hd1~`!@#')
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[hddname],3,2):
-        if not SetUpLib.locate_option(Key.UP,[hddname],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if not SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-        if not SetUpLib.locate_option(Key.UP,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
+# 设置硬盘密码长度大于最小字符数，小于最大字符数，设置成功测试
+def hdd_password_004():
+    hddname = SutConfig.Psw.HDD_PASSWORD_NAME_01
+    password = PwdLib.gen_pw(digit=3, upper=3, lower=3, symbol=3)
+    assert _boot_to_setup()
     logging.info('硬盘密码大于最小字符数，小于最大字符数测试..............')
-   
-    time.sleep(1)
-    SetUpLib.send_data_enter('h1$%^&*()_-+={[}]|"')
-    time.sleep(1)    
-    SetUpLib.send_data('h1$%^&*()_-+={[}]|"')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-        logging.info('设置硬盘密码大于最小字符数，小于最大字符数成功')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(2)
-    SetUpLib.send_keys(Key.SAVE_RESET)
-    time.sleep(5)
-    BmcLib.power_off()
-    time.sleep(5)
-    BmcLib.power_on()
-    BmcLib.enable_serial_normal()
-    if not SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        assert SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT)
-    time.sleep(3)
-    SetUpLib.send_data('hdd11111')
-    time.sleep(2)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('输入错误密码，提示密码错误')
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        stylelog.fail('输入错误密码，没有提示密码错误')
-        return
-    time.sleep(2)
-    SetUpLib.send_data('h1$%^&*()_-+={[}]|"')
-    time.sleep(2)
-    if  SetUpLib.wait_message_enter(SutConfig.Msg.POST_MESSAGE):
-        logging.info('输入正确密码，成功进入')
-        SetUpLib.send_key(Key.DEL)
-    else:
-        return
-    if SetUpLib.wait_message(SutConfig.Msg.PAGE_MAIN_CN):
-        logging.info('进入setup')
-    else:
-        return
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[hddname],3,2):
-        if not SetUpLib.locate_option(Key.UP,[hddname],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    
-    assert SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.DEL_HDD_PSW_OPTION],3)
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data('h1$%^&*()_-+={[}]|"')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS,5):
-        logging.info('删除密码')
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(2)
-    else:
-        return
-    SetUpLib.send_keys(Key.SAVE_RESET)
+    assert _set_hdd_password(hddname, password)
+    assert _boot_to_setup(is_del=False) == [True, True]
+    assert _del_hdd_password(hddname, password)
     return True
 
 
-
-#设置硬盘密码长度等于最大字符数，复杂度最小，设置成功测试(测试用密码'hdd12345678901234567')
-def hdd_password_005(hddorder):
-    if hddorder==1:
-        hddname=HDD_NAME_01
-    elif hddorder==2:
-        hddname=HDD_NAME_02
-    # elif hddorder==3:
-    #     hddname=HDD_NAME_03
-    else:
-        stylelog.fail('hddorder有误')
-        return
-    BmcLib.power_off()
-    time.sleep(5)
-
-    assert _del_hdd_password('h1$%^&*()_-+={[}]|"')
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[hddname],3,2):
-        if not SetUpLib.locate_option(Key.UP,[hddname],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if not SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-        if not SetUpLib.locate_option(Key.UP,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    logging.info('硬盘密码等于长度最大，复杂度最小测试..............')
-    
-    time.sleep(1)
-    SetUpLib.send_data_enter('hdd12345678901234567')
-    time.sleep(1)    
-    SetUpLib.send_data('hdd12345678901234567')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-        logging.info('设置硬盘密码成功')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(2)
-    SetUpLib.send_keys(Key.SAVE_RESET)
-    time.sleep(5)
-    BmcLib.power_off()
-    time.sleep(5)
-    BmcLib.power_on()
-    BmcLib.enable_serial_normal()
-    if not SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        assert SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT)
-    time.sleep(3)
-    SetUpLib.send_data('hdd11111')
-    time.sleep(2)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('输入错误密码，提示密码错误')
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        stylelog.fail('输入错误密码，没有提示密码错误')
-        return
-    time.sleep(2)
-    SetUpLib.send_data('hdd12345678901234567')
-    time.sleep(2)
-    if  SetUpLib.wait_message_enter(SutConfig.Msg.POST_MESSAGE):
-        logging.info('输入正确密码，成功进入')
-        SetUpLib.send_key(Key.DEL)
-    else:
-        return
-    if SetUpLib.wait_message(SutConfig.Msg.PAGE_MAIN_CN):
-        logging.info('进入setup')
-    else:
-        return
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[hddname],3,2):
-        if not SetUpLib.locate_option(Key.UP,[hddname],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    assert SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.DEL_HDD_PSW_OPTION],3)
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data('hdd12345678901234567')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS,5):
-        logging.info('删除密码')
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(2)
-    else:
-        return
-    SetUpLib.send_keys(Key.SAVE_RESET)
+# 设置硬盘密码长度等于最大字符数，复杂度最小，设置成功测试
+def hdd_password_005():
+    hddname = SutConfig.Psw.HDD_PASSWORD_NAME_01
+    password = PwdLib.gen_pw(digit=3, upper=0, lower=3, symbol=3, total=PwdLib.HDD_PW.MAX)
+    assert _boot_to_setup()
+    logging.info('设置硬盘密码长度等于最大字符数，复杂度最小测试..............')
+    assert _set_hdd_password(hddname, password)
+    assert _boot_to_setup(is_del=False) == [True, True]
+    assert _del_hdd_password(hddname, password)
     return True
 
 
-
-#设置硬盘密码长度等于最大字符数，复杂度最大，设置成功测试(测试用密码"Hdd123456 :;'\<,>.?/")
-def hdd_password_006(hddorder):
-    if hddorder==1:
-        hddname=HDD_NAME_01
-    elif hddorder==2:
-        hddname=HDD_NAME_02
-    # elif hddorder==3:
-    #     hddname=HDD_NAME_03
-    else:
-        stylelog.fail('hddorder有误')
-        return
-    BmcLib.power_off()
-    time.sleep(5)
-
-    assert _del_hdd_password('hdd12345678901234567')
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[hddname],3,2):
-        if not SetUpLib.locate_option(Key.UP,[hddname],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if not SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-        if not SetUpLib.locate_option(Key.UP,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
+# 设置硬盘密码长度等于最大字符数，复杂度最大，设置成功测试
+def hdd_password_006():
+    hddname = SutConfig.Psw.HDD_PASSWORD_NAME_01
+    password = PwdLib.gen_pw(digit=3, upper=3, lower=3, symbol=3, total=PwdLib.HDD_PW.MAX)
+    assert _boot_to_setup()
     logging.info('硬盘密码等于长度最大，复杂度最大测试..............')
-    
-    time.sleep(1)
-    SetUpLib.send_data_enter("Hdd123456 :;'\<,>.?/")
-    time.sleep(1)    
-    SetUpLib.send_data("Hdd123456 :;'\<,>.?/")
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-        logging.info('设置硬盘密码成功')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(2)
-    SetUpLib.send_keys(Key.SAVE_RESET)
-    time.sleep(5)
-    BmcLib.power_off()
-    time.sleep(5)
-    BmcLib.power_on()
-    BmcLib.enable_serial_normal()
-    if not SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        assert SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT)
-    time.sleep(3)
-    SetUpLib.send_data('hdd11111')
-    time.sleep(2)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('输入错误密码，提示密码错误')
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        stylelog.fail('输入错误密码，没有提示密码错误')
-        return
-    time.sleep(2)
-    SetUpLib.send_data("Hdd123456 :;'\<,>.?/")
-    time.sleep(2)
-    if  SetUpLib.wait_message_enter(SutConfig.Msg.POST_MESSAGE):
-        logging.info('输入正确密码，成功进入')
-        SetUpLib.send_key(Key.DEL)
-    else:
-        return
-    if SetUpLib.wait_message(SutConfig.Msg.PAGE_MAIN_CN):
-        logging.info('进入setup')
-    else:
-        return
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[hddname],3,2):
-        if not SetUpLib.locate_option(Key.UP,[hddname],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    assert SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.DEL_HDD_PSW_OPTION],3)
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data("Hdd123456 :;'\<,>.?/")
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS,5):
-        logging.info('删除密码')
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(2)
-    else:
-        return
-    SetUpLib.send_keys(Key.SAVE_RESET)
+    assert _set_hdd_password(hddname, password)
+    assert _boot_to_setup(is_del=False) == [True, True]
+    assert _del_hdd_password(hddname, password)
     return True
 
 
-
-#禁用硬盘密码测试
-def hdd_password_007(hddorder):
-    if hddorder==1:
-        hddname=HDD_NAME_01
-    elif hddorder==2:
-        hddname=HDD_NAME_02
-    # elif hddorder==3:
-    #     hddname=HDD_NAME_03
-    else:
-        stylelog.fail('hddorder有误')
-        return
-    BmcLib.power_off()
-    time.sleep(5)
-    assert _del_hdd_password("Hdd123456 :;'\<,>.?/")
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[hddname],3,2):
-        if not SetUpLib.locate_option(Key.UP,[hddname],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if not SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-        if not SetUpLib.locate_option(Key.UP,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    
-    time.sleep(1)
-    SetUpLib.send_data_enter('hdd12345')
-    time.sleep(1)    
-    SetUpLib.send_data('hdd12345')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-        logging.info('设置硬盘密码成功')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    assert SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.DEL_HDD_PSW_OPTION],3)
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(2)
-    SetUpLib.send_data('hdd11111')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.DEL_HDD_PSW_ERROR,5):
-        logging.info('禁用密码时输入错误的密码，提示密码无效')
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        stylelog.fail('禁用密码时输入错误的密码没有提示密码无效')
-        return
-    time.sleep(2)
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data('hdd12345')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS,5):
-        logging.info('禁用密码时输入正确的密码，成功禁用密码')
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(2)
-        SetUpLib.send_keys(Key.SAVE_RESET)
-        return True
-    else:
-        logging.info('禁用密码时输入正确的密码，没有成功禁用密码')
-        return
-
-
-
-#修改硬盘密码测试，修改为最小长度，最小复杂度，修改成功测试
-def hdd_password_008(hddorder):
-    if hddorder==1:
-        hddname=HDD_NAME_01
-    elif hddorder==2:
-        hddname=HDD_NAME_02
-    # elif hddorder==3:
-    #     hddname=HDD_NAME_03
-    else:
-        stylelog.fail('hddorder有误')
-        return
-    BmcLib.power_off()
-    time.sleep(5)
-    assert _del_hdd_password('hdd12345')
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[hddname],3,2):
-        if not SetUpLib.locate_option(Key.UP,[hddname],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if not SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-        if not SetUpLib.locate_option(Key.UP,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data_enter('hdd12345')
-    time.sleep(1)    
-    SetUpLib.send_data('hdd12345')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-        logging.info('设置硬盘密码成功')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(2)
-    SetUpLib.send_key(Key.ENTER)
-    if SetUpLib.wait_message(SutConfig.Psw.HDD_NOW_PSW,3):
-        time.sleep(1)
-        SetUpLib.send_data_enter('hdd12345')
-    time.sleep(1)
-    SetUpLib.send_data_enter('hdd11111')
-    time.sleep(1)    
-    SetUpLib.send_data('hdd11111')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-        logging.info('修改硬盘密码成功')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_keys(Key.SAVE_RESET)
-    time.sleep(5)
-    BmcLib.power_off()
-    time.sleep(5)
-    BmcLib.power_on()
-    BmcLib.enable_serial_normal()
-    if not SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        assert SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT)
-    time.sleep(3)
-    SetUpLib.send_data('hdd12345')
-    time.sleep(2)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('输入修改前的密码，提示密码错误')
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        stylelog.fail('输入修改前的密码，没有提示密码错误')
-        return
-    time.sleep(2)
-    SetUpLib.send_data('hdd11111')
-    time.sleep(2)
-    if  SetUpLib.wait_message_enter(SutConfig.Msg.POST_MESSAGE):
-        logging.info('输入修改后的密码，成功进入')
-        SetUpLib.send_key(Key.DEL)
-    else:
-        return
-    if SetUpLib.wait_message(SutConfig.Msg.PAGE_MAIN_CN):
-        logging.info('进入setup')
-    else:
-        return
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[hddname],3,2):
-        if not SetUpLib.locate_option(Key.UP,[hddname],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    assert SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.DEL_HDD_PSW_OPTION],3)
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data('hdd12345')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.DEL_HDD_PSW_ERROR,5):
-        logging.info('输入修改前的密码无效')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(2)
-    SetUpLib.send_data('hdd11111')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS,5):
-        logging.info('删除密码')
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(2)
-    else:
-        return
-    SetUpLib.send_keys(Key.SAVE_RESET)
+# 禁用硬盘密码测试
+def hdd_password_007():
+    hddname = SutConfig.Psw.HDD_PASSWORD_NAME_01
+    password = PwdLib.gen_pw(digit=3, upper=3, lower=3, symbol=3)
+    assert _boot_to_setup()
+    assert _set_hdd_password(hddname, password)
+    assert SetUpLib.locate_option(Key.DOWN, [SutConfig.Psw.DEL_HDD_PSW_OPTION], 3)
+    assert PwdLib.del_hdd_psw('hdd111111', False, PwdLib.hdd_pw_invalid), '禁用密码时输入错误的密码没有提示密码无效'
+    assert PwdLib.del_hdd_psw(password, True)
     return True
 
 
-
-#修改硬盘密码测试，修改为最大长度，最大复杂度，修改成功测试
-def hdd_password_009(hddorder):
-    if hddorder==1:
-        hddname=HDD_NAME_01
-    elif hddorder==2:
-        hddname=HDD_NAME_02
-    # elif hddorder==3:
-    #     hddname=HDD_NAME_03
-    else:
-        stylelog.fail('hddorder有误')
-        return
-    BmcLib.power_off()
-    time.sleep(5)
-    assert _del_hdd_password('hdd11111')
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[hddname],3,2):
-        if not SetUpLib.locate_option(Key.UP,[hddname],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if not SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-        if not SetUpLib.locate_option(Key.UP,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data_enter('hdd12345')
-    time.sleep(1)    
-    SetUpLib.send_data('hdd12345')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-        logging.info('设置硬盘密码成功')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(2)
-    SetUpLib.send_key(Key.ENTER)
-    if SetUpLib.wait_message(SutConfig.Psw.HDD_NOW_PSW,3):
-        time.sleep(1)
-        SetUpLib.send_data_enter('hdd12345')
-    time.sleep(1)
-    SetUpLib.send_data_enter('Hdd1234567890!@#$%^&')
-    time.sleep(1)    
-    SetUpLib.send_data('Hdd1234567890!@#$%^&')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-        logging.info('修改硬盘密码成功')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_keys(Key.SAVE_RESET)
-    time.sleep(5)
-    BmcLib.power_off()
-    time.sleep(5)
-    BmcLib.power_on()
-    BmcLib.enable_serial_normal()
-    if not SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        assert SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT)
-    time.sleep(3)
-    SetUpLib.send_data('hdd12345')
-    time.sleep(2)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('输入修改前的密码，提示密码错误')
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        stylelog.fail('输入修改前的密码，没有提示密码错误')
-        return
-    time.sleep(2)
-    SetUpLib.send_data('Hdd1234567890!@#$%^&')
-    time.sleep(2)
-    if  SetUpLib.wait_message_enter(SutConfig.Msg.POST_MESSAGE):
-        logging.info('输入修改后的密码，成功进入')
-        SetUpLib.send_key(Key.DEL)
-    else:
-        return
-    if SetUpLib.wait_message(SutConfig.Msg.PAGE_MAIN_CN):
-        logging.info('进入setup')
-    else:
-        return
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[hddname],3,2):
-        if not SetUpLib.locate_option(Key.UP,[hddname],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    assert SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.DEL_HDD_PSW_OPTION],3)
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data('hdd12345')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.DEL_HDD_PSW_ERROR,5):
-        logging.info('输入修改前的密码无效')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(2)
-    SetUpLib.send_data('Hdd1234567890!@#$%^&')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS,5):
-        logging.info('删除密码')
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(2)
-    else:
-        return
-    SetUpLib.send_keys(Key.SAVE_RESET)
+# 修改硬盘密码测试，修改为最小长度，最小复杂度，修改成功测试
+def hdd_password_008():
+    hddname = SutConfig.Psw.HDD_PASSWORD_NAME_01
+    password = PwdLib.gen_pw(digit=3, upper=3, lower=3, symbol=3)
+    new_psw = PwdLib.gen_pw(digit=1, upper=1, lower=0, symbol=1, total=PwdLib.HDD_PW.MIN)
+    assert _boot_to_setup()
+    assert _set_hdd_password(hddname, password)
+    assert PwdLib.set_hdd_admin(new_psw, True)
+    BmcLib.init_sut()
+    assert SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT)
+    assert PwdLib.check_psw_post(password, PwdLib.hdd_pw_incorrect), '输入修改前的密码，没有提示密码错误'
+    assert PwdLib.check_psw_post(new_psw, '')
+    assert SetUpLib.boot_with_hotkey_only(Key.DEL, SutConfig.Msg.PAGE_MAIN, 250, SutConfig.Msg.POST_MESSAGE)
+    assert SetUpLib.locate_menu(Key.DOWN, SutConfig.Psw.LOC_HDD_PSW + [hddname, SutConfig.Psw.DEL_HDD_PSW_OPTION], 18)
+    assert PwdLib.del_hdd_psw(password, False, PwdLib.hdd_pw_invalid)
+    assert PwdLib.del_hdd_psw(new_psw, True)
     return True
 
 
+# 修改硬盘密码测试，修改为最大长度，最大复杂度，修改成功测试
+def hdd_password_009():
+    hddname = SutConfig.Psw.HDD_PASSWORD_NAME_01
+    password = PwdLib.gen_pw(digit=3, upper=3, lower=3, symbol=3)
+    new_psw = PwdLib.gen_pw(digit=3, upper=3, lower=3, symbol=3, total=PwdLib.HDD_PW.MAX)
+    assert _boot_to_setup()
+    assert _set_hdd_password(hddname, password)
+    assert PwdLib.set_hdd_admin(new_psw, True)
+    BmcLib.init_sut()
+    assert SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT)
+    assert PwdLib.check_psw_post(password, PwdLib.hdd_pw_incorrect), '输入修改前的密码，没有提示密码错误'
+    assert PwdLib.check_psw_post(new_psw, '')
+    assert SetUpLib.boot_with_hotkey_only(Key.DEL, SutConfig.Msg.PAGE_MAIN, 250, SutConfig.Msg.POST_MESSAGE)
+    assert SetUpLib.locate_menu(Key.DOWN, SutConfig.Psw.LOC_HDD_PSW + [hddname, SutConfig.Psw.DEL_HDD_PSW_OPTION], 18)
+    assert PwdLib.del_hdd_psw(password, False, PwdLib.hdd_pw_invalid)
+    assert PwdLib.del_hdd_psw(new_psw, True)
+    return True
 
-#修改硬盘密码测试，修改为符合长度要求，不符合复杂度要求；符合复杂度要求，不符合长度要求；新密码和确认密码不同，修改失败测试
-def hdd_password_010(hddorder):
-    if hddorder==1:
-        hddname=HDD_NAME_01
-    elif hddorder==2:
-        hddname=HDD_NAME_02
-    # elif hddorder==3:
-    #     hddname=HDD_NAME_03
-    else:
-        stylelog.fail('hddorder有误')
-        return
-    BmcLib.power_off()
-    time.sleep(5)
 
-    assert _del_hdd_password('Hdd1234567890!@#$%^&')
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[hddname],3,2):
-        if not SetUpLib.locate_option(Key.UP,[hddname],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if not SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-        if not SetUpLib.locate_option(Key.UP,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data_enter('hdd12345')
-    time.sleep(1)    
-    SetUpLib.send_data('hdd12345')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-        logging.info('设置硬盘密码成功')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(2)
+# 修改硬盘密码测试，修改为符合长度要求，不符合复杂度要求；符合复杂度要求，不符合长度要求；新密码和确认密码不同，修改失败测试
+def hdd_password_010():
+    hddname = SutConfig.Psw.HDD_PASSWORD_NAME_01
+    password = [PwdLib.gen_pw(digit=3, upper=3, lower=3, symbol=3),
+                PwdLib.gen_pw(digit=10, upper=0, lower=0, symbol=0),
+                PwdLib.gen_pw(digit=1, upper=1, lower=1, symbol=1), ]
+    assert _boot_to_setup()
+    assert _set_hdd_password(hddname, password[0])
     logging.info('修改硬盘密码为符合长度要求，不符合复杂度要求测试..................')
-    SetUpLib.send_key(Key.ENTER)
-    if SetUpLib.wait_message(SutConfig.Psw.HDD_NOW_PSW,3):
-        time.sleep(1)
-        SetUpLib.send_data_enter('hdd12345')
-    time.sleep(1)
-    SetUpLib.send_data_enter('12345678')
-    time.sleep(1)    
-    SetUpLib.send_data('12345678')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.HDD_CHARACTERS_TYPE_NOT_ENOUGH, 5):
-        logging.info('修改硬盘密码为符合长度要求，不符合复杂度要求失败')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(2)
+    assert PwdLib.set_hdd_admin(password[1], False, expect=PwdLib.hdd_pw_simple)
     logging.info('修改硬盘密码为符合复杂度要求，不符合长度要求测试..................')
-    SetUpLib.send_key(Key.ENTER)
-    if SetUpLib.wait_message(SutConfig.Psw.HDD_NOW_PSW,3):
-        time.sleep(1)
-        SetUpLib.send_data_enter('hdd12345')
-    time.sleep(1)
-    SetUpLib.send_data_enter('hdd123')
-    time.sleep(1)    
-    SetUpLib.send_data('hdd123')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.HDD_CHARACTERS_LENGTH_NOT_ENOUGH, 5):
-        logging.info('修改硬盘密码为符合复杂度要求，不符合长度要求失败')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(2)
+    assert PwdLib.set_hdd_admin(password[2], False, expect=PwdLib.hdd_pw_short)
     logging.info('修改硬盘密码新密码和确认密码不同，修改失败测试..................')
-    SetUpLib.send_key(Key.ENTER)
-    if SetUpLib.wait_message(SutConfig.Psw.HDD_NOW_PSW,3):
-        time.sleep(1)
-        SetUpLib.send_data_enter('hdd12345')
-
-    time.sleep(1)
-    SetUpLib.send_data_enter('hdd11111')
-    time.sleep(1)    
-    SetUpLib.send_data('hdd12345')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.HDD_NEW_OLD_PSW_DIFF, 5):
-        logging.info('修改硬盘密码新密码和确认密码不同，修改失败')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    assert SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.DEL_HDD_PSW_OPTION],3)
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(2)
-    SetUpLib.send_data('hdd12345')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS,5):
-        logging.info('删除密码')
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(2)
-    else:
-        return
-    SetUpLib.send_keys(Key.SAVE_RESET)
+    assert PwdLib.set_hdd_admin(password[0], False, expect=PwdLib.hdd_pw_not_same, confirm_pw='hdd111111')
+    assert SetUpLib.locate_option(Key.DOWN, [SutConfig.Psw.DEL_HDD_PSW_OPTION], 3)
+    assert PwdLib.del_hdd_psw(password[0], True)
     return True
 
 
-
-#设置硬盘密码进入系统测试
-def hdd_password_011(hddorder):
-    if hddorder==1:
-        hddname=HDD_NAME_01
-        hddos=HDD_NAME_01_OS
-    elif hddorder==2:
-        hddname=HDD_NAME_02
-        hddos=HDD_NAME_02_OS
-    # elif hddorder==3:
-    #     hddname=HDD_NAME_03
-    else:
-        stylelog.fail('hddorder有误')
-        return
-    BmcLib.power_off()
-    time.sleep(5)
-    assert _del_hdd_password('hdd12345')
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[hddname],3,2):
-        if not SetUpLib.locate_option(Key.UP,[hddname],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
+# 设置硬盘密码进入系统测试
+def hdd_password_011():
+    password = PwdLib.gen_pw(digit=3, upper=3, lower=3, symbol=3)
+    assert _boot_to_setup()
+    assert SetUpLib.boot_to_page(SutConfig.Msg.PAGE_BOOT)
+    time.sleep(1)
+    SetUpLib.send_key(Key.RIGHT)
+    time.sleep(2)
+    SetUpLib.send_key(Key.LEFT)
+    if SetUpLib.wait_message('<Legacy> *Boot Mod', 5):
+        logging.info('当前启动模式为Legacy')
+        if HDD_NAME_01_OS == SutConfig.Msg.LEGACY_HDD_BOOT_NAME:
+            hddname = HDD_NAME_01
+            hddos = HDD_NAME_01_OS
         else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
+            hddname = HDD_NAME_02
+            hddos = HDD_NAME_02_OS
     else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if not SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-        if not SetUpLib.locate_option(Key.UP,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
+        logging.info('当前启动模式为UEFI')
+        if HDD_NAME_01_OS == SutConfig.Msg.UEFI_HDD_BOOT_NAME:
+            hddname = HDD_NAME_01
+            hddos = HDD_NAME_01_OS
         else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data_enter('hdd12345')
-    time.sleep(1)    
-    SetUpLib.send_data('hdd12345')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-        logging.info('设置硬盘密码成功')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_keys(Key.SAVE_RESET)
-    time.sleep(5)
-    BmcLib.power_off()
-    time.sleep(5)
-    BmcLib.power_on()
-    BmcLib.enable_serial_normal()
-    if not SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        assert SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT)
-    time.sleep(2)
-    SetUpLib.send_data('hdd12345')
-    time.sleep(2)
-    if  SetUpLib.wait_message_enter(SutConfig.Msg.POST_MESSAGE):
-        logging.info('输入正确密码，成功进入')
-        SetUpLib.send_key(Key.F11)
-    else:
-        stylelog.fail('输入正确密码，没有进入')
-        return
-    if SetUpLib.wait_message(SutConfig.Msg.ENTER_BOOTMENU_CN):
-        logging.info('进入启动菜单')
-    else:
-        stylelog.fail('没有进入启动菜单')
-        return
-    assert SetUpLib.select_boot_option(Key.DOWN,hddos[0],20,'')
-    if BmcLib.ping_sut():
-        logging.info('第一次成功进入系统')
-    else:
-        stylelog.fail('第一次没有进入系统')
-        return
-    BmcLib.power_off()
-    time.sleep(5)
-    BmcLib.power_on()
-    BmcLib.enable_serial_normal()
-    if not SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        assert SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT)
-    time.sleep(2)
-    SetUpLib.send_data('hdd12345')
-    time.sleep(2)
-    if  SetUpLib.wait_message_enter(SutConfig.Msg.POST_MESSAGE):
-        logging.info('输入正确密码，成功进入')
-        SetUpLib.send_key(Key.F11)
-    else:
-        stylelog.fail('输入正确密码，没有进入')
-        return
-    if SetUpLib.wait_message(SutConfig.Msg.ENTER_BOOTMENU_CN,10):
-        logging.info('进入启动菜单')
-    else:
-        stylelog.fail('没有进入启动菜单')
-        return
-    assert SetUpLib.select_boot_option(Key.DOWN,hddos[0],20,'')
-    if BmcLib.ping_sut():
-        logging.info('第二次成功进入系统')
-    else:
-        stylelog.fail('第二次没有进入系统')
-        return
-    BmcLib.power_off()
-    time.sleep(5)
-    BmcLib.power_on()
-    BmcLib.enable_serial_normal()
-    if not SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        assert SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT)
-    time.sleep(3)
-    SetUpLib.send_data('hdd12345')
-    time.sleep(2)
-    if  SetUpLib.wait_message_enter(SutConfig.Msg.POST_MESSAGE):
-        logging.info('输入正确密码，成功进入')
-        SetUpLib.send_key(Key.DEL)
-    else:
-        return
-    if SetUpLib.wait_message(SutConfig.Msg.PAGE_MAIN_CN):
-        logging.info('进入setup')
-    else:
-        return
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[hddname],3,2):
-        if not SetUpLib.locate_option(Key.UP,[hddname],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    assert SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.DEL_HDD_PSW_OPTION],3)
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data('hdd12345')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS):
-        logging.info('删除密码')
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(2)
-    else:
-        return
-    SetUpLib.send_keys(Key.SAVE_RESET)
+            hddname = HDD_NAME_02
+            hddos = HDD_NAME_02_OS
+    assert _set_hdd_password(hddname, password)
+    BmcLib.init_sut()
+    assert SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT)
+    assert PwdLib.check_psw_post(password, '')
+    assert SetUpLib.boot_to_boot_menu(False, False)
+    assert SetUpLib.select_boot_option(Key.DOWN, hddos, 30, '')
+    assert BmcLib.ping_sut(), '第一次没有进入系统'
+    BmcLib.init_sut()
+    assert SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT)
+    assert PwdLib.check_psw_post(password, '')
+    assert SetUpLib.boot_to_boot_menu(False, False)
+    assert SetUpLib.select_boot_option(Key.DOWN, hddos, 30, '')
+    assert BmcLib.ping_sut(), '第二次没有进入系统'
+    assert _boot_to_setup(is_del=False)
+    assert _del_hdd_password(hddname, password)
     return True
 
 
-
-#硬盘密码输错测试
-def hdd_password_012(hddorder):
-    if hddorder==1:
-        hddname=HDD_NAME_01
-        hddos=HDD_NAME_01_OS
-    elif hddorder==2:
-        hddname=HDD_NAME_02
-        hddos=HDD_NAME_02_OS
-    # elif hddorder==3:
-    #     hddname=HDD_NAME_03
-    else:
-        stylelog.fail('hddorder有误')
-        return
-    BmcLib.power_off()
-    time.sleep(5)
-
-    assert _del_hdd_password('hdd12345')
-    assert SetUpLib.enter_menu_change_value(Key.DOWN, SutConfig.Psw.LOC_HDD_PSW, 10)
-    if not SetUpLib.locate_option(Key.DOWN,[hddname],3,2):
-        if not SetUpLib.locate_option(Key.UP,[hddname],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if not SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-        if not SetUpLib.locate_option(Key.UP,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data_enter('hdd12345')
-    time.sleep(1)    
-    SetUpLib.send_data('hdd12345')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-        logging.info('设置硬盘密码成功')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_keys(Key.SAVE_RESET)
-    time.sleep(5)
-    BmcLib.power_off()
-    time.sleep(5)
-    BmcLib.power_on()
-    BmcLib.enable_serial_normal()
-    if not SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        assert SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT)
-    time.sleep(2)
-    SetUpLib.send_data('hdd11111')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('密码第一次输错')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-
-    else:
-        return
-    time.sleep(2)
-    SetUpLib.send_data('hdd22222')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('密码第二次输错')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_data('hdd33333')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.HDD_LOCK_PROMPT,10):
-        logging.info('密码第三次输错')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    if  SetUpLib.wait_message(SutConfig.Msg.POST_MESSAGE):
-        data=SetUpLib.get_data(10,Key.F11)
-    else:
-        return
-    if not re.compile(hddos[0]).findall(data):
-        logging.info('密码输错三次，启动项中没有硬盘')
-    else:
-        stylelog.fail('密码输错三次，启动项仍有硬盘')
-        return
-    assert SetUpLib.select_boot_option(Key.DOWN,SutConfig.Msg.ENTER_SETUP,20,SutConfig.Msg.PAGE_MAIN_CN)
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[hddname],3,2):
-        if not SetUpLib.locate_option(Key.UP,[hddname],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if SetUpLib.wait_message(SutConfig.Psw.HDD_LOCK_STATUS,2):
-        logging.info('输错三次硬盘密码进入setup，无法设置该硬盘的硬盘密码')
-    else:
-        return
-    SetUpLib.send_keys(Key.SAVE_RESET)
-    time.sleep(5)
-    BmcLib.power_off()
-    time.sleep(5)
-    BmcLib.power_on()
-    BmcLib.enable_serial_normal()
-    if not SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        assert SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT)
-    time.sleep(2)
-    SetUpLib.send_data('hdd11111')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('密码第一次输错')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-
-    else:
-        return
-    time.sleep(2)
-    SetUpLib.send_data('hdd22222')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('密码第二次输错')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-
-    else:
-        return
-    time.sleep(2)
-    SetUpLib.send_data('hdd12345')
-    time.sleep(2)
-    if  SetUpLib.wait_message_enter(SutConfig.Msg.POST_MESSAGE):
-        logging.info('第三次输入正确密码，成功进入')
-        SetUpLib.send_key(Key.DEL)
-    else:
-        return
-    if SetUpLib.wait_message(SutConfig.Msg.PAGE_MAIN_CN):
-        logging.info('进入setup')
-    else:
-        return
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[hddname],3,2):
-        if not SetUpLib.locate_option(Key.UP,[hddname],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    assert SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.DEL_HDD_PSW_OPTION],3)
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data('hdd12345')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS,5):
-        logging.info('删除密码')
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(2)
-    else:
-        return
-    SetUpLib.send_keys(Key.SAVE_RESET)
+# 硬盘密码输错测试
+def hdd_password_012():
+    hddname = SutConfig.Psw.HDD_PASSWORD_NAME_01
+    hddos = SutConfig.Psw.HDD_NAME_01_OS
+    password = PwdLib.gen_pw(digit=3, upper=3, lower=3, symbol=3)
+    assert _boot_to_setup()
+    assert _set_hdd_password(hddname, password)
+    BmcLib.init_sut()
+    assert SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT)
+    assert PwdLib.check_psw_post('hdd12123121', PwdLib.hdd_pw_incorrect)
+    assert PwdLib.check_psw_post('hdd12123121', PwdLib.hdd_pw_incorrect)
+    assert PwdLib.check_psw_post('hdd@111111', PwdLib.hdd_pw_limit_post)
+    data = SetUpLib.boot_to_boot_menu(True, False)
+    assert not re.search(hddos, data), '密码输错三次，启动项仍有硬盘'
+    assert SetUpLib.select_boot_option(Key.DOWN, SutConfig.Msg.ENTER_SETUP, 30, SutConfig.Msg.PAGE_MAIN)
+    assert SetUpLib.enter_menu_change_value(Key.DOWN, SutConfig.Psw.LOC_HDD_PSW + [hddname], 10)
+    assert SetUpLib.verify_info([SutConfig.Psw.HDD_LOCK_STATUS], 2)
+    logging.info('输错三次硬盘密码进入setup，无法设置该硬盘的硬盘密码')
+    BmcLib.init_sut()
+    assert SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT)
+    assert PwdLib.check_psw_post('hdd111111', PwdLib.hdd_pw_incorrect)
+    assert PwdLib.check_psw_post('hdd111111', PwdLib.hdd_pw_incorrect)
+    assert PwdLib.check_psw_post(password, '')
+    data = SetUpLib.boot_to_boot_menu(True, False)
+    assert re.search(hddos, data), '密码输错2次后输入正确密码，启动项没有硬盘'
+    assert SetUpLib.select_boot_option(Key.DOWN, SutConfig.Msg.ENTER_SETUP, 30, SutConfig.Msg.PAGE_MAIN)
+    assert _del_hdd_password(hddname, password)
     return True
 
 
-
-#硬盘密码输入时按ESC测试
-def hdd_password_013(hddorder):
-    if hddorder==1:
-        hddname=HDD_NAME_01
-        hddos=HDD_NAME_01_OS
-    elif hddorder==2:
-        hddname=HDD_NAME_02
-        hddos=HDD_NAME_02_OS
-    # elif hddorder==3:
-    #     hddname=HDD_NAME_03
-    else:
-        stylelog.fail('hddorder有误')
-        return
-
-    BmcLib.power_off()
-    time.sleep(5)
-
-    assert _del_hdd_password('hdd12345')
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[hddname],3,2):
-        if not SetUpLib.locate_option(Key.UP,[hddname],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if not SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-        if not SetUpLib.locate_option(Key.UP,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
+# 修改硬盘密码,输入错误密码3次,硬盘锁定
+def hdd_password_013():
+    password = PwdLib.gen_pw(digit=3, upper=3, lower=3, symbol=3)
+    hddname = SutConfig.Psw.HDD_PASSWORD_NAME_01
+    assert _boot_to_setup()
+    assert _set_hdd_password(hddname, password)
     time.sleep(1)
-    SetUpLib.send_data_enter('hdd12345')
-    time.sleep(1)    
-    SetUpLib.send_data('hdd12345')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-        logging.info('设置硬盘密码成功')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_keys(Key.SAVE_RESET)
-    time.sleep(5)
-    BmcLib.power_off()
-    time.sleep(5)
-    BmcLib.power_on()
-    BmcLib.enable_serial_normal()
-    if not SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        assert SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT)
-    time.sleep(2)
+    SetUpLib.send_key(Key.ENTER)
+    if not SetUpLib.wait_message(PwdLib.hdd_pw_enter_old, 3):
+        assert SetUpLib.locate_option(Key.DOWN, [SutConfig.Psw.DEL_HDD_PSW_OPTION], 5)
+        assert PwdLib.del_hdd_psw(password, True)
+        return True
     SetUpLib.send_key(Key.ESC)
-    if SetUpLib.wait_message(SutConfig.Psw.HDD_ESC_LOCK_PROMPT,5):
-        logging.info('输入密码时按ESC提示驱动器仍处于锁定状态')
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    if  SetUpLib.wait_message(SutConfig.Msg.POST_MESSAGE):
-        data=SetUpLib.get_data(10,Key.F11)
-    else:
-        return
-    if not re.compile(hddos[0]).findall(data):
-        logging.info('输入密码时按ESC，启动项中没有硬盘')
-    else:
-        stylelog.fail('输入密码时按ESC，启动项仍有硬盘')
-        return
-    assert SetUpLib.select_boot_option(Key.DOWN,SutConfig.Msg.ENTER_SETUP,20,SutConfig.Msg.PAGE_MAIN_CN)
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[hddname],3,2):
-        if not SetUpLib.locate_option(Key.UP,[hddname],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if SetUpLib.wait_message(SutConfig.Psw.HDD_LOCK_STATUS,2):
-        logging.info('输入密码时按ESC进入setup，无法设置该硬盘的硬盘密码')
-    else:
-        return
-    SetUpLib.send_keys(Key.SAVE_RESET)
-    time.sleep(5)
-    BmcLib.power_off()
-    time.sleep(5)
-    BmcLib.power_on()
-    BmcLib.enable_serial_normal()
-    if not SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        assert SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT)
-    time.sleep(1)
-    SetUpLib.send_data('hdd12345')
-    time.sleep(2)
-    if  SetUpLib.wait_message_enter(SutConfig.Msg.POST_MESSAGE):
-        logging.info('输入正确密码，成功进入')
-        SetUpLib.send_key(Key.DEL)
-    else:
-        return
-    if SetUpLib.wait_message(SutConfig.Msg.PAGE_MAIN_CN):
-        logging.info('进入setup')
-    else:
-        return
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[hddname],3,2):
-        if not SetUpLib.locate_option(Key.UP,[hddname],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    assert SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.DEL_HDD_PSW_OPTION],3)
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data('hdd12345')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS,5):
-        logging.info('删除密码')
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(2)
-    else:
-        return
-    SetUpLib.send_keys(Key.SAVE_RESET)
+    assert PwdLib.set_hdd_admin(password, None, 'hdd122121', PwdLib.hdd_pw_invalid)
+    assert PwdLib.set_hdd_admin(password, None, 'hdd122121', PwdLib.hdd_pw_invalid)
+    assert PwdLib.set_hdd_admin(password, None, 'hdd122121', PwdLib.hdd_pw_limit)
+    assert _boot_to_setup()
     return True
 
 
-
-#多硬盘密码测试
+# 硬盘密码输入时按ESC测试
 def hdd_password_014():
-    BmcLib.power_off()
-    time.sleep(5)
-
-    assert _del_hdd_password('hdd12345')
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_01],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_01],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if not SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-        if not SetUpLib.locate_option(Key.UP,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data_enter('hdd12345')
-    time.sleep(1)    
-    SetUpLib.send_data('hdd12345')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-        logging.info('设置硬盘密码成功')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_key(Key.ESC)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_02],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_02],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if not SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-        if not SetUpLib.locate_option(Key.UP,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data_enter('hdd123456')
-    time.sleep(1)    
-    SetUpLib.send_data('hdd123456')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-        logging.info('设置硬盘密码成功')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_keys(Key.SAVE_RESET)
-    time.sleep(5)
-    BmcLib.power_off()
-    time.sleep(5)
-    BmcLib.power_on()
-    BmcLib.enable_serial_normal()
-    if not SetUpLib.wait_message(HDD_NAME_01):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        assert SetUpLib.wait_message(HDD_NAME_01)
-    time.sleep(2)
-    SetUpLib.send_data('hdd123456')
-    time.sleep(2)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('输入其它硬盘密码，提示密码错误')
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        stylelog.fail('输入其他硬盘密码，没有提示密码错误')
-        return
-    time.sleep(2)
-    SetUpLib.send_data('hdd12345')
-    time.sleep(2)
-    if  SetUpLib.wait_message_enter(HDD_NAME_02):
-        logging.info('输入第一个硬盘密码，成功进入第一个硬盘，要求输入第二个硬盘密码')
-    else:
-        return
-    time.sleep(2)
-    SetUpLib.send_data('hdd12345')
-    time.sleep(2)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('输入其它硬盘密码，提示密码错误')
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        stylelog.fail('输入其他硬盘密码，没有提示密码错误')
-        return
-    time.sleep(2)
-    SetUpLib.send_data('hdd123456')
-    time.sleep(2)
-    if  SetUpLib.wait_message_enter(SutConfig.Msg.POST_MESSAGE):
-        logging.info('输入正确密码，成功进入')
-        SetUpLib.send_key(Key.DEL)
-    else:
-        return
-    if SetUpLib.wait_message(SutConfig.Msg.PAGE_MAIN_CN):
-        logging.info('进入setup')
-    else:
-        return
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_01],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_01],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    assert SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.DEL_HDD_PSW_OPTION],3)
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data('hdd12345')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS,5):
-        logging.info('删除密码')
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(2)
-    else:
-        return
-    SetUpLib.send_key(Key.ESC)
-    time.sleep(1)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_02],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_02],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    assert SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.DEL_HDD_PSW_OPTION],3)
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data('hdd123456')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS,5):
-        logging.info('删除密码')
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(2)
-    else:
-        return
-    SetUpLib.send_keys(Key.SAVE_RESET)
+    password = PwdLib.gen_pw(digit=3, upper=3, lower=3, symbol=3)
+    hddname = SutConfig.Psw.HDD_PASSWORD_NAME_01
+    hddos = SutConfig.Psw.HDD_NAME_01_OS
+    assert _boot_to_setup()
+    assert _set_hdd_password(hddname, password)
+    BmcLib.init_sut()
+    assert SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT)
+    assert PwdLib.check_psw_post('12312312312', PwdLib.hdd_pw_escape, key=Key.ESC)
+    data = SetUpLib.boot_to_boot_menu(True, False)
+    assert not re.search(hddos, data), '输入密码时按ESC，启动项仍有硬盘'
+    assert SetUpLib.select_boot_option(Key.DOWN, SutConfig.Msg.ENTER_SETUP, 30, SutConfig.Msg.PAGE_MAIN)
+    assert SetUpLib.enter_menu_change_value(Key.DOWN, SutConfig.Psw.LOC_HDD_PSW + [hddname], 10)
+    assert SetUpLib.verify_info([SutConfig.Psw.HDD_LOCK_STATUS], 2)
+    assert _boot_to_setup(is_del=False)
+    assert _del_hdd_password(hddname, password)
     return True
 
 
-
-#多硬盘密码输错测试
+# 多硬盘密码测试
 def hdd_password_015():
-    BmcLib.power_off()
-    time.sleep(5)
-    assert _del_hdd_password_two()
-    assert SetUpLib.enter_menu_change_value(Key.DOWN, SutConfig.Psw.LOC_HDD_PSW, 10)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_01],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_01],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if not SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-        if not SetUpLib.locate_option(Key.UP,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data_enter('hdd12345')
-    time.sleep(1)
-    SetUpLib.send_data('hdd12345')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-        logging.info('设置硬盘密码成功')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_key(Key.ESC)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_02],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_02],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if not SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-        if not SetUpLib.locate_option(Key.UP,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data_enter('hdd123456')
-    time.sleep(1)
-    SetUpLib.send_data('hdd123456')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-        logging.info('设置硬盘密码成功')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_keys(Key.SAVE_RESET)
-#第一个硬盘密码输错测试
-    time.sleep(5)
-    BmcLib.power_off()
-    time.sleep(5)
-    BmcLib.power_on()
-    BmcLib.enable_serial_normal()
-    if not SetUpLib.wait_message(HDD_NAME_01):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        assert SetUpLib.wait_message(HDD_NAME_01)
-    time.sleep(2)
-    logging.info('第一个硬盘密码输错测试.............................................................')
-    time.sleep(2)
-    SetUpLib.send_data('hdd11111')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('密码第一次输错')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-
-    else:
-        return
-    time.sleep(2)
-    SetUpLib.send_data('hdd22222')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('密码第二次输错')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_data('hdd33333')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.HDD_LOCK_PROMPT,10):
-        logging.info('密码第三次输错')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    if SetUpLib.wait_message(HDD_NAME_02):
-        logging.info('第二个硬盘密码')
-    else:
-        return
-    time.sleep(2)
-    SetUpLib.send_data('hdd123456')
-    time.sleep(1)
-    if  SetUpLib.wait_message_enter(SutConfig.Msg.POST_MESSAGE):
-        data=SetUpLib.get_data(10,Key.F11)
-    else:
-        return
-    if not re.compile(HDD_NAME_01_OS[0]).findall(data):
-        logging.info('第一个硬盘密码输错三次，启动项中没有该硬盘')
-    else:
-        stylelog.fail('第一个硬盘密码输错三次，启动项仍有硬盘')
-        return
-    if re.compile(HDD_NAME_02_OS[0]).findall(data):
-        logging.info('第二个硬盘输入正确的密码，启动项中有该硬盘')
-    else:
-        stylelog.fail('第二个硬盘输入正确的密码，启动项中没有该硬盘')
-        return
-    assert SetUpLib.select_boot_option(Key.DOWN,SutConfig.Msg.ENTER_SETUP,20,SutConfig.Msg.PAGE_MAIN_CN)
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_01],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_01],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if SetUpLib.wait_message(SutConfig.Psw.HDD_LOCK_STATUS,5):
-        logging.info('第一个硬盘输错密码三次进入setup，无法设置该硬盘的硬盘密码')
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_key(Key.ESC)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_02],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_02],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if SetUpLib.wait_message(SutConfig.Psw.DEL_HDD_PSW_OPTION,5):
-        logging.info('第二个硬盘输入正确密码进入setup，可以设置该硬盘的硬盘密码')
-    else:
-        return
-    SetUpLib.send_keys(Key.SAVE_RESET)
-#第二个硬盘密码输错测试
-    time.sleep(5)
-    BmcLib.power_off()
-    time.sleep(5)
-    BmcLib.power_on()
-    BmcLib.enable_serial_normal()
-    if not SetUpLib.wait_message(HDD_NAME_01):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        assert SetUpLib.wait_message(HDD_NAME_01)
-    time.sleep(2)
-    logging.info('第二个硬盘密码输错测试.......................................................')
-    time.sleep(2)
-    SetUpLib.send_data('hdd12345')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(HDD_NAME_02,10):
-        logging.info('第二个硬盘密码')
-    else:
-        return
-    time.sleep(1)
-
-    SetUpLib.send_data('hdd11111')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('密码第一次输错')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(2)
-    SetUpLib.send_data('hdd22222')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('密码第二次输错')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_data('hdd33333')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.HDD_LOCK_PROMPT,10):
-        logging.info('密码第三次输错')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    if  SetUpLib.wait_message(SutConfig.Msg.POST_MESSAGE):
-        data=SetUpLib.get_data(10,Key.F11)
-    else:
-        return
-    if not re.compile(HDD_NAME_02_OS[0]).findall(data):
-        logging.info('第二个硬盘密码输错三次，启动项中没有该硬盘')
-    else:
-        stylelog.fail('第二个硬盘密码输错三次，启动项仍有硬盘')
-        return
-    if re.compile(HDD_NAME_01_OS[0]).findall(data):
-        logging.info('第一个硬盘输入正确的密码，启动项中有该硬盘')
-    else:
-        stylelog.fail('第一个硬盘输入正确的密码，启动项中没有该硬盘')
-        return
-    assert SetUpLib.select_boot_option(Key.DOWN,SutConfig.Msg.ENTER_SETUP,20,SutConfig.Msg.PAGE_MAIN_CN)
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_02],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_02],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if SetUpLib.wait_message(SutConfig.Psw.HDD_LOCK_STATUS,5):
-        logging.info('第二个硬盘输错密码三次进入setup，无法设置该硬盘的硬盘密码')
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_key(Key.ESC)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_01],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_01],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if SetUpLib.wait_message(SutConfig.Psw.DEL_HDD_PSW_OPTION,5):
-        logging.info('第一个硬盘输入正确密码进入setup，可以设置该硬盘的硬盘密码')
-    else:
-        return
-    SetUpLib.send_keys(Key.SAVE_RESET)
-#两个硬盘密码输错测试
-    time.sleep(5)
-    BmcLib.power_off()
-    time.sleep(5)
-    BmcLib.power_on()
-    BmcLib.enable_serial_normal()
-    if not SetUpLib.wait_message(HDD_NAME_01):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        assert SetUpLib.wait_message(HDD_NAME_01)
-    time.sleep(2)
-    logging.info('两个硬盘密码输错测试.......................................................')
-    time.sleep(2)
-    SetUpLib.send_data('hdd11111')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('密码第一次输错')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(2)
-    SetUpLib.send_data('hdd22222')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('密码第二次输错')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_data('hdd33333')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.HDD_LOCK_PROMPT,10):
-        logging.info('密码第三次输错')
-        time.sleep(1)
-    else:
-        return
-    if SetUpLib.wait_message_enter(HDD_NAME_02,10):
-        logging.info('第二个硬盘')
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_data('hdd11111')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('密码第一次输错')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(2)
-    SetUpLib.send_data('hdd22222')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('密码第二次输错')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_data('hdd33333')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.HDD_LOCK_PROMPT,10):
-        logging.info('密码第三次输错')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    if  SetUpLib.wait_message(SutConfig.Msg.POST_MESSAGE):
-        data=SetUpLib.get_data(10,Key.F11)
-    else:
-        return
-    if not re.compile(HDD_NAME_01_OS[0]).findall(data):
-        logging.info('第一个硬盘密码输错三次，启动项中没有该硬盘')
-    else:
-        stylelog.fail('第一个硬盘密码输错三次，启动项中仍有该硬盘')
-        return
-    if not re.compile(HDD_NAME_02_OS[0]).findall(data):
-        logging.info('第二个硬盘密码输错三次，启动项中没有该硬盘')
-    else:
-        stylelog.fail('第二个硬盘密码输错三次，启动项中仍有该硬盘')
-        return
-    assert SetUpLib.select_boot_option(Key.DOWN,SutConfig.Msg.ENTER_SETUP,20,SutConfig.Msg.PAGE_MAIN_CN)
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_01],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_01],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if SetUpLib.wait_message(SutConfig.Psw.HDD_LOCK_STATUS,5):
-        logging.info('第一个硬盘输错密码三次进入setup，无法设置该硬盘的硬盘密码')
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_key(Key.ESC)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_02],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_02],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if SetUpLib.wait_message(SutConfig.Psw.HDD_LOCK_STATUS,5):
-        logging.info('第二个硬盘输错密码三次进入setup，无法设置该硬盘的硬盘密码')
-    else:
-        return
-    SetUpLib.send_keys(Key.SAVE_RESET)
-    time.sleep(5)
-    BmcLib.power_off()
-    time.sleep(5)
-    BmcLib.power_on()
-    BmcLib.enable_serial_normal()
-    if not SetUpLib.wait_message(HDD_NAME_01):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        assert SetUpLib.wait_message(HDD_NAME_01)
-    time.sleep(2)
-    SetUpLib.send_data('hdd11111')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('密码第一次输错')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(2)
-    SetUpLib.send_data('hdd22222')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('密码第二次输错')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_data('hdd12345')
-    time.sleep(2)
-    if  SetUpLib.wait_message_enter(HDD_NAME_02):
-        logging.info('第三次输入第一个硬盘密码，成功进入第一个硬盘，要求输入第二个硬盘密码')
-    else:
-        return
-    time.sleep(2)
-    SetUpLib.send_data('hdd11111')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('密码第一次输错')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(2)
-    SetUpLib.send_data('hdd22222')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('密码第二次输错')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_data('hdd123456')
-    time.sleep(2)
-    if  SetUpLib.wait_message_enter(SutConfig.Msg.POST_MESSAGE):
-        logging.info('输入正确密码，成功进入')
-        SetUpLib.send_key(Key.DEL)
-    else:
-        return
-    if SetUpLib.wait_message(SutConfig.Msg.PAGE_MAIN_CN):
-        logging.info('进入setup')
-    else:
-        return
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_01],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_01],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    assert SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.DEL_HDD_PSW_OPTION],3)
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data('hdd12345')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS,5):
-        logging.info('删除密码')
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(2)
-    else:
-        return
-    SetUpLib.send_key(Key.ESC)
-    time.sleep(1)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_02],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_02],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    assert SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.DEL_HDD_PSW_OPTION],3)
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data('hdd123456')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS,5):
-        logging.info('删除密码')
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(2)
-    else:
-        return
-    SetUpLib.send_keys(Key.SAVE_RESET)
+    password = [PwdLib.gen_pw(digit=3, upper=3, lower=3, symbol=3),
+                PwdLib.gen_pw(digit=3, upper=3, lower=3, symbol=3)]
+    hddname1 = SutConfig.Psw.HDD_PASSWORD_NAME_01
+    hddname2 = SutConfig.Psw.HDD_PASSWORD_NAME_02
+    assert _boot_to_setup()
+    assert _set_hdd_password_two(password)
+    BmcLib.init_sut()
+    assert SetUpLib.wait_message(hddname1)
+    assert PwdLib.check_psw_post(password[1], PwdLib.hdd_pw_incorrect), '输入其他硬盘密码，没有提示密码错误'
+    assert PwdLib.check_psw_post(password[0], hddname2, 60)
+    logging.info('输入第一个硬盘密码，成功进入第一个硬盘，要求输入第二个硬盘密码')
+    assert PwdLib.check_psw_post(password[0], PwdLib.hdd_pw_incorrect), '输入其他硬盘密码，没有提示密码错误'
+    assert PwdLib.check_psw_post(password[1], '')
+    assert SetUpLib.boot_with_hotkey_only(Key.DEL, SutConfig.Msg.PAGE_MAIN, 250, SutConfig.Msg.POST_MESSAGE)
+    assert _del_hdd_password_two(password)
     return True
 
 
-
-#多硬盘密码输入时按ESC测试
+# 多硬盘密码输错测试
 def hdd_password_016():
-    BmcLib.power_off()
-    time.sleep(5)
-    assert _del_hdd_password_two()
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_01],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_01],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if not SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-        if not SetUpLib.locate_option(Key.UP,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data_enter('hdd12345')
-    time.sleep(1)    
-    SetUpLib.send_data('hdd12345')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-        logging.info('设置硬盘密码成功')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
+    password = [PwdLib.gen_pw(digit=3, upper=3, lower=3, symbol=3),
+                PwdLib.gen_pw(digit=3, upper=3, lower=3, symbol=3)]
+    hddname1 = SutConfig.Psw.HDD_PASSWORD_NAME_01
+    hddname2 = SutConfig.Psw.HDD_PASSWORD_NAME_02
+    hddos1 = SutConfig.Psw.HDD_NAME_01_OS
+    hddos2 = SutConfig.Psw.HDD_NAME_02_OS
+    assert _boot_to_setup_two()
+    assert _set_hdd_password_two(password)
+    # 第一个硬盘密码输错测试
+    BmcLib.init_sut()
+    assert SetUpLib.wait_message(hddname1)
+    logging.info('第一个硬盘密码输错测试.............................................................')
+    assert PwdLib.check_psw_post('11111111', PwdLib.hdd_pw_incorrect)
+    assert PwdLib.check_psw_post('11111111', PwdLib.hdd_pw_incorrect)
+    assert PwdLib.check_psw_post('11111111', PwdLib.hdd_pw_limit_post)
+    assert SetUpLib.wait_message(hddname2)
+    assert PwdLib.check_psw_post(password[1], '')
+    data = SetUpLib.boot_to_boot_menu(True, False)
+    assert not re.search(hddos1, data), '第一个硬盘密码输错三次，启动项仍有硬盘'
+    assert re.search(hddos2, data), '第二个硬盘输入正确的密码，启动项中没有该硬盘'
+    assert SetUpLib.select_boot_option(Key.DOWN, SutConfig.Msg.ENTER_SETUP, 30, SutConfig.Msg.PAGE_MAIN)
+    assert SetUpLib.enter_menu_change_value(Key.DOWN, SutConfig.Psw.LOC_HDD_PSW + [hddname1], 10)
+    assert SetUpLib.verify_info([SutConfig.Psw.HDD_LOCK_STATUS], 2)
+    logging.info('第一个硬盘输错密码三次进入setup，无法设置该硬盘的硬盘密码')
     time.sleep(1)
     SetUpLib.send_key(Key.ESC)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_02],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_02],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if not SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-        if not SetUpLib.locate_option(Key.UP,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
+    assert SetUpLib.enter_menu_change_value(Key.DOWN, [hddname2], 5, 2)
+    assert SetUpLib.verify_info([SutConfig.Psw.DEL_HDD_PSW_OPTION], 3)
+    logging.info('第二个硬盘输入正确密码进入setup，可以设置该硬盘的硬盘密码')
+    # 第二个硬盘密码输错测试
+    BmcLib.init_sut()
+    assert SetUpLib.wait_message(hddname1)
+    logging.info('第二个硬盘密码输错测试.......................................................')
+    assert PwdLib.check_psw_post(password[0], hddname2, 60)
+    assert PwdLib.check_psw_post('13212123', PwdLib.hdd_pw_incorrect)
+    assert PwdLib.check_psw_post('13212123', PwdLib.hdd_pw_incorrect)
+    assert PwdLib.check_psw_post('13212123', PwdLib.hdd_pw_limit_post)
+    data = SetUpLib.boot_to_boot_menu(True, False)
+    assert not re.search(hddos2, data), '第二个硬盘密码输错三次，启动项仍有硬盘'
+    assert re.search(hddos1, data), '第一个硬盘输入正确的密码，启动项中没有该硬盘'
+    assert SetUpLib.select_boot_option(Key.DOWN, SutConfig.Msg.ENTER_SETUP, 30, SutConfig.Msg.PAGE_MAIN)
+    assert SetUpLib.enter_menu_change_value(Key.DOWN, SutConfig.Psw.LOC_HDD_PSW + [hddname2], 18)
+    assert SetUpLib.verify_info([SutConfig.Psw.HDD_LOCK_STATUS], 2)
+    logging.info('第二个硬盘输错密码三次进入setup，无法设置该硬盘的硬盘密码')
     time.sleep(1)
-    SetUpLib.send_data_enter('hdd123456')
-    time.sleep(1)    
-    SetUpLib.send_data('hdd123456')
+    SetUpLib.send_key(Key.ESC)
+    assert SetUpLib.enter_menu_change_value(Key.DOWN, [hddname1], 5)
+    assert SetUpLib.verify_info([SutConfig.Psw.DEL_HDD_PSW_OPTION], 3)
+    logging.info('第一个硬盘输入正确密码进入setup，可以设置该硬盘的硬盘密码')
+    # 两个硬盘密码输错测试
+    BmcLib.init_sut()
+    assert SetUpLib.wait_message(hddname1)
+    logging.info('两个硬盘密码输错测试.......................................................')
+    assert PwdLib.check_psw_post('13212123', PwdLib.hdd_pw_incorrect)
+    assert PwdLib.check_psw_post('13212123', PwdLib.hdd_pw_incorrect)
+    assert PwdLib.check_psw_post('13212123', PwdLib.hdd_pw_limit_post)
+    assert SetUpLib.wait_message(hddname2)
+    assert PwdLib.check_psw_post('13212123', PwdLib.hdd_pw_incorrect)
+    assert PwdLib.check_psw_post('13212123', PwdLib.hdd_pw_incorrect)
+    assert PwdLib.check_psw_post('13212123', PwdLib.hdd_pw_limit_post)
+    data = SetUpLib.boot_to_boot_menu(True, False)
+    assert not re.search(hddos1, data), '第一个硬盘密码输错三次，启动项中仍有该硬盘'
+    assert not re.search(hddos2, data), '第二个硬盘密码输错三次，启动项中仍有该硬盘'
+    assert SetUpLib.select_boot_option(Key.DOWN, SutConfig.Msg.ENTER_SETUP, 30, SutConfig.Msg.PAGE_MAIN)
+    assert SetUpLib.enter_menu_change_value(Key.DOWN, SutConfig.Psw.LOC_HDD_PSW + [hddname1], 10)
+    assert SetUpLib.verify_info([SutConfig.Psw.HDD_LOCK_STATUS], 2)
+    logging.info('第一个硬盘输错密码三次进入setup，无法设置该硬盘的硬盘密码')
     time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-        logging.info('设置硬盘密码成功')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_keys(Key.SAVE_RESET)
-#第一个硬盘密码输入时按ESC测试
-    time.sleep(5)
-    BmcLib.power_off()
-    time.sleep(5)
-    BmcLib.power_on()
-    BmcLib.enable_serial_normal()
-    if not SetUpLib.wait_message(HDD_NAME_01):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        assert SetUpLib.wait_message(HDD_NAME_01)
+    SetUpLib.send_key(Key.ESC)
+    assert SetUpLib.enter_menu_change_value(Key.DOWN, [hddname2], 5)
+    assert SetUpLib.verify_info([SutConfig.Psw.HDD_LOCK_STATUS], 3)
+    logging.info('第二个硬盘输错密码三次进入setup，无法设置该硬盘的硬盘密码')
+    BmcLib.init_sut()
+    assert SetUpLib.wait_message(hddname1)
+    assert PwdLib.check_psw_post('121322112', PwdLib.hdd_pw_incorrect)
+    assert PwdLib.check_psw_post('121322112', PwdLib.hdd_pw_incorrect)
+    assert PwdLib.check_psw_post(password[0], hddname2, 60)
+    logging.info('第三次输入第一个硬盘密码，成功进入第一个硬盘，要求输入第二个硬盘密码')
+    assert PwdLib.check_psw_post('121322112', PwdLib.hdd_pw_incorrect)
+    assert PwdLib.check_psw_post('121322112', PwdLib.hdd_pw_incorrect)
+    assert PwdLib.check_psw_post(password[1], '')
+    data = SetUpLib.boot_to_boot_menu(True, False)
+    assert re.search(hddos1, data) and re.search(hddos2, data)
+    assert SetUpLib.select_boot_option(Key.DOWN, SutConfig.Msg.ENTER_SETUP, 30, SutConfig.Msg.PAGE_MAIN)
+    assert _del_hdd_password_two(password)
+    return True
+
+
+# 多硬盘密码输入时按ESC测试
+def hdd_password_017():
+    password = [PwdLib.gen_pw(digit=3, upper=3, lower=3, symbol=3),
+                PwdLib.gen_pw(digit=3, upper=3, lower=3, symbol=3)]
+    hddname1 = SutConfig.Psw.HDD_PASSWORD_NAME_01
+    hddname2 = SutConfig.Psw.HDD_PASSWORD_NAME_02
+    hddos1 = SutConfig.Psw.HDD_NAME_01_OS
+    hddos2 = SutConfig.Psw.HDD_NAME_02_OS
+    assert _boot_to_setup_two()
+    assert _set_hdd_password_two(password)
+    # 第一个硬盘密码输入时按ESC测试
+    BmcLib.init_sut()
+    assert SetUpLib.wait_message(hddname1)
     time.sleep(2)
     logging.info('第一个硬盘密码输入时按ESC测试.............................................................')
-    
-    SetUpLib.send_key(Key.ESC)
-    if SetUpLib.wait_message(SutConfig.Psw.HDD_ESC_LOCK_PROMPT,10):
-        logging.info('第一个硬盘密码输入时按ESC，提示驱动器处于锁定状态')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if SetUpLib.wait_message(HDD_NAME_02):
-        logging.info('第二个硬盘密码')
-    else:
-        return
-    time.sleep(2)
-    SetUpLib.send_data('hdd123456')
-    time.sleep(1)
-    if  SetUpLib.wait_message_enter(SutConfig.Msg.POST_MESSAGE):
-        data=SetUpLib.get_data(10,Key.F11)
-    else:
-        return
-    if not re.compile(HDD_NAME_01_OS[0]).findall(data):
-        logging.info('第一个硬盘密码输入时按ESC，启动项中没有该硬盘')
-    else:
-        stylelog.fail('第一个硬盘密码输入时按ESC，启动项仍有硬盘')
-        return
-    if re.compile(HDD_NAME_02_OS[0]).findall(data):
-        logging.info('第二个硬盘输入正确的密码，启动项中有该硬盘')
-    else:
-        stylelog.fail('第二个硬盘输入正确的密码，启动项中没有该硬盘')
-        return
-    assert SetUpLib.select_boot_option(Key.DOWN,SutConfig.Msg.ENTER_SETUP,20,SutConfig.Msg.PAGE_MAIN_CN)
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_01],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_01],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if SetUpLib.wait_message(SutConfig.Psw.HDD_LOCK_STATUS,5):
-        logging.info('第一个硬盘输入时按ESC进入setup，无法设置该硬盘的硬盘密码')
-    else:
-        return
+    assert PwdLib.check_psw_post('12132123', PwdLib.hdd_pw_escape, key=Key.ESC)
+    logging.info('第一个硬盘密码输入时按ESC，提示驱动器处于锁定状态')
+    assert SetUpLib.wait_message(hddname2)
+    assert PwdLib.check_psw_post(password[1], '')
+    data = SetUpLib.boot_to_boot_menu(True, False)
+    assert not re.search(hddos1, data), '第一个硬盘密码输入时按ESC，启动项仍有硬盘'
+    assert re.search(hddos2, data), '第二个硬盘输入正确的密码，启动项中没有该硬盘'
+    assert SetUpLib.select_boot_option(Key.DOWN, SutConfig.Msg.ENTER_SETUP, 30, SutConfig.Msg.PAGE_MAIN)
+    assert SetUpLib.enter_menu_change_value(Key.DOWN, SutConfig.Psw.LOC_HDD_PSW + [hddname1], 10)
+    assert SetUpLib.verify_info([SutConfig.Psw.HDD_LOCK_STATUS], 2)
+    logging.info('第一个硬盘输入时按ESC进入setup，无法设置该硬盘的硬盘密码')
     time.sleep(1)
     SetUpLib.send_key(Key.ESC)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_02],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_02],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if SetUpLib.wait_message(SutConfig.Psw.DEL_HDD_PSW_OPTION,5):
-        logging.info('第二个硬盘输入正确密码进入setup，可以设置该硬盘的硬盘密码')
-    else:
-        return
-    SetUpLib.send_keys(Key.SAVE_RESET)
-#第二个硬盘密码输入时按ESC测试
-    time.sleep(5)
-    BmcLib.power_off()
-    time.sleep(5)
-    BmcLib.power_on()
-    BmcLib.enable_serial_normal()
-    if not SetUpLib.wait_message(HDD_NAME_01):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        assert SetUpLib.wait_message(HDD_NAME_01)
-    time.sleep(2)
+    assert SetUpLib.enter_menu_change_value(Key.DOWN, [hddname2], 18)
+    assert SetUpLib.verify_info([SutConfig.Psw.DEL_HDD_PSW_OPTION], 2)
+    logging.info('第二个硬盘输入正确密码进入setup，可以设置该硬盘的硬盘密码')
+    # 第二个硬盘密码输入时按ESC测试
+    BmcLib.init_sut()
+    assert SetUpLib.wait_message(hddname1)
     logging.info('第二个硬盘密码输入时按ESC测试.......................................................')
-    time.sleep(2)
-    SetUpLib.send_data('hdd12345')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(HDD_NAME_02,10):
-        logging.info('第二个硬盘密码')
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_key(Key.ESC)
-    if SetUpLib.wait_message(SutConfig.Psw.HDD_ESC_LOCK_PROMPT,10):
-        logging.info('第二个硬盘输入时按ESC提示驱动器处于锁定状态')
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-   
-    if  SetUpLib.wait_message(SutConfig.Msg.POST_MESSAGE):
-        data=SetUpLib.get_data(10,Key.F11)
-    else:
-        return
-    if not re.compile(HDD_NAME_02_OS[0]).findall(data):
-        logging.info('第二个硬盘密码输入时按ESC，启动项中没有该硬盘')
-    else:
-        stylelog.fail('第二个硬盘密码输入时按ESC，启动项仍有硬盘')
-        return
-    if re.compile(HDD_NAME_01_OS[0]).findall(data):
-        logging.info('第一个硬盘输入正确的密码，启动项中有该硬盘')
-    else:
-        stylelog.fail('第一个硬盘输入正确的密码，启动项中没有该硬盘')
-        return
-    assert SetUpLib.select_boot_option(Key.DOWN,SutConfig.Msg.ENTER_SETUP,20,SutConfig.Msg.PAGE_MAIN_CN)
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_02],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_02],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if SetUpLib.wait_message(SutConfig.Psw.HDD_LOCK_STATUS,5):
-        logging.info('第二个硬盘输错输入时按ESC进入setup，无法设置该硬盘的硬盘密码')
-    else:
-        return
+    assert PwdLib.check_psw_post(password[0], hddname2, 60)
+    assert PwdLib.check_psw_post('126544554', PwdLib.hdd_pw_escape, key=Key.ESC)
+    logging.info('第二个硬盘输入时按ESC提示驱动器处于锁定状态')
+    data = SetUpLib.boot_to_boot_menu(True, False)
+    assert re.search(hddos1, data), '第一个硬盘输入正确的密码，启动项中没有该硬盘'
+    assert not re.search(hddos2, data), '第二个硬盘密码输入时按ESC，启动项仍有硬盘'
+    assert SetUpLib.select_boot_option(Key.DOWN, SutConfig.Msg.ENTER_SETUP, 30, SutConfig.Msg.PAGE_MAIN)
+    assert SetUpLib.enter_menu_change_value(Key.DOWN, SutConfig.Psw.LOC_HDD_PSW + [hddname2], 10)
+    assert SetUpLib.verify_info([SutConfig.Psw.HDD_LOCK_STATUS], 2)
+    logging.info('第二个硬盘输错输入时按ESC进入setup，无法设置该硬盘的硬盘密码')
     time.sleep(1)
     SetUpLib.send_key(Key.ESC)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_01],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_01],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if SetUpLib.wait_message(SutConfig.Psw.DEL_HDD_PSW_OPTION,5):
-        logging.info('第一个硬盘输入正确密码进入setup，可以设置该硬盘的硬盘密码')
-    else:
-        return
-    SetUpLib.send_keys(Key.SAVE_RESET)
-#两个硬盘密码输入时按ESC测试
-    time.sleep(5)
-    BmcLib.power_off()
-    time.sleep(5)
-    BmcLib.power_on()
-    BmcLib.enable_serial_normal()
-    if not SetUpLib.wait_message(HDD_NAME_01):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        assert SetUpLib.wait_message(HDD_NAME_01)
-    time.sleep(2)
+    assert SetUpLib.enter_menu_change_value(Key.DOWN, [hddname1], 5)
+    assert SetUpLib.verify_info([SutConfig.Psw.DEL_HDD_PSW_OPTION], 3)
+    logging.info('第一个硬盘输入正确密码进入setup，可以设置该硬盘的硬盘密码')
+    # 两个硬盘密码输入时按ESC测试
+    BmcLib.init_sut()
+    assert SetUpLib.wait_message(hddname1)
     logging.info('两个硬盘密码输入按ESC测试.......................................................')
-    
-    SetUpLib.send_key(Key.ESC)
-    if SetUpLib.wait_message(SutConfig.Psw.HDD_ESC_LOCK_PROMPT,10):
-        logging.info('第一个硬盘输入时按ESC，提示驱动器处于锁定状态')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    if SetUpLib.wait_message(HDD_NAME_02,10):
-        logging.info('第二个硬盘')
-    else:
-        return
+    assert PwdLib.check_psw_post('111111121', PwdLib.hdd_pw_escape, key=Key.ESC)
+    logging.info('第一个硬盘输入时按ESC，提示驱动器处于锁定状态')
+    assert SetUpLib.wait_message(hddname2, 30)
+    assert PwdLib.check_psw_post('111111121', PwdLib.hdd_pw_escape, key=Key.ESC)
+    logging.info('第二个硬盘密码输入时按ESC提示驱动器处于锁定状态')
+    data = SetUpLib.boot_to_boot_menu(True, False)
+    assert not re.search(hddos1, data), '第一个硬盘密码输入时按ESC，启动项中仍有该硬盘'
+    assert not re.search(hddos2, data), '第二个硬盘密码输入时按ESC，启动项中仍有该硬盘'
+    assert SetUpLib.select_boot_option(Key.DOWN, SutConfig.Msg.ENTER_SETUP, 30, SutConfig.Msg.PAGE_MAIN)
+    assert SetUpLib.enter_menu_change_value(Key.DOWN, SutConfig.Psw.LOC_HDD_PSW + [hddname1], 10)
+    assert SetUpLib.verify_info([SutConfig.Psw.HDD_LOCK_STATUS], 2)
+    logging.info('第一个硬盘密码输入时按ESC进入setup，无法设置该硬盘的硬盘密码')
     time.sleep(1)
     SetUpLib.send_key(Key.ESC)
-    if SetUpLib.wait_message(SutConfig.Psw.HDD_ESC_LOCK_PROMPT,10):
-        logging.info('第二个硬盘密码输入时按ESC提示驱动器处于锁定状态')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    if  SetUpLib.wait_message(SutConfig.Msg.POST_MESSAGE):
-        data=SetUpLib.get_data(10,Key.F11)
-    else:
-        return
-    if not re.compile(HDD_NAME_01_OS[0]).findall(data):
-        logging.info('第一个硬盘密码输入时按ESC，启动项中没有该硬盘')
-    else:
-        stylelog.fail('第一个硬盘密码输入时按ESC，启动项中仍有该硬盘')
-        return
-    if not re.compile(HDD_NAME_02_OS[0]).findall(data):
-        logging.info('第二个硬盘密码输入时按ESC，启动项中没有该硬盘')
-    else:
-        stylelog.fail('第二个硬盘密码输入时按ESC，启动项中仍有该硬盘')
-        return
-    assert SetUpLib.select_boot_option(Key.DOWN,SutConfig.Msg.ENTER_SETUP,20,SutConfig.Msg.PAGE_MAIN_CN)
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_01],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_01],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if SetUpLib.wait_message(SutConfig.Psw.HDD_LOCK_STATUS,5):
-        logging.info('第一个硬盘密码输入时按ESC进入setup，无法设置该硬盘的硬盘密码')
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_key(Key.ESC)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_02],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_02],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if SetUpLib.wait_message(SutConfig.Psw.HDD_LOCK_STATUS,5):
-        logging.info('第二个硬盘密码输入时按ESC进入setup，无法设置该硬盘的硬盘密码')
-    else:
-        return
-    SetUpLib.send_keys(Key.SAVE_RESET)
-    time.sleep(5)
-    BmcLib.power_off()
-    time.sleep(5)
-    BmcLib.power_on()
-    BmcLib.enable_serial_normal()
-    if not SetUpLib.wait_message(HDD_NAME_01):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        assert SetUpLib.wait_message(HDD_NAME_01)
-    time.sleep(2)
-   
-    SetUpLib.send_data('hdd12345')
-    time.sleep(2)
-    if  SetUpLib.wait_message_enter(HDD_NAME_02):
-        logging.info('输入第一个硬盘密码，成功进入第一个硬盘，要求输入第二个硬盘密码')
-    else:
-        return
-    time.sleep(2)
-    SetUpLib.send_data('hdd123456')
-    time.sleep(2)
-    if  SetUpLib.wait_message_enter(SutConfig.Msg.POST_MESSAGE):
-        logging.info('输入正确密码，成功进入')
-        SetUpLib.send_key(Key.DEL)
-    else:
-        return
-    if SetUpLib.wait_message(SutConfig.Msg.PAGE_MAIN_CN):
-        logging.info('进入setup')
-    else:
-        return
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_01],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_01],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    assert SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.DEL_HDD_PSW_OPTION],3)
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data('hdd12345')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS,5):
-        logging.info('删除密码')
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(2)
-    else:
-        return
-    SetUpLib.send_key(Key.ESC)
-    time.sleep(1)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_02],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_02],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    assert SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.DEL_HDD_PSW_OPTION],3)
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data('hdd123456')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS,5):
-        logging.info('删除密码')
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(2)
-    else:
-        return
-    SetUpLib.send_keys(Key.SAVE_RESET)
+    assert SetUpLib.enter_menu_change_value(Key.DOWN, [hddname2], 10)
+    assert SetUpLib.verify_info([SutConfig.Psw.HDD_LOCK_STATUS], 2)
+    logging.info('第二个硬盘密码输入时按ESC进入setup，无法设置该硬盘的硬盘密码')
+    BmcLib.init_sut()
+    assert SetUpLib.wait_message(hddname1)
+    assert PwdLib.check_psw_post(password[0], hddname2, 60)
+    assert PwdLib.check_psw_post(password[1], '')
+    data = SetUpLib.boot_to_boot_menu(True, False)
+    assert re.search(hddos1, data) and re.search(hddos2, data)
+    assert SetUpLib.select_boot_option(Key.DOWN, SutConfig.Msg.ENTER_SETUP, 30, SutConfig.Msg.PAGE_MAIN)
+    assert _del_hdd_password_two(password)
     return True
 
 
+# 多硬盘密码进入系统测试
+def hdd_password_018():
+    password = [PwdLib.gen_pw(digit=3, upper=3, lower=3, symbol=3),
+                PwdLib.gen_pw(digit=3, upper=3, lower=3, symbol=3)]
+    hddname1 = SutConfig.Psw.HDD_PASSWORD_NAME_01
+    hddname2 = SutConfig.Psw.HDD_PASSWORD_NAME_02
+    hddos1 = SutConfig.Psw.HDD_NAME_01_OS
+    hddos2 = SutConfig.Psw.HDD_NAME_02_OS
 
-#多硬盘密码进入系统测试
-def hdd_password_017():
-    BmcLib.power_off()
-    time.sleep(5)
-    assert _del_hdd_password_two()
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_01],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_01],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if not SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-        if not SetUpLib.locate_option(Key.UP,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data_enter('hdd12345')
-    time.sleep(1)
-    SetUpLib.send_data('hdd12345')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-        logging.info('设置硬盘密码成功')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_key(Key.ESC)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_02],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_02],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    if not SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-        if not SetUpLib.locate_option(Key.UP,[SutConfig.Psw.SET_HDD_PSW_OPTION],3):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data_enter('hdd123456')
-    time.sleep(1)
-    SetUpLib.send_data('hdd123456')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS, 5):
-        logging.info('设置硬盘密码成功')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_keys(Key.SAVE_RESET)
-    time.sleep(5)
-    BmcLib.power_off()
-    time.sleep(8)
-    BmcLib.power_on()
-    time.sleep(5)
-    if not SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        time.sleep(5)
-        assert SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT)
-    time.sleep(2)
-    SetUpLib.send_data('hdd11111')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('密码第一次输错')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-
-    else:
-        return
-    time.sleep(2)
-    SetUpLib.send_data('hdd22222')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('密码第二次输错')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_data('hdd33333')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.HDD_LOCK_PROMPT,10):
-        logging.info('密码第三次输错,第一个硬盘密码输错三次，硬盘被锁定')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    if SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT):
-        logging.info('第二个硬盘密码')
-    else:
-        return
-    time.sleep(2)
-    SetUpLib.send_data('hdd123456')
-    time.sleep(1)
-    if  SetUpLib.wait_message_enter(SutConfig.Msg.POST_MESSAGE):
-        data=SetUpLib.get_data(10,Key.F11)
-    else:
-        return
-    if not re.compile(HDD_NAME_01_OS[0]).findall(data):
-        logging.info('第一个硬盘密码输错三次，启动项中没有该硬盘')
-    else:
-        stylelog.fail('第一个硬盘密码输错三次，启动项仍有硬盘')
-        return
-    if re.compile(HDD_NAME_02_OS[0]).findall(data):
-        logging.info('第二个硬盘输入正确的密码，启动项中有该硬盘')
-    else:
-        stylelog.fail('第二个硬盘输入正确的密码，启动项中没有该硬盘')
-        return
-    assert SetUpLib.select_boot_option(Key.DOWN,HDD_NAME_02_OS[0],20,'')
+    assert _boot_to_setup_two()
+    assert _set_hdd_password_two(password)
+    BmcLib.init_sut()
+    assert SetUpLib.wait_message(hddname1)
+    assert PwdLib.check_psw_post('111111111', PwdLib.hdd_pw_incorrect)
+    assert PwdLib.check_psw_post('111111111', PwdLib.hdd_pw_incorrect)
+    assert PwdLib.check_psw_post('111111111', PwdLib.hdd_pw_limit_post)
+    logging.info('密码第三次输错,第一个硬盘密码输错三次，硬盘被锁定')
+    assert SetUpLib.wait_message(hddname2)
+    assert PwdLib.check_psw_post(password[1], '')
+    data = SetUpLib.boot_to_boot_menu(True, False)
+    assert not re.search(hddname1, data), '第一个硬盘密码输错三次，启动项仍有硬盘'
+    assert re.search(hddname2, data), '第二个硬盘输入正确的密码，启动项中没有该硬盘'
+    assert SetUpLib.select_boot_option(Key.DOWN, hddname2, 30, '')
     logging.info('第二个硬盘第一次成功进入系统')
-    time.sleep(5)
-    BmcLib.power_off()
-    time.sleep(8)
-    BmcLib.power_on()
-    time.sleep(5)
-    if not SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        time.sleep(5)
-        assert SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT)
-    time.sleep(2)
-    SetUpLib.send_data('hdd12345')
-    time.sleep(1)
-    if  SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT):
-        logging.info('第一个硬盘正确输入密码成功')
-    else:
-        return
-    time.sleep(2)
-    SetUpLib.send_data('hdd11111')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('密码第一次输错')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-
-    else:
-        return
-    time.sleep(2)
-    SetUpLib.send_data('hdd22222')
-    time.sleep(1)
-    if SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_FAIL,10):
-        logging.info('密码第二次输错')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-
-    else:
-        return
-    time.sleep(1)
-    SetUpLib.send_data('hdd33333')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.HDD_LOCK_PROMPT,10):
-        logging.info('密码第三次输错,第二个硬盘密码输错三次，硬盘被锁定')
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    else:
-        return
-    if  SetUpLib.wait_message_enter(SutConfig.Msg.POST_MESSAGE):
-        data=SetUpLib.get_data(10,Key.F11)
-    if not re.compile(HDD_NAME_02_OS[0]).findall(data):
-        logging.info('第二个硬盘密码输错三次，启动项中没有该硬盘')
-    else:
-        stylelog.fail('第二个硬盘密码输错三次，启动项仍有硬盘')
-        return
-    if re.compile(HDD_NAME_01_OS[0]).findall(data):
-        logging.info('第一个硬盘输入正确的密码，启动项中有该硬盘')
-    else:
-        stylelog.fail('第一个硬盘输入正确的密码，启动项中没有该硬盘')
-        return
-    assert SetUpLib.select_boot_option(Key.DOWN,HDD_NAME_01_OS[0],20,'')
+    BmcLib.init_sut()
+    assert SetUpLib.wait_message(hddname1)
+    assert PwdLib.check_psw_post(password[0], hddname2, 60)
+    assert PwdLib.check_psw_post('12121212', PwdLib.hdd_pw_incorrect)
+    assert PwdLib.check_psw_post('12121212', PwdLib.hdd_pw_incorrect)
+    assert PwdLib.check_psw_post('12121212', PwdLib.hdd_pw_limit_post)
+    logging.info('密码第三次输错,第二个硬盘密码输错三次，硬盘被锁定')
+    data = SetUpLib.boot_to_boot_menu(True, False)
+    assert re.search(hddos1, data), '第一个硬盘输入正确的密码，启动项中没有该硬盘'
+    assert not re.search(hddos2, data), '第二个硬盘密码输错三次，启动项仍有硬盘'
+    assert SetUpLib.select_boot_option(Key.DOWN, hddname1, 30, '')
     logging.info('第一个硬盘第一次成功进入系统')
-    time.sleep(5)
-    BmcLib.power_off()
-    time.sleep(8)
-    BmcLib.power_on()
-    if not SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        time.sleep(5)
-        assert SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT)
+    BmcLib.init_sut()
+    assert SetUpLib.wait_message(hddname1)
+    assert PwdLib.check_psw_post(password[0], hddname2, 60)
+    assert PwdLib.check_psw_post(password[1], '')
+    data = SetUpLib.boot_to_boot_menu(True, False)
+    assert re.search(hddname1, data), '第一个硬盘输入正确的密码，启动项中没有该硬盘'
+    assert re.search(hddname2, data), '第二个硬盘输入正确的密码，启动项中没有该硬盘'
+    assert SetUpLib.select_boot_option(Key.DOWN, hddos1, 30, '')
+    logging.info('第一个硬盘第二次成功进入系统')
+    BmcLib.init_sut()
+    assert SetUpLib.wait_message(hddname1)
+    assert PwdLib.check_psw_post(password[0], hddname2, 60)
+    assert PwdLib.check_psw_post(password[1], '')
+    data = SetUpLib.boot_to_boot_menu(True, False)
+    assert re.search(hddname1, data), '第一个硬盘输入正确的密码，启动项中没有该硬盘'
+    assert re.search(hddname2, data), '第二个硬盘输入正确的密码，启动项中没有该硬盘'
+    assert SetUpLib.select_boot_option(Key.DOWN, hddos2, 30, '')
+    logging.info('第二个硬盘第二次成功进入系统')
+    assert _boot_to_setup_two(is_del=False)
+    assert _del_hdd_password_two(password)
+    return True
+
+
+def set_hash_type(type):
+    assert SetUpLib.boot_to_setup()
+    if type == 'type1':
+        assert SetUpLib.enter_menu_change_value(Key.DOWN, SutConfig.Psw.SET_HDD_HASH_TYPE1, 18)
+    elif type == 'type2':
+        assert SetUpLib.enter_menu_change_value(Key.DOWN, SutConfig.Psw.SET_HDD_HASH_TYPE2, 18)
+    else:
+        assert SetUpLib.enter_menu_change_value(Key.DOWN, SutConfig.Psw.SET_HDD_HASH_TYPE1, 18)
     time.sleep(2)
-    SetUpLib.send_data('hdd12345')
-    time.sleep(1)
-    if  SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT):
-        logging.info('第一个硬盘正确输入密码')
-    else:
-        return
-    time.sleep(2)
-    SetUpLib.send_data('hdd123456')
-    logging.info('第二个硬盘密码输入正确的密码')
-    time.sleep(1)
-    if  SetUpLib.wait_message_enter(SutConfig.Msg.POST_MESSAGE):
-        data=SetUpLib.get_data(10,Key.F11)
-    else:
-        return
-    if  re.compile(HDD_NAME_01_OS[0]).findall(data):
-        logging.info('第一个硬盘输入正确的密码，启动项中有该硬盘')
-    else:
-        stylelog.fail('第一个硬盘输入正确的密码，启动项中没有该硬盘')
-        return
-    if re.compile(HDD_NAME_02_OS[0]).findall(data):
-        logging.info('第二个硬盘输入正确的密码，启动项中有该硬盘')
-    else:
-        stylelog.fail('第二个硬盘输入正确的密码，启动项中没有该硬盘')
-        return
-    assert SetUpLib.select_boot_option(Key.DOWN,HDD_NAME_01_OS[0],20,'')
-    if BmcLib.ping_sut():
-        logging.info('第一个硬盘第二次成功进入系统')
-    else:
-        stylelog.fail('第一个硬盘第二次没有进入系统')
-        return
-    time.sleep(5)
-    BmcLib.power_off()
-    time.sleep(8)
-    BmcLib.power_on()
-    time.sleep(5)
-    if not SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        time.sleep(5)
-        assert SetUpLib.wait_message(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT)
-    time.sleep(2)
-    SetUpLib.send_data('hdd12345')
-    time.sleep(1)
-    if  SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT):
-        logging.info('第一个硬盘正确输入密码')
-    else:
-        return
-    time.sleep(2)
-    
-    SetUpLib.send_data('hdd123456')
-    logging.info('第二个硬盘密码输入正确的密码')
-    time.sleep(1)
-    if  SetUpLib.wait_message_enter(SutConfig.Msg.POST_MESSAGE):
-        data=SetUpLib.get_data(10,Key.F11)
-    else:
-        return
-    if  re.compile(HDD_NAME_01_OS[0]).findall(data):
-        logging.info('第一个硬盘输入正确的密码，启动项中有该硬盘')
-    else:
-        stylelog.fail('第一个硬盘输入正确的密码，启动项中没有该硬盘')
-        return
-    if re.compile(HDD_NAME_02_OS[0]).findall(data):
-        logging.info('第二个硬盘输入正确的密码，启动项中有该硬盘')
-    else:
-        stylelog.fail('第二个硬盘输入正确的密码，启动项中没有该硬盘')
-        return
-    assert SetUpLib.select_boot_option(Key.DOWN,HDD_NAME_02_OS[0],20,'')
-    if BmcLib.ping_sut():
-        logging.info('第二个硬盘第二次成功进入系统')
-    else:
-        stylelog.fail('第二个硬盘第二次没有进入系统')
-        return
-    time.sleep(5)
-    BmcLib.power_off()
-    time.sleep(8)
-    BmcLib.power_on()
-    if not SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT):
-        BmcLib.init_sut()
-        BmcLib.enable_serial_normal()
-        time.sleep(5)
-        assert SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT)
-    time.sleep(2)
-    SetUpLib.send_data('hdd12345')
-    time.sleep(2)
-    if  SetUpLib.wait_message_enter(SutConfig.Psw.LOGIN_HDD_PSW_PROMPT):
-        logging.info('输入第一个硬盘密码，成功进入第一个硬盘，要求输入第二个硬盘密码')
-    else:
-        return
-    time.sleep(2)
-    SetUpLib.send_data('hdd123456')
-    time.sleep(2)
-    if  SetUpLib.wait_message_enter(SutConfig.Msg.POST_MESSAGE):
-        logging.info('输入正确密码，成功进入')
-        SetUpLib.send_key(Key.DEL)
-    else:
-        return
-    if SetUpLib.wait_message(SutConfig.Msg.PAGE_MAIN_CN):
-        logging.info('进入setup')
-    else:
-        return
-    assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Psw.LOC_HDD_PSW,10)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_01],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_01],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    assert SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.DEL_HDD_PSW_OPTION],3)
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data('hdd12345')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS,5):
-        logging.info('删除密码')
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(2)
-    else:
-        return
-    SetUpLib.send_key(Key.ESC)
-    time.sleep(1)
-    if not SetUpLib.locate_option(Key.DOWN,[HDD_NAME_02],3,2):
-        if not SetUpLib.locate_option(Key.UP,[HDD_NAME_02],3,2):
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            SetUpLib.send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        SetUpLib.send_key(Key.ENTER)
-    assert SetUpLib.locate_option(Key.DOWN,[SutConfig.Psw.DEL_HDD_PSW_OPTION],3)
-    SetUpLib.send_key(Key.ENTER)
-    time.sleep(1)
-    SetUpLib.send_data('hdd123456')
-    if SetUpLib.wait_message_enter(SutConfig.Psw.SET_HDD_PSW_SUCCESS,5):
-        logging.info('删除密码')
-        SetUpLib.send_key(Key.ENTER)
-        time.sleep(2)
-    else:
-        return
     SetUpLib.send_keys(Key.SAVE_RESET)
+    time.sleep(5)
     return True

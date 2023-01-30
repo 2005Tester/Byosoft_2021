@@ -1,5 +1,7 @@
 import logging
 import time
+import os
+import csv
 from ICX2P.Config import SutConfig
 from ICX2P.BaseLib import SetUpLib, PlatMisc, BmcLib
 from ICX2P.Config.PlatConfig import Key, Msg
@@ -114,12 +116,11 @@ def testcase_com_resource_001():
 def testcase_networkMode_001():
     tc = ('105', '[TC105] Verify BMC Network Mode Information', 'Verify BMC Network Mode ')
     result = ReportGen.LogHeaderResult(tc)
-    page_server_mgmt = 'BMC version'
     path_bmc_cfg = ['BMC LAN Configuration']
     bmc_network_mode_dedicate = ['<Dedicated>']
     bmc_network_mode_value = 'DedicatedAutoShared\-PCIEOnboard OCP Shared'
     try:
-        assert SetUpLib.boot_to_page(page_server_mgmt)
+        assert SetUpLib.boot_to_page(Msg.PAGE_BMC)
         assert SetUpLib.enter_menu(Key.DOWN, path_bmc_cfg, 20, '<Dedicated>')
         assert SetUpLib.locate_option(Key.DOWN, bmc_network_mode_dedicate, 20)
         logging.info("**Verify BMC Network Mode Address default value is Dedicated**")
@@ -186,8 +187,9 @@ def testcase_wol_001():
     result = ReportGen.LogHeaderResult(tc)
     try:
         assert SetUpLib.boot_to_page(Msg.CPU_CONFIG)
-        assert SetUpLib.enter_menu(Key.DOWN, [Msg.MISC_CONFIG], 12, Msg.CDN)
-        assert SetUpLib.locate_option(Key.DOWN, ['Wake On Lan Support', "<Disabled>"], 12)
+        assert SetUpLib.enter_menu(Key.DOWN, [Msg.MISC_CONFIG], 25, Msg.CDN)
+        assert SetUpLib.locate_option(Key.UP, [Msg.WOL, f"<.+>"], 25)
+        assert SetUpLib.verify_supported_values("Disabled")
         result.log_pass()
         return True
     except AssertionError:
@@ -302,7 +304,7 @@ def testcase_load_custom_defaults_003():
     finally:
         BmcLib.clear_cmos()
         if not SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5):
-            UpdateBIOS.update_bios('master')
+            UpdateBIOS.update_bios(SutConfig.Env.LATEST_BRANCH)
         BmcLib.set_boot_mode("Legacy", once=False)
 
 
@@ -321,7 +323,7 @@ def testcase_loaddefault_005():
         logging.info("修改SPD CRC Check, Attempt Fast Boot 和 Refresh Options 成功")
         assert SetUpLib.back_to_setup_toppage()
         assert Sut.BIOS_COM.locate_setup_option(Key.RIGHT, [Msg.PAGE_SAVE], 10)
-        assert SetUpLib.locate_option(Key.DOWN, ['Load Defaults'], 10)
+        assert SetUpLib.locate_option(Key.DOWN, ['Load Factory Defaults'], 10)
         SetUpLib.send_keys([Key.ENTER, Key.Y])
         time.sleep(3)
         assert Sut.BIOS_COM.locate_setup_option(Key.RIGHT, [Msg.PAGE_ADVANCED], 10)
@@ -360,7 +362,7 @@ def testcase_loaddefault_006_007():
         assert SetUpLib.set_option_value("BMC WDT Support For POST", options_value[0], save=False)
         assert SetUpLib.set_option_value("BMC WDT Support For OS", options_value[0], save=False)
         logging.info("修改BMC WDT Support For POST和BMC WDT Support For OS 成功")
-        SetUpLib.send_keys([Key.F9, Key.Y])
+        SetUpLib.send_keys([Key.F9, Key.F])
         time.sleep(3)
         assert SetUpLib.get_option_value(['BMC WDT Support For POST', "<.+>"], Key.UP, 10) == default_value[0]
         assert SetUpLib.get_option_value(['BMC WDT Support For OS', "<.+>"], Key.UP, 10) == default_value[0]
@@ -407,5 +409,48 @@ def testcase_serial_003():
         logging.info("还原测试环境")
         BmcLib.clear_cmos()
         if not SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5):
-            UpdateBIOS.update_bios('master')
+            UpdateBIOS.update_bios(SutConfig.Env.LATEST_BRANCH)
         BmcLib.set_boot_mode("Legacy", once=False)
+
+
+# Author: Fubaolin
+# Testcase_LoadDefault_012, F9恢复默认值后，CPU资源分配测试
+# Precondition: N/A
+# OnStart: N/A
+# Steps: 1、Setup菜单下按F9恢复默认，F10保存退出；
+# 2、查看启动串口日志中CPU资源的分配情况，有结果A。
+# A：CPU资源分配正确。
+@core.test_case(('116', '[TC116]Testcase_LoadDefault_012', 'F9恢复默认值后CPU资源分配测试'))
+def testcase_loaddefault_012():
+    cpu_rsc_ls = ['Stk00', 'Stk01', 'Stk02', 'Stk03', 'Stk04', 'Stk05', 'Rsvd', 'Ubox']
+    cpu_rsc = ['CPU0']
+    i = 0
+    error_flag = 0
+    try:
+        cpu_rsc_file = os.path.join(SutConfig.Env.LOG_DIR, "cpu_resource.csv")
+        if not os.path.exists(cpu_rsc_file):
+            assert SetUpLib.boot_to_page(Msg.PAGE_INFO)
+            SetUpLib.send_keys(Key.RESET_DEFAULT)
+            cpu_rsc_file = PlatMisc.dump_cpu_resource()
+            assert cpu_rsc_file, "invalid CPU Resource Allocation Table"
+        with open(cpu_rsc_file, "r") as rsc_file:
+            rsc_data = csv.reader(rsc_file)
+            cpu_rsc_list = [row[0] for row in rsc_data]
+            for _cpu_rsc_num in cpu_rsc_list:
+                if _cpu_rsc_num == '':
+                    i += 1
+                    cpu_rsc.append(f'CPU{i}')
+                    assert SutConfig.SysCfg.CPU_CNT == len(cpu_rsc)
+                    logging.info('**Match CPU_num pass')
+        for j in cpu_rsc:
+            _cpu_rsc_s = [j] + cpu_rsc_ls
+            if not set(_cpu_rsc_s).issubset(set(cpu_rsc_list)):
+                logging.info('invalid CPU Resource not in cvs')
+                error_flag += 1
+        assert error_flag == 0
+        logging.info('**All date in Table')
+        return core.Status.Pass
+    except AssertionError as e:
+        logging.error(e)
+        return core.Status.Fail
+

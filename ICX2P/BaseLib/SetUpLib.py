@@ -55,7 +55,7 @@ def verify_options(key, options, trycounts):
 
 
 # Enter setup menu
-def enter_menu(key, option_path, try_counts, confirm_msg):
+def enter_menu(key, option_path, try_counts, confirm_msg: str = ""):
     try:
         return Sut.BIOS_COM.enter_menu(key, option_path, try_counts, confirm_msg, timeout=60)
     except Exception as e:
@@ -255,11 +255,11 @@ def enable_legacy_boot():
     if not Sut.BIOS_COM.locate_setup_option(Key.RIGHT, [Msg.PAGE_BOOT], 12):
         logging.info("Boot configuration page not found.")
         return
-    if not locate_option(Key.DOWN, ["Boot Type", "<UEFIBoot>"], 25):
+    if not locate_option(Key.DOWN, ["Boot Type", "<UEFI Boot>"], 25):
         return
     logging.info("Change boot type to legacy mode")
     send_key(Key.F5)
-    if not locate_option(Key.DOWN, ["Boot Type", "<LegacyBoot>"], 25):
+    if not locate_option(Key.DOWN, ["Boot Type", "<Legacy Boot>"], 25):
         logging.info("Failed to change boot type.")
         return
     logging.info("Save and reboot")
@@ -287,11 +287,11 @@ def disable_legacy_boot():
     if not Sut.BIOS_COM.locate_setup_option(Key.RIGHT, [Msg.PAGE_BOOT], 12):
         logging.info("Boot configuration page not found.")
         return
-    if not locate_option(Key.DOWN, ["Boot Type", "<LegacyBoot>"], 25):
+    if not locate_option(Key.DOWN, ["Boot Type", "<Legacy Boot>"], 25):
         return
     logging.info("Change boot type to UEFI mode")
     send_key(Key.F6)
-    if not locate_option(Key.DOWN, ["Boot Type", "<UEFIBoot>"], 25):
+    if not locate_option(Key.DOWN, ["Boot Type", "<UEFI Boot>"], 25):
         logging.info("Failed to change boot type.")
         return
     logging.info("Save and reboot")
@@ -357,7 +357,10 @@ def move_boot_option_up(boot_option, count):
 
 # Update default password, should be called after update bios
 def update_default_password():
-    logging.info("Change BIOS password to non-default.")
+    pwd_info_1 = 'Please type in your password'
+    pwd_info_2 = 'Please type in your new password'
+    pwd_info_3 = 'Please confirm your new password'
+    pwd_info_4 = 'Changes have been saved after press'
     if not BmcLib.force_reset():
         return
     if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.HOTKEY_PROMPT_DEL):
@@ -366,21 +369,31 @@ def update_default_password():
     if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.PW_PROMPT):
         return
     send_data(Msg.BIOS_PW_DEFAULT)
-    send_keys(Key.ENTER*2)
-    if not SerialLib.is_msg_present(Sut.BIOS_COM, "8-16"):
+    send_keys(Key.ENTER * 2, 1)
+    if not move_to_bios_config():
+        return
+    logging.info("SetUpLib: Move to specified setup page")
+    if not Sut.BIOS_COM.locate_setup_option(Key.RIGHT, [Msg.PAGE_SECURITY], 12):
+        logging.info("SetUpLib: Specified setup page not found.")
+        return
+    if not locate_option(Key.UP, ["Manage Supervisor Password"], 20):
+        return
+    logging.info("Change password from {0} to {1}".format(Msg.BIOS_PW_DEFAULT, Msg.BIOS_PASSWORD))
+    send_key(Key.ENTER)
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, pwd_info_1, 10):
+        return
+    send_data_enter(Msg.BIOS_PW_DEFAULT)
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, pwd_info_2, 10):
+        return
+    send_data_enter(Msg.BIOS_PASSWORD)
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, pwd_info_3, 10):
+        return
+    send_data_enter(Msg.BIOS_PASSWORD)
+    if not SerialLib.is_msg_present(Sut.BIOS_COM, pwd_info_4, 20):
         return
     send_key(Key.ENTER)
-    if not SerialLib.is_msg_present(Sut.BIOS_COM, "Enter New Password"):
-        return
-    send_data(Msg.BIOS_PASSWORD)
-    send_key(Key.ENTER)
-    send_data(Msg.BIOS_PASSWORD)
-    send_key(Key.ENTER)
-    if not SerialLib.is_msg_present(Sut.BIOS_COM, "Change password success."):
-        return
-    send_key(Key.ENTER)
-    if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.HOME_PAGE):
-        return
+    logging.info("Password is changed from {0} to {1}".format(Msg.BIOS_PW_DEFAULT, Msg.BIOS_PASSWORD))
+    send_keys(Key.SAVE_RESET, 2)
     logging.info("Password changed to non-default successfully")
     return True
 
@@ -421,7 +434,7 @@ def wait_message(msg, timeout=150):
 
 # Match a list of strings from serial port
 def wait_strings(msg_list, timeout=10):
-    return SerialLib.is_msg_list_present(Sut.BIOS_COM, msg_list, timeout)
+    return Sut.BIOS_COM.wait_messages(msg_list, timeout)
 
 
 # used to navigate to setup top page,

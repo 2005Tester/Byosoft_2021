@@ -38,10 +38,12 @@
 
     {
     "ProjectName": "SPR4P",
-    "Resources": ["BIOS_COM", "BMC_SSH", "BMC_SFTP", "BMC_RFISH", "OS_SSH", "OS_SFTP", "UNITOOL", "OS_LEGACY_SSH", "UNITOOL_LEGACY_OS"],
+    "Resources": ["BIOS_TERM", "BMC_SSH", "BMC_SFTP", "BMC_RFISH", "OS_SSH", "OS_SFTP", "UNITOOL", "OS_LEGACY_SSH", "UNITOOL_LEGACY_OS"],
     "ConfigMapping": {
-        "Sut01": "Sut01Config"
-        }
+        "Sut01": "Sut01Config",
+        "Sut02": "Sut02Config",
+        "Sut03": "Sut03Config"
+    }
     },
 	{
     "ProjectName": "HY5",

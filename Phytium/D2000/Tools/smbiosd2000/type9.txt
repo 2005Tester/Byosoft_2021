@@ -1,0 +1,45 @@
+# dmidecode 3.2
+Getting SMBIOS data from sysfs.
+SMBIOS 3.3.0 present.
+# SMBIOS implementations newer than version 3.2.0 are not
+# fully supported by this version of dmidecode.
+
+Handle 0x001A, DMI type 9, 28 bytes
+System Slot Information
+	Designation: <BAD INDEX>
+	Type: x16 PCI Express x16
+	Current Usage: In Use
+	Length: Long
+	ID: 0
+	Characteristics:
+		3.3 V is provided
+		Opening is shared
+		PME signal is supported
+	Bus Address: 0000:00:00.0
+
+Handle 0x001B, DMI type 9, 28 bytes
+System Slot Information
+	Designation: <BAD INDEX>
+	Type: x8 PCI Express x8
+	Current Usage: Available
+	Length: Short
+	ID: 1
+	Characteristics:
+		3.3 V is provided
+		Opening is shared
+		PME signal is supported
+	Bus Address: 0000:00:03.0
+
+Handle 0x001C, DMI type 9, 28 bytes
+System Slot Information
+	Designation: <BAD INDEX>
+	Type: x8 PCI Express x8
+	Current Usage: Available
+	Length: Short
+	ID: 2
+	Characteristics:
+		3.3 V is provided
+		Opening is shared
+		PME signal is supported
+	Bus Address: 0000:00:04.0
+

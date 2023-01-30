@@ -518,7 +518,7 @@ def open_session():
 
 # Match a list of strings from serial port
 def wait_strings(msg_list, delay=10):
-    return SerialLib.is_msg_list_present(Sut.BIOS_COM, msg_list, delay)
+    return Sut.BIOS_COM.wait_messages(msg_list, delay)
 
 
 

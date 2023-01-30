@@ -2,11 +2,14 @@
 [
     {
     "ProjectName": "Inspur7500",
-    "Resources": ["BIOS_COM", "BMC_SSH", "BMC_SFTP", "OS_SSH", "OS_SFTP"],
+    "Resources": ["BIOS_COM", "BMC_SSH", "BMC_SFTP", "OS_SSH", "OS_SFTP","OS_LEGACY_SSH","OS_LEGACY_SFTP"],
     "ConfigMapping": {
         "Puti": "PutiConfig",
         "Nvwa": "NvwaConfig",
-        "Huike1": "Huike1Config"
+        "Huike": "HuikeConfig",
+        "Yangjian": "YangjianConfig",
+        "Sanzang": "SanzangConfig"
+
         }
     },
 
@@ -33,6 +36,14 @@
     "Resources": ["BIOS_COM", "BMC_SSH", "BMC_SFTP", "OS_SSH", "OS_SFTP"],
     "ConfigMapping": {
         "Sut01": "Sut01Config"
+        }
+    },
+	{
+    "ProjectName": "ByoTool",
+    "Resources": ["BIOS_COM", "BMC_SSH", "BMC_SFTP", "OS_SSH", "OS_SFTP","OS_LEGACY_SSH","OS_LEGACY_SFTP"],
+    "ConfigMapping": {
+        "CRB7000": "CRB7000",
+		"CRB3000": "CRB3000"
         }
     }
 ]

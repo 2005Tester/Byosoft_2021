@@ -23,7 +23,7 @@ from batf.Common.LogAnalyzer import LogAnalyzer
 from ICX2P.TestCase import UpdateBIOS
 
 P = LogAnalyzer(SutConfig.Env.LOG_DIR)
-baseline = os.path.join(os.path.dirname(__file__), r"..\Tools\SetupBase\2288服务器setup菜单基线版本_Byosoft_V0.1.xlsx")
+baseline = PlatMisc.root_path() / "ICX2P/Tools/SetupBase/2288服务器setup菜单基线.xlsx"
 
 
 # POST, Boot, Setup, OS Installation, PM, Device, Chipsec Test and Source code cons.
@@ -202,7 +202,7 @@ def load_default():
     logging.info("***Modified options are verified.")
 
     logging.info("***Reset defaul by hotkey")
-    SetUpLib.send_keys([Key.F9, Key.Y, Key.F10, Key.Y], 2)
+    SetUpLib.send_keys(Key.RESET_DEFAULT, 2)
 
     # Verify whether options are reset to default
     logging.info("***Verify whether options are reset to default")
@@ -343,7 +343,7 @@ def serial_print_keywords():
     tc = ('026', '[TC026]Testcase_SerialPrint_001', '启动关键信息打印测试')
     result = ReportGen.LogHeaderResult(tc)
     cpu_resource = r"[\s\S]*".join([rf"CPU{n}[\s\S]*Ubox.+" for n in range(SysCfg.CPU_CNT)])
-    bios_ver = r"BIOS Revision :\s+\d.\d+"
+    bios_ver = r"BIOS Version :\s+\d.\d+"
     pcie_lnk = r"PCIE LINK STATUS:"
 
     def check_process(timeout):
@@ -353,7 +353,7 @@ def serial_print_keywords():
         key_string1 = re.search(cpu_resource, cpu_log)
         assert key_string1, "CPU Resource Allocation not found"
         logging.info("CPU Resource Allocation check pass")
-        # BIOS Revision
+        # BIOS Version
         ver_log = SerialLib.cut_log(Sut.BIOS_COM, "BootType :", "BIOS Date :", 100, timeout)
         key_string2 = re.search(bios_ver, ver_log)
         assert key_string2, "BIOS Revision not found"
@@ -633,7 +633,7 @@ def _set_loadDefault(set_value, os_ip, uni_type=Sut.UNITOOL, ssh_type=Sut.OS_SSH
 def loadDefault_001_uefi():
     tc = ('012', '[TC012]01 BMC Clearcmos恢复菜单默认值测试', '支持恢复Setup默认值')
     result = ReportGen.LogHeaderResult(tc)
-    set_value = {'CoreDisableMask': '10', 'IotEn': '1', 'CompletionTimeout': '0'}  # 可根据平台设计增减设置变量
+    set_value = {'CoreDisableMask': '10', 'IotEn': '1', 'CompletionTimeoutGlobal': '0'}  # 可根据平台设计增减设置变量
     try:
         assert BmcLib.force_reset()
         assert _set_loadDefault(set_value, SutConfig.Env.OS_IP)
@@ -649,7 +649,7 @@ def loadDefault_001_uefi():
 def loadDefault_001_legacy():
     tc = ('013', '[TC013]01 BMC Clearcmos恢复菜单默认值测试 LEGACY MODE', '支持恢复Setup默认值')
     result = ReportGen.LogHeaderResult(tc)
-    set_value = {'CoreDisableMask': '10', 'IotEn': '1', 'CompletionTimeout': '0'}  # 可根据平台设计增减设置变量
+    set_value = {'CoreDisableMask': '10', 'IotEn': '1', 'CompletionTimeoutGlobal': '0'}  # 可根据平台设计增减设置变量
     try:
         assert BmcLib.force_reset()
         assert _set_loadDefault(set_value, SutConfig.Env.OS_IP_LEGACY, Sut.UNITOOL_LEGACY_OS, Sut.OS_LEGACY_SSH)  # legacy mode
@@ -662,7 +662,7 @@ def loadDefault_001_legacy():
         logging.info("还原测试环境")
         BmcLib.clear_cmos()
         if not SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5):
-            UpdateBIOS.update_bios('master')
+            UpdateBIOS.update_bios(SutConfig.Env.LATEST_BRANCH)
         BmcLib.set_boot_mode("Legacy", once=False)
 
 
@@ -740,7 +740,7 @@ def _check_msg_in_log(list_info, duration, timeout):
         assert str_flag != 0, "**checkin list_info fail"
         logging.info('check_msg_in_log pass')
         return True
-    except AssertionError as e:
+    except Exception as e:
         logging.error(e)
         return False
 

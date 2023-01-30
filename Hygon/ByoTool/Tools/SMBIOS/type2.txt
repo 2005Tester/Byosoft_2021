@@ -1,0 +1,18 @@
+                          Type2 message
+-------------------------------------------------------------------------
+Number: 0
+-------------------------------------------------------------------------
+************start type show*********-----------------
+Type  :2
+Handle:17
+Manufacturer Name        :oem204
+Product Name             :oem205
+Version                  :oem206
+Serial Number            :oem207
+Asset Tag                :oem208
+Feature Flags            :Use param /view Type Number 5 show filed info
+Location in Chassis      :oem2010
+Chassis Handle           :0010h
+Board Type               :Motherboard             
+Contained Object Handles :6f00h
+

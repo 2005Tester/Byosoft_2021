@@ -1,0 +1,24 @@
+# dmidecode 3.2
+Getting SMBIOS data from sysfs.
+SMBIOS 3.3.0 present.
+# SMBIOS implementations newer than version 3.2.0 are not
+# fully supported by this version of dmidecode.
+
+Handle 0x000F, DMI type 3, 22 bytes
+Chassis Information
+	Manufacturer: Byosoft
+	Type: Desktop
+	Lock: Not Present
+	Version: 123456
+	Serial Number: 123456
+	Asset Tag: 123456
+	Boot-up State: Safe
+	Power Supply State: Safe
+	Thermal State: Safe
+	Security Status: None
+	OEM Information: 0x00000000
+	Height: 2 U
+	Number Of Power Cords: 1
+	Contained Elements: 0
+	SKU Number: Not specified
+

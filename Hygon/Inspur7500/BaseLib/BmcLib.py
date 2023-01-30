@@ -1,12 +1,10 @@
+# -*- encoding=utf8 -*-
 import logging
 import subprocess
 import time
 from Inspur7500.Config import SutConfig
 import re
-from batf.SutInit import Sut
-from batf import SshLib, MiscLib
-from batf.Report import stylelog
-
+from multidict import CIMultiDict
 
 
 # run command in windows,
@@ -14,10 +12,10 @@ def interaction(cmd, exp, timeout=10):
     logging.info("Run command: {0}".format(cmd))
     start_time = time.time()
     while True:
-        #主要用来执行shell命令，args是待执行的命令，shell为True是就执行shell命令。当args为列表（列表第一项通常是要执行程序的路径，后面是要执行的命令），
+        # 主要用来执行shell命令，args是待执行的命令，shell为True是就执行shell命令。当args为列表（列表第一项通常是要执行程序的路径，后面是要执行的命令），
         # shell为false时，表示在列表第一项的程序下执行命令。
         p = subprocess.Popen(args=cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdoutput, erroutput) = p.communicate()#输出的是程序的标准输出和标准错误
+        (stdoutput, erroutput) = p.communicate()  # 输出的是程序的标准输出和标准错误
         now = time.time()
         time_spent = (now - start_time)
         if exp in stdoutput.decode('gbk'):
@@ -31,8 +29,24 @@ def interaction(cmd, exp, timeout=10):
     return True
 
 
+def output(cmd):
+    logging.info("Run command: {0}".format(cmd))
+    try:
+        # 主要用来执行shell命令，args是待执行的命令，shell为True是就执行shell命令。当args为列表（列表第一项通常是要执行程序的路径，后面是要执行的命令），
+        # shell为false时，表示在列表第一项的程序下执行命令。
+        p = subprocess.Popen(args=cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        (stdoutput, erroutput) = p.communicate()  # 输出的是程序的标准输出和标准错误
+        if stdoutput != '':
+            return stdoutput.decode('gbk')
+        elif erroutput != '':
+            return erroutput.decode('gbk')
+        else:
+            return ''
+    except:
+        return ''
 
-def ping_sut():
+
+def ping_sut(delay=200):
     logging.info("Test network connection...")
     ping_cmd = 'ping {0}'.format(SutConfig.Env.OS_IP)
     start_time = time.time()
@@ -44,10 +58,9 @@ def ping_sut():
         if 'TTL=' in stdoutput.decode('gbk'):
             logging.info("SUT is online.")
             return True
-        if time_spent > 200:
+        if time_spent > delay:
             logging.error("Lost SUT for %s seconds, check the ip connection" % time_spent)
             return False
-
 
 
 # updated by arthur,
@@ -57,14 +70,13 @@ def is_power_on():
     return interaction(ret_cmd, 'Chassis Power is on')
 
 
-
 def is_power_off():
     logging.info("Check power status...")
     ret_cmd = '{0} chassis power status'.format(SutConfig.Env.IPMITOOL)
     return interaction(ret_cmd, 'Chassis Power is off')
 
 
-
+# check power status
 def power_status():
     logging.info("Check power status...")
     time.sleep(5)
@@ -80,15 +92,14 @@ def power_status():
         sut_status2 = "Chassis Power is on"
         if sut_status1 in stdoutput.decode('gbk'):
             logging.info("{0}".format(sut_status1))
-            return  sut_status1
+            return sut_status1
         if sut_status2 in stdoutput.decode('gbk'):
             logging.info("{0}".format(sut_status2))
-            return  sut_status2
+            return sut_status2
         if time_spent > 10:
             logging.error("Command run timeout - %s seconds, unable to find the power status." % time_spent)
             return
 
-        
 
 def power_off():
     logging.info("Starting to power off the SUT.")
@@ -96,12 +107,10 @@ def power_off():
     return interaction(ret_cmd, 'Chassis Power Control: Down/Off')
 
 
-
 def power_on():
     logging.info("Starting to power on the SUT.")
     ret_cmd = '{0} chassis power on'.format(SutConfig.Env.IPMITOOL)
     return interaction(ret_cmd, 'Chassis Power Control: Up/On')
-
 
 
 def init_sut():
@@ -112,12 +121,11 @@ def init_sut():
             assert power_on(), "Power on failed."
             return True
         else:
-            logging.info("SUT is on, now reset it.")
-            assert power_reset(), "Power reset failed."
+            logging.info("SUT is on, now cycle it.")
+            assert power_cycle(), "Power cycle failed."
             return True
     except AssertionError:
         return
-
 
 
 def power_reset():
@@ -126,24 +134,21 @@ def power_reset():
     return interaction(ret_cmd, 'Chassis Power Control: Reset')
 
 
-
 def power_cycle():
     logging.info("Starting to power cycle the SUT.")
     ret_cmd = '{0} chassis power cycle'.format(SutConfig.Env.IPMITOOL)
     return interaction(ret_cmd, 'Chassis Power Control: Cycle')
 
 
-
 def set_console_to_bios():
     logging.info("Set Console output to BIOS.")
-    ret_cmd = '{0} raw 0x3e 0xc4 0x01'.format(SutConfig.Env.IPMITOOL)
+    ret_cmd = '{0} {1}'.format(SutConfig.Env.IPMITOOL, SutConfig.Env.SET_BIOS_SERIAL)
     return interaction(ret_cmd, "")
 
 
-
-#Enable Console
+# Enable Console
 def enable_console_direction():
-    ret_cmd = '{0} raw 0x3e 0xc2'.format(SutConfig.Env.IPMITOOL)
+    ret_cmd = '{0} {1}'.format(SutConfig.Env.IPMITOOL, SutConfig.Env.GET_OPTION)
     p = subprocess.Popen(args=ret_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdoutput, erroutput) = p.communicate()
     cmd = stdoutput.decode('gbk')
@@ -151,19 +156,20 @@ def enable_console_direction():
     if int(cmd[-1], 16) & 1 == 1:
         cmd[-1] = hex(int(cmd[-1], 16) - 1)[2:]
     logging.info("Enable console direction.")
-    ret_cmd = '{0} raw 0x3e 0xc3 0x01 0x{1} 0x{2} 0x{3} 0x{4} 0x{5} 0x{6} 0x13 0x{7} 0x{8} 0x{9} 0x{10} 0x{11} 0x{12}'.format(
-        SutConfig.Env.IPMITOOL, cmd[1], cmd[2], cmd[3], cmd[4], cmd[5], cmd[6], cmd[8], cmd[9], cmd[10],
+    # cmd_console = hex(int('{:08b}'.format(int(cmd[7], 16))[:3] + '10011', 2))[2:]
+    cmd_console = hex(int('10' + '{:08b}'.format(int(cmd[7], 16))[2] + '10011', 2))[2:]
+    ret_cmd = '{0} {14} 0x{1} 0x{2} 0x{3} 0x{4} 0x{5} 0x{6} 0x{7} 0x{8} 0x{9} 0x{10} 0x{11} 0x{12} 0x{13}'.format(
+        SutConfig.Env.IPMITOOL, cmd[1], cmd[2], cmd[3], cmd[4], cmd[5], cmd[6], cmd_console, cmd[8], cmd[9], cmd[10],
         cmd[11],
-        cmd[12], cmd[13])
+        cmd[12], cmd[13], SutConfig.Env.CHANGE_OPTION)
     return interaction(ret_cmd, "")
 
 
-
-#Check whether Console is enabled or not
+# Check whether Console is enabled or not
 def check_serial_status():
     set_console_to_bios()
     logging.info("Check Serial status.")
-    ret_cmd = '{0} raw 0x3e 0xc2'.format(SutConfig.Env.IPMITOOL)
+    ret_cmd = '{0} {1}'.format(SutConfig.Env.IPMITOOL, SutConfig.Env.GET_OPTION)
     logging.info("Run command: {0}".format(ret_cmd))
     start_time = time.time()
     while True:
@@ -172,7 +178,8 @@ def check_serial_status():
         cmd = stdoutput.decode('gbk')
         now = time.time()
         time_spent = (now - start_time)
-        if cmd[22:24] != '13':
+        if '{:08b}'.format(int(cmd[22:24], 16))[-5:] != '10011' or '{:08b}'.format(int(cmd[22:24], 16))[:2] != '10':
+            # if cmd[22:24] != '13':
             logging.info("Checked BIOS value is:{0}".format(cmd))
             logging.info("Serial is disabled.")
             return re.findall('[0-9a-zA-Z]{2}', cmd)
@@ -189,13 +196,12 @@ def check_serial_status():
         return "enabled"
 
 
-
-#Enable Console and Shell after update BIOS
+# Enable Console and Shell after update BIOS
 def enable_serial_after_update_bios():
     init_sut()
     logging.info("Delay 90s to let new BIOS boot once.")
-    time.sleep(90)   
-    set_console_to_bios()  
+    time.sleep(90)
+    set_console_to_bios()
     enable_console_direction()
     power_reset()
     while True:
@@ -204,54 +210,59 @@ def enable_serial_after_update_bios():
         if check_serial_status() == "disabled":
             logging.info("Delay 30s to enable serial again.")
             time.sleep(30)
-            set_console_to_bios()  
+            set_console_to_bios()
             enable_console_direction()
-            power_reset() 
+            power_reset()
         else:
             set_console_to_bios()
             logging.info("Enable Serial successed.")
             return True
 
 
-
-#Enable Console and Shell
+# Enable Console and Shell
 def enable_serial_normal():
     set_console_to_bios()
     while True:
         logging.info("Delay 5s to check serial status.")
         time.sleep(5)
-        cmd=check_serial_status()
-        if cmd!= "enabled":
+        cmd = check_serial_status()
+        if cmd != "enabled":
             set_console_to_bios()
             if int(cmd[-1], 16) & 1 == 1:
                 cmd[-1] = hex(int(cmd[-1], 16) - 1)[2:]
+            # cmd_console = hex(int('{:08b}'.format(int(cmd[7], 16))[:3] + '10011', 2))[2:]
+            cmd_console = hex(int('10' + '{:08b}'.format(int(cmd[7], 16))[2] + '10011', 2))[2:]
             logging.info("Enable console direction.")
-            ret_cmd = '{0} raw 0x3e 0xc3 0x01 0x{1} 0x{2} 0x{3} 0x{4} 0x{5} 0x{6} 0x13 0x{7} 0x{8} 0x{9} 0x{10} 0x{11} 0x{12}'.format(
-                SutConfig.Env.IPMITOOL, cmd[1], cmd[2], cmd[3], cmd[4], cmd[5], cmd[6], cmd[8], cmd[9], cmd[10],
+            ret_cmd = '{0} {14} 0x{1} 0x{2} 0x{3} 0x{4} 0x{5} 0x{6} 0x{7} 0x{8} 0x{9} 0x{10} 0x{11} 0x{12} 0x{13}'.format(
+                SutConfig.Env.IPMITOOL, cmd[1], cmd[2], cmd[3], cmd[4], cmd[5], cmd[6], cmd_console, cmd[8], cmd[9],
+                cmd[10],
                 cmd[11],
-                cmd[12], cmd[13])
+                cmd[12], cmd[13], SutConfig.Env.CHANGE_OPTION)
             interaction(ret_cmd, "")
-            power_reset() 
+            init_sut()
         else:
             set_console_to_bios()
             logging.info("Direct to boot.")
             return True
 
 
-
 def enable_serial_only():
     set_console_to_bios()
-    ret_cmd = '{0} raw 0x3e 0xc2'.format(SutConfig.Env.IPMITOOL)
+    ret_cmd = '{0} {1}'.format(SutConfig.Env.IPMITOOL, SutConfig.Env.GET_OPTION)
     p = subprocess.Popen(args=ret_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdoutput, erroutput) = p.communicate()
     cmd = stdoutput.decode('gbk')
-    if cmd[22: 24] != '13':
+    if '{:08b}'.format(int(cmd[22:24], 16))[-5:] != '10011' or '{:08b}'.format(int(cmd[22:24], 16))[:2] != '10':
+        # if cmd[22: 24] != '13':
         cmd = re.findall('[0-9a-zA-Z]{2}', cmd)
         time.sleep(1)
         set_console_to_bios()
-        ret_cmd = '{0} raw 0x3e 0xc3 0x01 0x{1} 0x{2} 0x{3} 0x{4} 0x{5} 0x{6} 0x13 0x{7} 0x{8} 0x{9} 0x{10} 0x{11} 0x{12}'.format(
-            SutConfig.Env.IPMITOOL, cmd[1], cmd[2], cmd[3], cmd[4], cmd[5], cmd[6], cmd[8], cmd[9], cmd[10], cmd[11],
-            cmd[12], cmd[13])
+        # cmd_console = hex(int('{:08b}'.format(int(cmd[7], 16))[:3] + '10011', 2))[2:]
+        cmd_console = hex(int('10' + '{:08b}'.format(int(cmd[7], 16))[2] + '10011', 2))[2:]
+        ret_cmd = '{0} {14} 0x{1} 0x{2} 0x{3} 0x{4} 0x{5} 0x{6} 0x{7} 0x{8} 0x{9} 0x{10} 0x{11} 0x{12} 0x{13}'.format(
+            SutConfig.Env.IPMITOOL, cmd[1], cmd[2], cmd[3], cmd[4], cmd[5], cmd[6], cmd_console, cmd[8], cmd[9],
+            cmd[10], cmd[11],
+            cmd[12], cmd[13], SutConfig.Env.CHANGE_OPTION)
         logging.info('Run Command {0}'.format(ret_cmd))
         p = subprocess.Popen(args=ret_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         (stdoutput, erroutput) = p.communicate()
@@ -263,3 +274,70 @@ def enable_serial_only():
         set_console_to_bios()
         logging.info('Serial is Enabled')
         return True
+
+
+def change_bios_value(input):
+    def get_cmd_change(cmd):
+        option_value1 = SutConfig.Ipm.OPTION_VALUE
+        option_value = CIMultiDict()
+        for k1, v1 in option_value1.items():
+            dict = CIMultiDict()
+            for k2, v2 in v1[1].items():
+                dict[k2] = v2
+            option_value[k1] = [v1[0], dict]
+        for i in input:
+            option = i.split(':')[0]
+            value = i.split(':')[1]
+            if option.lower() == 'waittime':
+                cmd[12] = '{:0{width}x}'.format(int(value), width=4)[:2]
+                cmd[11] = '{:0{width}x}'.format(int(value), width=4)[-2:]
+            else:
+                a = cmd[option_value[option][0]]  # 16进制数字
+                b = '{:08b}'.format(int(a, 16))[::-1]  # 十六进制转8位二进制数字的倒序
+                index_start = int(option_value[option][1][value][0].split(',')[0])  # 要替换的起始序号
+                if len(option_value[option][1][value][0].split(',')) > 1:
+                    index_end = int(option_value[option][1][value][0].split(',')[1]) + 1  # 要替换的结束序号
+                else:
+                    index_end = index_start + 1
+
+                b = b[:index_start] + option_value[option][1][value][1][::-1] + b[index_end:]  # 替换为需要修改的值
+                b = b[::-1]  # 变回原来的顺序
+
+                if len(hex(int(b, 2))[2:]) == 1:
+                    cmd[option_value[option][0]] = '0' + hex(int(b, 2))[2:]  # 转换为十六进制
+                else:
+                    cmd[option_value[option][0]] = hex(int(b, 2))[2:]  # 转换为十六进制
+        return cmd
+
+    enable_serial_normal()
+    logging.info(f'Change BIOS value => {",".join(input)}')
+    get_cmd = '{0} {1}'.format(SutConfig.Env.IPMITOOL, SutConfig.Env.GET_OPTION)
+    hexadecimal = output(get_cmd)
+    cmd = re.findall('\w+', hexadecimal)
+    cmd_change = get_cmd_change(cmd)
+    ret_cmd_change = '{0} {14} 0x{1} 0x{2} 0x{3} 0x{4} 0x{5} 0x{6} 0x{7} 0x{8} 0x{9} 0x{10} 0x{11} 0x{12} 0x{13}'.format(
+        SutConfig.Env.IPMITOOL, cmd_change[1], cmd_change[2], cmd_change[3], cmd_change[4], cmd_change[5],
+        cmd_change[6], cmd_change[7], cmd_change[8], cmd_change[9], cmd_change[10],
+        cmd_change[11], cmd_change[12], cmd_change[13], SutConfig.Env.CHANGE_OPTION)
+    try_counts = 3
+    while try_counts:
+        interaction(ret_cmd_change, "")
+        init_sut()
+        logging.info("Delay 5s to check bios value.")
+        time.sleep(5)
+        if re.findall('\w+', output(get_cmd)) == cmd_change:
+            break
+        try_counts -= 1
+    return cmd_change
+
+
+def get_boot_mode():
+    ret_cmd = '{0} {1}'.format(SutConfig.Env.IPMITOOL, SutConfig.Env.GET_OPTION)
+    p = subprocess.Popen(args=ret_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    (stdoutput, erroutput) = p.communicate()
+    hexadecimal = stdoutput.decode('gbk')
+    cmd = re.findall('\w+', hexadecimal)
+    if int(cmd[3], 16) & 1 == 1:
+        return 'Legacy'
+    else:
+        return 'UEFI'

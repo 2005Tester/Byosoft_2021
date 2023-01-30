@@ -25,7 +25,7 @@ function module, only used below
 def _navigate_to_mem_fre():
     try:
         assert SetUpLib.locate_option(Key.RIGHT, [Msg.PAGE_ADVANCED], 6)
-        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_CONFIG, 12, Msg.MEM_FRE)
+        assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_MEM_CONFIG, 15, Msg.PPR_Type)
         return True
     except AssertionError:
         logging.info("navigate_to_mem_fre: Fail")
@@ -49,13 +49,13 @@ def dimm_power_mgt_01():
     tc = ('700', '[TC700]Testcase_MemPower_001', 'BIOS默认关闭DDR4内存的LP-ASR模式测试')
     result = ReportGen.LogHeaderResult(tc)
     try:
-        assert (SetUpLib.boot_to_page(Msg.PAGE_INFO))
+        assert SetUpLib.boot_to_page(Msg.PAGE_INFO)
         if SetUpLib.verify_info(['CPU Number\s+2'], 7):
             assert _navigate_to_mem_fre(), 'navigate to mem freq page -> fail'
-            assert (SetUpLib.verify_options(Key.DOWN, [[Msg.MEM2X_REFRESH, '<Dynamic Mode>']], 7))
+            assert SetUpLib.verify_options(Key.DOWN, [[Msg.MEM2X_REFRESH, '<Dynamic Mode>']], 12)
         elif SetUpLib.verify_info(['CPU Number\s+4'], 7):
             assert _navigate_to_mem_fre(), 'navigate to mem freq page -> fail'
-            assert (SetUpLib.verify_options(Key.DOWN, [[Msg.MEM2X_REFRESH, '<Static 2X Mode>']], 7))
+            assert SetUpLib.verify_options(Key.DOWN, [[Msg.MEM2X_REFRESH, '<Static 2X Mode>']], 12)
         else:
             logging.info('Unsupported CPU Number...')
             raise AssertionError
@@ -255,7 +255,7 @@ def rmt_menu_test():
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED), "boot_to_page -> fail"
         logging.info("Press Enter")
         SetUpLib.send_key(Key.ENTER)
-        assert SetUpLib.enter_menu(Key.DOWN, [Msg.MEMORY_CONFIG, BSSA_MENU], 15, BSSA_RMT), "enter_menu >> fail"
+        assert SetUpLib.enter_menu(Key.DOWN, [Msg.MEMORY_CONFIG, BSSA_MENU], 20, BSSA_RMT), "enter_menu >> fail"
         # BSSA Rank Margin Tool: Enable
         assert SetUpLib.locate_option(Key.DOWN, [BSSA_RMT, "<Disabled>"], 15), "locate_option >> fail"
         logging.info("Press F6")
@@ -316,7 +316,7 @@ def memory_compa_006(n=1):
             mem_mb = re.search("Total Memory : (\d+)MB", meminfo)
             assert mem_mb, "Search total memory size from serial failed"
             mem_size_ser = int(mem_mb.group(1))
-            assert SetUpLib.continue_to_page('BIOS Revision')
+            assert SetUpLib.continue_to_page(Msg.PAGE_INFO)
             assert SetUpLib.verify_info([f'Total Memory\s+{mem_size_ser} MB'], 20), "dimm_size_verify -> fail"
             assert SetUpLib.back_to_front_page("Boot Manager")
             SetUpLib.send_key(Key.ENTER)

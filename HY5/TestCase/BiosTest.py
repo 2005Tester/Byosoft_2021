@@ -18,7 +18,7 @@ from batf.Report import ReportGen, stylelog
 from batf.Common.LogAnalyzer import LogAnalyzer
 
 P = LogAnalyzer(SutConfig.Env.LOG_DIR)
-baseline = os.path.join(os.path.dirname(__file__), r"..\Tools\SetupBase\2288服务器setup菜单基线版本_Byosoft_V0.1.xlsx")
+baseline = PlatMisc.root_path() / "ICX2P/Tools/SetupBase/2288服务器setup菜单基线.xlsx"
 
 
 # POST, Boot, Setup, OS Installation, PM, Device, Chipsec Test and Source code cons.

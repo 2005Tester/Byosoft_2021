@@ -31,8 +31,8 @@ class Env:
     PROJECT_NAME = "TCE"
     SUT_CONFIG = "Sut01"  # 2U-1-DIMM
     REPORT_TEMPLATE = "TCE\\Report\\template"
-    RELEASE_BRANCH = "TCEV6_022"
-    PREVIOUS_BRANCH = 'TCEV6_021'
+    RELEASE_BRANCH = "TCEV6_027"
+    PREVIOUS_BRANCH = 'TCEV6_026'
 
     # Log settings
     timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
@@ -41,16 +41,16 @@ class Env:
         os.makedirs(LOG_DIR)
 
     # BIOS Serial setting
-    BIOS_SERIAL = "com4"  # rdp hostname: nuc3
+    BIOS_SERIAL = "com9"  # rdp hostname: nuc3
 
     # BMC Configuration
-    BMC_IP = '192.168.111.40'
+    BMC_IP = '192.168.111.30'
     BMC_USER = 'Administrator'
     BMC_PASSWORD = 'Admin@9000'
 
     # OS Configuration
-    OS_IP = '192.168.111.41'
-    # OS_IP_UBUNTU = '192.168.111.53'
+    OS_IP = '192.168.111.13'
+    OS_IP_UBUNTU = '192.168.111.245'
     OS_USER = 'root'
     OS_PASSWORD = '1'
 

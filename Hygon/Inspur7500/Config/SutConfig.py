@@ -17,11 +17,6 @@ SutCfgMde = importlib.import_module(var.get('SutCfg'), var.get('project'))
 class Env(SutCfgMde.Env):
     pass
 
-
-class SysCfg(SutCfgMde.SysCfg):
-    pass
-
-
 class Msg(SutCfgMde.Msg):
     pass
 
@@ -47,4 +42,17 @@ class Sup(SutCfgMde.Sup):
     pass
 
 class Upd(SutCfgMde.Upd):
+    pass
+
+
+class Rfs(SutCfgMde.Rfs):
+    pass
+
+class Tool(SutCfgMde.Tool):
+    pass
+
+class Sec(SutCfgMde.Sec):
+    pass
+
+class Ras(SutCfgMde.Ras):
     pass

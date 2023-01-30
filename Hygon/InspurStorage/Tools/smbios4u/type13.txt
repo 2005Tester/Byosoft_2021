@@ -1,0 +1,11 @@
+# dmidecode 3.2
+Getting SMBIOS data from sysfs.
+SMBIOS 3.1 present.
+
+Handle 0x005C, DMI type 13, 22 bytes
+BIOS Language Information
+	Language Description Format: Long
+	Installable Languages: 2
+		en|US|iso8859-1
+		zh|CN|unicode
+	Currently Installed Language: en|US|iso8859-1

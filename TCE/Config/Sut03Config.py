@@ -14,7 +14,7 @@ import datetime
 # OS Boot Option Keywords
 class BootOS:
     name_ruler = r"RAID CARD|HDD\s*\d+|NVME\s*\d+|SLOT\s*\d+"
-    SLES = f"sled-secureboot.*?(?:{name_ruler})"
+    SLES = f"SUSE Linux Enterprise.*?(?:{name_ruler})"
     Ubuntu = f"ubuntu.*?(?:{name_ruler})"
 
 
@@ -29,8 +29,8 @@ class Env:
     PROJECT_NAME = "TCE"
     SUT_CONFIG = "Sut03"  # 4U-Full-DIMM
     REPORT_TEMPLATE = "TCE\\Report\\template"
-    RELEASE_BRANCH = "TCEV6_022"
-    PREVIOUS_BRANCH = 'TCEV6_021'
+    RELEASE_BRANCH = "TCEV6_027"
+    PREVIOUS_BRANCH = 'TCEV6_026'
 
     # Log settings
     timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
@@ -39,16 +39,16 @@ class Env:
         os.makedirs(LOG_DIR)
 
     # BIOS Serial setting
-    BIOS_SERIAL = "com10"  # rdp hostname: desktop-ft2tm75
+    BIOS_SERIAL = "com12"  # rdp hostname: desktop-ft2tm75
 
     # BMC Configuration
-    BMC_IP = '192.168.111.113'
+    BMC_IP = '192.168.111.118'
     BMC_USER = 'Administrator'
     BMC_PASSWORD = 'Admin@9000'
 
     # OS Configuration
-    OS_IP = '192.168.111.116'
-    OS_IP_UBUNTU = '192.168.111.21'
+    OS_IP = '192.168.111.119'
+    OS_IP_UBUNTU = '192.168.111.120'
     OS_USER = 'root'
     OS_PASSWORD = '1'
 
@@ -74,7 +74,7 @@ class Env:
 class SysCfg:
     CPU_CNT = 2  # cpu socket count
     CPU_CORE = 32  # cpu core count
-    DIMM_SIZE = 128  # /GB
+    DIMM_SIZE = 64  # /GB
     USB_Storage = 0  # usb disk inserted
 
     PCIE_MAP = [

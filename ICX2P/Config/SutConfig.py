@@ -41,9 +41,12 @@ class Env(_Env):
     if not os.path.exists(LOG_DIR):
         os.makedirs(LOG_DIR)
 
+    # BIOS branch for master test
+    LATEST_BRANCH = "master"
+
     # BIOS Vcs branch for release test
-    RELEASE_BRANCH = "2288V6_020"
-    PREVIOUS_BRANCH = "2288V6_019"
+    RELEASE_BRANCH = "2288V6_038"
+    PREVIOUS_BRANCH = "2288V6_037"
 
     # Redfish configuration
     REDFISH_API = {
@@ -88,7 +91,7 @@ class SysCfg(_SysCfg):
 
     # Example:　Intel\(R\) Xeon\(R\) Gold 6330 CPU @ 2.00GHz
     CPU_FULL_NAME = "{0} {1} {2} CPU @ {3:.1f}0GHz".format(
-        SutCfgMde.CPU.Name, SutCfgMde.CPU.Level, '\s*'.join(_SysCfg.CPU_TYPE), _SysCfg.CPU_BASE)
+        SutCfgMde.CPU.Name, '\s*'.join(SutCfgMde.CPU.Level), '\s*'.join(_SysCfg.CPU_TYPE), _SysCfg.CPU_BASE)
 
     # BIOS Setup　Processor Info页面详细信息
     PROC_LIST = []
@@ -151,20 +154,12 @@ class SysCfg(_SysCfg):
                 'memFlows|memFlowsExt|memFlowsExt2|memFlowsExt3|DfxRstCplBitsEn|' \
                 'EnablePkgCCriteriaKti[1]|UefiOcpPxe|LegacyOcpPxe|PcieAerEcrcEn'
 
-    Unitool_Backup_Name = [
-        'Backup name:SetupBackup Restore variable Success size:0x325',
-        'Backup name:PchSetupBackup Restore variable Success size:0x420',
-        'Backup name:MeRcConfigurationBackup Restore variable Success size:0x55',
-        'Backup name:SocketIioConfigBackup Restore variable Success size:0x20BA',
-        'Backup name:SocketCommonRcConfigBackup Restore variable Success size:0x3B',
-        'Backup name:SocketMpLinkConfigBackup Restore variable Success size:0xAD',
-        'Backup name:SocketMemoryConfigBackup Restore variable Success size:0x3EA',
-        'Backup name:SocketPowerManagementConfigBackup Restore variable Success size:0x1D6',
-        'Backup name:SocketProcessorCoreConfigBackup Restore variable Success size:0x14E',
-        'Backup name:MemBootHealthConfigBackup Restore variable Success size:0x13',
-        'Backup name:BootClassOrderBackup Restore variable Success size:0x4',
-        'Backup name:SetupBackup Restore variable Success size:0x18',
-    ]
+    Backup_Name = ['Setup', 'PchSetup', 'MeRcConfiguration', 'SocketIioConfig', 'SocketIioConfig',
+                   'SocketCommonRcConfig', 'SocketMemoryConfig', 'SocketPowerManagementConfig',
+                   'SocketProcessorCoreConfig', 'MemBootHealthConfig', 'BootClassOrder']
+    Unitool_Backup_Name = []
+    for bak_name in Backup_Name:
+        Unitool_Backup_Name.append(f'Backup name:{bak_name}Backup Restore variable Success size:0x[0-9a-fA-F]+')
 
     # 精简打印，华为要求 LogTime_check_list
     OEM_LOG_SUT = [

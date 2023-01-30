@@ -155,7 +155,7 @@ class Msg:
     # Firmware version info
     ME_VERSION = '0F:4.4.4.58'
     RC_VERSION = '0.2.2.003A'
-    BIOS_DATE = '12/08/2021'
+    BIOS_DATE = '03/17/2022'
     iBMC_VERSION = '3.02.01.05'
     CPU_TYPE = 'Ice Lake'
     TOTAL_MEMORY = '{0}MB'.format(SutConfig.SysCfg.DIMM_SIZE * 1024)

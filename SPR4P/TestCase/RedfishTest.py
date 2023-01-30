@@ -1,31 +1,28 @@
-import os
-import re
-import time
 import json
 import random
+import re
+
 import pandas
-import logging
 import openpyxl
 from copy import deepcopy
 from pathlib import Path
 
-from batf.SutInit import Sut
 from batf.Common.RedfishLib import Redfish
-from batf.Report import ReportGen
-from batf.Common.LogAnalyzer import LogAnalyzer
-from batf import MiscLib, SshLib, SutInit, core, SerialLib
-from SPR4P.Config import SutConfig
-from SPR4P.Config.PlatConfig import Key, Msg, BootOS
-from SPR4P.BaseLib import SetUpLib, PlatMisc, BmcLib
 
-base_line = Path(__file__).parent.parent.absolute()/"Resource/SetupBase/V7服务器setup菜单基线版本_Byosoft_V0.1.xlsx"
-power_efficiency = Path(__file__).parent.parent.absolute()/"Resource/PowerEfficiency/5886HV7_PowerEfficiency.csv"
+from SPR4P.Config import *
+from SPR4P.BaseLib import *
 
 
-class _BootInvolved:
-    Exclusive = ["BootTypeOrder0", "BootTypeOrder1", "BootTypeOrder2", "BootTypeOrder3"]
-    MemPop = ["MemChannelEnable"]
-    BootOS = ["BootType", "PowerOnPassword"]
+####################################
+# Redfish Test Case
+# TC 300-350
+####################################
+
+
+class _BootFail:  # 修改以下变量可能会导致无法启动到系统
+    BootOrder = ["BootTypeOrder0", "BootTypeOrder1", "BootTypeOrder2", "BootTypeOrder3"]
+    Memory = []
+    BootType = ["BootType"]
     ReadOnly = ["OemSecureBoot"]
 
 
@@ -44,35 +41,42 @@ def _to_excel(data, name="", path=SutConfig.Env.LOG_DIR):
     logging.info("Create excel {} successful!".format(path_name))
 
 
-def _read_default_values(variables):
-    """通过Unitool读取多个变量的值，返回字典"""
+def _reboot_sut(timeout=SutConfig.Env.BOOT_DELAY):
+    BmcLib.force_reset()
+    if SerialLib.is_msg_present(Sut.BIOS_COM, msg=Msg.BIOS_BOOT_COMPLETE, delay=timeout):
+        SerialLib.clean_buffer(Sut.BIOS_COM)
+        return True
+    if MiscLib.ping_sut(SutConfig.Env.OS_IP, 300):
+        return True
+    core.capture_screen()
+
+
+def _read_default_with_unitool(variables):
+    """通过Unitool读取多个变量的默认值，返回字典"""
     var_format = []
-    for var in variables:
-        if "[0]" in var:
-            var_format.append(var[:var.find("[")])
+    for _var in variables:
+        if "[0]" in _var:
+            var_format.append(_var[:_var.find("[")])
         else:
-            var_format.append(var)
+            var_format.append(_var)
     key_values = Sut.UNITOOL.read(*var_format)
     return key_values
 
 
-def _reboot_sut(timeout=600):
-    """重启到BIOS结束，不需要进OS"""
-    BmcLib.force_reset()
-    if MiscLib.ping_sut(SutConfig.Env.OS_IP, timeout):
-        return True
-    # if SerialLib.is_msg_present(Sut.BIOS_COM, msg=Msg.BIOS_BOOT_COMPLETE, delay=timeout):
-    #     SerialLib.clean_buffer(Sut.BIOS_COM)
-    #     return True
+def _baseline_key_value_map(base_xlsx):
+    """
+    从基线中解析出基线字典, 返回字典格式为：
+    {
+        Key1: {ValueHex1: ValueName1,  ValueHex2: ValueName2},
+        Key2: {ValueHex1: ValueName1,  ValueHex2: ValueName2},
+    }
+    """
+    setup_col = "H"  # 基线Excel中Setup选项名 列索引
+    value_col = "G"  # 基线Excel中Setup选项值 列索引
 
-
-def _option_value_index_map(base_xlsx):
-    """从基线中解析出{变量名:值}的字典，返回字典"""
     base_xlsx = openpyxl.load_workbook(base_xlsx)
     sheets = base_xlsx.sheetnames
     base_sheet = base_xlsx[sheets[0]]
-    setup_col = "K"  # setup column index of xlsx
-    value_col = "I"  # value column index of xlsx
     max_row = base_sheet.max_row
     table = {}
     for row in range(1, max_row):
@@ -81,26 +85,30 @@ def _option_value_index_map(base_xlsx):
             continue
         option = option.replace("\n", "").strip()
         values = base_sheet[f"{value_col}{row}"].value
-        if not values:
+        if (not values) or (not option) or (option == "NA"):
             continue
         value_list = values.split("\n")
         for v in value_list:
             if len(re.findall(":", v)) == 1:
-                vname = v.split(":")[0]
-                vidx = v.split(":")[1].strip()
-                index = str(int(vidx, 16)) if "0x" in vidx else vidx
+                value_name = v.split(":")[0]
+                value_int = v.split(":")[1]
+                if "0x" in value_name.lower():
+                    value_name, value_int = value_int, value_name
+                index = str(int(value_int, 16)) if value_int.startswith("0x") else value_int
                 if isinstance(table.get(option), dict):
-                    table[option].update({index: vname.strip()})
+                    table[option].update({index: value_name.strip()})
                 else:
-                    table[option] = {index: vname.strip()}
+                    table[option] = {index: value_name.strip()}
             elif len(re.findall(":", v)) > 1:
-                vname = v[:v.rfind(":")]
-                vidx = v[v.rfind(":")+1:]
-                index = str(int(vidx, 16)) if "0x" in vidx else vidx
+                value_name = v[:v.find(":")].strip()
+                value_int = v[v.find(":")+1:].strip()
+                if "0x" in value_name.lower():
+                    value_name, value_int = value_int, value_name
+                index = str(int(value_int, 16)) if value_int.startswith("0x") else value_int
                 if isinstance(table.get(option), dict) and table.get(option):
-                    table[option].update({index: vname.strip()})
+                    table[option].update({index: value_name.strip()})
                 else:
-                    table[option] = {index: vname.strip()}
+                    table[option] = {index: value_name.strip()}
             else:
                 table[option] = v
     return table
@@ -114,8 +122,7 @@ class _DepenTest(Redfish):
         -   bmc_user
         -   bmc_pw
         -   COM
-    2. 进入到Redfish文件夹，运行命令 RedFishTest.py depmain 开始测试
-    3. 测试完成后Excel报告保存在 config.REPORT_DIR 路径中
+    2. 测试完成后Excel报告保存在 config.REPORT_DIR 路径中
 
     【测试流程】
     1. Dump Registry文件
@@ -139,6 +146,7 @@ class _DepenTest(Redfish):
 
     def __init__(self):
         super(_DepenTest, self).__init__(SutConfig.Env.BMC_IP, SutConfig.Env.BMC_USER, SutConfig.Env.BMC_PASSWORD, SutConfig.Env.REDFISH_API)
+        self.session._timeout = 15
         self.atts_pd = pandas.DataFrame()
         self.map_from_pd = pandas.DataFrame()
         self.depens = self.Dependencies()
@@ -276,10 +284,11 @@ class _DepenTest(Redfish):
             mf_dic.update({mf["MapFromAttribute"]: mf["MapFromValue"]})
         return mf_dic
 
-    def gen_data_w_top(self, mapfrom: list):
+    def gen_data_with_top(self, mapfrom: list):
         """ 当发现 MapFromAttribute 被联动时，找到上级联动一起修改 """
         mf_dic = self.mf_key_value(mapfrom)
         depens = deepcopy(self.depens)
+        top_merge_dic = {}
         for depen in depens:
             mapto_name = depen["Dependency"]["MapToAttribute"]
             if mapto_name not in mf_dic.keys():
@@ -293,14 +302,16 @@ class _DepenTest(Redfish):
                 if key in mf_dic.keys():  # 避免PATHC Value被覆盖修改
                     continue
                 value = self.not_the_value(key, mapto_value, mapto_name)
-                kv = {key: value}
+                top_merge_dic = {key: value}
                 if mf["MapTerms"] == "OR":  # OR的只选择一个
-                    mf_dic.update(kv)
+                    top_merge_dic.update(mf_dic)  # 上级联动菜单要放在前面，才能修改成功
                     break
-                mf_dic.update(kv)  # AND的选择所有
-        return mf_dic
+                top_merge_dic.update(mf_dic)  # AND的选择所有
+        if not top_merge_dic:
+            return mf_dic
+        return top_merge_dic
 
-    def check_mapto(self, mapfrom: list):
+    def check_mapto(self, mapfrom: list, row):
         """ PATCH完成后重启，检查所有的MapTo的联动条件是否满足 """
         # pandas DataFrame filter doesn't support list types, use column IndexStr instead
         mf_info = {mf["MapFromAttribute"]: mf["MapFromValue"] for mf in mapfrom}
@@ -321,9 +332,10 @@ class _DepenTest(Redfish):
             if map_property == "CurrentValue":
                 if not self.check_bios_option(**{map_key: map_value}):
                     result = result & False
-                    logging.info(rf"[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <fail>")
+                    self.map_from_pd.loc[row, "Message"] = f"[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <fail>"
+                    logging.info(rf'[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <fail>')
                     continue
-                logging.info(rf"[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <pass>")
+                logging.info(rf'[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <pass>')
                 continue
             # Hidden/ReadOnly map_key can't be changed
             patch_try = self.patch_radom(map_key)
@@ -332,37 +344,62 @@ class _DepenTest(Redfish):
             if (map_property == "Hidden" or map_property == "ReadOnly") and map_value:
                 if patch_try.result:
                     result = result & False  # Hidden/ReadOnly should patch fail
-                    logging.info(rf"[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <fail>")
-                    logging.info(rf"Status: {patch_try.status}")
+                    logging.info(rf'[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <fail>')
+                    if pandas.isna(self.map_from_pd.loc[row, "Message"]):
+                        self.map_from_pd.loc[row, "Message"] = patch_try.body
+                    else:
+                        self.map_from_pd.loc[row, "Message"] += f"{patch_try.body}\n"
+                    logging.info(rf'Status: {patch_try.status}')
                     continue
-                logging.info(rf"[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <pass>")
+                logging.info(rf'[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <pass>')
                 continue
-            # is map_key be mapped bt other item as Hidden/ReadOnly ?
+            # is map_key be mapped by other item as Hidden/ReadOnly ?
             if self.mapto_link.get(map_key):
                 for kmf, vmf in mf_info.items():
                     if vmf in self.mapto_link[map_key].get(kmf):
                         if patch_try.result:
                             result = result & False
-                            logging.info(rf"[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <fail>")
-                            logging.info(rf"Message: {patch_try.body}")
+                            logging.info(rf'[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <fail>')
+                            logging.info(rf'Message: {patch_try.body}')
+                            if pandas.isna(self.map_from_pd.loc[row, "Message"]):
+                                self.map_from_pd.loc[row, "Message"] = patch_try.body
+                            else:
+                                self.map_from_pd.loc[row, "Message"] += f"{patch_try.body}\n"
                             continue
-                        logging.info(rf"[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <pass>")
+                        logging.info(rf'[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <pass>')
                     else:
                         if not patch_try.result:
                             result = result & False
-                            logging.info(rf"[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <fail>")
-                            logging.info(rf"Message: {patch_try.body}")
+                            logging.info(rf'[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <fail>')
+                            logging.info(rf'Message: {patch_try.body}')
+                            if pandas.isna(self.map_from_pd.loc[row, "Message"]):
+                                self.map_from_pd.loc[row, "Message"] = patch_try.body
+                            else:
+                                self.map_from_pd.loc[row, "Message"] += f"{patch_try.body}\n"
                             continue
-                        logging.info(rf"[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <pass>")
+                        logging.info(rf'[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <pass>')
                 continue
             # Others Patch pass
             if not patch_try.result:
                 result = result & False
-                logging.info(rf"[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <fail>")
-                logging.info(rf"Message: {patch_try.body}")
+                logging.info(rf'[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <fail>')
+                logging.debug(rf'Message: {patch_try.body}')
+                if pandas.isna(self.map_from_pd.loc[row, "Message"]):
+                    self.map_from_pd.loc[row, "Message"] = patch_try.body
+                else:
+                    self.map_from_pd.loc[row, "Message"] += patch_try.body
                 continue
-            logging.info(rf"[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <pass>")
+            logging.info(rf'[CHECK] MapTO: {map_key}: {map_property} -> {map_value} <pass>')
         return result
+
+    def get_random_in_range(self, range_scope, exclude):
+        try:
+            random_int = random.choice(range_scope)
+            if random_int != exclude:
+                return random_int
+            return self.get_random_in_range(range_scope, exclude)
+        except Exception:
+            return
 
     def patch_radom(self, key: str):
         """ 随机选择一个有效Value去PATCH，用于重启后检查是否能修改，判断是否隐藏或只读 """
@@ -371,7 +408,7 @@ class _DepenTest(Redfish):
             logging.info(rf"[{key}] not in AttributeName list, <skipped>")
             return {"result": None}
         att_series = attpd.loc[key]
-        default = att_series["DefaultValue"]
+        default = att_series.get("DefaultValue")
         if att_series["Type"] == "Enumeration":
             vale = deepcopy(att_series["Value"])
             if default in vale:
@@ -381,12 +418,16 @@ class _DepenTest(Redfish):
         if att_series["Type"] == "Integer":
             low = int(att_series["LowerBound"])
             up = int(att_series["UpperBound"] + 1)
-            scrlar = int(att_series["ScalarIncrement"])
-            scrlar = 1 if (scrlar == 0) else scrlar
-            iter_range = list(range(low, up, scrlar))
-            iter_range.remove(default)
-            ival = random.choice(iter_range)
-            return self.set_bios_option(**{key: ival})
+            scalar = int(att_series["ScalarIncrement"])
+            scalar = 1 if (scalar == 0) else scalar
+            value_range = range(low, up, scalar)
+            if default not in value_range:
+                logging.error(f"Default not in Value list: '{key}': [{low}, {up}], step={scalar}")
+            random_value = self.get_random_in_range(value_range, default)
+            if random_value is None:
+                logging.error(f"\"{key}\" Generate Value list Fail: low={low}, up={up}, scalar={scalar}")
+                return
+            return self.set_bios_option(**{key: random_value})
 
     def gen_report(self):
         """ 生成最终结果 """
@@ -400,18 +441,20 @@ class _DepenTest(Redfish):
         self.map_from_pd.drop(labels="IndexStr", axis=1, inplace=True)
         self.map_from_pd["index"] = self.map_from_pd["index"].apply(json.dumps).apply(eval)
         self.map_from_pd["index"] = self.map_from_pd["index"].apply(lambda x: json.dumps(x, indent=4))
-        _to_excel(self.map_from_pd, "DepMainSummary")
+        _to_excel(self.map_from_pd, "Redfish联动测试报告")
 
-    def run_test(self):
+    def run_test_dep(self):
         # 初始化整理数据
         self.depenfor_info(dump=True)
         self.mapto_info(dump=True)
         self.attributes_info(dump=True)
         self.mapfrom_info(dump=True)
         self.drop_hidden_false(dump=True)
+
+        # 初始化测试状态表格
         pdlist = self.map_from_pd.columns.tolist()
-        pdlist = pdlist[:1] + ["IndexStr", "PATCH", "IsMapped", "PatchStatus", "CheckStatus", "CheckMapTo",
-                               "Summary"] + pdlist[1:]
+        pdlist = pdlist[:1] + ["IndexStr", "PatchData", "IsMapped", "PatchStatus", "CheckStatus", "CheckMapTo",
+                               "Summary", "Message"] + pdlist[1:]
         self.map_from_pd = self.map_from_pd.reindex(columns=pdlist)
         self.map_from_pd["IndexStr"] = self.map_from_pd["index"].apply(lambda x: json.dumps(x, indent=4))
 
@@ -420,86 +463,93 @@ class _DepenTest(Redfish):
         for row, mf_item in self.map_from_pd["index"].iteritems():
             test_count += 1
             try:
-                logging.info(f"==========================================================[{test_count}/{len(self.map_from_pd['index'])}]")
+                # 实时显示测试进度
+                logging.info(f"{'='*60}[{test_count}/{len(self.map_from_pd['index'])}]")
 
-                # Load Default and Reboot
-                self.bios_load_default()
+                # 恢复默认并重启
+                BmcLib.clear_cmos()
                 if not _reboot_sut():
+                    self.map_from_pd.loc[row, "Message"] = "Init boot fail"
                     logging.info("Boot up failed")
                     continue
                 logging.info("Boot up successfully")
 
-                # print test title
+                # 打印测试项目
                 key_value = self.gen_patch_data(mf_item)
-                logging.info("Start test {}".format(key_value))
+                logging.info('Start test {}'.format(key_value))
 
-                # PATCH items of mapped as unchanged
+                # 主选项被关联，多级联动的情况，将主菜单和子菜单一起修改，要选择可以修改的值。(Hidden/ReadOnly时不可修改)
                 if self.mapped_as_unchanged(mf_item):
                     logging.info(r"Items is mapped as Hidden or ReadOnly, try patch with top-level")
-                    # 多级联动的情况，将主菜单和子菜单一起修改，主菜单要改为 非 Hidden / ReadOnly
                     self.map_from_pd.loc[row, "IsMapped"] = "yes"
-                    key_value = self.gen_data_w_top(mf_item)
-                    self.map_from_pd.loc[row, "PATCH"] = json.dumps(key_value, indent=4)
+                    key_value = self.gen_data_with_top(mf_item)
+                    self.map_from_pd.loc[row, "PatchData"] = json.dumps(key_value, indent=4)
                     patch_result = self.set_bios_option(**key_value)
                     if not patch_result.result:
-                        logging.info(r"[PATCH] {} <fail>".format(key_value))
-                        logging.info(f"Status: {patch_result.status}")
-                        logging.info(rf"Message: {patch_result.body}")
+                        logging.info(r'[PATCH] {} <fail>'.format(key_value))
+                        logging.info(f'Status: {patch_result.status}')
+                        logging.info(rf'Message: {patch_result.body}')
                         self.map_from_pd.loc[row, "PatchStatus"] = "fail"
+                        if pandas.isna(self.map_from_pd.loc[row, "Message"]):
+                            self.map_from_pd.loc[row, "Message"] = patch_result.body
+                        else:
+                            self.map_from_pd.loc[row, "Message"] += patch_result.body
                         continue
-                    logging.info(r"[PATCH] {} <pass>".format(key_value))
-                    logging.info(rf"Status: {patch_result.status}")
-                    self.map_from_pd.loc[row, "PatchStatus"] = "pass"
-                else:
-                    # Normal PATCH
-                    self.map_from_pd.loc[row, "PATCH"] = json.dumps(key_value, indent=4)
-                    patch_result = self.set_bios_option(**key_value)
-                    if not patch_result.result:
-                        logging.info(r"[PATCH] {} <fail>".format(key_value))
-                        logging.info(rf"Error Message: {patch_result.body}")
-                        self.map_from_pd.loc[row, "PatchStatus"] = "fail"
-                        continue
-                    logging.info(r"[PATCH] {} <pass>".format(key_value))
+                    logging.info(r'[PATCH] {} <pass>'.format(key_value))
+                    logging.info(rf'Status: {patch_result.status}')
                     self.map_from_pd.loc[row, "PatchStatus"] = "pass"
 
-                # REBOOT
+                # 主菜单没有被关联的情况，正常PATCH
+                else:
+                    self.map_from_pd.loc[row, "PatchData"] = json.dumps(key_value, indent=4)
+                    patch_result = self.set_bios_option(**key_value)
+                    if not patch_result.result:
+                        logging.info(r'[PATCH] {} <fail>'.format(key_value))
+                        logging.info(rf'Error Message: {patch_result.body}')
+                        self.map_from_pd.loc[row, "PatchStatus"] = "fail"
+                        if pandas.isna(self.map_from_pd.loc[row, "Message"]):
+                            self.map_from_pd.loc[row, "Message"] = patch_result.body
+                        else:
+                            self.map_from_pd.loc[row, "Message"] += patch_result.body
+                        continue
+                    logging.info(r'[PATCH] {} <pass>'.format(key_value))
+                    self.map_from_pd.loc[row, "PatchStatus"] = "pass"
+
+                # PATCH完成后重启生效
                 if not _reboot_sut():
+                    self.map_from_pd.loc[row, "Message"] = "Boot fail after patch"
                     logging.info("Boot up failed")
                     continue
                 logging.info("Boot up successfully")
 
-                # CHECK MapFrom
+                # 检查主选项是否修改成功
                 if not self.check_bios_option(**key_value):
-                    logging.info(r"[CHECK] >>> MapFrom: {} <fail>".format(key_value))
+                    logging.info(r'[CHECK] >>> MapFrom: {} <fail>'.format(key_value))
                     self.map_from_pd.loc[row, "CheckStatus"] = "fail"
                     continue
-                logging.info(r"[CHECK] >>> MapFrom: {} <pass>".format(key_value))
+                logging.info(r'[CHECK] >>> MapFrom: {} <pass>'.format(key_value))
                 self.map_from_pd.loc[row, "CheckStatus"] = "pass"
 
-                # CHECK MapTo
-                if not self.check_mapto(mf_item):
+                # 检查被关联的子选项，联动关系是否满足
+                if not self.check_mapto(mf_item, row):
                     self.map_from_pd.loc[row, "CheckMapTo"] = "fail"
-                    logging.info(r"[CHECK] >>> MapTo Result: <fail>")
+                    logging.info(r'[CHECK] >>> MapTo Result: <fail>')
                     continue
                 self.map_from_pd.loc[row, "CheckMapTo"] = "pass"
-                logging.info(r"[CHECK] >>> MapTo Result: <pass>")
+                logging.info(r'[CHECK] >>> MapTo Result: <pass>')
 
-                # Force to UEFI if 'BootType' is set to 'LegacyBoot' (this attribute can't be load default with post)
-                if ('BootType', 'LegacyBoot') in key_value.items():
-                    assert self.set_bios_option(BootType='UEFIBoot').result
-                    assert _reboot_sut()
-
+            # 单个变量测试异常不影响下一个测试
             except Exception as e:
                 logging.error(e)
-                continue
 
-        # Result Summary
+        # 生成测试报告
         self.gen_report()
 
 
 class _NonDepTest(Redfish):
     def __init__(self):
         super(_NonDepTest, self).__init__(SutConfig.Env.BMC_IP, SutConfig.Env.BMC_USER, SutConfig.Env.BMC_PASSWORD, SutConfig.Env.REDFISH_API)
+        self.session._timeout = 15
         self.registry_dump(dump_json=True, path=SutConfig.Env.LOG_DIR)
 
     def attributes_data(self):
@@ -520,24 +570,42 @@ class _NonDepTest(Redfish):
             if len(values) < 2:
                 logging.info(f"[Warning] Only One Value: {key} = {values}")
                 return
-            values.remove(default_value)
+            if default_value in values:
+                values.remove(default_value)
+            else:
+                logging.error(f"Default not in Value list: {key} = {values}")
             return random.choice(values)
         if self.att_pd.loc[key, "Type"] == "Integer":  # 整数型值
             scalar = deepcopy(self.att_pd.loc[key, "ScalarIncrement"])
             scalar = scalar if scalar else 1
             lower = deepcopy(self.att_pd.loc[key, "LowerBound"])
             upper = deepcopy(self.att_pd.loc[key, "UpperBound"])
-            values = list(range(int(lower), int(upper) + 1, int(scalar)))
-            values.remove(default_value)
-            return int(random.choice(values))
+            value_range = range(int(lower), int(upper+1), int(scalar))
+            if default_value not in value_range:
+                logging.error(f"Default not in Value list: '{key}': [{lower}, {upper}], step={scalar}")
+            random_value = self.get_random_in_range(value_range, default_value)
+            if random_value is None:
+                logging.error(f"\"{key}\" Generate Value list Fail: low={lower}, upper={upper}, scalar={scalar}")
+                return
+            return random_value
 
-    def gen_patch_key_value(self):
+    def get_random_in_range(self, range_scope, exclude):
+        try:
+            random_int = random.choice(range_scope)
+            if random_int != exclude:
+                return random_int
+            return self.get_random_in_range(range_scope, exclude)
+        except Exception:
+            return
+
+    def gen_patch_key_value(self):  # 生成所有待测试变量的Key:Value字典(Value为非默认值)
         self.patch_key_value = {}
         for att in self.att_pd.index:
             value = self.get_non_default_value(att)
             if value is not None:
                 self.patch_key_value[att] = value
-        self.patch_key_value.update(self.boot_order_key_value())  # Boot Order取值需要特殊处理
+        self.boot_order = self.boot_order_key_value()  # Boot Order取值需要特殊处理
+        self.patch_key_value.update(self.boot_order)
 
     def report_init(self):
         self.result = pandas.DataFrame.from_dict(self.patch_key_value, orient="index")  # 整理报告格式
@@ -568,33 +636,39 @@ class _NonDepTest(Redfish):
         for name in self.been_mapto:
             self.patch_key_value.pop(name)
 
-    def boot_type_load_default(self):  # boot type无法load_default
+    def boot_type_load_default(self):
         name = "BootType"
         default = self.att_pd.loc[name, "DefaultValue"]
         logging.info(f"BootType load default to \"{default}\"")
         if self.set_bios_option(**{name: default}).result:
             logging.info("BootType load default successfully")
 
-    def try_patch_all(self):
-        except_list = _BootInvolved.MemPop + _BootInvolved.Exclusive + _BootInvolved.ReadOnly
+    def read_default_from_redfish(self):
+        for key in self.att_pd.index:
+            self.result.loc[key, "default_value"] = self.att_pd.loc[key, "DefaultValue"]
+
+    def remove_exclude_items_in_patch(self):
+        except_list = _BootFail.Memory + _BootFail.ReadOnly + _BootFail.BootType + _BootFail.BootOrder
         for i in except_list:
             try:
                 self.patch_key_value.pop(i)
             except Exception as e:
                 logging.error(f"Exclude attribute: {e} not in Attributes list")
 
-        for k in self.att_pd.index:
-            if k not in self.patch_key_value.keys():
-                logging.debug(f"Items {k} will be test in single patch")
-                continue
-            default_value = self.att_pd.loc[k, "DefaultValue"]
-            self.result.loc[k, "default_value"] = default_value
+    def try_test_in_batch(self):
+        self.remove_exclude_items_in_patch()  # 批量测试时，去掉那些会导致无法启动的选项
+        not_in_patch_all = [k for k in self.att_pd.index if k not in self.patch_key_value.keys()]
+        logging.debug(f"Items will test in single patch: [{not_in_patch_all}]")  # 打印非批量测试的选项
         logging.info(f"Try Patch {len(self.patch_key_value)} items that without dependency")
+        with open(os.path.join(var.get("log_dir"), "patch_non_dep.json"), "w") as patch_js:
+            json.dump(self.patch_key_value, patch_js, indent=4)  # 批量测试的数据保存到本地
 
         while True:
             write = self.set_bios_option(**self.patch_key_value)
-            logging.info(f"PATCH Status: {write.status}")
-            logging.info(f"PATCH Message: {write.body}")
+            logging.info(f'PATCH Status: {write.status}')
+            logging.info(f'PATCH Message: {write.body}')
+
+            # 如果批量修改成功，则break进入下一步
             if write.result:
                 for key, value in self.patch_key_value.items():
                     if isinstance(value, int):
@@ -603,48 +677,54 @@ class _NonDepTest(Redfish):
                         logging.debug(f'\"{key}\":\"{value}\",')
                     self.result.loc[key, "patch_status"] = "pass"
                 break
+
+            # 如果批量修改失败，则找出失败的变量名
             fail_att = re.search(r"Attributes/(\S+?)\s", write.body)
             if fail_att:
                 fail_att = fail_att.group(1)
             else:
                 logging.info(f"[Error] Attributes not found: {write.body}")
-                continue
+                break
+
+            # 找出失败的变量名后，将失败的变量名剔除，再次尝试批量修改
             logging.info(f"PATCH Failed: remove \"{fail_att}\" and retry...")
             self.result.loc[fail_att, "patch_status"] = f"{write.body}"
             if self.patch_key_value.get(fail_att):
                 self.patch_key_value.pop(fail_att)
             logging.info(f"Remain {len(self.patch_key_value)} items in testing...")
 
-    def narrow_down_fail_items(self):
+    def narrow_down_fail_items(self, count=10):
         """ 批量修改失败时，10个1组筛选出是哪部分选项导致无法修改成功 """
         all_keys = list(self.test_fail_key_value.keys())
-        for index in range(len(all_keys)//10+1):
+        for index in range(len(all_keys)//count+1):
             logging.info("================================================")
-            self.bios_load_default()
+            BmcLib.clear_cmos()
             _reboot_sut()
-            test_keys = all_keys[0:10] if len(all_keys)>10 else all_keys
+            test_keys = all_keys[0:count] if len(all_keys) > count else all_keys
             test_kv = {k: self.test_fail_key_value[k] for k in test_keys}
             patch = self.set_bios_option(**test_kv)
-            logging.info(f"[NarrowDown]: PATCH {patch.body}")
+            logging.info(f'[NarrowDown]: PATCH {patch.body}')
             if patch.result:
                 for key in test_kv:
                     self.result.loc[key, "patch_status"] = "pass"
                 _reboot_sut()
             if self.check_bios_option(**test_kv):
-                logging.info("[NarrowDown]: pass")
+                logging.info('[NarrowDown]: pass')
                 for key in test_kv:
                     self.result.loc[key, "check_status"] = "pass"
                     self.test_fail_key_value.pop(key)
             else:
-                logging.info("[NarrowDown]: fail")
+                logging.info('[NarrowDown]: fail')
             for tk in test_keys:
                 all_keys.remove(tk)
 
-    def boot_order_key_value(self):
-        boot_order_name = "BootTypeOrder"
-        boot_order_menus = [att for att in self.att_pd.index if boot_order_name in att]
-        boot_order_values = self.att_pd.loc[f"{boot_order_name}0", "Value"]
+    def boot_order_key_value(self) -> dict:
         order_key_value = {}
+        if not _BootFail.BootOrder:
+            return order_key_value
+        boot_order_name = _BootFail.BootOrder[0][0:-1]
+        boot_order_menus = [att for att in self.att_pd.index if boot_order_name in att]
+        boot_order_values = deepcopy(self.att_pd.loc[f"{boot_order_name}1", "Value"])
         for order in boot_order_menus:
             choose_value = random.choice(boot_order_values)
             order_key_value[order] = choose_value
@@ -653,57 +733,73 @@ class _NonDepTest(Redfish):
 
     def exclude_items_key_value(self):
         exclude_kv = {}
-        for boot_os in _BootInvolved.BootOS:
+        exclude_kv.update(self.boot_order)  # 加入BootTypeOrder选项
+        for boot_os in _BootFail.BootType + _BootFail.Memory + _BootFail.ReadOnly:  # 最后加入所有排除的选项
             exclude_kv[boot_os] = self.get_non_default_value(boot_os)
         return exclude_kv
 
     def single_patch_test(self):
-        self.been_mapto.update(self.test_fail_key_value)  # fail的选项单独测试一遍
-        self.been_mapto.update(self.exclude_items_key_value())  #排除的选项放在最后测试
-        logging.info(f"{len(self.been_mapto)} items excluded, try test one by one...")
-        excluded_items = deepcopy(self.been_mapto)
-        for key, value in excluded_items.items():
-            if key not in self.been_mapto:
-                continue
-            logging.info("============================================================")
+        single_patch_items = {}
+        single_patch_items.update(self.been_mapto)  # 被关联的选项
+        single_patch_items.update(self.test_fail_key_value)  # fail的选项单独测试一遍
+        single_patch_items.update(self.exclude_items_key_value())  # 排除的选项放在最后测试
+        logging.info(f"{len(single_patch_items)} items will be test one by one...")
+
+        test_count = 0
+        single_patch_items_copy = deepcopy(single_patch_items)
+        for key, value in single_patch_items_copy.items():
+            # 带索引的选项统一修改，减少重启次数
             index_option = re.findall(r"(\w+)\[(\d+)]", key)
             patch_kv = {key: value}
-            if index_option:  # 带索引的选项统一修改，减少重启次数
+            if index_option:
                 index_name = index_option[0][0]
-                if key in self.been_mapto.keys():
-                    ifound = re.findall(rf"({index_name})\[(\d+)]", "".join(self.been_mapto.keys()))
+                if key in single_patch_items.keys():
+                    ifound = re.findall(rf"({index_name})(?:\[(\d+)])?", "".join(single_patch_items.keys()))
                     for ikv in ifound:
-                        ikey = f"{ikv[0]}[{ikv[1]}]"
+                        ikey = f"{ikv[0]}[{ikv[1]}]" if ikv[1] else f"{ikv[0]}"
                         patch_kv[ikey] = value
-                        self.been_mapto.pop(ikey)
+                        single_patch_items.pop(ikey)
                 else:
                     continue
-            boot_order = re.findall(f"BootTypeOrder", key)
-            if boot_order:  # BootOrder需要4个选项一起修改
-                if key in self.been_mapto.keys():
-                    patch_kv = self.boot_order_key_value()
-                    for jkv in patch_kv:
-                        self.been_mapto.pop(jkv)
+
+            # BootTypeOrder需要特殊处理: 4个选项一起修改，并且跳过后面的，避免重复
+            if re.findall(f"BootTypeOrder", key):
+                patch_kv = self.boot_order
+                if key in single_patch_items.keys():
+                    for jkv in self.boot_order:
+                        single_patch_items.pop(jkv)
                 else:
                     continue
+
+            # 显示测试进度
+            test_count += 1
+            logging.info(f"{'=' * 50}[{test_count}/{len(single_patch_items)}]")
+
+            # 测试开始前恢复默认
             logging.info(f"Testing: {patch_kv}")
-            self.result.loc[key, "default_value"] = self.att_pd.loc[key, "DefaultValue"]
-            self.bios_load_default()
+            BmcLib.clear_cmos()
             _reboot_sut()
+
+            # PATCH修改变量
             patch = self.set_bios_option(**patch_kv)
             if patch.result:
                 logging.info(f"[PATCH] {patch.body} successfully")
+
+                # 如果能修改成功，重启检查结果
                 _reboot_sut()
-                check_value = self.read_bios_option(*patch_kv.keys())
-                for check_name in patch_kv.keys():
+                read_patch_items = self.read_bios_option(*patch_kv.keys())
+                for check_name, check_value in patch_kv.items():
                     self.result.loc[check_name, "patch_status"] = "pass"
-                    if check_value.get(check_name) == value:
+                    patch_value = read_patch_items.get(check_name)
+                    if patch_value == check_value:
                         self.result.loc[check_name, "check_status"] = "pass"
-                        logging.info(f"[Check] {check_name} = {value} <pass>")
+                        logging.info(f"[Check] {check_name} = {check_value} <pass>")
                     else:
-                        logging.info(f"[Check] {check_name} = {value} <fail> -> {check_value.get(check_name)}")
+                        logging.info(f"[Check] {check_name} = {check_value} <fail> -> {patch_value}")
                         self.result.loc[check_name, "check_status"] = "fail"
                 continue
+
+            # 如果无法PATCH修改成功，则在表格中记录详细的报错信息
             logging.info(f"PATCH Status: {patch.status}")
             logging.info(f"PATCH Message: {patch.body}")
             for pf_name in patch_kv.keys():
@@ -720,48 +816,318 @@ class _NonDepTest(Redfish):
              None), axis=1)
         _to_excel(self.result, name)
 
-    def run_test(self):
-        self.bios_load_default()  # 测试前先恢复默认
-        _reboot_sut()
-        self.attributes_data()  # 获取所有变量信息
-        self.gen_patch_key_value()  # 生成非默认值数据表
-        self.report_init()
-        self.drop_been_mapped()  # 去掉默认情况就存在联动关系的选项
-        self.try_patch_all()  # 先尝试批量修改
-        _reboot_sut()
-        data = self.read_bios_option(*self.patch_key_value.keys())
-        self.test_fail_key_value = {}
-        for key, value in self.patch_key_value.items():  # 检查批量修改的结果
-            if data.get(key) != value:
-                self.test_fail_key_value[key] = value
-                self.result.loc[key, "check_status"] = "fail"
-                logging.info(rf"[Failed] {key} | patch=<{value}>; read=<{data.get(key)}>")
+    def run_test_non_dep(self):
+        try:
+            BmcLib.clear_cmos()  # 测试前先恢复默认
+            _reboot_sut()
+            self.attributes_data()  # 获取所有变量信息
+            self.gen_patch_key_value()  # 生成非默认值数据表
+            self.report_init()
+            self.read_default_from_redfish()  # 将所有选项的默认值填入表格
+            self.drop_been_mapped()  # 去掉默认情况就存在联动关系的选项
+
+            # 先尝试批量修改
+            self.try_test_in_batch()
+            _reboot_sut()
+            data = self.read_bios_option(*self.patch_key_value.keys())
+            self.test_fail_key_value = {}
+
+            # 检查批量修改的结果
+            for key, value in self.patch_key_value.items():
+                if data.get(key) != value:
+                    self.test_fail_key_value[key] = value
+                    self.result.loc[key, "check_status"] = "fail"
+                    logging.info(rf'[Failed] {key} | patch=<{value}>; read=<{data.get(key)}>')
+                    continue
+                self.result.loc[key, "check_status"] = "pass"
+
+            # 批量修改结果生成报告
+            self.gen_report("非联动测试结果批量修改")
+            BmcLib.clear_cmos()
+            _reboot_sut()
+
+            # 测试Fail的10个1组，尝试PATCH，并更新测试结果数据表
+            self.narrow_down_fail_items(count=10)
+
+            # 剩下的Fail选项 和 非默认情况下有联动关系的单独测试， 每次PATCH一项并重启，更新测试结果数据表
+            self.single_patch_test()
+
+            # 测完恢复默认
+            BmcLib.clear_cmos()
+            _reboot_sut()
+        except Exception as e:
+            logging.error(e)
+        finally:
+            # 生成测试报告
+            self.gen_report("非联动测试结果汇总")
+
+
+class _BaselineRegistryTest:
+    def __init__(self, registry, baseline):
+        self.registry = registry
+        self.baseline = baseline
+        self.reg_dict = None
+        self.summary = []
+
+    def values_to_dict(self, value: str):
+        value_pairs = value.splitlines()
+        value_dict = {}
+        for values in value_pairs:
+            split_index = values.rfind(":")
+            val_split = [values[:split_index], values[split_index + 1:]]
+            val_name, val_num = val_split[0].strip(), val_split[1].strip()
+            if "0x" in val_name:
+                val_name, val_num = val_num, val_name
+            value_dict[val_name] = val_num
+        return value_dict
+
+    def get_default_value(self, value="Enabled*\nDisabled"):
+        return "".join(re.findall("(.+)\*", value))
+
+    def baseline_to_dict(self, dump_file=None):
+        """
+        Transfer Baseline Excel to dict
+        {
+        "Variable Name1": {
+                        "setup": "SetupOption Name1"
+                        "values": { "Enabled": "0x0", "Disabled": "0x1" },
+                        "default":"Enabled",
+                        "help":"Help Messages",
+                        "unicfg": True,
+                        "redfish": False
+                        }
+
+        }
+        """
+        base_file = self.baseline
+        logging.info(f"Baseline file: {base_file}")
+        sheet_name = "V7 Setup基线"
+
+        head_variable = "项目名"
+        head_setup = "英文菜单项"
+        head_help = "英文Help字符串"
+
+        head_value = "英文选择项Value"
+        head_default = "英文选择项"
+
+        head_unitool = "UniCfg"
+        head_redfish = "Redfish"
+
+        base_dict = {}
+        pd = pandas.read_excel(base_file, sheet_name=sheet_name, dtype=str)
+        pd = pd.fillna("")
+
+        for row in pd.index:
+            var_name = pd.loc[row, head_variable]
+            if not var_name.strip():
                 continue
-            self.result.loc[key, "check_status"] = "pass"
-        self.gen_report("非联动测试结果批量修改")  # 批量修改结果生成报告
-        self.boot_type_load_default()  # 恢复 BootType为UEFI（因为POST无法恢复）
-        self.bios_load_default()
-        _reboot_sut()
-        self.narrow_down_fail_items()  # 测试Fail的10个1组，尝试PATCH，并更新测试结果数据表
-        self.single_patch_test()  # 剩下的Fail选项 + 非默认情况下有联动关系的单独测试， 每次PATCH一项并重启，更新测试结果数据表
-        # 测完恢复默认
-        self.bios_load_default()
-        _reboot_sut()
-        # 生成测试报告
-        self.gen_report("非联动测试结果汇总")
+            var_values = pd.loc[row, head_value]
+            var_default = pd.loc[row, head_default]
+            var_setup = pd.loc[row, head_setup]
+            var_help = pd.loc[row, head_help]
+            var_unicfg = pd.loc[row, head_unitool]
+            var_redfish = pd.loc[row, head_redfish]
+
+            var_setup = str(var_setup)
+            var_values = self.values_to_dict(var_values)
+            var_default = self.get_default_value(var_default)
+
+            var_help = str(var_help)
+            var_unicfg = True if str(var_unicfg).strip() == "Y" else False
+            var_redfish = True if str(var_redfish).strip() == "Y" else False
+            base_dict[var_name] = {"setup": var_setup,
+                                   "values": var_values,
+                                   "default": var_default,
+                                   "help": var_help,
+                                   "unicfg": var_unicfg,
+                                   "redfish": var_redfish}
+        if dump_file:
+            with open(dump_file, "w", encoding="utf-8") as f:
+                json.dump(base_dict, f, indent=4)
+
+        return base_dict
+
+    def load_registry(self):
+        if isinstance(self.registry, dict):
+            self.reg_dict = self.registry
+            return self.registry
+        if os.path.exists(self.registry):
+            with open(self.registry, "r", encoding="utf-8") as reg:
+                self.reg_dict = json.load(reg)
+                return self.reg_dict
+        logging.error("registry file not exists")
+        return {}
+
+    def add_fail_info(self, name="", base="", reg="", reason=""):
+        base_info = f"Baseline={base}," if base else ""
+        reg_info = f"Registry={reg}" if reg else ""
+        reason_info = f"{reason}:" if reason else ""
+        logging.error(f"[{name}]{reason_info} {base_info}{reg_info}")
+        self.summary.append({"变量名": name, "基线": repr(base), "Registry": repr(reg), "备注": reason})
+
+    def value_compare(self, name, val_base, val_reg, fail_reason):
+        if str(val_base) != str(val_reg):
+            if val_base.strip().lower().startswith("0x"):
+                if int(val_base, 16) != int(val_reg):
+                    self.add_fail_info(name, val_base, val_reg, fail_reason)
+            else:
+                self.add_fail_info(name, val_base, val_reg, fail_reason)
+
+    def registry_check(self, option, option_dict):
+        attributes = self.reg_dict["RegistryEntries"]["Attributes"]
+        att_found = False
+        for attri in attributes:
+            att_name = attri["AttributeName"]
+            if att_name.strip().lower() != option.strip().lower():
+                continue
+            att_found = True
+            att_display = attri["DisplayName"]
+            att_help = attri["HelpText"]
+            att_default = attri["DefaultValue"]
+
+            base_setup = option_dict["setup"]
+            base_default = option_dict["default"]
+            base_help = option_dict["help"]
+
+            if str(base_setup) != str(att_display):
+                self.add_fail_info(att_display, base_setup, att_display, "变量名不一致")
+
+            self.value_compare(att_display, base_default, att_default, "默认值不一致")
+
+            if str(base_help) != str(att_help):
+                self.add_fail_info(att_display, base_help, att_help, "帮助信息不一致")
+
+            att_type = attri["Type"]
+            att_values_dict = {}
+            if att_type == "Enumeration":
+                att_value = attri["Value"]
+                if not att_value:
+                    self.add_fail_info(att_display, reason="没有Value信息")
+                for val in attri["Value"]:
+                    val_display = val["DisplayName"]
+                    val_name = val["ValueName"]
+                    if str(val_display) != str(val_name):
+                        self.add_fail_info(att_display, reg=f"ValueName={val_name}, DisplayName={val_display}", reason="ValueName和DisplayName不一致")
+                    att_values_dict[val_display] = val_name
+                base_values = set(option_dict["values"].keys())
+                reg_values = set(att_values_dict.keys())
+                if base_values != reg_values:
+                    self.add_fail_info(att_display, f"{base_values}", f"{reg_values}", "Value选项不一致")
+            if att_type == "Integer":
+                att_low = attri["LowerBound"]
+                att_up = attri["UpperBound"]
+                try:
+                    base_min = option_dict["values"]["min"]
+                    base_max = option_dict["values"]["max"]
+                except:
+                    self.add_fail_info(att_display, base=f'"{list(option_dict["values"].keys())}"', reason="整型选项名不是min/max")
+                    continue
+                self.value_compare(att_display, f"{base_min}", f"{att_low}", "Value最小值不一致")
+                self.value_compare(att_display, f"{base_max}", f"{att_up}", "Value最大值不一致")
+
+        # if not att_found:
+        #     self.add_fail_info(option, reason="选项未找到")
+        return True
+
+    def attributes_key_values(self):
+        attributes = self.reg_dict["RegistryEntries"]["Attributes"]
+        att_dict = {}
+        for attr in attributes:
+            att_name = attr["AttributeName"]
+            if att_name in att_dict:
+                self.add_fail_info(att_name, reason="Registry Attributes 变量重复")
+                continue
+            att_dict[att_name] = {}
+            att_type = attr["Type"]
+            att_dict[att_name]["type"] = att_type
+            att_dict[att_name]["values"] = []
+            if att_type == "Enumeration":
+                for val in attr["Value"]:
+                    val_name = val["ValueName"]
+                    att_dict[att_name]["values"].append(val_name)
+            elif att_type == "Integer":
+                att_low = attr["LowerBound"]
+                att_up = attr["UpperBound"]
+                att_dict[att_name]["values"].append(f"min:{att_low}")
+                att_dict[att_name]["values"].append(f"max:{att_up}")
+        return att_dict
+
+    def dependency_check(self):
+        dependencies = self.reg_dict["RegistryEntries"]["Dependencies"]
+        attr_kv = self.attributes_key_values()
+
+        for depens in dependencies:
+            depen = depens["Dependency"]
+            map_froms = depen["MapFrom"]
+            map_to_att = depen["MapToAttribute"]
+            map_to_property = depen["MapToProperty"]
+            map_to_value = depen["MapToValue"]
+            depen_for = depens["DependencyFor"]
+            if depen_for not in attr_kv:
+                self.add_fail_info(depen_for, reason="DependencyFor没有在Attributes里面定义")
+
+            if map_to_att not in attr_kv:
+                self.add_fail_info(map_to_att, reason="MapToAttribute没有在Attributes里面定义")
+
+            if (map_to_property == "CurrentValue") and (map_to_att in attr_kv):
+                if attr_kv[map_to_att]["type"] == "Enumeration":
+                    if map_to_value not in attr_kv[map_to_att]["values"]:
+                        self.add_fail_info(map_to_att, reg=map_to_value, reason="MapToValue没有在Attributes里面定义")
+                elif attr_kv[map_to_att]["type"] == "Integer":
+                    values = attr_kv[map_to_att]["values"]
+                    vmin = "".join([re.findall("min:(.+)", v)[0] for v in values if "min" in v])
+                    vmax = "".join([re.findall("max:(.+)", v)[0] for v in values if "max" in v])
+                    vmin = int(vmin)
+                    vmax = int(vmax)
+                    value_range = range(vmin, vmax+1)
+                    if int(map_to_value) not in value_range:
+                        self.add_fail_info(map_to_att, reg=map_to_value, reason="MapToValue没有在Attributes里面定义")
+
+            for mfrom in map_froms:
+                mf_att = mfrom["MapFromAttribute"]
+                mf_property = mfrom["MapFromProperty"]
+                mf_value = mfrom["MapFromValue"]
+                if mf_att not in attr_kv:
+                    self.add_fail_info(mf_att, reason="MapFromAttribute没有在Attributes里面定义")
+
+                if (mf_property == "CurrentValue") and (mf_att in attr_kv):
+                    if attr_kv[mf_att]["type"] == "Enumeration":
+                        if mf_value not in attr_kv[mf_att]["values"]:
+                            self.add_fail_info(mf_att, reg=mf_value, reason="MapFromValue没有在Attributes里面定义")
+                    elif attr_kv[mf_att]["type"] == "Integer":
+                        values = attr_kv[mf_att]["values"]
+                        vmin = "".join([re.findall("min:(.+)", v)[0] for v in values if "min" in v])
+                        vmax = "".join([re.findall("max:(.+)", v)[0] for v in values if "max" in v])
+                        value_range = range(int(vmin, int(vmax)))
+                        if mf_value not in value_range:
+                            self.add_fail_info(mf_att, reg=mf_value, reason="MapFromValue没有在Attributes里面定义")
+
+    def gen_report(self, excel_name):
+        df = pandas.DataFrame(self.summary)
+        if "备注" in df:
+            df.set_index("备注", inplace=True)
+        df.sort_index(inplace=True)
+        path = os.path.join(Env.LOG_DIR, var.get("current_test"))
+        if not os.path.exists(path):
+            os.makedirs(path)
+        df.to_excel(os.path.join(path, f"{excel_name}.xlsx"))
+
+    def baseline_test(self):
+        baeline = self.baseline_to_dict("baseline.json")
+        self.load_registry()
+        for op_name, op_dict in baeline.items():
+            self.registry_check(op_name, op_dict)
+        self.gen_report("基线和Registry对齐测试汇总")
+        return True
+
+    def depen_test(self):
+        self.load_registry()
+        self.dependency_check()
+        self.gen_report("Registry联动变量名测试汇总")
+        return True
 
 
-def _unitool_check(option, value):
-    value = int(str(value), 16) if "0x" in str(value) else int(value)
-    stdin, stdout, stderr = Sut.OS_SSH.ssh_client.exec_command(r'cd {};./unitool -r {} |grep value'.format(SutConfig.Env.UNI_PATH, option))
-    rcv_data = stdout.read().decode("utf-8").split(":")
-    if len(rcv_data) != 2:
-        return False, rcv_data
-    get_value = int(rcv_data[1])
-    return (get_value == value), get_value
-
-
-@core.test_case(("124", "[TC124] Redfish default value test", "Redfish default value test"))
+@core.test_case(("300", "[TC300] Redfish default value test", "Redfish default value test"))
 def redfish_default_value_test():
     """
     检查Redfish的默认值和Unitool读到的默认值是否一致
@@ -770,6 +1136,7 @@ def redfish_default_value_test():
     3， 比较二者是否一样
     """
     try:
+        baseline_xlsx = PlatMisc.root_path()/"Resource/SetupBase/5885HV7_Setup_Baseline.xlsx"
         var_data = Sut.BMC_RFISH.Attributes()
         with open(Path(SutConfig.Env.LOG_DIR)/"Attributes.json", "w") as cur:
             json.dump(var_data, cur, indent=4)
@@ -780,8 +1147,8 @@ def redfish_default_value_test():
         redfish_info = [n.get("AttributeName") for n in Sut.BMC_RFISH.Attributes()]  # Redfish读到的信息
         BmcLib.force_reset()
         MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
-        baseline_info = _option_value_index_map(base_xlsx=base_line)  # 基线文件定义的信息
-        unitool_read_info = _read_default_values(redfish_info)  # Unitool读到的实际值
+        baseline_info = _baseline_key_value_map(base_xlsx=baseline_xlsx)  # 基线文件定义的信息
+        unitool_read_info = _read_default_with_unitool(redfish_info)  # Unitool读到的实际值
         default_value = {}
         fail_items = []
         for var_name in redfish_info:
@@ -808,7 +1175,7 @@ def redfish_default_value_test():
         return core.Status.Fail
 
 
-@core.test_case(("125", "[TC125] Redfish post load default test", "Redfish post load default test"))
+@core.test_case(("301", "[TC301] Redfish post load default test", "Redfish post load default test"))
 def redfish_post_load_default_test():
     """
     1， 修改几个变量的值
@@ -816,27 +1183,7 @@ def redfish_post_load_default_test():
     3， redfish POST恢复默认
     4， 重启检查是否全部恢复默认
     """
-
-    pick_setup = {
-        "UsbBoot": 0,
-        # "WakeOnPME": 1,
-        "AcpiApicPolicy": 0,
-        "FDMSupport": 0,
-        # "SataPort": 0,
-        # "sSataPort": 0,
-        "PerformanceTuningMode": 0,
-        "VTdSupport": 0,
-        "ADDDCEn": 1,
-        "ActiveCpuCores": 4,
-        "ProcessorHyperThreadingDisable": 1,
-        "UFSDisable": 1,
-        "ProcessorEistEnable": 0,
-        "C6Enable": 1,
-        "IrqThreshold": 0,
-        # "EnableBiosSsaRMT": 1,
-        "pprType": 0,
-        # "BMCWDTEnable": 1,
-    }
+    pick_setup = BiosCfg.HPM_KEEP
 
     try:
         BmcLib.force_reset()
@@ -870,37 +1217,35 @@ def redfish_post_load_default_test():
         return core.Status.Pass
 
 
-# 【测试配置】
-# 1. 配置 config 文件
-#     -   bmc_ip
-#     -   bmc_user
-#     -   bmc_pw
-#     -   COM
-#     -   os_ip
-#     -   os_user
-#     -   os_pw
-#     -   unitool_path
-#     -   AppExcel
-# 2. AppExcel变量名那一列的名字需要修改为 AttributeName
-# 3. 测试完成后Excel报告保存在测试日志路径中
-@core.test_case(("126", "[TC126] Redfish power efficiency test", "Redfish power efficiency test"))
+@core.test_case(("302", "[TC302] Redfish power efficiency test", "Redfish power efficiency test"))
 def redfish_power_efficiency_test():
     """
     1. 按照能效菜单的Excel表格遍历修改能效菜单模式
     2. 重启进OS后，使用Unitool检查所有相关选项的值，确认是否与预期相同，相同则PASS，不相同则返回实际当前值
     4. Excel表格遍历完成后生成测试报告，以Excel格式保存
     """
-
-    # HY5和2288V6的菜单名不一样
+    # 能效菜单变量名可能有2种，自适应匹配
     app_name_list = ["ApplicationProfile", "BenchMarkSelection"]
+
+    def _unitool_check(option, value):
+        if pandas.isna(value):
+            return False, value
+        value = int(str(value), 16) if "0x" in str(value).lower() else int(value, 10)
+        stdin, stdout, stderr = Sut.OS_SSH.ssh_client.exec_command(
+            r'cd {};./uniCfg -r {} |grep value'.format(SutConfig.Env.UNI_PATH, option))
+        rcv_data = stdout.read().decode("utf-8").split(":")
+        if len(rcv_data) != 2:
+            return False, rcv_data
+        get_value = int(rcv_data[1].strip(), 16)
+        return (get_value == value), get_value
+
     try:
-        # os_ssh = SshConnection(config.os_ip, config.os_user, config.os_pw)
-        pd = pandas.read_excel(power_efficiency, sheet_name=0, index_col="AttributeName")
-        # rfish = Redfish(config.bmc_ip, config.bmc_user, config.bmc_pw)
+        power_efficiency_csv = PlatMisc.root_path()/f"{Env.POWER_EFFICIENCY}"
+        pd = pandas.read_csv(power_efficiency_csv, index_col=0)
         Sut.BMC_RFISH.registry_dump(True, path=SutConfig.Env.LOG_DIR, name="registry.json")  # 获取registry数据
         names = [n.get("AttributeName") for n in Sut.BMC_RFISH.Attributes()]
         app_name = "".join([app for app in app_name_list if app in names])
-
+        fail_items = {}
         for ap in pd:
             logging.info("===============================================")
             logging.info('[Set] {} = "{}"'.format(app_name, ap))
@@ -925,7 +1270,6 @@ def redfish_power_efficiency_test():
             if not Sut.OS_SSH.login():
                 continue
             Sut.OS_SSH.ssh_client.exec_command(r'cd {};insmod ufudev.ko'.format(SutConfig.Env.UNI_PATH))
-            logging.info("Unitool driver installed")
             time.sleep(3)  # 进OS后等待3秒确保Unitool Driver加载完成
 
             for sub in pd[ap].index:
@@ -933,37 +1277,120 @@ def redfish_power_efficiency_test():
                 if not result:
                     pd.loc[sub, ap + "_Check"] = get_val
                     logging.info("[Check] {} = {} | fail ====-> {}".format(sub, pd.loc[sub, ap], get_val))
+                    if ap not in fail_items:
+                        fail_items[ap] = {}
+                    fail_items[ap][sub] = f"expect={pd.loc[sub, ap]} | actually={get_val}"
                     continue
                 pd.loc[sub, ap + "_Check"] = "pass"
                 logging.info("[Check] {} = {} | pass".format(sub, get_val))
             pd = pd.sort_index(axis=1)
         _to_excel(pd, "{}_Redfish_Test.xlsx".format(app_name))
+        assert not fail_items, f"Fail items: {fail_items}"
         return core.Status.Pass
     except Exception as e:
         logging.error(e)
         return core.Status.Fail
 
 
-@core.test_case(("127", "[TC127] Redfish dependency variables test", "Redfish dependency variables test"))
+@core.test_case(("303", "[TC303] Redfish dependency variables test", "Redfish dependency variables test"))
 def redfish_dependency_test():
     """联动菜单测试"""
     try:
-        deptest = _DepenTest()
-        deptest.run_test()
+        dep_test = _DepenTest()
+        dep_test.run_test_dep()
         return core.Status.Pass
     except Exception as e:
         logging.error(e)
         return core.Status.Fail
 
 
-@core.test_case(("128", "[TC128] Redfish non-dependency variables test", "Redfish non-dependency variables test"))
+@core.test_case(("304", "[TC304] Redfish non-dependency variables test", "Redfish non-dependency variables test"))
 def redfish_non_dependency_test():
     """非联动菜单测试"""
     try:
-        deptest = _NonDepTest()
-        deptest.run_test()
+        non_dep_test = _NonDepTest()
+        non_dep_test.run_test_non_dep()
         return core.Status.Pass
     except Exception as e:
         logging.error(e)
         return core.Status.Fail
 
+
+@core.test_case(305)
+def baseline_registry_alignment_check():
+    """检查基线和Registry的变量名，变量值，帮助信息和默认值是否一致"""
+    path = os.path.join(Env.LOG_DIR, var.get('current_test'))
+    if not os.path.exists(path):
+        os.makedirs(path)
+    registry = Sut.BMC_RFISH.registry_dump(dump_json=True, path=path)
+    baseline = PlatMisc.root_path() / "Resource/SetupBase/5885HV7_Setup_Baseline.xlsx"
+    base_reg = _BaselineRegistryTest(registry=registry, baseline=baseline)
+    try:
+        assert base_reg.baseline_test()
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+        return core.Status.Fail
+
+
+@core.test_case(306)
+def registry_dependency_map_check():
+    """检查Registry的联动关系变量名和变量值是否正确"""
+    path = os.path.join(Env.LOG_DIR, var.get('current_test'))
+    if not os.path.exists(path):
+        os.makedirs(path)
+    registry = Sut.BMC_RFISH.registry_dump(dump_json=True, path=path)
+    baseline = PlatMisc.root_path() / "Resource/SetupBase/5885HV7_Setup_Baseline.xlsx"
+    base_reg = _BaselineRegistryTest(registry=registry, baseline=baseline)
+    try:
+        assert base_reg.depen_test()
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+        return core.Status.Fail
+
+
+@core.test_case(307)
+def interface_unify_test():
+    """Redfish接口归一化测试"""
+    try:
+        redfish_api_base = PlatMisc.root_path() / r"Resource/RedfishBase/工具RedFish接口归一化列表.xlsx"
+        base_data: pandas.DataFrame = pandas.read_excel(redfish_api_base, sheet_name="V7工具选项对齐表格", usecols=["最终接口", "选项键值"], index_col="最终接口")
+        base_data.drop_duplicates(inplace=True)
+
+        attr_list = Sut.BMC_RFISH.Attributes()
+        attr_dict = {}
+        for attr in attr_list:
+            attr_name = attr["AttributeName"]
+            if attr_name not in base_data.index:
+                continue
+            if attr["Type"] == "Enumeration":
+                values = [val["ValueName"] for val in attr["Value"]]
+                attr_dict[attr_name] = values
+            elif attr["Type"] == "Integer":
+                val_up = attr["UpperBound"]
+                val_low = attr["LowerBound"]
+                val_scalar = attr["ScalarIncrement"] if attr["ScalarIncrement"] > 0 else 1
+                values = [str(v) for v in range(val_low, val_up+1, val_scalar)]
+                attr_dict[attr_name] = values
+
+        fails = 0
+        for attr_base in base_data.index:
+            if pandas.isna(attr_base):
+                continue
+            if attr_base not in attr_dict:
+                logging.error(f"AttributeName base missing in registry: {attr_base}")
+                fails += 1
+                continue
+            val_reg = attr_dict[attr_base]
+            val_base = base_data.loc[attr_base, "选项键值"]
+            val_strs = "".join(re.findall("\[(.*)\]", val_base))
+            val_split = [v.strip() for v in re.split(",|，", val_strs)]
+            if not MiscLib.same_values(val_split, val_reg):
+                logging.error(f"[{attr_base}] value mismatch: expect={val_base}, registry={val_reg}")
+                fails += 1
+        assert fails == 0, f"fails count: {fails}"
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+        return core.Status.Fail

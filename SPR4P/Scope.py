@@ -1,16 +1,21 @@
-from batf import var, SshLib, SutInit
+from batf import var
 from batf.TcExecutor import TestScope
 from SPR4P.Config import SutConfig
-from SPR4P.TestCase import UpdateBIOS, Os, Legacy
+from SPR4P.Config.PlatConfig import Msg
+from SPR4P.TestCase import UpdateBIOS, Legacy
+from SPR4P.BaseLib import SetUpLib, PlatMisc
 
 
 # Supported type (case senstive): Release, Daily, Weekly
-def scope(type, branch='master'):
-    test_scope = TestScope(SutConfig.Env.TESTCASE_CSV, type)
-    # set boot option to none,
-    SshLib.execute_command(SutInit.Sut.BMC_SSH, 'ipmcset -d bootdevice -v 0 permanent')
+def scope(run_type, branch=SutConfig.Env.BRANCH_LATEST):
+    var.set("run_type", run_type)
+    csv_file = SutConfig.Env.TESTCASE_CSV
+    if var.get("test_csv"):
+        csv_file = var.get("test_csv")
+    test_scope = TestScope(csv_file, run_type)
     if UpdateBIOS.update_bios(branch):
-        if test_scope.os and Os.boot_to_suse():
+        if test_scope.os and SetUpLib.boot_os_from_bm():
+            PlatMisc.set_rtc_time_linux(time_str=None)  # 测试开始之前, 将RTC时间与SUT时间同步
             test_scope.run_test('os')
         test_scope.run_test('default')
         test_scope.run_test('fulldebug')
@@ -35,7 +40,7 @@ def weekly_scope():
 
 def release_scope():
     """Release Basic Function Test"""
-    release_branch = SutConfig.Env.RELEASE_BRANCH
+    release_branch = SutConfig.Env.BRANCH_RELEASE
     var.set('branch', release_branch)
     scope("Release", release_branch)
 
@@ -47,9 +52,6 @@ def check_csv():
 
 
 def debug_scope():
-    from SPR4P.TestCase import VariableLoop, RedfishTest
-    VariableLoop.test_variable_loop()
-    RedfishTest.redfish_default_value_test()
-    RedfishTest.redfish_post_load_default_test()
-    RedfishTest.redfish_non_dependency_test()
-    RedfishTest.redfish_dependency_test()
+    import SPR4P.TestCase as test
+    test.Testcase_HelpInfo_005()
+

@@ -844,10 +844,8 @@ def unitool_Equipment_Tools_007():
         assert BmcLib.force_reset(), "Boot to boot manager fail."
         assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 600), "Ping SUT fail."
         assert PlatMisc.unipwd_tool("set", 'Byosoft@9003'), 'unitool_set failed'
-        assert SetUpLib.boot_to_pw_prompt(Key.DEL) 
-        assert SetUpLib.wait_message('Enter Current Password:')
-        SetUpLib.send_data_enter(Msg.BIOS_PASSWORD)
-        assert SetUpLib.wait_message(invalid_info), 'Invalid_Password --> not found'
+        assert BmcLib.force_reset()
+        assert Sut.BIOS_COM.boot_with_hotkey(Key.DEL, invalid_info, 300)
         SetUpLib.send_key(Key.ENTER)
         assert SetUpLib.wait_message('Enter Current Password:'), 'Enter_Current_Password --> not found'
         SetUpLib.send_data_enter('Byosoft@9003')
@@ -936,7 +934,7 @@ def unitool_Equipment_Tools_010_011():
             if not PlatMisc.unipwd_tool("check", Msg.BIOS_PASSWORD):
                 assert PlatMisc.unipwd_tool("set", Msg.BIOS_PASSWORD)
         else:
-            UpdateBIOS.update_bios('master')
+            UpdateBIOS.update_bios(SutConfig.Env.LATEST_BRANCH)
 
 
 # Main function

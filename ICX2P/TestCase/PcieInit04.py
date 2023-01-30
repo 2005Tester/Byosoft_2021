@@ -373,7 +373,7 @@ def aspm_global_disable_l1only():
             assert SetUpLib.enter_menu(Key.UP, Msg.PATH_IIO_CONFIG, 15, Msg.IIO_CONFIG)
             for cpu in range(SutConfig.SysCfg.CPU_CNT):  # CPU遍历
                 cpu_menu = f"CPU {cpu+1} Configuration"
-                assert SetUpLib.enter_menu(Key.DOWN, [cpu_menu], 15, "PCIe Completion Timeout")
+                assert SetUpLib.enter_menu(Key.DOWN, [cpu_menu], 15, cpu_menu)
                 root_ports = PlatMisc.match_options(Key.DOWN, "(Port (?:DMI|[0-4][A-D]))", 10)
                 for port in root_ports:  # Root Port遍历
                     assert SetUpLib.enter_menu(Key.DOWN, [port], 10, "Link Speed")
@@ -419,7 +419,7 @@ def aspm_per_port_loop():
     tc = ('641', '[TC641] Testcase_ASPM_003 / Testcase_ASPM_004', 'Root Port ASPM开关测试 / 遍历Root Port ASPM开关测试')
     result = ReportGen.LogHeaderResult(tc)
     iio_aspm_values = ["L1 Only", "Disabled"]
-    aspm_lnkcap_flag = {"Disabled": "not supported", "L1 Only": "L1"}
+    aspm_lnkcap_flag = {"Disabled": "not supported", "Auto": "L1 Only"}
     save_value = "Disabled"  # ASPM per port 默认值
 
     def iio_aspm_check(value):  # 修改Global为PerPort，遍历修改IIO并检查状态与OS pci info
@@ -429,7 +429,7 @@ def aspm_per_port_loop():
             assert SetUpLib.enter_menu(Key.UP, Msg.PATH_IIO_CONFIG, 15, Msg.IIO_CONFIG)
             for cpu in range(SutConfig.SysCfg.CPU_CNT):  # CPU遍历
                 cpu_menu = f"CPU {cpu+1} Configuration"
-                assert SetUpLib.enter_menu(Key.DOWN, [cpu_menu], 15, "PCIe Completion Timeout")
+                assert SetUpLib.enter_menu(Key.DOWN, [cpu_menu], 15, cpu_menu)
                 root_ports = PlatMisc.match_options(Key.DOWN, "(Port (?:DMI|[0-4][A-D]))", 10)  # 动态获取Root Port
                 for port in root_ports:  # Root Port遍历
                     assert SetUpLib.enter_menu(Key.DOWN, [port], 10, "Link Speed")
@@ -632,7 +632,7 @@ def root_port_switch_menu():
         assert SetUpLib.enter_menu(Key.UP, Msg.PATH_IIO_CONFIG, 15, Msg.IIO_CONFIG)
         for cpu in range(SutConfig.SysCfg.CPU_CNT):  # CPU遍历
             cpu_menu = f"CPU {cpu + 1} Configuration"
-            assert SetUpLib.enter_menu(Key.DOWN, [cpu_menu], 15, "PCIe Completion Timeout")
+            assert SetUpLib.enter_menu(Key.DOWN, [cpu_menu], 15, cpu_menu)
             root_ports = PlatMisc.match_options(Key.DOWN, "(Port (?:[0-4][A-D]))", 10)
             for port in root_ports:  # Root Port遍历
                 assert SetUpLib.enter_menu(Key.DOWN, [port], 10, "PCIe Port")

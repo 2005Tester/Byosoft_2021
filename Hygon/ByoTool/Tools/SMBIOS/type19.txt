@@ -1,0 +1,28 @@
+                          Type19 message
+-------------------------------------------------------------------------
+Number: 0
+-------------------------------------------------------------------------
+************start type show*********-----------------
+Type  :19
+Handle:3
+Starting Address          :00000000h KB
+Ending Address            :001FFFFFh KB
+Memory Array_Handle       :0002h
+Partition Width           :01h
+Extended Starting Address :00000000h
+Extended Ending Address   :00000000h
+
+                          Type19 message
+-------------------------------------------------------------------------
+Number: 1
+-------------------------------------------------------------------------
+************start type show*********-----------------
+Type  :19
+Handle:4
+Starting Address          :00400000h KB
+Ending Address            :011FFFFFh KB
+Memory Array_Handle       :0002h
+Partition Width           :01h
+Extended Starting Address :00000000h
+Extended Ending Address   :00000000h
+

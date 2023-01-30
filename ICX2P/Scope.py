@@ -5,7 +5,7 @@ from ICX2P.TestCase import UpdateBIOS, Os, Legacy
 
 
 # Supported type (case senstive): Release, Daily, Weekly
-def scope(type, branch='2288V6_016'):
+def scope(type, branch=SutConfig.Env.LATEST_BRANCH):
     test_scope = TestScope(SutConfig.Env.TESTCASE_CSV, type)
     # set boot option to none,
     SshLib.execute_command(SutInit.Sut.BMC_SSH, 'ipmcset -d bootdevice -v 0 permanent')
@@ -48,7 +48,7 @@ def check_csv():
 
 def debug_scope():
     from ICX2P.TestCase import Io05, CpuInit01, MemInit02, PcieInit04
-    UpdateBIOS.update_bios('2288V6_016')
+    UpdateBIOS.update_bios(SutConfig.Env.LATEST_BRANCH)
     CpuInit01.cpu_compa_06()
     MemInit02.memory_compa_006()
     Legacy.enable_legacy_boot()

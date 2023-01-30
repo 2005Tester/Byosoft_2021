@@ -323,7 +323,7 @@ def testcase_httpboot_001():
     try:
         assert SetUpLib.boot_to_page('Boot Options')
         assert SetUpLib.get_option_value(["HTTPS Boot Capability", "<.+>"], Key.UP, 10) == default_value
-        assert SetUpLib.get_all_values('HTTPS Boot Capability', Key.UP, 15)   == options_value
+        assert SetUpLib.get_all_values('HTTPS Boot Capability', Key.UP, 15) == options_value
         return core.Status.Pass
     except AssertionError as e:
         logging.error(e)
@@ -363,7 +363,7 @@ def testcase_pxecfg_001():
         assert SetUpLib.boot_to_page('Boot Options')
         assert SetUpLib.get_option_value([Msg.PXE_BOOT_CAPABILITY, "<.+>"], Key.UP, 10) == default_value
         assert SetUpLib.get_all_values(Msg.PXE_BOOT_CAPABILITY, Key.UP, 15) == options_value
-        assert SetUpLib.set_option_value(Msg.BOOT_TYPE, "LegacyBoot", save=True)
+        assert SetUpLib.set_option_value(Msg.BOOT_TYPE, "Legacy Boot", save=True)
         assert SetUpLib.continue_to_bios_config()
         assert Sut.BIOS_COM.locate_setup_option(Key.LEFT, ['Boot Options'], 10)
         assert SetUpLib.verify_info([Msg.PXE_BOOT_CAPABILITY], 10) is None
@@ -373,7 +373,7 @@ def testcase_pxecfg_001():
     finally:
         BmcLib.clear_cmos()
         if not SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5):
-            UpdateBIOS.update_bios('master')
+            UpdateBIOS.update_bios(SutConfig.Env.LATEST_BRANCH)
 
 
 # Testcase_PxeCfg_002 02 PXE总开关功能测试
@@ -414,21 +414,21 @@ def testcase_bootmodeset_001():
     try:
         assert SetUpLib.boot_to_page(Msg.BOOT_OPTIONS)
         assert BmcLib.is_uefi_boot()
-        assert SetUpLib.set_option_value(Msg.BOOT_TYPE, "LegacyBoot", save=True)
+        assert SetUpLib.set_option_value(Msg.BOOT_TYPE, "Legacy Boot", save=True)
         assert SetUpLib.continue_to_page(Msg.BOOT_OPTIONS)
         assert BmcLib.is_uefi_boot() is None
-        assert SetUpLib.get_option_value([Msg.BOOT_TYPE, "<.+>"], Key.UP, 10) == 'LegacyBoot'
-        assert SetUpLib.set_option_value(Msg.BOOT_TYPE, "UEFIBoot", save=True)
+        assert SetUpLib.get_option_value([Msg.BOOT_TYPE, "<.+>"], Key.UP, 10) == 'Legacy Boot'
+        assert SetUpLib.set_option_value(Msg.BOOT_TYPE, "UEFI Boot", save=True)
         assert SetUpLib.continue_to_page(Msg.BOOT_OPTIONS)
         assert BmcLib.is_uefi_boot()
-        assert SetUpLib.get_option_value([Msg.BOOT_TYPE, "<.+>"], Key.UP, 10) == 'UEFIBoot'
+        assert SetUpLib.get_option_value([Msg.BOOT_TYPE, "<.+>"], Key.UP, 10) == 'UEFI Boot'
         return core.Status.Pass
     except AssertionError:
         return core.Status.Fail
     finally:
         BmcLib.clear_cmos()
         if not SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5):
-            UpdateBIOS.update_bios('master')
+            UpdateBIOS.update_bios(SutConfig.Env.LATEST_BRANCH)
 
 
 # Testcase_BootModeSet_002 '02 BMC设置启动模式测试 支持BMC界面配置启动类型
@@ -446,19 +446,19 @@ def testcase_bootmodeset_002():
         for i in range(3):
             SetUpLib.send_key(Key.CTRL_ALT_DELETE)
             assert SetUpLib.continue_to_page(Msg.BOOT_OPTIONS)
-        assert SetUpLib.get_option_value([Msg.BOOT_TYPE, "<.+>"], Key.UP, 10) == 'UEFIBoot'
+        assert SetUpLib.get_option_value([Msg.BOOT_TYPE, "<.+>"], Key.UP, 10) == 'UEFI Boot'
         assert BmcLib.set_boot_mode("Legacy", once=True)
         for i in range(3):
             SetUpLib.send_key(Key.CTRL_ALT_DELETE)
             assert SetUpLib.continue_to_page(Msg.BOOT_OPTIONS)
-        assert SetUpLib.get_option_value([Msg.BOOT_TYPE, "<.+>"], Key.UP, 10) == 'LegacyBoot'
+        assert SetUpLib.get_option_value([Msg.BOOT_TYPE, "<.+>"], Key.UP, 10) == 'Legacy Boot'
         return core.Status.Pass
     except AssertionError:
         return core.Status.Fail
     finally:
         BmcLib.clear_cmos()
         if not SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5):
-            UpdateBIOS.update_bios('master')
+            UpdateBIOS.update_bios(SutConfig.Env.LATEST_BRANCH)
 
 
 #Testcase_BootModeSet_003 03 BMC Web设置BIOS启动模式_Forced System Reset 支持BMC界面配置启动类型
@@ -474,18 +474,18 @@ def testcase_bootmodeset_003():
         assert BmcLib.set_boot_mode("Legacy", once=True)
         assert BmcLib.force_reset()
         assert SetUpLib.continue_to_page(Msg.BOOT_OPTIONS)
-        assert SetUpLib.get_option_value([Msg.BOOT_TYPE, "<.+>"], Key.UP, 10) == 'LegacyBoot'
+        assert SetUpLib.get_option_value([Msg.BOOT_TYPE, "<.+>"], Key.UP, 10) == 'Legacy Boot'
         assert BmcLib.set_boot_mode("UEFI", once=True)
         assert BmcLib.force_reset()
         assert SetUpLib.continue_to_page(Msg.BOOT_OPTIONS)
-        assert SetUpLib.get_option_value([Msg.BOOT_TYPE, "<.+>"], Key.UP, 10) == 'UEFIBoot'
+        assert SetUpLib.get_option_value([Msg.BOOT_TYPE, "<.+>"], Key.UP, 10) == 'UEFI Boot'
         return core.Status.Pass
     except AssertionError:
         return core.Status.Fail
     finally:
         BmcLib.clear_cmos()
         if not SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5):
-            UpdateBIOS.update_bios('master')
+            UpdateBIOS.update_bios(SutConfig.Env.LATEST_BRANCH)
 
 
 # Testcase_BootModeSet_004 '04 BMC Web设置BIOS启动模式_Forced Power Cycle 支持BMC界面配置启动类型
@@ -501,18 +501,18 @@ def testcase_bootmodeset_004():
         assert BmcLib.set_boot_mode("Legacy", once=True)
         assert BmcLib.force_power_cycle()
         assert SetUpLib.continue_to_page(Msg.BOOT_OPTIONS)
-        assert SetUpLib.get_option_value([Msg.BOOT_TYPE, "<.+>"], Key.UP, 10) == 'LegacyBoot'
+        assert SetUpLib.get_option_value([Msg.BOOT_TYPE, "<.+>"], Key.UP, 10) == 'Legacy Boot'
         assert BmcLib.set_boot_mode("UEFI", once=True)
         assert BmcLib.force_power_cycle()
         assert SetUpLib.continue_to_page(Msg.BOOT_OPTIONS)
-        assert SetUpLib.get_option_value([Msg.BOOT_TYPE, "<.+>"], Key.UP, 10) == 'UEFIBoot'
+        assert SetUpLib.get_option_value([Msg.BOOT_TYPE, "<.+>"], Key.UP, 10) == 'UEFI Boot'
         return core.Status.Pass
     except AssertionError:
         return core.Status.Fail
     finally:
         BmcLib.clear_cmos()
         if not SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5):
-            UpdateBIOS.update_bios('master')
+            UpdateBIOS.update_bios(SutConfig.Env.LATEST_BRANCH)
 
 
 # Testcase_BootModeSet_005 05 BMC Web设置BIOS启动模式_Power On Cycle 支持BMC界面配置启动类型
@@ -529,19 +529,19 @@ def testcase_bootmodeset_005():
         assert BmcLib.power_off()
         assert BmcLib.power_on()
         assert SetUpLib.continue_to_page(Msg.BOOT_OPTIONS)
-        assert SetUpLib.get_option_value([Msg.BOOT_TYPE, "<.+>"], Key.UP, 10) == 'LegacyBoot'
+        assert SetUpLib.get_option_value([Msg.BOOT_TYPE, "<.+>"], Key.UP, 10) == 'Legacy Boot'
         assert BmcLib.set_boot_mode("UEFI", once=True)
         assert BmcLib.power_off()
         assert BmcLib.power_on()
         assert SetUpLib.continue_to_page(Msg.BOOT_OPTIONS)
-        assert SetUpLib.get_option_value([Msg.BOOT_TYPE, "<.+>"], Key.UP, 10) == 'UEFIBoot'
+        assert SetUpLib.get_option_value([Msg.BOOT_TYPE, "<.+>"], Key.UP, 10) == 'UEFI Boot'
         return core.Status.Pass
     except AssertionError:
         return core.Status.Fail
     finally:
         BmcLib.clear_cmos()
         if not SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5):
-            UpdateBIOS.update_bios('master')
+            UpdateBIOS.update_bios(SutConfig.Env.LATEST_BRANCH)
 
 
 # Testcase_BootModeSet_006 06 BMC设置启动模式后通过Setup菜单恢复 支持BMC界面配置启动类型
@@ -556,10 +556,10 @@ def testcase_bootmodeset_006():
         assert BmcLib.set_boot_mode("Legacy", once=True)
         assert BmcLib.force_reset()
         assert SetUpLib.continue_to_page(Msg.BOOT_OPTIONS)
-        assert SetUpLib.get_option_value([Msg.BOOT_TYPE, "<.+>"], Key.UP, 10) == 'LegacyBoot'
-        assert SetUpLib.set_option_value(Msg.BOOT_TYPE, "UEFIBoot", save=True)
+        assert SetUpLib.get_option_value([Msg.BOOT_TYPE, "<.+>"], Key.UP, 10) == 'Legacy Boot'
+        assert SetUpLib.set_option_value(Msg.BOOT_TYPE, "UEFI Boot", save=True)
         assert SetUpLib.continue_to_page(Msg.BOOT_OPTIONS)
-        assert SetUpLib.get_option_value([Msg.BOOT_TYPE, "<.+>"], Key.UP, 10) == 'UEFIBoot'
+        assert SetUpLib.get_option_value([Msg.BOOT_TYPE, "<.+>"], Key.UP, 10) == 'UEFI Boot'
         assert BmcLib.is_uefi_boot()
         return core.Status.Pass
     except AssertionError:
@@ -567,7 +567,7 @@ def testcase_bootmodeset_006():
     finally:
         BmcLib.clear_cmos()
         if not SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5):
-            UpdateBIOS.update_bios('master')
+            UpdateBIOS.update_bios(SutConfig.Env.LATEST_BRANCH)
 
 # Testcase_SP_Boot_011 SP安全启动测试
 # Author: ouyang

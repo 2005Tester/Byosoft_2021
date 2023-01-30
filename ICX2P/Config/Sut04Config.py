@@ -29,12 +29,12 @@ class Env:
     BMC_PASSWORD = 'Admin@9001'
 
     # UEFI OS
-    OS_IP = '192.168.111.11'
+    OS_IP = '192.168.111.112'
     OS_USER = 'root'
     OS_PASSWORD = 'root'
 
     # Legacy OS
-    OS_IP_LEGACY = '192.168.111.243'
+    OS_IP_LEGACY = '192.168.111.84'
     OS_USER_LEGACY = 'root'
     OS_PASSWORD_LEGACY = 'root'
 
@@ -86,18 +86,25 @@ class SysCfg:
 
     # PCIE设备安装位置  "Bus:Dev.Fun": {"BandWidth": "x**", "Speed": "Gen*"}
     PCIE_POP = {"17:00.0": {"BandWidth": "x16", "Speed": "Gen3"},
-                "31:00.0": {"BandWidth": "x08", "Speed": "Gen2"},
-                "31:00.1": {"BandWidth": "x08", "Speed": "Gen2"},
+                # "31:00.0": {"BandWidth": "x08", "Speed": "Gen2"},
+                # "31:00.1": {"BandWidth": "x08", "Speed": "Gen2"},
                 }
 
     # USB Info
     USB_REAR = 2  # Rear USB Ports
     USB_BUILD_IN = 1  # Build-in USB Ports
-    USB_DISK = 1  # USB Disk Inserted
+    USB_DISK = 2  # USB Disk Inserted
+
+    # Boot Option Flag
+    OS_UEFI = "P4-sled-secureboot SATA- HDD 8"                  # UEFI OS名称 (PlatConfig.BootOS中定义的OS名称)
+    OS_LEGACY = '\(Bus 33 Dev 00\)PCI RAID Adapter RAID CARD'   # Legacy OS
+    BOOT_DVD = 'Virtual DVD-ROM VM'                             # DVD Boot Option
+    BOOT_USB = ""                                               # USB Boot Option
 
     # PXE Info
-    PXE_UEFI = r'UEFI PXEv4:\([0-9A-Z\-]{17}\) - Port00 SLOT1'
-    PXE_LEGACY = 'IBA XE Slot 3100 v2358 Port 0 SLOT1'
+    PXE_UEFI_MSG = "Install CentOS"
+    PXE_UEFI = r'UEFI PXEv4:\([0-9A-Z\-]{17}\) - Port00 SLOT2'
+    PXE_LEGACY = 'IBA XE Slot 4B00 v2358 Port 0 SLOT2'
 
     # Legacy OptionROM Info
     Option_Rom_Start = "Initializing Intel\(R\) Boot Agent XE v2.3.58"

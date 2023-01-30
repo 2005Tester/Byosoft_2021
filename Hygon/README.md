@@ -33,13 +33,16 @@ Execution: Release, daily, weekly，比如release参数，就表示执行AllTest
 ### Inspur7500
 | Module | ID Range |
 | ------ | ------ |
-|  BootTest	| 401-500 |
-|  CpuTest | 301~400 |
-|  HddPasswordTest | 801~900 |
-|  IpmitoolTest | 501~600 |
-|  PCIETest | 251~300 |
-|  PXETest | 201~250 |
-|  SetupPasswordTest | 701~800 |
-|  SetUpTest | 601~700 |
-|  SmbiosTest | 101~200 |
 |  UpdateBIOS | 001~100 |
+|  SmbiosTest | 101~200 |
+|  PXETest | 201~250 |
+|  PCIETest | 251~300 |
+|  CpuTest | 301~400 |
+|  BootTest	| 401-500 |
+|  IpmitoolTest | 501~600 |
+|  SetUpTest | 601~700 |
+|  SetupPasswordTest | 701~800 |
+|  HddPasswordTest | 801~900 |
+|  RedFish | 901~950 |
+|  RAS | 1001~1050 |
+|  SecureBoot | 3001~3500 |

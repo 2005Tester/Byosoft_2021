@@ -1,4 +1,5 @@
 import logging
+import time
 
 from batf import MiscLib, SshLib, SutInit, core
 from batf.Report import ReportGen
@@ -103,12 +104,13 @@ def testcase_spcr_001():
 def testcase_ACPI_001():
     try:
         cmds = ["acpidump > acpi.out\n", "acpixtract -a acpi.out\n", "iasl -d facp.dat\n"]
-        rets = [" ", " ", " "]
+        rets = ["", "", ""]
         assert BmcLib.force_reset()
         assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 300)
-        assert SshLib.interaction(SutInit.Sut.OS_SSH, cmds, rets)
-        res = SshLib.execute_command(SutInit.Sut.OS_SSH, "cat facp.dsl | grep 'Use Platform Timer'")
-        assert '0' in res, '{}'.format(res)
+        assert SshLib.interaction(SutInit.Sut.OS_SSH, cmds, rets), f"cmd fail"
+        res_facp = SshLib.execute_command(SutInit.Sut.OS_SSH, "cat facp.dsl | grep 'Use Platform Timer'\n")
+        assert res_facp, "Pls checkin SshLib.execute_command"
+        assert '0' in res_facp, '{}'.format(res_facp)
         return core.Status.Pass
     except Exception as e:
         logging.error(e)

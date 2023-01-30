@@ -13,12 +13,12 @@ from batf.SutInit import Sut
 from batf.Common.RedfishLib import Redfish
 from batf.Report import ReportGen
 from batf.Common.LogAnalyzer import LogAnalyzer
-from batf import MiscLib, SshLib, SutInit, core, SerialLib
+from batf import MiscLib, SshLib, SutInit, core, SerialLib, var
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Key, Msg, BootOS
 from ICX2P.BaseLib import SetUpLib, PlatMisc, BmcLib
 
-base_line = Path(__file__).parent.parent.absolute()/"Tools/SetupBase/2288服务器setup菜单基线版本_Byosoft_V0.1.xlsx"
+base_line = PlatMisc.root_path() / "ICX2P/Tools/SetupBase/2288服务器setup菜单基线.xlsx"
 power_efficiency = Path(__file__).parent.parent.absolute()/"Tools/PowerEfficiency/2288V6_PowerEfficiency.csv"
 
 
@@ -749,6 +749,252 @@ class _NonDepTest(Redfish):
         self.gen_report("非联动测试结果汇总")
 
 
+class _BaselineRegistryTest:
+
+    def __init__(self, registry, baseline):
+        self.registry = registry
+        self.baseline = baseline
+        self.reg_dict = None
+        self.summary = []
+
+    def values_to_dict(self, value: str):
+        value_pairs = value.splitlines()
+        value_dict = {}
+        for values in value_pairs:
+            split_index = values.rfind(":")
+            val_split = [values[:split_index], values[split_index + 1:]]
+            val_name, val_num = val_split[0], val_split[1]
+            value_dict[val_name] = val_num
+        return value_dict
+
+    def get_default_value(self, value="Enabled*\nDisabled"):
+        return "".join(re.findall("(.+)\*", value))
+
+    def baseline_to_dict(self, dump_file=None):
+        """
+        Transfer Baseline Excel to dict
+        {
+        "Variable Name1": {
+                        "setup": "SetupOption Name1"
+                        "values": { "Enabled": "0x0", "Disabled": "0x1" },
+                        "default":"Enabled",
+                        "help":"Help Messages",
+                        "unicfg": True,
+                        "redfish": False
+                        }
+
+        }
+        """
+        base_file = self.baseline
+        logging.info(f"Baseline file: {base_file}")
+        sheet_name = "X86 Setup Menu Baseline"
+
+        head_variable = "VariableName"
+        head_setup = "英文菜单项"
+        head_help = "英文Help字符串"
+
+        head_value = "Value"
+        head_default = "英文选择项"
+
+        head_unitool = "UniTool"
+        head_redfish = "Redfish"
+
+        base_dict = {}
+        pd = pandas.read_excel(base_file, sheet_name=sheet_name, dtype=str, engine="openpyxl")
+        pd = pd.fillna("")
+
+        for row in pd.index:
+            var_name = pd.loc[row, head_variable]
+            if not var_name.strip():
+                continue
+            var_values = pd.loc[row, head_value]
+            var_default = pd.loc[row, head_default]
+            var_setup = pd.loc[row, head_setup]
+            var_help = pd.loc[row, head_help]
+            var_unicfg = pd.loc[row, head_unitool]
+            var_redfish = pd.loc[row, head_redfish]
+
+            var_setup = str(var_setup)
+            var_values = self.values_to_dict(var_values)
+            var_default = self.get_default_value(var_default)
+
+            var_help = str(var_help)
+            var_unicfg = True if str(var_unicfg).strip() == "Y" else False
+            var_redfish = True if str(var_redfish).strip() == "Y" else False
+            base_dict[var_name] = {"setup": var_setup,
+                                   "values": var_values,
+                                   "default": var_default,
+                                   "help": var_help,
+                                   "unicfg": var_unicfg,
+                                   "redfish": var_redfish}
+        if dump_file:
+            with open(dump_file, "w", encoding="utf-8") as f:
+                json.dump(base_dict, f, indent=4)
+
+        return base_dict
+
+    def load_registry(self):
+        with open(self.registry, "r", encoding="utf-8") as reg:
+            self.reg_dict = json.load(reg)
+            return self.reg_dict
+
+    def add_fail_info(self, name="", base="", reg="", reason=""):
+        base_info = f"Baseline={base}," if base else ""
+        reg_info = f"Registry={reg}" if reg else ""
+        reason_info = f"{reason}:" if reason else ""
+        logging.error(f"[{name}]{reason_info} {base_info}{reg_info}")
+        self.summary.append({"变量名": name, "基线": repr(base), "Registry": repr(reg), "备注": reason})
+
+    def registry_check(self, option, option_dict):
+        attributes = self.reg_dict["RegistryEntries"]["Attributes"]
+        att_found = False
+        for attri in attributes:
+            att_name = attri["AttributeName"]
+            if att_name.strip().lower() != option.strip().lower():
+                continue
+            att_found = True
+            att_display = attri["DisplayName"]
+            att_help = attri["HelpText"]
+            att_default = attri["DefaultValue"]
+
+            base_setup = option_dict["setup"]
+            base_default = option_dict["default"]
+            base_help = option_dict["help"]
+
+            if str(base_setup) != str(att_display):
+                self.add_fail_info(att_display, base_setup, att_display, "变量名不一致")
+            if str(base_default) != str(att_default):
+                self.add_fail_info(att_display, base_default, att_default, "默认值不一致")
+            if str(base_help) != str(att_help):
+                self.add_fail_info(att_display, base_help, att_help, "帮助信息不一致")
+
+            att_type = attri["Type"]
+            att_values_dict = {}
+            if att_type == "Enumeration":
+                att_value = attri["Value"]
+                if not att_value:
+                    self.add_fail_info(att_display, reason="没有Value信息")
+                for val in attri["Value"]:
+                    val_display = val["DisplayName"]
+                    val_name = val["ValueName"]
+                    if str(val_display) != str(val_name):
+                        self.add_fail_info(att_display, reg=f"ValueName={val_name}, DisplayName={val_display}", reason="ValueName和DisplayName不一致")
+                    att_values_dict[val_display] = val_name
+                base_values = set(option_dict["values"].keys())
+                reg_values = set(att_values_dict.keys())
+                if base_values != reg_values:
+                    self.add_fail_info(att_display, f"{base_values}", f"{reg_values}", "Value选项不一致")
+            if att_type == "Integer":
+                att_low = attri["LowerBound"]
+                att_up = attri["UpperBound"]
+                try:
+                    base_min = option_dict["values"]["min"]
+                    base_max = option_dict["values"]["max"]
+                except:
+                    self.add_fail_info(att_display, base=f'"{list(option_dict["values"].keys())}"', reason="整型选项名不是min/max")
+                    continue
+                if str(att_low) != str(base_min):
+                    self.add_fail_info(att_display, f"{base_min}", f"{att_low}", "Value最小值不一致")
+                if str(att_up) != str(base_max):
+                    self.add_fail_info(att_display, f"{base_max}", f"{att_up}", "Value最大值不一致")
+        if not att_found:
+            self.add_fail_info(option, reason="选项未找到")
+        return True
+
+    def attributes_key_values(self):
+        attributes = self.reg_dict["RegistryEntries"]["Attributes"]
+        att_dict = {}
+        for attr in attributes:
+            att_name = attr["AttributeName"]
+            if att_name in att_dict:
+                self.add_fail_info(att_name, reason="Registry Attributes 变量重复")
+                continue
+            att_dict[att_name] = {}
+            att_type = attr["Type"]
+            att_dict[att_name]["type"] = att_type
+            att_dict[att_name]["values"] = []
+            if att_type == "Enumeration":
+                for val in attr["Value"]:
+                    val_name = val["ValueName"]
+                    att_dict[att_name]["values"].append(val_name)
+            elif att_type == "Integer":
+                att_low = attr["LowerBound"]
+                att_up = attr["UpperBound"]
+                att_dict[att_name]["values"].append(f"min:{att_low}")
+                att_dict[att_name]["values"].append(f"max:{att_up}")
+        return att_dict
+
+    def dependency_check(self):
+        dependencies = self.reg_dict["RegistryEntries"]["Dependencies"]
+        attr_kv = self.attributes_key_values()
+
+        for depens in dependencies:
+            depen = depens["Dependency"]
+            map_froms = depen["MapFrom"]
+            map_to_att = depen["MapToAttribute"]
+            map_to_property = depen["MapToProperty"]
+            map_to_value = depen["MapToValue"]
+            depen_for = depens["DependencyFor"]
+            if depen_for not in attr_kv:
+                self.add_fail_info(depen_for, reason="DependencyFor没有在Attributes里面定义")
+
+            if map_to_att not in attr_kv:
+                self.add_fail_info(map_to_att, reason="MapToAttribute没有在Attributes里面定义")
+
+            if (map_to_property == "CurrentValue") and (map_to_att in attr_kv):
+                if attr_kv[map_to_att]["type"] == "Enumeration":
+                    if map_to_value not in attr_kv[map_to_att]["values"]:
+                        self.add_fail_info(map_to_att, reg=map_to_value, reason="MapToValue没有在Attributes里面定义")
+                elif attr_kv[map_to_att]["type"] == "Integer":
+                    values = attr_kv[map_to_att]["values"]
+                    vmin = "".join([re.findall("min:(.+)", v)[0] for v in values if "min" in v])
+                    vmax = "".join([re.findall("max:(.+)", v)[0] for v in values if "max" in v])
+                    vmin = int(vmin)
+                    vmax = int(vmax)
+                    value_range = range(vmin, vmax+1)
+                    if int(map_to_value) not in value_range:
+                        self.add_fail_info(map_to_att, reg=map_to_value, reason="MapToValue没有在Attributes里面定义")
+
+            for mfrom in map_froms:
+                mf_att = mfrom["MapFromAttribute"]
+                mf_property = mfrom["MapFromProperty"]
+                mf_value = mfrom["MapFromValue"]
+                if mf_att not in attr_kv:
+                    self.add_fail_info(mf_att, reason="MapFromAttribute没有在Attributes里面定义")
+
+                if (mf_property == "CurrentValue") and (mf_att in attr_kv):
+                    if attr_kv[mf_att]["type"] == "Enumeration":
+                        if mf_value not in attr_kv[mf_att]["values"]:
+                            self.add_fail_info(mf_att, reg=mf_value, reason="MapFromValue没有在Attributes里面定义")
+                    elif attr_kv[mf_att]["type"] == "Integer":
+                        values = attr_kv[mf_att]["values"]
+                        vmin = "".join([re.findall("min:(.+)", v)[0] for v in values if "min" in v])
+                        vmax = "".join([re.findall("max:(.+)", v)[0] for v in values if "max" in v])
+                        value_range = range(int(vmin, int(vmax)))
+                        if mf_value not in value_range:
+                            self.add_fail_info(mf_att, reg=mf_value, reason="MapFromValue没有在Attributes里面定义")
+
+    def baseline_test(self):
+        baeline = self.baseline_to_dict("baseline.json")
+        self.load_registry()
+        for op_name, op_dict in baeline.items():
+            self.registry_check(op_name, op_dict)
+        self.gen_report("基线和Registry对齐问题点")
+        self.summary = []
+
+    def depen_test(self):
+        self.load_registry()
+        self.dependency_check()
+        self.gen_report("Registry联动变量名检查问题点")
+
+    def gen_report(self, excel_name):
+        df = pandas.DataFrame(self.summary)
+        if "备注" in df:
+            df.set_index("备注", inplace=True)
+        df.sort_index(inplace=True)
+        df.to_excel(f"{excel_name}.xlsx")
+
+
 def _unitool_check(option, value):
     value = int(str(value), 16) if "0x" in str(value) else int(value)
     stdin, stdout, stderr = Sut.OS_SSH.ssh_client.exec_command(r'cd {};./unitool -r {} |grep value'.format(SutConfig.Env.UNI_PATH, option))
@@ -963,3 +1209,36 @@ def redfish_non_dependency_test():
         logging.error(e)
         return core.Status.Fail
 
+
+@core.test_case(305)
+def baseline_registry_alignment_check():
+    """检查基线和Registry的变量名，变量值，帮助信息和默认值是否一致"""
+    path = os.path.join(SutConfig.Env.LOG_DIR, var.get('current_test'))
+    if not os.path.exists(path):
+        os.makedirs(path)
+    registry = Sut.BMC_RFISH.registry_dump(dump_json=True, path=path)
+    baseline = PlatMisc.root_path() / "ICX2P/Tools/SetupBase/2288服务器setup菜单基线.xlsx"
+    base_reg = _BaselineRegistryTest(registry=registry, baseline=baseline)
+    try:
+        assert base_reg.baseline_test()
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+        return core.Status.Fail
+
+
+@core.test_case(306)
+def registry_dependency_map_check():
+    """检查Registry的联动关系变量名和变量值是否正确"""
+    path = os.path.join(SutConfig.Env.LOG_DIR, var.get('current_test'))
+    if not os.path.exists(path):
+        os.makedirs(path)
+    registry = Sut.BMC_RFISH.registry_dump(dump_json=True, path=path)
+    baseline = PlatMisc.root_path() / "ICX2P/Tools/SetupBase/2288服务器setup菜单基线.xlsx"
+    base_reg = _BaselineRegistryTest(registry=registry, baseline=baseline)
+    try:
+        assert base_reg.depen_test()
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+        return core.Status.Fail

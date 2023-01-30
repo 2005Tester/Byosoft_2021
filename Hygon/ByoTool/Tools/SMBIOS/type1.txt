@@ -1,0 +1,17 @@
+                          Type1 message
+-------------------------------------------------------------------------
+Number: 0
+-------------------------------------------------------------------------
+************start type show*********-----------------
+Type  :1
+Handle:15
+Manufacturer Name :oem104
+Product Name      :oem105
+Version           :oem106
+Serial Number     :oem107
+UUID              :B5 91 C9 62 A8 ED D3 53 0A A7 BD 7B 36 F9 6F 3A 
+Wake-up           :AC Power Restored
+SKU Number String :R1130-F0001-01
+Family String     :Type1Family
+
+

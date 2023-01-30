@@ -20,7 +20,7 @@ from ICX2P.BaseLib import SetUpLib, BmcLib
 
 # Obtain the path of latest bios image from Gitlab artifacts
 def get_test_image(dst, branch, job):
-    gitlab_icx = Ci.Gitlab(31, 'PbLqm_njsnGxCQBtHoMG')
+    gitlab_icx = Ci.Gitlab(166, 'PbLqm_njsnGxCQBtHoMG')
     test_image = gitlab_icx.download_latest_image(branch, dst, ".bin", job)
     logging.info("Image for test: {0}".format(test_image))
     return(test_image)

@@ -73,7 +73,7 @@ def _log_Time(log_n):
         assert MiscLib.ping_sut(SutConfig.Env.OS_IP, 600) #考虑全打印
         logging.info("Suse_OS Boot Successful")
         SERIAL_LOG = os.path.join(SutConfig.Env.LOG_DIR, 'TC{}.log'.format(log_n))
-        with open(SERIAL_LOG , 'r', encoding="utf-8") as _log:
+        with open(SERIAL_LOG, 'r', encoding="utf-8") as _log:
             ser_log = _log.read()
         s_cont = 0
         for str_check in SutConfig.SysCfg.OEM_LOG_SUT + Msg.OEM_LOG_COMMON:

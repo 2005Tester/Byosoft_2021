@@ -1,0 +1,46 @@
+# dmidecode 3.2
+Getting SMBIOS data from sysfs.
+SMBIOS 3.3.0 present.
+# SMBIOS implementations newer than version 3.2.0 are not
+# fully supported by this version of dmidecode.
+
+Handle 0x001F, DMI type 41, 11 bytes
+Onboard Device
+	Reference Designation: <BAD INDEX>
+	Type: Ethernet
+	Status: Enabled
+	Type Instance: 1
+	Bus Address: 00ff:ff:1f.7
+
+Handle 0x0020, DMI type 41, 11 bytes
+Onboard Device
+	Reference Designation: <BAD INDEX>
+	Type: Ethernet
+	Status: Enabled
+	Type Instance: 2
+	Bus Address: 00ff:ff:1f.7
+
+Handle 0x0021, DMI type 41, 11 bytes
+Onboard Device
+	Reference Designation: Onboard - SATA
+	Type: SATA Controller
+	Status: Enabled
+	Type Instance: 1
+	Bus Address: 0000:10:00.0
+
+Handle 0x0022, DMI type 41, 11 bytes
+Onboard Device
+	Reference Designation: Onboard - NVME
+	Type: Other
+	Status: Enabled
+	Type Instance: 1
+	Bus Address: 0000:0f:00.0
+
+Handle 0x0023, DMI type 41, 11 bytes
+Onboard Device
+	Reference Designation: Onboard - USB
+	Type: Other
+	Status: Enabled
+	Type Instance: 1
+	Bus Address: 0000:13:00.0
+

@@ -1,0 +1,17 @@
+                          Type20 message
+-------------------------------------------------------------------------
+Number: 0
+-------------------------------------------------------------------------
+************start type show*********-----------------
+Type  :20
+Handle:13
+Starting Address                   :1FFFFFF00000000h KB
+Ending Address                     :FFFFFF0004000Ch KB
+Memory Device Handle               :0000h
+Memory Array Mapped Address Handle :0000h
+Partition Row Position             :00h
+Interleave Position                :00h
+Interleaved Data Depth             :00h
+Extended Starting Address          :7FFFFFFFFh
+Extended Starting Address          :2F35300035300000h
+

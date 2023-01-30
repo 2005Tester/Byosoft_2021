@@ -1,8 +1,0 @@
-{
- "Attributes": {
-  "Ipv4Pxe": "Disable",
-  "Ipv6Pxe": "Enable",
-  "NetworkProtocol": "UEFI:IPv4/IPv6",
-  "NetworkHttpsProtocol": "HTTPS:IPv4/IPv6"
- }
-}

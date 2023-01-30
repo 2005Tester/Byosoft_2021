@@ -27,17 +27,19 @@ def power_on():
     cmd_reset = 'ipmcset -d powerstate -v 1\n'
     ret_reset = 'Do you want to continue'
     cmd_confirm = 'Y\n'
-    ret_confirm = ''
+    ret_confirm = 'success'
     cmds = [cmd_reset, cmd_confirm]
     rets = [ret_reset, ret_confirm]
+
     try_count = 3
     while is_power_off() and (try_count > 0):
         if Sut.BMC_SSH.login():
-            Sut.BMC_SSH.interaction(cmds, rets)
-            time.sleep(3)
+            Sut.BMC_SSH.interaction(cmds, rets, delay=1)
+            time.sleep(5)
         if not is_power_off():
             return True
         try_count -= 1
+
     if is_power_off():
         logging.error("Power on failed")
         return
@@ -52,14 +54,25 @@ def power_off():
     cmd_reset = 'ipmcset -d powerstate -v 2\n'
     ret_reset = 'Do you want to continue'
     cmd_confirm = 'Y\n'
-    ret_confirm = ''
+    ret_confirm = 'success'
     cmds = [cmd_reset, cmd_confirm]
     rets = [ret_reset, ret_confirm]
-    if Sut.BMC_SSH.login():
-        return Sut.BMC_SSH.interaction(cmds, rets)
-    else:
+
+    try_count = 3
+    while (not is_power_off()) and (try_count > 0):
+        if Sut.BMC_SSH.login():
+            Sut.BMC_SSH.interaction(cmds, rets, delay=1)
+            time.sleep(5)
+        if is_power_off():
+            return True
+        try_count -= 1
+
+    if not is_power_off():
         logging.error("Power off failed")
         return
+    else:
+        logging.info("Power status is already off.")
+        return True
 
 
 # Force reset SUT by BMC command
@@ -74,11 +87,11 @@ def force_reset():
         cmd_reset = 'ipmcset -d frucontrol -v 0\n'
         ret_reset = 'Do you want to continue'
         cmd_confirm = 'Y\n'
-        ret_confirm = ''
+        ret_confirm = 'success'
         cmds = [cmd_reset, cmd_confirm]
         rets = [ret_reset, ret_confirm]
         if Sut.BMC_SSH.login():
-            return Sut.BMC_SSH.interaction(cmds, rets)
+            return Sut.BMC_SSH.interaction(cmds, rets, delay=1)
         else:
             logging.error("Force system reset failed")
             return
@@ -90,11 +103,11 @@ def force_power_cycle():
     cmd_powercycle = 'ipmcset -d frucontrol -v 2\n'
     ret_powercycle = 'Do you want to continue'
     cmd_confirm = 'Y\n'
-    ret_confirm = ''
+    ret_confirm = 'success'
     cmds = [cmd_powercycle, cmd_confirm]
     rets = [ret_powercycle, ret_confirm]
     if Sut.BMC_SSH.login():
-        return Sut.BMC_SSH.interaction(cmds, rets)
+        return Sut.BMC_SSH.interaction(cmds, rets, delay=1)
     else:
         logging.error("HY5 Common TC: force powercycle failed")
         return
@@ -106,7 +119,7 @@ def clear_cmos():
     cmd_clearcoms = 'ipmcset -d clearcmos\n'
     ret_clearcmos = 'Do you want to continue'
     cmd_confirm = 'Y\n'
-    ret_confirm = ''
+    ret_confirm = 'success'
     cmds = [cmd_clearcoms, cmd_confirm]
     rets = [ret_clearcmos, ret_confirm]
     sleep_cnt = 0
@@ -136,7 +149,7 @@ def debug_message(enable=True):
     cmd1 = f"ipmcset -t maintenance -d biosprint -v {value}\n"
     rtn1 = 'Do you want to continue'
     cmd2 = 'Y\n'
-    rtn2 = 'successfully'
+    rtn2 = 'success'
     if not Sut.BMC_SSH.login():
         return
     if not enable:
@@ -150,19 +163,16 @@ def debug_message(enable=True):
 def program_flash():
     # Program flash procedure: power off->maint mode->attach upgrade ->load bin
     logging.info("[BmcLib.program_flash]Programing flash...")
-    cmd_shutdown = 'ipmcset -d powerstate -v 2\n'
-    ret_shutdown = 'Do you want to continue'
     cmd_maint_mode = 'maint_debug_cli\n'
     ret_maint_mode = 'Debug Shell'
-    cmd_confirm = 'Y\n'
-    ret_confirm = 'Control fru0 forced power off successfully'
     cmd_upgrade_mode = 'attach upgrade\n'
     ret_upgrade_mode = 'Success'
     cmd_load = 'load_bios_bin /tmp/rp001.bin\n'
     ret_load = 'load bios succefully'
-    cmds = [cmd_shutdown, cmd_confirm, cmd_maint_mode, cmd_upgrade_mode, cmd_load]
-    rets = [ret_shutdown, ret_confirm, ret_maint_mode, ret_upgrade_mode, ret_load]
-    return SshLib.interaction(Sut.BMC_SSH, cmds, rets)
+    cmds = [cmd_maint_mode, cmd_upgrade_mode, cmd_load]
+    rets = [ret_maint_mode, ret_upgrade_mode, ret_load]
+    if power_off():
+        return SshLib.interaction(Sut.BMC_SSH, cmds, rets)
 
 
 # BMC一键收集
@@ -224,7 +234,7 @@ def firmware_version_check():
         return
     bios_ver = "".join(re.findall("\nActive\s+BIOS\s+Version:\s+.*?\)([.\d]+)", info))
     BmcInfo.BIOS = bios_ver
-    bmc_ver = "".join(re.findall("\nActive\s+BMC\s+Version:\s+.*?\)([.\d]+)", info))
+    bmc_ver = "".join(re.findall("\nActive\s+iBMC\s+Version:\s+.*?\)([.\d]+)", info))
     BmcInfo.BMC = bmc_ver
     cpld_ver = "".join(re.findall("\nCPLD\s+Version:\s+.*?\)([.\d]+)", info))
     BmcInfo.CPLD = cpld_ver

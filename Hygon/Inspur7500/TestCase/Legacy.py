@@ -1,9 +1,9 @@
-import logging
+# -*- encoding=utf8 -*-
 from Inspur7500.BaseLib import SetUpLib, BmcLib
-from batf import MiscLib
 from batf.Report import ReportGen
 
-# Test case ID: TC500-520
+
+# Test case ID: TC901-020
 
 ##########################################
 #            Legacy Test Cases           #
@@ -11,7 +11,7 @@ from batf.Report import ReportGen
 
 
 def enable_legacy_boot():
-    tc = ('500', '[TC500] Enable Legacy Boot', 'Enable Legacy Boot.')
+    tc = ('1', '[TC1] Enable Legacy Boot', 'Enable Legacy Boot.')
     result = ReportGen.LogHeaderResult(tc)
     if not SetUpLib.enable_legacy_boot():
         result.log_fail(capture=True)
@@ -21,17 +21,10 @@ def enable_legacy_boot():
 
 
 def disable_legacy_boot():
-    tc = ('501', '[TC501] Disable Legacy Boot', 'Disable Legacy Boot.')
+    tc = ('2', '[TC2] Disable Legacy Boot', 'Disable Legacy Boot.')
     result = ReportGen.LogHeaderResult(tc)
     if not SetUpLib.disable_legacy_boot():
         result.log_fail(capture=True)
         return
     result.log_pass()
     return True
-
-
-# Author: WangQingshan
-# 启动到Legacy OS并检查dmesg没有错误
-# Precondition: 依赖 enable_legacy_boot()
-# OnStart: Legacy Mode
-# OnComplete: NA

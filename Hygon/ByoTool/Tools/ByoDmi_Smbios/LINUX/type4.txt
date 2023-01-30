@@ -1,0 +1,35 @@
+                          Type4 message
+-------------------------------------------------------------------------
+Number: 0
+-------------------------------------------------------------------------
+************start type show*********-----------------
+Type  :4
+Handle:8
+Socket Designation       :P0
+Processor Type           :Central Processor
+Processor Family         :Other
+Processor Manufacturer   :Chengdu Hygon
+Processor ID             :178BFBFF 00900F21
+Processor Version        :Hygon Dhyana2 Eng Sample
+Voltage                  :1.2 V
+External Clock           :100  MHz
+Max Speed                :3200 MHz
+Current Speed            :3000 MHz
+CPU Socket               :Socketed
+Status                   :CPU Enabled
+Processor Upgrade        :Other
+L1 Cache Handle          :0005h
+L2 Cache Handle          :0006h
+L3 Cache Handle          :0007h
+Serial Number            :6926-FD0C40FF
+Assert Tag               :Null
+Part Number              :Null
+Core Count               :08h
+Core Enabled             :08h
+Thread Count             :10h
+Processor Characteristics:Use param /view Type Number 38 show filed info
+Processor Family 2       :Other
+Core Count2 :08h
+Core Enabled2 :08h
+Thread Count2 :10h
+

@@ -16,6 +16,7 @@ Release.compare_fdm_log(),,Yes,,
 Release.registry_check(),Yes,Yes,,
 Release.hpm_downgrade_test(),,Yes,,
 Release.bios_downgrade_flash(),,Yes,,
+Release.testcase_pcie_card(),,Yes,,Yes
 BiosTest.usb_test(),,Yes,Yes,Yes
 CpuInit01.cpu_mem_info(),,Yes,Yes,Yes
 BiosTest.press_f2(),,,Yes,Yes
@@ -31,6 +32,7 @@ DefaultValueTest.testcase_thermalPolicy_001(),,,Yes,Yes
 DefaultValueTest.testcase_wol_001(),,,Yes,Yes
 DefaultValueTest.testcase_load_custom_defaults_001(),,,Yes,Yes
 DefaultValueTest.testcase_load_custom_defaults_002(),,,Yes,Yes
+DefaultValueTest.testcase_loaddefault_012(),,,Yes,Yes
 BiosTest.dram_rapl_option_check(),,,Yes,Yes
 BiosTest.testcase_vtd_002(),,,Yes,Yes
 BiosTest.testcase_vtd_003(),,,Yes,Yes

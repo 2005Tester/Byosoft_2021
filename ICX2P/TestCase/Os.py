@@ -1,4 +1,4 @@
-import logging, os
+import logging, os, re
 from batf import SerialLib, SshLib, MiscLib, core
 from batf.SutInit import Sut
 from ICX2P.Config import SutConfig
@@ -167,10 +167,15 @@ def EquipmentModeFlag_Valid_Recovery():
         assert SerialLib.is_msg_present(Sut.BIOS_COM, "Clear EquipmentEnableFlag success", delay=600)
         ser_log = os.path.join(SutConfig.Env.LOG_DIR, 'TC305.log')
         assert _EquipmentModeFlag_ser_log(ser_log, str_Flag), "EquipmentEnableFlag_1 not found"
-        with open(ser_log, 'r+') as r:
-            lines = [line.strip('\n') for line in r.readlines() if line.strip()]
-            assert set(SutConfig.SysCfg.Unitool_Backup_Name) < set(lines), "Unitool_Backup_Name not found"
-            logging.info("first reboot,found all key")
+        with open(ser_log, 'r+') as _log:
+            ser_log_str = _log.read()
+            error_flag = 0
+            for backup_name in SutConfig.SysCfg.Unitool_Backup_Name:
+                if not re.search(backup_name, ser_log_str):
+                    error_flag += 1
+                    logging.info("{} not found".format(backup_name))
+        assert error_flag == 0
+        logging.info("first reboot,found all key")
         # set--4, results--B
         assert BmcLib.force_reset()
         assert SerialLib.is_msg_present(Sut.BIOS_COM, "OnExitBootServices...", delay=600)
@@ -240,7 +245,7 @@ def Legacy_EquipmentMode_Custom():
         logging.info("还原测试环境")
         BmcLib.clear_cmos()
         if not SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5):
-            UpdateBIOS.update_bios('master')
+            UpdateBIOS.update_bios(SutConfig.Env.LATEST_BRANCH)
 
 
 # Author: Fubaolin

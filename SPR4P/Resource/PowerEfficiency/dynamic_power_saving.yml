@@ -1,0 +1,105 @@
+MlcStreamerPrefetcherEnable:
+  - msr
+  - "0x1a4"
+  - 0  # bit
+  - Enabled : 0
+    Disabled : 1
+
+
+MlcSpatialPrefetcherEnable:
+  - msr
+  - "0x1a4"
+  - 1  # bit
+  - Enabled : 0
+    Disabled : 1
+
+DCUIPPrefetcherEnable:
+  - msr
+  - "0x1a4"
+  - 3  # bit
+  - Enabled: 0
+    Disabled: 1
+
+DCUStreamerPrefetcherEnable:
+  - msr
+  - "0x1a4"
+  - 2  # bit
+  - Enabled: 0
+    Disabled: 1
+
+LlcPrefetchEnable:
+  - msr
+  - "0x6d"
+  - 42  # bit
+  - Enabled: 0
+    Disabled: 1
+
+#UncoreFreqScaling:
+#  - msr
+#  - "0x620"
+#  - 0-6  # bit
+#  - Enabled: 0
+#    Disabled: 1
+
+EETurboDisable:
+  - msr
+  - "0x1fc"
+  - 19  # bit
+  - Enabled: 0
+    Disabled: 1
+
+PwrPerfTuning:
+  - msr
+  - "0x1fc"
+  - 34  # bit
+  - OS Controls EPB: 0
+    BIOS Controls EPB: 1
+    PECI Controls EPB: 0  # if index >= 2, force set to 0
+
+AltEngPerfBIAS:
+  - msr
+  - "0x1b0"
+  - 0-3  # bit
+  - Performance: 0
+    Balanced Performance: 7
+
+TurboMode:
+  - msr
+  - "0x1a0"
+  - 38  # bit
+  - Enabled: 0
+    Disabled: 1
+
+PackageCState:
+  - msr
+  - "0xe2"
+  - 0-3  # bit
+  - C0/C1 State: 0
+    C6(Non-Retention State): 0x2
+    C6(Retention State): 0x3
+    Auto: 0x3
+
+KtiLinkL1En:
+  - cscripts
+  - sv.socket0.uncore.upi.showsearch("c_l1_en","f")
+  - c_l1_en
+  - Enabled: 1
+    Disabled: 0
+    Auto: 1
+  - any  # 至少1个等于
+
+LLCDeadLineAlloc:
+  - cscripts
+  - sv.socket0.uncore.cha.chas.showsearch("deadonvalidllc","f")
+  - deadonvalidllc
+  - Enabled: 0
+    Disabled: 1
+  - any  # 至少1个等于
+
+#CustomRefreshRateEn:
+#  - cscripts
+#  - sv.sockets.uncore.memss.mcs.showsearch("ev_2x_ref_en","f")
+#  - ev_2x_ref_en
+#  - Enabled: 1
+#    Disabled: 0
+#  - any  # 至少1个等于

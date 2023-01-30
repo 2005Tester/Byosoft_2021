@@ -27,8 +27,9 @@ class Key:
     LEFT = [chr(0x1b), chr(0x5b), chr(0x44)]
     RIGHT = [chr(0x1b), chr(0x5b), chr(0x43)]
     Y = [chr(0x59)]
+    F = [chr(0x46)]
     DISCARD_CHANGES = ['N']
-    RESET_DEFAULT = [F9, Y, F10, Y]
+    RESET_DEFAULT = [F9, F, F10, Y]
     SAVE_RESET = [F10, Y]
     ENTER_SAVE_RESET = [ENTER, Y, F10, Y]
 
@@ -63,11 +64,12 @@ class Msg:
     BIOS_BOOT_COMPLETE = 'BIOS boot completed'
 
     # pages in bios configuration
-    PAGE_INFO = "BIOS Revision"
+    PAGE_INFO = "BIOS Version"
     PAGE_ADVANCED = 'CPU Configuration'
-    PAGE_BMC = 'BMC version'
+    PAGE_BMC = 'BMC Version'
     PAGE_SECURITY = 'TPM Device'
-    PAGE_BOOT = '<[UEFILegacy]{4,6}Boot>'
+    # PAGE_BOOT = '<[UEFILegacy]{4,6} Boot>'
+    PAGE_BOOT = 'Boot Options'
     PAGE_SAVE = 'Save Changes and Exit'
 
     # menus of CPU configuration
@@ -80,6 +82,7 @@ class Msg:
     MEMORY_TOP = 'Memory Topology'
     MEMORY_RAS_CFG = "Memory RAS Configuration"
     ADV_POWER_MGF_CONFIG = 'Advanced Power Mgmt. Configuration'
+    PPR_Type = "PPR Type"
     MEM_FRE = 'Memory Frequency'
     MEM2X_REFRESH = 'Refresh Options'
     PFM_PRO = 'Performance Profile'
@@ -122,6 +125,7 @@ class Msg:
     MISC_CONFIG = 'Miscellaneous Configuration'
     CDN = 'Network CDN'
     ASPM_GLOBAL = r"PCIe ASPM Support \(Global\)"
+    WOL = "Wake On Lan Support"
 
     # menus of Password configuration
     MGT_SPV_PWD = 'Manage Supervisor Password'
@@ -155,7 +159,7 @@ class Msg:
     # Menu in Boot page
     MENU_BOOT_ORDER = 'UEFI Boot'
     MENU_HDD_BOOT = 'HDD Device'
-    BOOT_OPTION_SUSE = [BootOS.SLES]
+    BOOT_OPTION_SUSE = [BootOS.SLED]
     BOOT_OPTION_OS = [getattr(BootOS, SutConfig.Env.OS_NAME.upper())]
     PXE_OPT = 'UEFI HTTPSv4: Network - Port00 SLOT1'
     UBUNTU = BootOS.UBUNTU
@@ -172,9 +176,9 @@ class Msg:
 
     # Firmware version info
     ME_VERSION = '0F:4.4.4.56'
-    RC_VERSION = '0.2.2.0030'
-    BIOS_REVISION = '0.18'
-    BIOS_DATE = '09/29/2021'
+    RC_VERSION = '0.4.2.0010'
+    BIOS_REVISION = '0.53'
+    BIOS_DATE = '11/25/2022'
     BMC_VERSION = '3.03.07.10'
     CPU_TYPE = 'Ice Lake'
     TOTAL_MEMORY = '{0}MB'.format(SutConfig.SysCfg.MEM_SIZE * 1024)
@@ -186,13 +190,13 @@ class Msg:
     RELEASE_BRANCH = "2288V6_{}"
 
     # show logo flag
-    LOGO_SHOW = "BootType :"
+    LOGO_SHOW = "STOP_SOCKET_0_DIMMINFO_TABLE"
 
     # 精简打印，华为要求 LogTime_check_list
     OEM_LOG_COMMON = [
     'BootType',
     'RC Version',
-    'BIOS Revision',
+    'BIOS Version',
     'BIOS Date',
     'BMC Version',
     'R_PCH_TCO2_STS = 0x0',
@@ -202,7 +206,6 @@ class Msg:
     'Press F11 go to BootManager',
     'Press F12 go to PXE boot',
     'Press F6 go to SP boot',
-    'BGRT BmpToGop Unsupported',
     'BIOS boot completed.']
 
 # BIOS configuration to be set by unitool
@@ -246,13 +249,13 @@ class BiosCfg:
         "IrqThreshold": 0,
         "EnableBiosSsaRMT": 1,
         "pprType": 0,
-        "BMCWDTEnable": 1,
+        "BMCWDTEnable": 1
     }
 
     Spread_Spectrum_bef = {
-        "EnableClockSpreadSpec": 0
+        "EnableClockSpreadSpec": 1
     }
 
     Spread_Spectrum_aft = {
-        "EnableClockSpreadSpec": 1
+        "EnableClockSpreadSpec": 0
     }

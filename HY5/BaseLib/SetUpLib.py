@@ -421,7 +421,7 @@ def wait_message(msg, timeout=150):
 
 # Match a list of strings from serial port
 def wait_strings(msg_list, timeout=10):
-    return SerialLib.is_msg_list_present(Sut.BIOS_COM, msg_list, timeout)
+    return Sut.BIOS_COM.wait_messages(msg_list, timeout)
 
 
 # used to navigate to setup top page,

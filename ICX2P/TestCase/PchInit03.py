@@ -50,13 +50,17 @@ def post_gpio_error_check():
 def usb_default_enable_check():
     tc = ('601', '[TC601] Testcase_USB_Port_001', '01 Setup菜单默认打开USB Port选项测试')
     result = ReportGen.LogHeaderResult(tc)
-    rear_usb = rf"Rear USB Control(?:\s+<Enabled>\s+USB Physical Port\d+){{{SysCfg.USB_REAR}}}"
-    buildin_usb = rf"Built-in USB Control(?:\s+<Enabled>\s+USB Physical Port\d+){{{SysCfg.USB_BUILD_IN}}}"
-    key_words = f"{rear_usb}.+{buildin_usb}"
+    rear_usb = []
+    for i in range(1, SysCfg.USB_REAR+1):
+        rear_usb.append(f"\s+<Enabled>\s+USB Physical Port{i}")
+    buildin_usb = []
+    for j in range(1, SysCfg.USB_BUILD_IN+1):
+        buildin_usb.append(f"\s+<Enabled>\s+USB Physical Port{j}")
+    key_words = f"{str(rear_usb)}.+{str(buildin_usb)}"
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Key.DOWN, Msg.PATH_USB_CFG, 6, "USB")
-        if SetUpLib.verify_info([rear_usb, buildin_usb], 10):
+        if SetUpLib.verify_info(rear_usb, 10) and SetUpLib.verify_info(buildin_usb, 10):
             result.log_pass()  # return pass if verify_info match
             return True
         assert os.path.isfile(var.get('serial_log')), "Invalid serial log"

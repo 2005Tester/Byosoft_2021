@@ -219,7 +219,7 @@ def iommu():
             logging.info('iommu关闭')
         else:
             stylelog.fail('iommu没有关闭')
-            return
+            return  
     assert SetUpLib.boot_to_setup()
     assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Setup.SET_IOMMU_ENABLED,20)
     time.sleep(1)
@@ -634,10 +634,10 @@ def sata_controller():
     assert SetUpLib.boot_to_setup()
     assert SetUpLib.enter_menu_change_value(Key.DOWN,SutConfig.Setup.SET_SATA_CONTROLLER,8)
     data = SetUpLib.get_data(1)
-    num = re.findall('SATA (\d+) *\[', data)
+    num = re.findall('SATA Port (\d+) *\[', data)
     if num:
         for i in num:
-            assert SetUpLib.select_option_value(Key.DOWN, ['SATA Port {0}'.format(i)], Key.DOWN, 'Disabled', 7)
+            assert SetUpLib.select_option_value(Key.DOWN, ['Onboard SATA Port {0}'.format(i)], Key.DOWN, 'Disabled', 7)
             time.sleep(2)
             SetUpLib.send_keys(Key.SAVE_RESET)
             assert SetUpLib.boot_to_setup()

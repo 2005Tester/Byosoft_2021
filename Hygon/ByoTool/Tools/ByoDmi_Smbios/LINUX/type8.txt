@@ -1,0 +1,117 @@
+                          Type8 message
+-------------------------------------------------------------------------
+Number: 0
+-------------------------------------------------------------------------
+************start type show*********-----------------
+Type  :8
+Handle:18
+Internal Reference Designator :CON_REAR_USB1
+Internal Type                 :Access Bus
+External Reference Designator :USB_Bottom
+External Type                 :Access Bus
+Port Type                     :USB
+
+                          Type8 message
+-------------------------------------------------------------------------
+Number: 1
+-------------------------------------------------------------------------
+************start type show*********-----------------
+Type  :8
+Handle:19
+Internal Reference Designator :CON_REAR_USB2
+Internal Type                 :Access Bus
+External Reference Designator :USB_Top
+External Type                 :Access Bus
+Port Type                     :USB
+
+                          Type8 message
+-------------------------------------------------------------------------
+Number: 2
+-------------------------------------------------------------------------
+************start type show*********-----------------
+Type  :8
+Handle:20
+Internal Reference Designator :VGA
+Internal Type                 :DB-15 pin female
+External Reference Designator :Video
+External Type                 :DB-15 pin female
+Port Type                     :Video Port
+
+                          Type8 message
+-------------------------------------------------------------------------
+Number: 3
+-------------------------------------------------------------------------
+************start type show*********-----------------
+Type  :8
+Handle:21
+Internal Reference Designator :BMC_Mgmf
+Internal Type                 :RJ-45
+External Reference Designator :LAN
+External Type                 :RJ-45
+Port Type                     :Network Port
+
+                          Type8 message
+-------------------------------------------------------------------------
+Number: 4
+-------------------------------------------------------------------------
+************start type show*********-----------------
+Type  :8
+Handle:22
+Internal Reference Designator :HDD0(J15)
+Internal Type                 :SAS/SATA Plug Receptacle
+External Reference Designator :Null
+External Type                 :None
+Port Type                     :SATA
+
+                          Type8 message
+-------------------------------------------------------------------------
+Number: 5
+-------------------------------------------------------------------------
+************start type show*********-----------------
+Type  :8
+Handle:23
+Internal Reference Designator :HDD1(J16)
+Internal Type                 :SAS/SATA Plug Receptacle
+External Reference Designator :Null
+External Type                 :None
+Port Type                     :SATA
+
+                          Type8 message
+-------------------------------------------------------------------------
+Number: 6
+-------------------------------------------------------------------------
+************start type show*********-----------------
+Type  :8
+Handle:24
+Internal Reference Designator :HDD2(J17)
+Internal Type                 :SAS/SATA Plug Receptacle
+External Reference Designator :Null
+External Type                 :None
+Port Type                     :SATA
+
+                          Type8 message
+-------------------------------------------------------------------------
+Number: 7
+-------------------------------------------------------------------------
+************start type show*********-----------------
+Type  :8
+Handle:25
+Internal Reference Designator :HDD3(J18)
+Internal Type                 :SAS/SATA Plug Receptacle
+External Reference Designator :Null
+External Type                 :None
+Port Type                     :SATA
+
+                          Type8 message
+-------------------------------------------------------------------------
+Number: 8
+-------------------------------------------------------------------------
+************start type show*********-----------------
+Type  :8
+Handle:26
+Internal Reference Designator :USB0-1(J46)
+Internal Type                 :Access Bus
+External Reference Designator :Null
+External Type                 :None
+Port Type                     :USB
+

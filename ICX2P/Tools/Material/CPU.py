@@ -49,9 +49,10 @@ class Icx8352Y(ICX):
     BaseFreq = 2.2
     TurboFreq = 2.8  # AVX / All Cores
     Cores = 32
-    Stepping = "D2"
+    Stepping = "D1"
     L3_Cache = 49152
     TDP = 205
+    Level = "Platinum"
 
 
 class Icx6348(ICX):

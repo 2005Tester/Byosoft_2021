@@ -6,6 +6,7 @@
 #  stored in a retrieval system, or transmitted in any form or by any
 #  means without the express written consent of Byosoft Corporation.
 # -*- encoding=utf8 -*-
+import json
 import os
 import csv
 import re
@@ -14,11 +15,18 @@ import logging
 import time
 import difflib
 from PIL import Image
+from pathlib import Path
 from ICX2P.Config import SutConfig
 from ICX2P.Config.PlatConfig import Msg, Key
 from ICX2P.BaseLib import SetUpLib, BmcLib
 from batf.SutInit import Sut
 from batf import SerialLib, SshLib
+
+
+def root_path() -> Path:
+    """Get current project root path, return Path object"""
+    root = Path(__file__).parent.parent
+    return root
 
 
 # OS - capture time,
@@ -312,24 +320,26 @@ def read_file(file: str) -> str:
         return f.read()
 
 
-def check_differ(object1: str, object2: str) -> list:
+def check_differ(object1, object2) -> list:
     """
     Compare the differences line by line for two object
     Parameters
     ----------
-    object1: str    file path or text strings
-    object2: str    file path or text strings
+    object1:        file path or object
+    object2:        file path or object
 
     Returns
     -------
-    str            if two object have any difference, return list of different strings
-                   if two object have no difference, return empty list
+    list            if two object have any difference, return list of different strings
+                    if two object have no difference, return empty list
     """
 
+    obj1 = json.dumps(object1, indent=0)
+    obj2 = json.dumps(object2, indent=0)
+    content1 = read_file(obj1) if os.path.isfile(obj1) else obj1
+    content2 = read_file(obj2) if os.path.isfile(obj2) else obj2
     diff = difflib.Differ()
-    text1 = read_file(object1) if os.path.isfile(object1) else object1
-    text2 = read_file(object2) if os.path.isfile(object2) else object2
-    check_diff = diff.compare(text1.splitlines(), text2.splitlines())
+    check_diff = diff.compare(content1.splitlines(), content2.splitlines())
     difference = []
     for d in check_diff:
         if not d.startswith(" "):

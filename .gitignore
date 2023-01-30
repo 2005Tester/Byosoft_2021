@@ -9,3 +9,9 @@ hpm/
 tmp/
 Icx2pDaily.bat
 ScopeLocal.py
+AllTestLocal.csv
+SutConfigLocal.py
+chromedriver.exe
+*Daily.bat
+*Weekly.bat
+*Release.bat

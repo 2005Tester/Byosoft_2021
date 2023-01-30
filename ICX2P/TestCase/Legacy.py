@@ -108,5 +108,5 @@ def testcase_UEFIBootManager_002():
     finally:
         BmcLib.clear_cmos()
         if not SetUpLib.move_boot_option_up(Msg.BOOT_OPTION_OS, 5):
-            UpdateBIOS.update_bios('master')
+            UpdateBIOS.update_bios(SutConfig.Env.LATEST_BRANCH)
         BmcLib.set_boot_mode("Legacy", once=False)

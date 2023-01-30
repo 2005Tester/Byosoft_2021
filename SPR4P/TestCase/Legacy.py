@@ -1,11 +1,5 @@
-import logging
-from SPR4P.Config import SutConfig
-from SPR4P.BaseLib import SetUpLib, PlatMisc, BmcLib
-from batf import MiscLib, SerialLib, core
-from batf.Report import ReportGen
-from batf.SutInit import Sut
-from SPR4P.Config.PlatConfig import Key, Msg
-from SPR4P.TestCase import UpdateBIOS
+from SPR4P.Config import *
+from SPR4P.BaseLib import *
 
 # Test case ID: TC500-520
 
@@ -41,10 +35,10 @@ def boot_to_legacy_os():
     err_ignore = ["XFS .*?: Metadata (?:I/O|CRC) error", "ERST.*? support is initialized", "regulatory.(?:0|db)"]
     try:
         assert BmcLib.force_reset()
-        if not SetUpLib.wait_message('Start of legacy boot', 600):
+        if not SetUpLib.wait_msg('Start of legacy boot', 600):
             assert SetUpLib.enable_legacy_boot()
         assert MiscLib.ping_sut(SutConfig.Env.OS_IP_LEGACY, 600)
-        assert not PlatMisc.get_dmesg_keywords(["error", "fail"], err_ignore)
+        assert not PlatMisc.check_dmesg(["error", "fail"], err_ignore)
         return core.Status.Pass
     except Exception as e:
         logging.error(e)
