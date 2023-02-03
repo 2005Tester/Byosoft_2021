@@ -147,25 +147,6 @@ def dump_cpu_resource():
     return csv_file
 
 
-# match all similar named options of one page
-def match_options(key, patten, try_cnt=10):
-    name_patten = re.compile(patten)
-    SerialLib.clean_buffer(Sut.BIOS_COM)
-    tmp_data = ""
-    for i in range(try_cnt):
-        SetUpLib.send_keys([key])
-        tmp_data += SerialLib.recv_data(Sut.BIOS_COM, 1024)
-    search_result = name_patten.findall(tmp_data)
-    if not search_result:
-        logging.info(f"No any options matched for '{patten}'")
-        return
-    menu_list = list(set(search_result))
-    menu_list.sort(reverse=False)
-    for port in menu_list:
-        logging.info(f"Option '{port}' matched")
-    return menu_list
-
-
 # Check whether DVD-ROM exists in boot manager
 def dvd_verify():
     logging.info("** Verify DVD exists ")
@@ -395,7 +376,6 @@ def smbios_dump_compare(ssh, type_n):
         for diff in difference:
             logging.warning(diff)
         return False
-
     logging.info(f"Check SMBIOS type{type_n} pass")
     return True
 
@@ -618,60 +598,13 @@ def get_latest_hpm_bios():
         raise FileNotFoundError(f"Hpm files not found in path: {branch_latest}")
 
 
-def images_similar(image1, image2, similarity=2, hash_size=32):
-    """
-    计算两个图片相似度：
-    1.缩小图片：收缩到9*8的大小，以便它有相同的像素点。
-    2.转化为灰度图：把缩放后的图片转化为256阶的灰度图。
-    3.计算差异值：dHash算法工作在相邻像素之间，这样每行9个像素之间产生了8个不同的差异，一共8行，则产生了64个差异值
-    4.获得指纹：如果左边的像素比右边的更亮，则记录为1，否则为0.
-    5.最后比对两张图片的指纹，获得汉明距离。
-    6.最后计算百分比，差异度越低，则图片越相似。
-
-    Parameters
-    ----------
-    image1 : str
-        File path of the 1st image to be check.
-    image2 : str
-        File path of the 2nd image to be check.
-    similarity: int
-        image similarity value，if difference percentage is larger，the two images are different，return False
-    hash_size: int
-        resize pixels of the grey image，default = 8
-
-    Returns
-    -------
-    Bool
-    return True if they are same or similar, otherwise return false
-    """
-    def image_fp(image):
-        try:
-            img = Image.open(image)
-        except Exception as e:
-            raise IOError(f"Open image failed: {e}")
-        width, height = hash_size + 1, hash_size
-        img_resize = img.convert("L").resize((width, height), Image.ANTIALIAS)
-        pixels = numpy.asarray(img_resize)
-        diff = pixels[:, 1:] > pixels[:, :-1]
-        diff = diff.astype(int)
-        return diff
-    logging.info(f"Compare images: {image1} -> {image2}")
-    img1_fp = image_fp(image1)
-    img2_fp = image_fp(image2)
-    calc = abs(img1_fp - img2_fp)
-    percentage = (numpy.count_nonzero(calc) * 100) / calc.size
-    logging.debug(f"Images difference: {round(percentage, 1)}%")
-    if percentage <= similarity:
-        return True
-
-
 def is_sp_boot_success(timeout=300):
     logging.info("Waiting SP boot complete...")
     start_time = time.time()
     sp_flag = root_path() / "Resource/Images/sp_flag.bmp"
     while time.time() - start_time <= timeout:
         tmp = screen_crop((0, 0, 200, 30), name="sp_boot", path=os.path.join(SutConfig.Env.LOG_DIR, var.get('current_test')))
-        if images_similar(tmp, str(sp_flag)):
+        if MiscLib.images_similar(tmp, str(sp_flag)):
             return True
         time.sleep(15)
     logging.info("SP boot failed")
@@ -736,7 +669,9 @@ def mark_legacy_test(func):
 
 
 def mark_skip_if(condition, reason=None, equal=True, value=None):
-    """装饰器，当condition条件为True时，跳过测试; 如果condition为函数实例, 并且函数返回值满足equal和value的条件, 则跳过测试"""
+    """
+    装饰器，当condition条件为True时，跳过测试;
+    如果condition为函数实例, 并且函数(返回值)满足equal(是否等于)和value(预期值)的条件, 则跳过测试"""
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -757,53 +692,6 @@ def mark_skip_if(condition, reason=None, equal=True, value=None):
             return func(*args, **kwargs)
         return wrapper
     return decorator
-
-
-def read_file(file: str) -> str:
-    """
-    Easy to open and read file
-    Parameters
-    ----------
-    file:str        file object to be read
-
-    Returns
-    -------
-    str             return strings of file's content
-    """
-
-    if not os.path.exists(file):
-        logging.error(f"File not exist: {file}")
-        return ""
-    with open(file, "r", encoding="utf-8") as f:
-        return f.read()
-
-
-def check_differ(object1, object2) -> list:
-    """
-    Compare the differences line by line for two object
-    Parameters
-    ----------
-    object1:        file path or object
-    object2:        file path or object
-
-    Returns
-    -------
-    list            if two object have any difference, return list of different strings
-                    if two object have no difference, return empty list
-    """
-
-    obj1 = json.dumps(object1, indent=0)
-    obj2 = json.dumps(object2, indent=0)
-    content1 = read_file(obj1) if os.path.isfile(obj1) else obj1
-    content2 = read_file(obj2) if os.path.isfile(obj2) else obj2
-    diff = difflib.Differ()
-    check_diff = diff.compare(content1.splitlines(), content2.splitlines())
-    difference = []
-    for d in check_diff:
-        if not d.startswith(" "):
-            logging.warning(d)
-            difference.append(d)
-    return difference
 
 
 def compare_file(path1, path2):
@@ -840,7 +728,7 @@ def del_lines_from_file(contents, path):
 
 
 def match_config_version():
-    """根据run_type的不同,自动切换版本.(解决多个项目共用代码问题)"""
+    """根据run_type的不同,自动切换版本 (解决多个项目共用代码问题)"""
     class Ver:
         ME = SutConfig.Env.ME_VER_LATEST
         RC = SutConfig.Env.RC_VER_LATEST
@@ -854,5 +742,4 @@ def match_config_version():
         Ver.MicroCode = SutConfig.Env.MICRO_CODE_RELEASE
         Ver.BiosVer = SutConfig.Env.BIOS_VER_RELEASE
         Ver.BiosDate = SutConfig.Env.BIOS_DATE_RELEASE
-
     return Ver

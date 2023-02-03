@@ -165,7 +165,7 @@ def Testcase_EquipmentTools_007():
         origin_logo = PlatMisc.save_logo(path=Env.LOG_DIR, name="origin_logo")
         assert origin_logo, "fail to get origin_logo"
 
-        assert SetUpLib.boot_to_default_os(reset=False)
+        assert SetUpLib.boot_to_default_os(reset=False, delay=15)
         backup_logo = "logo_backup.bmp"
         assert PlatMisc.uni_command(f"-getlogo {backup_logo}")  # backup logo
         assert PlatMisc.unilogo_update(name="CustomLogo.bmp")
@@ -174,7 +174,7 @@ def Testcase_EquipmentTools_007():
         assert modify_logo, "fail to get modify_logo"
         assert not MiscLib.compare_images(modify_logo, origin_logo), "Modify logo should be different with origin logo"
 
-        assert SetUpLib.boot_to_default_os(reset=False)
+        assert SetUpLib.boot_to_default_os(reset=False, delay=15)
         assert PlatMisc.uni_command(f"-setlogo {backup_logo}")  # restore logo
 
         restore_logo = PlatMisc.save_logo(path=Env.LOG_DIR, name="restore_logo")
@@ -480,161 +480,38 @@ def Testcase_EquipmentTools_017():
         PwdLib.restore_admin_password()
 
 
-# @core.test_case(("2616", "[TC2616] Testcase_EquipmentTools_025", "装备脚本定制BIOS测试"))
-# def Testcase_EquipmentTools_025():
-#     """
-#     Name:       装备脚本定制BIOS测试
-#     Condition:  1、装备包已上传到OS（装备支持的OS）；
-#                 2、定制Logo已上传OS装备包路径，假定为test.bmp；
-#                 3、使用装备BMC、BIOS版本。
-#     Steps:      1、启动进OS，装备路径下创建配置文件customset.ini，文件内容格式如：
-#                 BootOrder 1023  
-#                 @uniPassword Admin123456!
-#                 @uniLogoFile test.bmp
-#                 保存后执行./common_config.sh脚本，检查执行情况，有结果A；
-#                 2、执行./common_verify.sh脚本，检查校验情况，有结果B；
-#                 3、重启在启动过程查看Logo是否定制成功，登录Setup菜单检查密码和变量是否定制成功，有结果C；
-#     Result:     A：脚本执行成功，提示变量、Logo、密码均定制成功；
-#                 B：脚本执行成功，提示变量、Logo、密码均校验成功；
-#                 C：变量、Logo、密码均与定制一致。
-#     Remark:     1、定制变量即自行选择；
-#                 2、BIOS版本格式a.b.c，其中a为2表示上网版本，1表示装备版本；BMC版本格式a.b.c.d，其中d为奇数表示上网版本，偶数表示装备版本；
-#     """
-#     try:
-#         
-#         return core.Status.Pass
-#     except Exception as e:
-#         logging.error(e)
-#         return core.Status.Fail
-#     finally:
-#         BmcLib.clear_cmos()
+@core.test_case(("2617", "[TC2617] Testcase_EquipmentTools_028", "装备脚本开启VMD"))
+def Testcase_EquipmentTools_028():
+    """
+    Name:       装备脚本开启VMD
+    Condition:  1、装备包已上传到OS（装备支持的OS）；
+                2、使用装备BMC、BIOS版本。
+    Steps:      1、启动进OS，装备路径下执行./intel_VMD_Open.sh命令定制VMD选项，检查执行情况，有结果A；
+                2、重启后进入Setup菜单，检查VMD是否已打开，有结果B；
+                3、进OS后通过uniCfg关闭VMD,进入Setup再次检查VMD选项情况，有结果C。
+    Result:     A：脚本运行成功，VMD开启，且系统自动重启；
+                B：VMD已开启；
+                C：VMD已关闭。
+    Remark:     1、BIOS版本格式a.b.c，其中a为2表示上网版本，1表示装备版本；BMC版本格式a.b.c.d，其中d为奇数表示上网版本，偶数表示装备版本；
+    """
+    try:
+        assert SetUpLib.boot_to_default_os(delay=10)
+        assert Sut.UNITOOL.write(**BiosCfg.VMD_EN)
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Msg.PATH_VMD)
+        assert SetUpLib.get_option_value(Msg.VMD_CONFIG) == Msg.ENABLE
 
-
-# @core.test_case(("2617", "[TC2617] Testcase_EquipmentTools_028", "装备脚本开启VMD"))
-# def Testcase_EquipmentTools_028():
-#     """
-#     Name:       装备脚本开启VMD
-#     Condition:  1、装备包已上传到OS（装备支持的OS）；
-#                 2、使用装备BMC、BIOS版本。
-#     Steps:      1、启动进OS，装备路径下执行./intel_VMD_Open.sh命令定制VMD选项，检查执行情况，有结果A；
-#                 2、重启后进入Setup菜单，检查VMD是否已打开，有结果B；
-#                 3、进OS后通过uniCfg再次检查VMD选项情况，有结果C。
-#     Result:     A：脚本运行成功，VMD开启，且系统自动重启；
-#                 B：VMD已开启；
-#                 C：VMD已关闭。
-#     Remark:     1、BIOS版本格式a.b.c，其中a为2表示上网版本，1表示装备版本；BMC版本格式a.b.c.d，其中d为奇数表示上网版本，偶数表示装备版本；
-#     """
-#     try:
-#         
-#         return core.Status.Pass
-#     except Exception as e:
-#         logging.error(e)
-#         return core.Status.Fail
-#     finally:
-#         BmcLib.clear_cmos()
-
-
-# @core.test_case(("2618", "[TC2618] Testcase_EquipmentTools_029", "装备脚本Margin测试"))
-# def Testcase_EquipmentTools_029():
-#     """
-#     Name:       装备脚本Margin测试
-#     Condition:  1、装备包已上传到OS（装备支持的OS）；
-#                 2、使用装备BMC、BIOS版本。
-#     Steps:      1、启动进OS，执行./memtest_config.sh使能装备标志位
-#                 2、OS下执行以下几条命令后冷复位单板做Margin测试（V5单板）
-#                 ./uniCfg -w EnableBiosSsaRMTonFCB:1 
-#                 ./uniCfg -w RankMargin:0 
-#                 ./uniCfg -w EnableBiosSsaRMT:1 
-#                 ./uniCfg -w BiosSsaPerBitMargining:1 
-#                 ./uniCfg -w BiosSsaDebugMessages:5 
-#                 ./uniCfg -w SysDbgLevel:1
-#                 3、保存一份串口日志，启动进OS，使用rw工具读取type128中Margin结果内存地址，对比内存中的Margin结果和串口打印的Margin结果中打印*的地方，有结果A。
-#                 具体操作步骤：
-#                 1）进入OS，敲dmidecode -t 128，获取第二个word32的值为00 60 2B 6E（该地址为小端模式）
-#                 2）读取上面地址中内容 ./rw mmr 6E2B6000 2000 ，查看6E2B6510开始的一段非0值（十六进制）
-#                 3）串口打印中搜索rank margin（十进制）
-#                 4）将2）和3）中的值进行对比，有结果A
-#                 
-#     Result:     A：Margin测试结果正确。
-#     Remark:     1、BIOS版本格式a.b.c，其中a为2表示上网版本，1表示装备版本；BMC版本格式a.b.c.d，其中d为奇数表示上网版本，偶数表示装备版本；
-#     """
-#     try:
-#         
-#         return core.Status.Pass
-#     except Exception as e:
-#         logging.error(e)
-#         return core.Status.Fail
-#     finally:
-#         BmcLib.clear_cmos()
-
-
-# @core.test_case(("2619", "[TC2619] Testcase_EquipmentModeCe_001", "装备模式下，触发MEM CE错误测试"))
-# def Testcase_EquipmentModeCe_001():
-#     """
-#     Name:       装备模式下，触发MEM CE错误测试
-#     Condition:  1、使用装备BMC、BIOS版本。
-#     Steps:      1、启动进OS，设置装备标志，reboot；
-#                 2、启动进OS，飞线注入ce错误，观察OS dmesg信息及FDM日志，有结果A。
-#     Result:     A：OS运行正常，dmesg和FDM记录ce错误。
-#     Remark:     1、BIOS版本格式a.b.c，其中a为2表示上网版本，1表示装备版本；BMC版本格式a.b.c.d，其中d为奇数表示上网版本，偶数表示装备版本；
-#     """
-#     try:
-#         
-#         return core.Status.Pass
-#     except Exception as e:
-#         logging.error(e)
-#         return core.Status.Fail
-#     finally:
-#         BmcLib.clear_cmos()
-
-
-# @core.test_case(("2620", "[TC2620] Testcase_EquipmentModeCe_002", "装备模式下，触发PCIE CE错误测试"))
-# def Testcase_EquipmentModeCe_002():
-#     """
-#     Name:       装备模式下，触发PCIE CE错误测试
-#     Condition:  1、使用装备BMC、BIOS版本。
-#     Steps:      1、启动进OS，设置装备标志，reboot；
-#                 2、启动进OS，ITP工具注入PCIE ce故障，观察OS运行情况及FDM日志，有结果A。
-#     Result:     A：OS运行正常，dmesg和FDM记录ce错误。
-#     Remark:     1、ITP工具PCIE ce故障注入错误，命令如下：
-#                   halt()
-#                   ei.resetInjcetorLockCheck()    ei.injectPcieError(0,0,errType="ce")
-#                   ITP.go()
-#                 2、BIOS版本格式a.b.c，其中a为2表示上网版本，1表示装备版本；BMC版本格式a.b.c.d，其中d为奇数表示上网版本，偶数表示装备版本；
-#     """
-#     try:
-#         
-#         return core.Status.Pass
-#     except Exception as e:
-#         logging.error(e)
-#         return core.Status.Fail
-#     finally:
-#         BmcLib.clear_cmos()
-
-
-# @core.test_case(("2621", "[TC2621] Testcase_EquipmentModeCe_003", "装备模式下，触发QPI CE错误测试"))
-# def Testcase_EquipmentModeCe_003():
-#     """
-#     Name:       装备模式下，触发QPI CE错误测试
-#     Condition:  1、使用装备BMC、BIOS版本。
-#     Steps:      1、启动进OS，设置装备标志，reboot；
-#                 2、启动进OS，ITP工具注入QPI ce故障，观察OS运行情况及FDM日志，有结果A。
-#     Result:     A：OS运行正常，dmesg和FDM记录ce错误。
-#     Remark:     1、ITP工具QPI ce故障注入错误，命令如下：
-#                   halt()
-#                   ei.resetInjcetorLockCheck()
-#                   ei.injectQpiError(0,0,1)
-#                   ITP.go()
-#                 2、BIOS版本格式a.b.c，其中a为2表示上网版本，1表示装备版本；BMC版本格式a.b.c.d，其中d为奇数表示上网版本，偶数表示装备版本；
-#     """
-#     try:
-#         
-#         return core.Status.Pass
-#     except Exception as e:
-#         logging.error(e)
-#         return core.Status.Fail
-#     finally:
-#         BmcLib.clear_cmos()
+        assert SetUpLib.boot_to_default_os(delay=10)
+        assert Sut.UNITOOL.write(**BiosCfg.VMD_DIS)
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Msg.PATH_VMD)
+        assert SetUpLib.get_option_value(Msg.VMD_CONFIG) == Msg.DISABLE
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+        return core.Status.Fail
+    finally:
+        BmcLib.clear_cmos()
 
 
 @core.test_case(("2622", "[TC2622] Testcase_FtPxeBoot_001", "FT模式标志位检查"))
@@ -796,27 +673,6 @@ def Testcase_FtPxeBoot_008():
 #                 3、测试完成后需退出FT模式，命令如下：
 #                 maint_debug_cli
 #                 setprop DftStatus.FTModeFlag 0
-#     """
-#     try:
-#         
-#         return core.Status.Pass
-#     except Exception as e:
-#         logging.error(e)
-#         return core.Status.Fail
-#     finally:
-#         BmcLib.clear_cmos()
-
-
-# @core.test_case(("2627", "[TC2627] Testcase_MemoryBomId_002", "内存BOM ID上报BMC测试"))
-# def Testcase_MemoryBomId_002():
-#     """
-#     Name:       内存BOM ID上报BMC测试
-#     Condition:  1、内存已写入BOM ID；
-#                 2、使用装备BMC、BIOS版本。
-#     Steps:      1、查看BMC Web界面内存信息，与SMBIOS Type17中的内存信息进行对比，有结果A。
-#     Result:     A：BMC Web正确显示内存BOM ID。
-#     Remark:     1、内存BOM ID对应Type17 Assert Tag字段后8个字节；
-#                 2、BIOS版本格式a.b.c，其中a为2表示上网版本，1表示装备版本；BMC版本格式a.b.c.d，其中d为奇数表示上网版本，偶数表示装备版本；
 #     """
 #     try:
 #         

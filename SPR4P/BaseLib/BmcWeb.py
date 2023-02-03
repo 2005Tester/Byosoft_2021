@@ -74,7 +74,7 @@ class BmcWeb(Chrome):
         time.sleep(0.5)
         assert self.move_to_element("css", "#localUserIcon")
         assert self.click_until("css", "#loginOut")
-        time.sleep(0.5)
+        time.sleep(1)
         self.is_login = False
 
     def logout_quit(self):

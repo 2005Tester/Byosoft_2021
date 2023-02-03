@@ -14,9 +14,7 @@ from SPR4P.BaseLib import *
 @core.test_case(('300', '[TC300] Boot to UEFI SUSE Linux', 'Boot to UEFI SUSE Linux'))
 def boot_to_suse():
     try:
-        assert SetUpLib.boot_to_bootmanager()
-        assert SetUpLib.enter_menu(Msg.BOOT_OPTION_SUSE, Key.DOWN, 20, Msg.LINUX_GRUB)
-        # assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE)
+        assert SetUpLib.boot_os_from_bm(Msg.BOOT_OPTION_SUSE)
         logging.info("OS Boot Successful")
         return core.Status.Pass
     except Exception:
@@ -27,9 +25,7 @@ def boot_to_suse():
 @core.test_case(('301', '[TC301] 装备模式:Boot to UEFI SUSE Linux', 'Boot to UEFI SUSE Linux in Manufacture mode'))
 def boot_to_suse_mfg():
     try:
-        assert SetUpLib.boot_to_bootmanager()
-        assert SetUpLib.enter_menu(Msg.BOOT_OPTION_SUSE, Key.DOWN, 20, Msg.LINUX_GRUB)
-        # assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.BIOS_BOOT_COMPLETE)
+        assert SetUpLib.boot_os_from_bm(Msg.BOOT_OPTION_SUSE)
         logging.info("OS Boot Successful")
         return core.Status.Pass
     except Exception:

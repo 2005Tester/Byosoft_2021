@@ -287,7 +287,7 @@ def release_hpm_downgrade_test():
 @core.test_case(('906', '[TC906] POST Logo', 'Check POST Logo.'))
 def release_post_logo_check():
     try:
-        default_logo = os.path.join(PlatMisc.root_path(), "Resource/Logo/PostLogo.bmp")
+        default_logo = os.path.join(PlatMisc.root_path(), Env.POST_LOGO)
         logging.info(f"Post logo: {default_logo}")
         post_logo = PlatMisc.save_logo(name="post_logo")
         if not post_logo:
@@ -388,7 +388,7 @@ def release_boot_device_list():
         assert SetUpLib.boot_to_bootmanager()
         dev_not_found = []
         for boot_type in boot_dev:
-            if not SetUpLib.locate_option([boot_type[1]], Key.DOWN, try_counts=12):
+            if not SetUpLib.locate_option([boot_type[1]], refresh=True):
                 logging.info(f"Boot Device not found in boot manager: {boot_dev[1]}")
                 dev_not_found.append(boot_type[0])
         if dev_not_found:
@@ -416,7 +416,7 @@ def release_pxe_boot_test():
         return core.Status.Pass
     try:
         assert SetUpLib.boot_to_bootmanager()
-        assert SetUpLib.locate_option(SutConfig.Sys.PXE_UEFI_DEV)
+        assert SetUpLib.locate_option(SutConfig.Sys.PXE_UEFI_DEV, refresh=True)
         SetUpLib.send_key(Key.ENTER)
         assert SetUpLib.wait_msg(SutConfig.Sys.PXE_UEFI_MSG)
 
@@ -424,7 +424,7 @@ def release_pxe_boot_test():
         assert SetUpLib.boot_to_page(Msg.PAGE_BOOT)
         assert SetUpLib.set_option_value(Msg.PXE_BOOT_CAPABILITY, Msg.VAL_PXE_CAP[2], save=True)
         assert SetUpLib.boot_to_bootmanager()
-        assert SetUpLib.locate_option(SutConfig.Sys.PXE_UEFI_DEV_IPV6)
+        assert SetUpLib.locate_option(SutConfig.Sys.PXE_UEFI_DEV_IPV6, refresh=True)
         SetUpLib.send_key(Key.ENTER)
         assert SetUpLib.wait_msg(SutConfig.Sys.PXE_UEFI_MSG)
         return core.Status.Pass
@@ -665,7 +665,7 @@ def equip_tool_set_and_restore():
         # 抓取默认logo和bios设置
         origin_logo = PlatMisc.save_logo(path=SutConfig.Env.LOG_DIR, name="origin_logo")
         assert origin_logo, "fail to get origin_logo"
-        assert SetUpLib.boot_to_default_os(reset=False)
+        assert SetUpLib.boot_to_default_os(reset=False,delay=10)
         default_config = Sut.UNITOOL.read(*BiosCfg.HPM_KEEP)
         # 修改为非默认
         assert Sut.UNITOOL.write(**BiosCfg.HPM_KEEP)
@@ -676,7 +676,7 @@ def equip_tool_set_and_restore():
         modify_logo = PlatMisc.save_logo(path=SutConfig.Env.LOG_DIR, name="modify_logo")
         assert modify_logo, "fail to get modify_logo"
         assert not MiscLib.compare_images(modify_logo, origin_logo), "Modify logo should be different with origin logo"
-        assert SetUpLib.boot_to_default_os(reset=False)
+        assert SetUpLib.boot_to_default_os(reset=False,delay=10)
         assert Sut.UNITOOL.check(**BiosCfg.HPM_KEEP)
         assert PlatMisc.unipwd_tool(new_pw, cmd="check")
         # 恢复默认
@@ -688,7 +688,7 @@ def equip_tool_set_and_restore():
         restore_logo = PlatMisc.save_logo(path=SutConfig.Env.LOG_DIR, name="restore_logo")
         assert restore_logo, "fail to get restore_logo"
         assert MiscLib.compare_images(restore_logo, origin_logo), "Restore logo should be same with origin logo"
-        assert SetUpLib.boot_to_default_os(reset=False, timeout=Env.BOOT_DELAY * 2)
+        assert SetUpLib.boot_to_default_os(reset=False, timeout=Env.BOOT_DELAY * 2,delay=10)
         assert Sut.UNITOOL.check(**default_config)
         assert PlatMisc.unipwd_tool(Msg.BIOS_PW_DEFAULT, cmd="check")
         return core.Status.Pass

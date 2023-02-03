@@ -453,13 +453,16 @@ def delele_user_pw():
 
 
 # ###########################弱密码################################
-def pick_a_weak_password():
+def pick_a_weak_password(pw_list=None, valid=True, exclude: list = None):
     """在弱密码字典中随机挑选一个符合密码要求的弱密码"""
-    pw = random.choice(PW.WEAK_PW)
-    if not pw_is_valid(pw):
-        return pick_a_weak_password()
-    logging.info(f"Pick the weak password: {pw}")
-    return pw
+    pws = pw_list if pw_list else PW.WEAK_PW
+    pw_choice = random.choice(pws)
+    if exclude and (pw_choice in exclude):
+        return pick_a_weak_password(pw_list, valid, exclude)
+    if valid and not pw_is_valid(pw_choice):
+        return pick_a_weak_password(pw_list, valid, exclude)
+    logging.info(f"Pick the weak password: {pw_choice}")
+    return pw_choice
 
 
 def get_default_weak_pw_list() -> list:
@@ -542,7 +545,8 @@ def delete_weak_pw(weak_pws, span=1):
 
 def del_default_weak_pw_and_verify():
     weak_default = get_default_weak_pw_list()
-    weak_choice = random.choice(weak_default)
+    weak_choice = pick_a_weak_password(pw_list=weak_default, valid=False,
+                                       exclude=[PW.ADMIN, PW.USER, Msg.BIOS_PW_DEFAULT])  # 排除默认密码, 防止后续修改时出现5次以内历史密码告警
     assert SetUpLib.locate_option(Msg.DEL_WEAK_PW)
     SetUpLib.send_key(Key.ENTER)
     assert SetUpLib.wait_msg(pw_input_weak)

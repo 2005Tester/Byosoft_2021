@@ -79,6 +79,7 @@ class Attr:
     BOOT_TYPE = "UefiOptimizedBootToggle"
     PXE_EN = "SlotPxeEnable"
     HW_PREFETCHER = "MlcStreamerPrefetcherEnable"
+    VMD = "SystemVMDConfigEnable"
 
     # BMC配置相关
     BMC_WDT_POST = "SvrMngmntFrb2Enable"
@@ -433,6 +434,7 @@ class Msg:
     PATH_PERI_CONFIG = [PERI_CONFIG, SIO_1711]
     PATH_IIO_STACK = [CPU_CONFIG, IIO_CONFIG, IIO_STK_RSC_CONFIG]
     PATH_SRIOV = [PERI_CONFIG, SRIOV_MENU]
+    PATH_VMD = [CPU_CONFIG, IIO_CONFIG, VMD_MENU]
 
     # Keyboard Type
     KEYBOARD_FR = "fr-FR"
@@ -547,3 +549,7 @@ class BiosCfg:
     Boot_Fail_Policy_def = {Attr.BOOT_FAIL_POLICY: 1}
 
     Boot_Fail_Policy_aft = {Attr.BOOT_FAIL_POLICY: 2}
+
+    VMD_EN = {Attr.VMD: 1}
+    VMD_DIS = {Attr.VMD: 0}
+

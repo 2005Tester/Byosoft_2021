@@ -1,4 +1,5 @@
 import os
+from batf import var
 
 
 class Spr5885HV7:
@@ -34,6 +35,8 @@ class Spr5885HV7:
 
     # 满配CPU Socket数量
     MAX_CPU_CNT = 4
+
+    POST_LOGO = "Resource/Logo/PostLogo.bmp"
 
     # HPM BIOS存放路径 (Release测试需要刷入HPM BIOS时，需要将HPM BIOS存放到指定路径中)
     BIOS_PATH = rf"\\192.168.113.26\PublicRW\QA\Firmware\5885HV7\BIOS"
@@ -81,7 +84,7 @@ class Spr2288HV7:
     BIOS_DATE_LATEST = Spr5885HV7.BIOS_DATE_LATEST      # [master]
 
     # Release Branch Firmware Version
-    ME_VER_RELEASE = "18:6.0.4.25"          # [Release]
+    ME_VER_RELEASE = "18:6.0.3.256"          # [Release]
     RC_VER_RELEASE = "1.1.1.016B"           # [Release]
     MICRO_CODE_RELEASE = "AB0000C0"         # [Release]
     BIOS_VER_RELEASE = "2.00.19"            # [Release]
@@ -94,6 +97,11 @@ class Spr2288HV7:
 
     # 满配CPU Socket数量
     MAX_CPU_CNT = 2
+
+    POST_LOGO = "Resource/Logo/PostLogo.bmp"
+
+    if var.get("runtype") == "Release":
+        POST_LOGO = "Resource/Logo/xFusion_PostLogo.bmp"
 
     # HPM BIOS存放路径 (Release测试需要刷入HPM BIOS时，需要将HPM BIOS存放到指定路径中)
     BIOS_PATH = rf"\\192.168.113.26\PublicRW\QA\Firmware\2288HV7\BIOS"

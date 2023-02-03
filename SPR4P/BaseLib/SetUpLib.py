@@ -179,11 +179,8 @@ def locate_option(setupoption: Union[str, list], key=Key.DOWN, try_counts: int =
     else:
         setupoption = option_check(setupoption, integer)
         name, value = setupoption
-    delay = 0.5
-    if refresh:
-        Sut.BIOS_COM.read_full_buffer(save=False)
-        delay = 0.1
-    return Sut.BIOS_COM.locate_option(key, name, value, try_counts, span=span, order=order, exact=exact, delay=delay)
+    delay = 0.8 if refresh else 0.5
+    return Sut.BIOS_COM.locate_option(key, name, value, try_counts, span=span, order=order, exact=exact, delay=delay, refresh=refresh)
 
 
 def boot_with_hotkey(key, msg: str, timeout: int = SutConfig.Env.BOOT_DELAY, password=Msg.BIOS_PASSWORD, prompt=Msg.HOTKEY_PROMPT_F6):
@@ -470,7 +467,7 @@ def boot_os_from_bm(os_name: str = Msg.BOOT_OPTION_OS):
     """发送重启命令, 按下热键启动到Boot Manager, 选择OS启动项，进入OS"""
     if not boot_to_bootmanager():
         return
-    if not locate_option(os_name, Key.DOWN, 10, refresh=True):
+    if not locate_option(os_name, refresh=True):
         return
     send_key(Key.ENTER)
     if not SerialLib.is_msg_present_clean(Sut.BIOS_COM, msg=Msg.LINUX_GRUB, delay=60):
@@ -580,32 +577,10 @@ def get_option_help(option: str, key=Key.DOWN, counts: int = 40) -> str:
         return help_info
 
 
-def get_all_options(key=Key.UP, counts: int = 40, span=None) -> dict:
+def get_all_options(key=Key.UP, counts: int = 40, span=None, refresh=False) -> dict:
     """获取当前页面的所有选项和Value，返回键值对字典"""
-    options = {}
-    last_name = None
-    last_out = None
-    try_counts = 0
-    SerialLib.clean_buffer(Sut.BIOS_COM)
-    while counts:
-        send_key(key)
-        serial_out = Sut.BIOS_COM.read_full_buffer()
-        current = Sut.BIOS_COM.option(serial_out, span=span)
-        if (current.name in options) and (last_name != current.name):
-            logging.info(f"Back to start point after try {try_counts} times")
-            break
-        elif serial_out == last_out:
-            logging.info(f"Back to start point after try {try_counts} times")
-            break
-        options[current.name] = current.value if current.value else None
-        last_name = current.name
-        last_out = serial_out
-        try_counts += 1
-    logging.info(f"Current page options:\n{json.dumps(options, indent=4)}")
-    Sut.BIOS_COM.current.name = None
-    if not options:
-        logging.warning("Current page options is empty or get options error")
-    return options
+    delay = 0.95 if refresh else 0.5
+    return Sut.BIOS_COM.get_all_options(key=key, counts=counts, span=span, refresh=refresh, delay=delay)
 
 
 def load_custom_default():
@@ -731,33 +706,18 @@ def save_with_exit():
 def get_main_info(key=Key.UP, counts: int = 40) -> dict:
     """获取main页面的所有选项和Value,因为页面在不停刷新,需要特殊处理"""
     name_overwrite = ["System Time", "System Date"]
-    options = {}
-    last_name = None
-    last_out = None
-    try_counts = 0
-    SerialLib.clean_buffer(Sut.BIOS_COM)
-    while counts:
-        send_key(key)
-        serial_out = Sut.BIOS_COM.read_full_buffer(delay=0.5)  # read and drop it, do not remove this step
-        serial_out = Sut.BIOS_COM.read_full_buffer(delay=0.5)
-        current = Sut.BIOS_COM.option(serial_out)
-        for op_name in name_overwrite:
-            if op_name in current.name:
-                current.name = op_name  # deal with special option name due to refresh too fast
-                break
-        if (current.name in options) and (last_name != current.name):
-            logging.info(f"Back to start point after try {try_counts} times")
-            break
-        elif serial_out == last_out:
-            logging.info(f"Back to start point after try {try_counts} times")
-            break
-        options[current.name] = current.value if current.value else None
-        last_name = current.name
-        last_out = serial_out
-        try_counts += 1
-    logging.info(f"Current page options:\n{json.dumps(options, indent=4)}")
-    Sut.BIOS_COM.current.name = None
-    return options
+    options = get_all_options(key, counts, refresh=True)
+    main_options = {}
+    for op_name, op_value in options.items():
+        if any(ov in op_name for ov in name_overwrite):
+            for name_ov in name_overwrite:
+                if name_ov in op_name:
+                    main_options[name_ov] = op_value
+                    break
+        else:
+            main_options[op_name] = op_value
+    logging.info(f"Main page info: \n{json.dumps(main_options, indent=4)}")
+    return main_options
 
 
 def check_grey_option(option: Union[str, list, dict], key=Key.DOWN, counts=40, refresh_keys: list = None, integer=False, span: int = None) -> bool:
@@ -796,10 +756,10 @@ def get_post_log(reset=True, timeout=SutConfig.Env.BOOT_DELAY) -> str:
     return post_log
 
 
-def get_row_lines(key=Key.ENTER):
+def get_visiable_text(key=Key.ENTER):
     """
-    (需要先定位到某个界面)按下键盘,读取串口串口输出,并解析出setup中所有可见的文字(包括置灰和无法选中的部分)
-    返回列表,每一行的文字作为列表的一个元素(按行编号从小到大排序)
+    先定位到某个页面,按下键盘,读取串口串口输出,并解析出setup中所有可见的文字,包括置灰和无法选中的部分.
+    返回列表,每一行的文字作为列表的一个元素,按行编号从小到大排序.
     """
     send_key(key, delay=1)
     strs = Sut.BIOS_COM.read_full_buffer()

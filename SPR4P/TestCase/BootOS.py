@@ -200,7 +200,7 @@ def Testcase_PxeBootUefi_006():
                 logging.info("modify MAC")
                 SshLib.execute_command(Sut.OS_SSH,f"eeupdate64e /NIC=2 /MAC={mac}")
                 assert SetUpLib.boot_to_bootmanager()
-                assert SetUpLib.locate_option(SutConfig.Sys.PXE_UEFI_DEV),f"{boot_success}th times find PXE Boot devices fail"
+                assert SetUpLib.locate_option(SutConfig.Sys.PXE_UEFI_DEV, refresh=True), f"{boot_success}th times find PXE Boot devices fail"
                 SetUpLib.send_key(Key.ENTER)
                 assert SetUpLib.wait_msg(SutConfig.Sys.PXE_UEFI_MSG),f"{boot_success}th times PXE Boot fail"
                 boot_success = boot_success + 1
@@ -273,7 +273,7 @@ def Testcase_Check_PxePort():
     """
     try:
         assert SetUpLib.boot_to_bootmanager()
-        assert SetUpLib.locate_option(r'UEFI PXEv4:', order=Sys.NETWORK_PORT, exact=False)
+        assert SetUpLib.locate_option(r'UEFI PXEv4:', order=Sys.NETWORK_PORT, exact=False, refresh=True)
         assert SetUpLib.locate_option(SutConfig.Sys.PXE_UEFI_DEV), f" find PXE Boot devices fail"
         SetUpLib.send_key(Key.ENTER)
         assert SetUpLib.wait_msg(SutConfig.Sys.PXE_UEFI_MSG)

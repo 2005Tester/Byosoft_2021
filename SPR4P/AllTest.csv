@@ -493,7 +493,7 @@ Custom.Testcase_Redfish_003(),,,Yes,Yes
 Equipment.Testcase_EquipmentTools_003(),equip,,Yes,Yes
 Equipment.Testcase_Vddio_001(),,,Yes,Yes
 Equipment.Testcase_Vddio_002(),equip,,Yes,Yes
-Equipment.Testcase_Vddio_003(),,,Yes,Yes
+Equipment.Testcase_Vddio_003(),equip,,Yes,Yes
 Equipment.Testcase_EquipmentTools_008(),equip,,,Yes
 Equipment.Testcase_EquipmentTools_009(),equip,,,Yes
 Equipment.Testcase_EquipmentTools_001(),,,,Yes

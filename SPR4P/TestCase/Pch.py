@@ -68,7 +68,7 @@ def Testcase_UsbPort_001():
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Msg.PCH_CONFIG)
         assert SetUpLib.locate_option(Msg.USB_CONFIG)
-        option_row_lines = SetUpLib.get_row_lines(key=Key.ENTER)
+        option_row_lines = SetUpLib.get_visiable_text(key=Key.ENTER)
         if BmcLib.get_fw_version().PRODUCT == SutConfig.Env.PROJECT_NAME:
             logging.debug("no front usb on 2P W/A")
             pass

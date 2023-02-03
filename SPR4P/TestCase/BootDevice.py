@@ -95,7 +95,7 @@ def Testcase_BootDeviceTypeUefi_004():
     """
     try:
         assert SetUpLib.boot_to_bootmanager()
-        boot_options = SetUpLib.get_all_options()
+        boot_options = SetUpLib.get_all_options(refresh=True)
         for op in boot_options:
             assert "sp" not in op.lower(), f"SP boot found: {op}"
         assert SolLib.boot_with_hotkey(Key.F6, Msg.F6_CONFIRM_UEFI)
@@ -191,7 +191,7 @@ def Testcase_BootDeviceTypeLegacy_004():
     """
     try:
         assert SetUpLib.boot_to_bootmanager()
-        boot_options = SetUpLib.get_all_options()
+        boot_options = SetUpLib.get_all_options(refresh=True)
         for op in boot_options:
             assert "sp" not in op.lower(), f"SP boot found: {op}"
         assert SolLib.boot_with_hotkey(Key.F6, Msg.F6_CONFIRM_LEGACY)

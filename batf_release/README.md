@@ -64,6 +64,8 @@ core.capture_screen(img_dir=None, img_file=None)
 4. 优化grey_option: 支持通过参数手动指定选项跨行.
 5. 优化gen_report: 提高生成HTML报告的速度.
 6. 优化TcExecute: 当手动中断测试时,也可以生成测试报告.
+7. 优化locate_option: 支持对自刷新页面,选项的定位.
+8. 增加get_all_options: 支持对自刷新页面,所有选项名和选项值的获取.
 
 
 **0.1.7**

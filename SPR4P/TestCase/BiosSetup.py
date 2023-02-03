@@ -2249,9 +2249,9 @@ def Testcase_HelpInfoUefi_001():
     Result:     A：启动项分类名称、启动设备名称及帮助信息显示为PXE，没有BEV字样出现。
     Remark:
     """
-    def verify_pxe():
+    def verify_pxe(refresh=False):
         try:
-            boot_dict = SetUpLib.get_all_options()
+            boot_dict = SetUpLib.get_all_options(refresh)
             boot_list = list(map(str, boot_dict.keys()))
             for pxe_info in boot_list:
                 if "PXE" in pxe_info:
@@ -2262,7 +2262,7 @@ def Testcase_HelpInfoUefi_001():
             return False
     try:
         assert SetUpLib.boot_to_bootmanager()               # BootManager_page 检查PXE设备启动名称显示
-        assert verify_pxe()
+        assert verify_pxe(refresh=True)
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)     # PXE_Configuration 检查PXE设备启动名称显示
         assert SetUpLib.enter_menu(Msg.PXE_CONFIG)
         assert verify_pxe()
