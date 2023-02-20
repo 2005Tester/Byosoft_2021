@@ -590,7 +590,7 @@ def get_current_date():
     SetUpLib.send_key(Key.ENTER)
     data = SetUpLib.get_data(3)
     date = re.findall(
-        r'\[([0-9]{2})/ +System Date.*([0-9]{2})/([0-9]{4})]\s*\[(\d+):\s*System Time.*([0-9]{2}):\s*System Time.*([0-9]{2})\]',
+        r'\[([0-9]{2})/ +(?:RTC|System) Date.*([0-9]{2})/([0-9]{4})]\s*\[(\d+):\s*(?:RTC|System) Time.*([0-9]{2}):\s*(?:RTC|System) Time.*([0-9]{2})\]',
         data)
     if date and len(list(date[0])) == 6:
         date_time = list(date[0])

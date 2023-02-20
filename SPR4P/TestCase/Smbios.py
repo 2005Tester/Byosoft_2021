@@ -15,8 +15,8 @@ TYPES = [0, 1, 2, 3, 4, 7, 9, 13, 16, 17, 19, 38, 39, 41, 127]
 def smbios_template_refresh(type_id):
     sut = "".join(re.findall("(Sut\d+)", var.get("SutCfg")))
     template = PlatMisc.root_path()/f"Resource/Smbios/{sut}/type{type_id}.txt"
-    bios_ver = PlatMisc.match_config_version().BiosVer
-    bios_date = PlatMisc.match_config_version().BiosDate
+    bios_ver = PlatMisc.config_ver().BiosVer
+    bios_date = PlatMisc.config_ver().BiosDate
     refresh_point = {
         0: {"Version: .+": f"Version: {bios_ver}",
             "Release Date: .+": f"Release Date: {bios_date}"},

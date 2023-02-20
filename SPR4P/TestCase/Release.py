@@ -66,7 +66,7 @@ def _env_restore():
     """环境恢复"""
     try:
         BmcLib.clear_cmos()
-        bios_ver = PlatMisc.match_config_version().BiosVer
+        bios_ver = PlatMisc.config_ver().BiosVer
         if BmcLib.get_fw_version().BIOS == bios_ver:
             return True
         assert _get_bios_bin_image()
@@ -202,7 +202,7 @@ def _get_all_file():
 
 @core.test_case(("901", "[TC901] Parallel flash", "Check BIOS version under setup and BMC Web"))
 def release_parallel_flash_test():
-    bios_ver = PlatMisc.match_config_version().BiosVer
+    bios_ver = PlatMisc.config_ver().BiosVer
     try:
         assert _get_bios_bin_image()
         assert Update.flash_bios_bin_and_init(TestStatus.new_bin_img)
@@ -215,7 +215,7 @@ def release_parallel_flash_test():
 
 @core.test_case(('902', '[TC902] Downgrade flash', "Check BIOS version under setup and BMC Web"))
 def release_downgrade_flash_test():
-    bios_ver = PlatMisc.match_config_version().BiosVer
+    bios_ver = PlatMisc.config_ver().BiosVer
     last_version = f"{bios_ver[:-2]}{SutConfig.Env.BRANCH_OLD[-2:]}"  # 2.00. + xx
     try:
         assert _get_bios_bin_image()
@@ -235,7 +235,7 @@ def release_downgrade_flash_test():
 @core.test_case(("903", "[TC903] ME_Check ME Version and status",
                  "ME version should be match within BIOS bin file, ME Status shoule be normal."))
 def release_me_version_status():
-    me_ver = PlatMisc.match_config_version().ME
+    me_ver = PlatMisc.config_ver().ME
     me_info = ['Oper. Firmware Version\s+{0}'.format(me_ver),
                'Recovery Firmware Version\s+{0}'.format(me_ver),
                'Intel ME Target Image Boot\s+Success']
@@ -287,7 +287,8 @@ def release_hpm_downgrade_test():
 @core.test_case(('906', '[TC906] POST Logo', 'Check POST Logo.'))
 def release_post_logo_check():
     try:
-        default_logo = os.path.join(PlatMisc.root_path(), Env.POST_LOGO)
+        post_default = PlatMisc.config_ver().PostLogo
+        default_logo = os.path.join(PlatMisc.root_path(), post_default)
         logging.info(f"Post logo: {default_logo}")
         post_logo = PlatMisc.save_logo(name="post_logo")
         if not post_logo:
@@ -668,10 +669,13 @@ def equip_tool_set_and_restore():
         assert SetUpLib.boot_to_default_os(reset=False,delay=10)
         default_config = Sut.UNITOOL.read(*BiosCfg.HPM_KEEP)
         # 修改为非默认
+        logo_backup = "logo_backup.bmp"
         assert Sut.UNITOOL.write(**BiosCfg.HPM_KEEP)
         assert PwdLib.set_admin_pw_by_unipwd(new_pw, Msg.BIOS_PASSWORD)
-        assert PlatMisc.uni_command("-getlogo logo_backup.bmp")  # backup logo
-        assert PlatMisc.unilogo_update(name="CustomLogo.bmp")
+        if PlatMisc.config_ver().LogoSrc:
+            assert PlatMisc.uni_command(f"-getlogo {logo_backup}")  # backup logo
+        custom_logo = PlatMisc.root_path() / "Resource/Logo/CustomLogo.bmp"
+        assert PlatMisc.unilogo_update(custom_logo)
         # 重启并检查修改结果
         modify_logo = PlatMisc.save_logo(path=SutConfig.Env.LOG_DIR, name="modify_logo")
         assert modify_logo, "fail to get modify_logo"
@@ -683,7 +687,10 @@ def equip_tool_set_and_restore():
         assert PlatMisc.uni_command("-c")
         logging.info("Unitool load default scuuess")
         assert PwdLib.set_admin_pw_by_unipwd(Msg.BIOS_PW_DEFAULT, new_pw)
-        assert PlatMisc.uni_command("-setlogo logo_backup.bmp")  # restore logo
+        if PlatMisc.config_ver().LogoSrc:
+            assert PlatMisc.uni_command(f"-setlogo {logo_backup}")  # restore logo
+        else:
+            assert PlatMisc.unilogo_update(PlatMisc.config_ver().LogoSrc)
         # 重启并检查恢复默认结果
         restore_logo = PlatMisc.save_logo(path=SutConfig.Env.LOG_DIR, name="restore_logo")
         assert restore_logo, "fail to get restore_logo"
@@ -697,7 +704,7 @@ def equip_tool_set_and_restore():
         return core.Status.Fail
     finally:
         PwdLib.restore_admin_password()
-        PlatMisc.unilogo_update(name="Logo.bmp")
+        PlatMisc.unilogo_update(PlatMisc.config_ver().LogoSrc)
 
 
 @core.test_case(('921', '[TC921] Testcase_Release_021', 'AC Cycle长时间测试'))

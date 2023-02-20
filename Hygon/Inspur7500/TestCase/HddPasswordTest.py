@@ -1,5 +1,4 @@
 # -*- encoding=utf8 -*-
-from Inspur7500.Config import *
 from Inspur7500.BaseLib import *
 from Inspur7500.Base import *
 
@@ -402,7 +401,7 @@ def hdd_password_018():
     except Exception as e:
         logging.info('Error...........................................')
         time.sleep(3)
-        HDDPassword._go_to_setup_two()
+        HDDPassword._boot_to_setup_two()
         BmcLib.power_off()
         time.sleep(5)
         logging.error(e)

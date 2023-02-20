@@ -1,3 +1,4 @@
+import json
 from SPR4P.Config import *
 from SPR4P.BaseLib import *
 
@@ -7,183 +8,197 @@ from SPR4P.BaseLib import *
 ####################################
 
 
-# @core.test_case(("2000", "[TC2000] Testcase_UpgradeNoChange_001", "升级配置不丢失"))
-# def Testcase_UpgradeNoChange_001():
-#     """
-#     Name:       升级配置不丢失
-#     Condition:  1、已知待升级版本b。
-#     Steps:      1、启动进Setup菜单，随机修改部分选项，F10保存重启再次进Setup菜单检查修改是否生效，有结果A；
-#                 2、使用Redfish收集一份CurrentValue值，假定为x；
-#                 3、BMC Web升级b版本后启动进OS，再次Redfish收集一份CurrentValue值，假定为y；
-#                 4、对比xy两份CurrentValue值，检查是否存在差异，有结果B。
-#     Result:     A：选项修改生效；
-#                 B：xy保持一致（不一致需确定合理性）。
-#     Remark:     
-#     """
-#     try:
-#         
-#         return core.Status.Pass
-#     except Exception as e:
-#         logging.error(e)
-#         return core.Status.Fail
-#     finally:
-#         BmcLib.clear_cmos()
+def _bios_restore(logo=False, password=False, custom=False):
+    BmcLib.clear_cmos()
+    if BmcLib.get_fw_version().BIOS != PlatMisc.config_ver().BiosVer:
+        return Update.flash_bios_bin_and_init()
+
+    if not MiscLib.ping_sut(Env.OS_IP, 10):
+        if not SetUpLib.boot_to_default_os():
+            return False
+    logo_restore = PlatMisc.unilogo_update(PlatMisc.config_ver().LogoSrc) if logo else True
+    pw_restore = PwdLib.restore_admin_password() if password else True
+    custom = PlatMisc.uni_command("-c") if custom else True
+    return logo_restore and pw_restore and custom
 
 
-# @core.test_case(("2001", "[TC2001] Testcase_UpgradeNoChange_002", "默认Logo升级不丢失"))
-# def Testcase_UpgradeNoChange_002():
-#     """
-#     Name:       默认Logo升级不丢失
-#     Condition:  1、已知待升级版本b。
-#     Steps:      1、上电启动，检查当前版本Logo，假定为x；
-#                 2、BMC Web升级b版本后启动进OS，检查版本Logo，假定为y；
-#                 3、对比xy是否一致，有结果A。
-#     Result:     A：xy保持一致。
-#     Remark:     
-#     """
-#     try:
-#         
-#         return core.Status.Pass
-#     except Exception as e:
-#         logging.error(e)
-#         return core.Status.Fail
-#     finally:
-#         BmcLib.clear_cmos()
+@core.test_case(("2000", "[TC2000] Testcase_UpgradeNoChange_001", "升级配置不丢失"))
+def Testcase_UpgradeNoChange_001():
+    """
+    Name:       升级配置不丢失
+    Condition:  1、已知待升级版本b。
+    Steps:      1、启动进Setup菜单，随机修改部分选项，F10保存重启再次进Setup菜单检查修改是否生效，有结果A；
+                2、使用Redfish收集一份CurrentValue值，假定为x；
+                3、BMC Web升级b版本后启动进OS，再次Redfish收集一份CurrentValue值，假定为y；
+                4、对比xy两份CurrentValue值，检查是否存在差异，有结果B。
+    Result:     A：选项修改生效；
+                B：xy保持一致（不一致需确定合理性）。
+    Remark:
+    """
+    try:
+        hpm_file = PlatMisc.get_latest_hpm_bios()
+
+        assert SetUpLib.boot_to_default_os()
+        assert Sut.UNITOOL.write(**BiosCfg.HPM_KEEP)
+        assert SetUpLib.boot_to_default_os()
+        log_path = PlatMisc.current_test_dir()
+        current_value_a = Sut.BMC_RFISH.current_dump(dump_json=True, path=log_path, name=f"CurrentValue_a.json")
+
+        assert Update.update_bios_hpm(hpm_file)
+        assert SetUpLib.boot_to_default_os(reset=False)
+        current_value_b = Sut.BMC_RFISH.current_dump(dump_json=True, path=log_path, name=f"CurrentValue_b.json")
+        assert current_value_a == current_value_b, "CurrentValue_a != CurrentValue_b"
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+        return core.Status.Fail
+    finally:
+        _bios_restore()
 
 
-# @core.test_case(("2002", "[TC2002] Testcase_UpgradeNoChange_003", "定制Logo升级不丢失"))
-# def Testcase_UpgradeNoChange_003():
-#     """
-#     Name:       定制Logo升级不丢失
-#     Condition:  1、已知待升级版本b；
-#                 2、装备工具已定制Logo。
-#     Steps:      1、上电启动，检查当前版本Logo是否为定制Logo，有结果A；
-#                 2、BMC Web升级b版本后启动，检查版本Logo是否为定制Logo，有结果A。
-#     Result:     A：为装备定制Logo。
-#     Remark:     
-#     """
-#     try:
-#         
-#         return core.Status.Pass
-#     except Exception as e:
-#         logging.error(e)
-#         return core.Status.Fail
-#     finally:
-#         BmcLib.clear_cmos()
+@core.test_case(("2001", "[TC2001] Testcase_UpgradeNoChange_002", "默认Logo升级不丢失"))
+def Testcase_UpgradeNoChange_002():
+    """
+    Name:       默认Logo升级不丢失
+    Condition:  1、已知待升级版本b。
+    Steps:      1、上电启动，检查当前版本Logo，假定为x；
+                2、BMC Web升级b版本后启动进OS，检查版本Logo，假定为y；
+                3、对比xy是否一致，有结果A。
+    Result:     A：xy保持一致。
+    Remark:
+    """
+    try:
+        hpm_file = PlatMisc.get_latest_hpm_bios()
+        default_logo = PlatMisc.save_logo(path=PlatMisc.current_test_dir())
+        assert Update.update_bios_hpm(hpm_file)
+        custom_logo = PlatMisc.save_logo(path=PlatMisc.current_test_dir())
+        assert MiscLib.compare_images(default_logo, custom_logo)
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+        return core.Status.Fail
+    finally:
+        _bios_restore()
 
 
-# @core.test_case(("2003", "[TC2003] Testcase_UpgradeNoChange_004", "密码升级不丢失"))
-# def Testcase_UpgradeNoChange_004():
-#     """
-#     Name:       密码升级不丢失
-#     Condition:  1、已知待升级版本b。
-#     Steps:      1、启动进Setup菜单，修改密码为x，F10保存重启使用x密码登录Setup菜单，检查是否成功，有结果A；
-#                 2、BMC Web升级b版本后启动，用x密码登录Setup菜单，检查是否成功，有结果A；
-#     Result:     A：密码x登录成功。
-#     Remark:     
-#     """
-#     try:
-#         
-#         return core.Status.Pass
-#     except Exception as e:
-#         logging.error(e)
-#         return core.Status.Fail
-#     finally:
-#         BmcLib.clear_cmos()
+@core.test_case(("2002", "[TC2002] Testcase_UpgradeNoChange_003", "定制Logo升级不丢失"))
+def Testcase_UpgradeNoChange_003():
+    """
+    Name:       定制Logo升级不丢失
+    Condition:  1、已知待升级版本b；
+                2、装备工具已定制Logo。
+    Steps:      1、上电启动，检查当前版本Logo是否为定制Logo，有结果A；
+                2、BMC Web升级b版本后启动，检查版本Logo是否为定制Logo，有结果A。
+    Result:     A：为装备定制Logo。
+    Remark:
+    """
+    try:
+        hpm_file = PlatMisc.get_latest_hpm_bios()
+
+        assert SetUpLib.boot_to_default_os(delay=10)
+        custom_logo = PlatMisc.root_path() / "Resource/Logo/CustomLogo.bmp"
+        assert PlatMisc.unilogo_update(custom_logo)
+
+        assert Update.update_bios_hpm(hpm_file)
+        custom_post_logo = PlatMisc.save_logo(path=PlatMisc.current_test_dir())
+        assert MiscLib.images_similar(custom_post_logo, str(custom_logo))
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+        return core.Status.Fail
+    finally:
+        _bios_restore(logo=True)
 
 
-# @core.test_case(("2004", "[TC2004] Testcase_UpgradeNoChange_005", "定制菜单升级不丢失"))
-# def Testcase_UpgradeNoChange_005():
-#     """
-#     Name:       定制菜单升级不丢失
-#     Condition:  1、已知待升级版本b；
-#                 2、装备工具已定制Setup菜单。
-#     Steps:      1、BMC Web升级b版本，启动进Setup菜单，按"Load Custom Default"，检查定制化菜单是否正常加载，有结果A。
-#     Result:     A：定制化菜单正常加载，选项值与定制一致。
-#     Remark:     
-#     """
-#     try:
-#         
-#         return core.Status.Pass
-#     except Exception as e:
-#         logging.error(e)
-#         return core.Status.Fail
-#     finally:
-#         BmcLib.clear_cmos()
+@core.test_case(("2003", "[TC2003] Testcase_UpgradeNoChange_004", "密码升级不丢失"))
+def Testcase_UpgradeNoChange_004():
+    """
+    Name:       密码升级不丢失
+    Condition:  1、已知待升级版本b。
+    Steps:      1、启动进Setup菜单，修改密码为x，F10保存重启使用x密码登录Setup菜单，检查是否成功，有结果A；
+                2、BMC Web升级b版本后启动，用x密码登录Setup菜单，检查是否成功，有结果A；
+    Result:     A：密码x登录成功。
+    Remark:
+    """
+    try:
+        pw_x = PwdLib.gen_pw(prefix="Admin@", digit=2, upper=PW.MAX - 8)
+        hpm_file = PlatMisc.get_latest_hpm_bios()
+        assert SetUpLib.boot_to_page(Msg.PAGE_SECURITY)
+        assert PwdLib.set_admin_pw_and_verify(pw_x, PW.ADMIN)
+        assert Update.update_bios_hpm(hpm_file)
+        assert PwdLib.continue_to_setup_with_pw(pw_x)
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+        return core.Status.Fail
+    finally:
+        _bios_restore(password=True)
 
 
-# @core.test_case(("2005", "[TC2005] Testcase_UpgradeNoChange_006", "相同选项版本间默认值不同，默认配置下升级测试"))
-# def Testcase_UpgradeNoChange_006():
-#     """
-#     Name:       相同选项版本间默认值不同，默认配置下升级测试
-#     Condition:  1、已知当前版本a、待升级打桩版本b；
-#                 2、ab版本间选项m默认值不同，假定a版本m选项默认值为x，b版本m选项默认值为y。
-#     Steps:      1、BMC命令行Clearcmos操作；
-#                 2、启动进Setup菜单，检查m选项值，有结果A；
-#                 3、BMC Web升级b版本，启动进Setup菜单，检查m选项值，有结果B。
-#     Result:     A：选项m值为x；
-#                 B：选项m值为y。
-#     Remark:     
-#     """
-#     try:
-#         
-#         return core.Status.Pass
-#     except Exception as e:
-#         logging.error(e)
-#         return core.Status.Fail
-#     finally:
-#         BmcLib.clear_cmos()
+@core.test_case(("2004", "[TC2004] Testcase_UpgradeNoChange_005", "定制菜单升级不丢失"))
+def Testcase_UpgradeNoChange_005():
+    """
+    Name:       定制菜单升级不丢失
+    Condition:  1、已知待升级版本b；
+                2、装备工具已定制Setup菜单。
+    Steps:      1、BMC Web升级b版本，启动进Setup菜单，按"Load Custom Default"，检查定制化菜单是否正常加载，有结果A。
+    Result:     A：定制化菜单正常加载，选项值与定制一致。
+    Remark:
+    """
+    try:
+        set_options = BiosCfg.HPM_KEEP
+        hpm_file = PlatMisc.get_latest_hpm_bios()
+        assert SetUpLib.boot_to_default_os()
+        assert Sut.UNITOOL.write(**set_options)
+        assert PlatMisc.uni_command(Msg.UNI_SAVE_CUSTOM_DEFAULT)
+        assert SetUpLib.boot_to_page(Msg.PAGE_SAVE)
+        assert SetUpLib.locate_option(Msg.LOAD_CUSTOM_DEFAULT)
+        assert Update.update_bios_hpm(hpm_file)
+        assert SetUpLib.continue_to_page(Msg.PAGE_SAVE)
+        assert SetUpLib.locate_option(Msg.LOAD_CUSTOM_DEFAULT)
+        assert SetUpLib.back_to_front_page()
+        SetUpLib.send_key(Key.ENTER)
+        assert MiscLib.ping_sut(Env.OS_IP, 300)
+        assert Sut.UNITOOL.check(**set_options)
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+        return core.Status.Fail
+    finally:
+        _bios_restore(custom=True)
 
 
-# @core.test_case(("2006", "[TC2006] Testcase_UpgradeNoChange_007", "相同选项版本间默认值不同，非默认配置下升级测试"))
-# def Testcase_UpgradeNoChange_007():
-#     """
-#     Name:       相同选项版本间默认值不同，非默认配置下升级测试
-#     Condition:  1、已知当前版本a、待升级打桩版本b；
-#                 2、ab版本间选项m默认值不同，假定a版本m选项默认值为x，b版本m选项默认值为y，m选项除xy外还有可选项z；
-#                 3、当前a版本为默认配置。
-#     Steps:      1、启动进Setup菜单，检查m选项值，有结果A；
-#                 2、修改m选项值为z，F10保存重启进setup菜单，检查修改是否生效，有结果B；
-#                 3、BMC Web升级b版本，启动进Setup菜单，检查m选项值，有结果B；
-#                 4、F9恢复默认，F10保存重启进Setup菜单，检查m选项值，有结果C。
-#     Result:     A：选项m值为x；
-#                 B：选项m值为z；
-#                 C：选项m值为y。
-#     Remark:     
-#     """
-#     try:
-#         
-#         return core.Status.Pass
-#     except Exception as e:
-#         logging.error(e)
-#         return core.Status.Fail
-#     finally:
-#         BmcLib.clear_cmos()
-
-
-# @core.test_case(("2007", "[TC2007] Testcase_Redfish_001", "升级后未启动时带外设置变量值"))
-# def Testcase_Redfish_001():
-#     """
-#     Name:       升级后未启动时带外设置变量值
-#     Condition:  1、Postman工具已安装。
-#     Steps:      1、下电升级BIOS，升级完成后仍保持下电状态；
-#                 2、通过Redfish修改部分Setup变量并下发；
-#                 3、启动进Setup菜单，检查变量修改是否生效，有结果A。
-#     Result:     A：Redfish修改生效。
-#     Remark:     1、Redfish设置接口：
-#                 https://192.168.X.XXX/redfish/v1/Systems/1/Bios/Settings
-#                 192.168.X.XXX为BMC IP地址；
-#                 2、支持Redfish修改变量参考Setup菜单基线；
-#                 3、通过PATCH操作进行带外设置。
-#     """
-#     try:
-#         
-#         return core.Status.Pass
-#     except Exception as e:
-#         logging.error(e)
-#         return core.Status.Fail
-#     finally:
-#         BmcLib.clear_cmos()
+@core.test_case(("2007", "[TC2007] Testcase_Redfish_001", "升级后未启动时带外设置变量值"))
+def Testcase_Redfish_001():
+    """
+    Name:       升级后未启动时带外设置变量值
+    Condition:  1、Postman工具已安装。
+    Steps:      1、下电升级BIOS，升级完成后仍保持下电状态；
+                2、通过Redfish修改部分Setup变量并下发；
+                3、启动进Setup菜单，检查变量修改是否生效，有结果A。
+    Result:     A：Redfish修改生效。
+    Remark:     1、Redfish设置接口：
+                https://192.168.X.XXX/redfish/v1/Systems/1/Bios/Settings
+                192.168.X.XXX为BMC IP地址；
+                2、支持Redfish修改变量参考Setup菜单基线；
+                3、通过PATCH操作进行带外设置。
+    """
+    try:
+        hpm_file = PlatMisc.get_latest_hpm_bios()
+        assert Update.update_bios_hpm(hpm_file, power_on=False)
+        set_options = Sut.BMC_RFISH.set_bios_option(**RedfishCfg.HPM_KEEP)
+        assert set_options.result, f"Set BIOS failed: [{set_options.status}]{set_options.body}"
+        logging.info(f"Set BIOS configuration success:\n{json.dumps(RedfishCfg.HPM_KEEP, indent=4)}")
+        assert SetUpLib.boot_to_setup()
+        assert Sut.BMC_RFISH.check_bios_option(**RedfishCfg.HPM_KEEP), \
+            f"Check BIOS failed: {json.dumps(Sut.BMC_RFISH.read_bios_option(*RedfishCfg.HPM_KEEP), indent=4)}"
+        logging.info(f"Check BIOS configuration success")
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+        return core.Status.Fail
+    finally:
+        _bios_restore()
 
 
 @core.test_case(("2008", "[TC2008] Testcase_Redfish_002", "带外设置基本选项"))
@@ -246,29 +261,36 @@ def Testcase_Redfish_003():
         BmcLib.clear_cmos()
 
 
-# @core.test_case(("2010", "[TC2010] Testcase_Redfish_004", "带外设置联动关系选项_从项可设置"))
-# def Testcase_Redfish_004():
-#     """
-#     Name:       带外设置联动关系选项_从项可设置
-#     Condition:  1、Postman工具已安装；
-#                 2、随机选择有联动关系，且从项可设置的变量，假定为a。
-#     Steps:      1、通过Redfish修改变量a及其主项并下发；
-#                 2、启动进Setup菜单，检查变量a及主项修改是否生效，有结果A；
-#     Result:     A：主从项均设置生效。
-#     Remark:     1、Redfish设置接口：
-#                 https://192.168.X.XXX/redfish/v1/Systems/1/Bios/Settings
-#                 192.168.X.XXX为BMC IP地址；
-#                 2、支持Redfish修改变量参考Setup菜单基线；
-#                 3、通过PATCH操作进行带外设置。
-#     """
-#     try:
-#         
-#         return core.Status.Pass
-#     except Exception as e:
-#         logging.error(e)
-#         return core.Status.Fail
-#     finally:
-#         BmcLib.clear_cmos()
+@core.test_case(("2010", "[TC2010] Testcase_Redfish_004", "带外设置联动关系选项_从项可设置"))
+def Testcase_Redfish_004():
+    """
+    Name:       带外设置联动关系选项_从项可设置
+    Condition:  1、Postman工具已安装；
+                2、随机选择有联动关系，且从项可设置的变量，假定为a。
+    Steps:      1、通过Redfish修改变量a及其主项并下发；
+                2、启动进Setup菜单，检查变量a及主项修改是否生效，有结果A；
+    Result:     A：主从项均设置生效。
+    Remark:     1、Redfish设置接口：
+                https://192.168.X.XXX/redfish/v1/Systems/1/Bios/Settings
+                192.168.X.XXX为BMC IP地址；
+                2、支持Redfish修改变量参考Setup菜单基线；
+                3、通过PATCH操作进行带外设置。
+    """
+    try:
+        choice_op = RedfishCfg.DEP_MAIN_SUB
+        logging.info(f"Choice option for test: {choice_op}")
+        set_op = Sut.BMC_RFISH.set_bios_option(**choice_op)
+        assert set_op.result, f"Choice option set failed: [{set_op.status}] {set_op.body}"
+        logging.info("Set BIOS config success")
+        assert SetUpLib.boot_to_setup()
+        assert Sut.BMC_RFISH.check_bios_option(**choice_op), f"Check option failed:\n{Sut.BMC_RFISH.read_bios_option(*choice_op)}"
+        logging.info("Check BIOS config success")
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+        return core.Status.Fail
+    finally:
+        BmcLib.clear_cmos()
 
 
 # @core.test_case(("2011", "[TC2011] Testcase_Redfish_005", "带外设置联动关系从项_从项不可设置"))
@@ -505,27 +527,30 @@ def Testcase_Redfish_003():
 #         BmcLib.clear_cmos()
 
 
-# @core.test_case(("2020", "[TC2020] Testcase_MemorySequence_001", "内存时序设置菜单检查"))
-# def Testcase_MemorySequence_001():
-#     """
-#     Name:       内存时序设置菜单检查
-#     Condition:  
-#     Steps:      1、启动进Setup菜单，查看是否存在内存时序菜单，可选值及默认值，有结果A；
-#                 2、使能内存时序总开关，检查内存参数是否可设置，有结果B；
-#                 3、关闭内存时序总开关，检查内存参数是否可设置，有结果C；
-#     Result:     A：提供时序调整总开关，Enabled、Disabled可选，默认为Disabled；
-#                 B：开启后提供时序参数调整选项，包括tREFI，tCAS，tRP，tRCD，tRAS，tWR，tRFC，tRRD，tRTP，tWTR，tFAW，tRC，tCWL等；
-#                 C：关闭后隐藏所有序参数调整选项。
-#     Remark:     1、提供菜单，调整内存时序参数；（仅功能性能比拼使用，默认关闭隐藏）
-#                 2、使能后功能不需要测试；
-#                 3、具体参数的变量名称需要由开发提供。
-#     """
-#     try:
-#         
-#         return core.Status.Pass
-#     except Exception as e:
-#         logging.error(e)
-#         return core.Status.Fail
-#     finally:
-#         BmcLib.clear_cmos()
+@core.test_case(("2020", "[TC2020] Testcase_MemorySequence_001", "内存时序设置菜单检查"))
+def Testcase_MemorySequence_001():
+    """
+    Name:       内存时序设置菜单检查
+    Condition:
+    Steps:      1、启动进Setup菜单，查看是否存在内存时序菜单，可选值及默认值，有结果A；
+                2、使能内存时序总开关，检查内存参数是否可设置，有结果B；
+                3、关闭内存时序总开关，检查内存参数是否可设置，有结果C；
+    Result:     A：提供时序调整总开关，Enabled、Disabled可选，默认为Disabled；
+                B：开启后提供时序参数调整选项，包括tREFI，tCAS，tRP，tRCD，tRAS，tWR，tRFC，tRRD，tRTP，tWTR，tFAW，tRC，tCWL等；
+                C：关闭后隐藏所有序参数调整选项。
+    Remark:     1、提供菜单，调整内存时序参数；（仅功能性能比拼使用，默认关闭隐藏）
+                2、使能后功能不需要测试；
+                3、具体参数的变量名称需要由开发提供。
+    """
+    valid_param = {'tCAS': 0, 'tRP': 0, 'tRCD': 0, 'tRAS': 0, 'tRC': 0}
+    try:
+        assert BmcLib.force_reset()
+        assert MiscLib.ping_sut(SutConfig.Env.OS_IP, SutConfig.Env.BOOT_DELAY)
+        assert Sut.UNITOOL.check(**valid_param)
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+        return core.Status.Fail
+    # finally:
+    #     BmcLib.clear_cmos()
 

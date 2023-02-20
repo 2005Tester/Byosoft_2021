@@ -1680,8 +1680,7 @@ def Testcase_UserPassWord_020():
         return core.Status.Fail
     finally:
         if Update.flash_bios_bin_and_init(img):
-            PwdLib.update_current_pw(pw_admin=Msg.BIOS_PASSWORD)
-            PwdLib.update_current_pw(pw_user="")
+            PwdLib.update_current_pw(pw_admin=Msg.BIOS_PASSWORD, pw_user="")
 
 
 @core.test_case(("2353", "[TC2353] Testcase_WeakKeyList_001", "弱口令字典默认清单检查"))
@@ -3893,12 +3892,14 @@ def Testcase_FirstLogin_010():
     """
     img = var.get("biosimage") if var.get("biosimage") else Update.get_test_image("master")
     try:
+        hpm_img = PlatMisc.get_latest_hpm_bios()
+
         assert Update.update_bios_bin(img)
         PwdLib.update_current_pw(pw_admin=Msg.BIOS_PW_DEFAULT)
         assert SetUpLib.boot_to_pw_prompt()
         SetUpLib.send_data_enter(Msg.BIOS_PW_DEFAULT)
         assert SetUpLib.wait_msg(PwdLib.pw_is_default, 10)
-        hpm_img = PlatMisc.get_latest_hpm_bios()
+
         assert Update.update_bios_hpm(hpm_img)
         PwdLib.update_current_pw(pw_admin=Msg.BIOS_PW_DEFAULT)
         assert SetUpLib.continue_to_pw_prompt()
@@ -4424,6 +4425,7 @@ def Testcase_HttpsBoot_007():
         return core.Status.Fail
     finally:
         BmcLib.clear_cmos()
+
 
 @core.test_case(("2429", "[TC2429] Testcase_HttpsBoot_002", "Https IPv4启动"))
 def Testcase_HttpsBoot_002():

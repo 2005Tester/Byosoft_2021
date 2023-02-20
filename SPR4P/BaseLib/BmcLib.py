@@ -3,6 +3,7 @@ import re
 import time
 import logging
 from copy import deepcopy
+from pathlib import Path
 from batf.SutInit import Sut
 from batf import SshLib, MiscLib
 from SPR4P.Config import SutConfig
@@ -355,22 +356,35 @@ def open_bt_channel():
 
 # Check bmc bt test_data, better call it before power or capture action, better use reboot in OS
 def read_bt_data(key_str, timeout=SutConfig.Env.BOOT_DELAY, login=True, logout=True, shell=None):
-    """key_str: the test_data you wanna to grab from bt channel"""
+    """key_str: the test_data you wanna to grab from bt channel, should be a list"""
+    # check input data, key_str[0]: e.g 58 c6 must be 1st param from list
+    assert isinstance(key_str, list), 'input should be a list'
     logging.info("Reading data from bt channel...")
     if login:
         shell = open_bt_channel()
     time_start = time.time()
     buffer = ""
+    res_flg = []  # store the temp result,
     while True:
         if shell.recv_ready():
             temp = shell.recv(1024).decode('utf-8')
             last2_buffer = f"{buffer}{temp}"
             buffer = temp
-            if key_str in last2_buffer:
-                logging.info(f"Msg found in bt channel: {key_str}")
-                break
+            if len(key_str) == 1:
+                if (i in last2_buffer for i in key_str):
+                    logging.info(f"All msg found in bt channel: {key_str}")
+                    break
+            else:
+                for j in key_str[1:]:
+                    if re.findall(r'.*{0}.*{1}'.format(key_str[0], j), last2_buffer, re.I):
+                        logging.debug(f'Msg found...{j}')
+                        res_flg.append(j)
+
+                if res_flg == key_str[1:]:
+                    logging.info(f"All msg found in bt channel: {res_flg}")
+                    break
         if time.time() - time_start > timeout:
-            logging.info(f"Msg not found in bt channel within {timeout}s: {key_str}")
+            logging.info(f"Msg not found in bt channel within {timeout}s: {list(set(key_str[1:]) - set(res_flg))}")
             if logout:
                 logging.info("Close the bt channel.")
                 Sut.BMC_SSH.close_session()
@@ -460,3 +474,21 @@ def get_tpm_info():
     vendor = "".join(re.findall("Manufacturer\s+Name:\s+(\S+)", sys_info))
     logging.info(f"Vendor: {vendor}, Version: {version}")
     return {"Protocol": tpm_present, "Verson": version, "Vendor": vendor}
+
+
+def ipmitool(cmd, response: str = "db 07 00"):
+    root_path = Path(__file__).parent.parent
+    ipmi_exe = root_path / "Resource/ipmitool/ipmitool.exe"
+    cmd = f"{ipmi_exe} -I lanplus -H {SutConfig.Env.BMC_IP} -U {SutConfig.Env.BMC_USER} -P {SutConfig.Env.BMC_PASSWORD} {cmd}"
+    exec_result = MiscLib.shell_cmd(cmd)
+    if not response:
+        logging.info(f"Ipmitool cmd executed without confirm")
+        return exec_result.result
+    output = exec_result.output
+    if response not in output:
+        logging.error(f"Expect response: {response}, actually={output}")
+        return False
+    else:
+        logging.info(f"Ipmitool cmd executed success")
+        return True
+

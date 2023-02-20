@@ -219,18 +219,17 @@ def unipwd_tool(new_pw="", old_pw="", cmd="set") -> bool:
         logging.error(e)
 
 
-# update logo with unilogo tool in linux
-# 若path参数为空，则默认刷\Tools\Logo里的logo文件
-def unilogo_update(name, path=""):
-    cd_path = f"cd {SutConfig.Env.UNI_PATH}"
-    logo_flash = f"./uniCfg -setlogo ./{name}"
-    rtn_pass = f"Update Logo.+success"
+def unilogo_update(logo_file):
+    """Update logo with unilogo tool in linux."""
     try:
-        if not path:
-            path = root_path() / "Resource/Logo"
-            logging.info(f"Update the logo: {path}/{name}")
-            assert name in os.listdir(path), f"Logo name {name} not exist in directory: Tools/Logo"  # 检查name文件是否存在
-        assert SshLib.sftp_upload_file(Sut.OS_SFTP, f"{path}/{name}", f"{SutConfig.Env.UNI_PATH}/{name}", ret_msg="")
+        if not logo_file:
+            logo_file = root_path() / "Resource/Logo/EmptyLogo.bmp"  # 如果logo_file为空,则刷全黑LOGO
+        logging.info(f"Update the logo: {logo_file}")
+        name = Path(logo_file).name
+        cd_path = f"cd {SutConfig.Env.UNI_PATH}"
+        logo_flash = f"./uniCfg -setlogo ./{name}"
+        rtn_pass = f"Update Logo.+success"
+        assert SshLib.sftp_upload_file(Sut.OS_SFTP, f"{logo_file}", f"{SutConfig.Env.UNI_PATH}/{name}", ret_msg="")
         rtn = SshLib.execute_command(Sut.OS_SSH, f"{cd_path};{logo_flash}")
         assert rtn, f"execute_command for flash logo error: {rtn}"
         assert re.search(rtn_pass, rtn.lower(), re.I), f"Unilogo update logo failed:\n{rtn}"
@@ -276,9 +275,6 @@ def uni_command(cmd, uefi=True):
     rsp_fail = "error"
     ssh_ins = Sut.OS_SSH if uefi else Sut.OS_LEGACY_SSH
     try:
-        if "getlogo" in cmd:
-            logo_file = cmd.split()[1]
-            SshLib.execute_command(ssh_ins, f"{cd_path};rm -rf {logo_file}")
         rsp = SshLib.execute_command(ssh_ins, f"{cd_path};./{tool_name} {cmd}", print_result=True)  # 默认Sut.OS_SSH 为uefi模式下os
         assert MiscLib.msg_contain(rsp.lower(), rsp_pass, excepts=rsp_fail), f"[{tool_name}] '{cmd}' failed"
         return True
@@ -645,11 +641,14 @@ def get_pcie_bdf(reset=True):
     return bdf_info
 
 
-def current_test_dir() -> Path:
+def current_test_dir():
     current_path = Path(SutConfig.Env.LOG_DIR) / var.get("current_test")
-    if not os.path.exists(current_path):
-        os.makedirs(current_path)
-    return current_path
+    try:
+        Path(current_path).mkdir(exist_ok=True, parents=True)
+        if Path(current_path).exists():
+            return current_path
+    except Exception as e:
+        logging.error(e)
 
 
 def mark_legacy_test(func):
@@ -658,7 +657,7 @@ def mark_legacy_test(func):
     def wrapper(*args, **kwargs):
         try:
             BmcLib.force_reset()
-            SetUpLib.wait_boot_msgs(Msg.HOTKEY_PROMPT_DEL)  # workaround for clear CMOS will cause boot type setting fail
+            SetUpLib.wait_boot_msgs(Msg.BIOS_BOOT_COMPLETE)  # workaround for clear CMOS will cause boot type setting fail
             assert BmcWeb.BMC_WEB.set_boot_overwrite(mode="legacy", once=False)
             return func(*args, **kwargs)
         except Exception:
@@ -727,19 +726,26 @@ def del_lines_from_file(contents, path):
                 f.write(line)
 
 
-def match_config_version():
-    """根据run_type的不同,自动切换版本 (解决多个项目共用代码问题)"""
-    class Ver:
+def config_ver():
+    """根据run_type的不同,自动切换配置版本 (解决多个项目共用代码问题)"""
+    class Config:
         ME = SutConfig.Env.ME_VER_LATEST
         RC = SutConfig.Env.RC_VER_LATEST
         MicroCode = SutConfig.Env.MICRO_CODE_LATEST
         BiosVer = SutConfig.Env.BIOS_VER_LATEST
         BiosDate = SutConfig.Env.BIOS_DATE_LATEST
+        PostLogo = SutConfig.Env.POST_LOGO
+        LogoSrc = SutConfig.Env.LOGO_SRC
 
     if var.get("run_type").lower() == "release":
-        Ver.ME = SutConfig.Env.ME_VER_RELEASE
-        Ver.RC = SutConfig.Env.RC_VER_RELEASE
-        Ver.MicroCode = SutConfig.Env.MICRO_CODE_RELEASE
-        Ver.BiosVer = SutConfig.Env.BIOS_VER_RELEASE
-        Ver.BiosDate = SutConfig.Env.BIOS_DATE_RELEASE
-    return Ver
+        Config.ME = SutConfig.Env.ME_VER_RELEASE
+        Config.RC = SutConfig.Env.RC_VER_RELEASE
+        Config.MicroCode = SutConfig.Env.MICRO_CODE_RELEASE
+        Config.BiosVer = SutConfig.Env.BIOS_VER_RELEASE
+        Config.BiosDate = SutConfig.Env.BIOS_DATE_RELEASE
+
+        if SutConfig.Env.PROJECT_NAME == "2288 V7":
+            Config.PostLogo = "Resource/Logo/xFusion_PostLogo.bmp"
+            Config.LogoSrc = "Resource/Logo/XFusionLogo.bmp"
+
+    return Config

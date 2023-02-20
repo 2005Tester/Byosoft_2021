@@ -18,8 +18,8 @@ class Spr5885HV7:
     ME_VER_LATEST = '18:6.0.4.25'           # [master]
     RC_VER_LATEST = '1.1.1.020F'            # [master]
     MICRO_CODE_LATEST = 'AB000161'          # [master]
-    BIOS_VER_LATEST = '2.00.28'             # [master]
-    BIOS_DATE_LATEST = '12/21/2022'         # [master]
+    BIOS_VER_LATEST = '2.00.29'             # [master]
+    BIOS_DATE_LATEST = '02/10/2023'         # [master]
 
     # Release Branch Firmware Version
     ME_VER_RELEASE = ME_VER_LATEST          # [Release]
@@ -30,13 +30,14 @@ class Spr5885HV7:
 
     # Git Branch Name
     BRANCH_LATEST = "master"
-    BRANCH_RELEASE = "5885HV7_028"          # [Release]
-    BRANCH_OLD = "5885HV7_027"              # [Release]
+    BRANCH_RELEASE = "5885HV7_029"          # [Release]
+    BRANCH_OLD = "5885HV7_028"              # [Release]
 
     # 满配CPU Socket数量
     MAX_CPU_CNT = 4
 
-    POST_LOGO = "Resource/Logo/PostLogo.bmp"
+    POST_LOGO = "Resource/Logo/EmptyLogo.bmp"   # 默认启动时,LOGO位置的图像,如果没有LOGO则为全黑
+    LOGO_SRC = None                             # LOGO源文件, 如过设置为None表示LOGO不存在
 
     # HPM BIOS存放路径 (Release测试需要刷入HPM BIOS时，需要将HPM BIOS存放到指定路径中)
     BIOS_PATH = rf"\\192.168.113.26\PublicRW\QA\Firmware\5885HV7\BIOS"
@@ -76,7 +77,7 @@ class Spr2288HV7:
     PCH_VERSION = r'EBG PCH B1 - EBG A0/A1/B0/B1 SKU'
 
     # Latest Branch Firmware Version
-    BMC_VER = '3.06.02.05'
+    BMC_VER = '3.06.02.08'
     ME_VER_LATEST = Spr5885HV7.ME_VER_LATEST            # [master]
     RC_VER_LATEST = Spr5885HV7.RC_VER_LATEST            # [master]
     MICRO_CODE_LATEST = Spr5885HV7.MICRO_CODE_LATEST    # [master]
@@ -87,21 +88,19 @@ class Spr2288HV7:
     ME_VER_RELEASE = "18:6.0.3.256"          # [Release]
     RC_VER_RELEASE = "1.1.1.016B"           # [Release]
     MICRO_CODE_RELEASE = "AB0000C0"         # [Release]
-    BIOS_VER_RELEASE = "2.00.19"            # [Release]
-    BIOS_DATE_RELEASE = "01/07/2023"        # [Release]
+    BIOS_VER_RELEASE = "2.00.20"            # [Release]
+    BIOS_DATE_RELEASE = "02/08/2023"        # [Release]
 
     # Git Branch Name
     BRANCH_LATEST = "master"
-    BRANCH_RELEASE = "2288HV7_019"          # [Release]
-    BRANCH_OLD = "2288HV7_018"              # [Release]
+    BRANCH_RELEASE = "2288HV7_020"          # [Release]
+    BRANCH_OLD = "2288HV7_019"              # [Release]
 
     # 满配CPU Socket数量
     MAX_CPU_CNT = 2
 
-    POST_LOGO = "Resource/Logo/PostLogo.bmp"
-
-    if var.get("runtype") == "Release":
-        POST_LOGO = "Resource/Logo/xFusion_PostLogo.bmp"
+    POST_LOGO = Spr5885HV7.POST_LOGO    # 默认启动时,LOGO位置的图像,如果没有LOGO则为全黑
+    LOGO_SRC = Spr5885HV7.LOGO_SRC      # LOGO源文件, 如过设置为None表示LOGO不存在
 
     # HPM BIOS存放路径 (Release测试需要刷入HPM BIOS时，需要将HPM BIOS存放到指定路径中)
     BIOS_PATH = rf"\\192.168.113.26\PublicRW\QA\Firmware\2288HV7\BIOS"

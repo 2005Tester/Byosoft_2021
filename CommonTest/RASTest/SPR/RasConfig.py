@@ -27,7 +27,7 @@ Cscript_Path = r"E:\Tools\Cscripts\SPR"
 COM = "COM5"
 
 # Boot到系统的标志字符串
-OS_FLAG = "SUSE Linux Enterprise"
+OS_FLAG = "Red Hat Enterprise Linux"
 
 # 打开DebugMessage后重启系统 超时时间
 BOOT_TIMEOUT = 900
@@ -36,13 +36,13 @@ BOOT_TIMEOUT = 900
 TestcaseFunc = "Testcase_"
 TestcaseFile = "Testcase_"
 
+
 # Delay时间
 class Delay:
-    mem_ce = 15  # MEM CE未超阈值注错间隔时间
+    mem_ce = 5  # MEM CE未超阈值注错间隔时间
     mem_ov = 5*60 + 5  # MEM CE超阈值后注错间隔时间
     bank_vls = mem_ov + 120   # 生成Bank VLS等待时间
     rank_vls = mem_ov + 240   # 生成Rank VLS等待时间
-    # rank_sparing = 320
     caterr = 720
     mem_uce = 180
 
@@ -77,55 +77,51 @@ class Sys:
 
     # port_map
     PORT_MAP = {
-        0: ["dmi", "dmi"],
-        1: ["0a", "pxp0.pcieg5.port0"],
-        2: ["0b", "pxp0.pcieg4.port3"],
-        3: ["0c", "pxp0.pcieg5.port1"],
-        4: ["0d", "pxp0.pcieg4.port2"],
-        5: ["0e", "pxp0.pcieg5.port2"],
-        6: ["0f", "pxp0.pcieg4.port1"],
-        7: ["0g", "pxp0.pcieg5.port3"],
-        8: ["0h", "pxp0.pcieg4.port0"],
-        9: ["1a", "pxp1.pcieg5.port0"],
-        10: ["1b", "pxp1.pcieg4.port3"],
-        11: ["1c", "pxp1.pcieg5.port1"],
-        12: ["1d", "pxp1.pcieg4.port2"],
-        13: ["1e", "pxp1.pcieg5.port2"],
-        14: ["1f", "pxp1.pcieg4.port1"],
-        15: ["1g", "pxp1.pcieg5.port3"],
-        16: ["1h", "pxp1.pcieg4.port0"],
-        17: ["2a", "pxp2.pcieg5.port0"],
-        18: ["2b", "pxp2.pcieg4.port3"],
-        19: ["2c", "pxp2.pcieg5.port1"],
-        20: ["2d", "pxp2.pcieg4.port2"],
-        21: ["2e", "pxp2.pcieg5.port2"],
-        22: ["2f", "pxp2.pcieg4.port1"],
-        23: ["2g", "pxp2.pcieg5.port3"],
-        24: ["2h", "pxp2.pcieg4.port0"],
-        25: ["3a", "pxp3.pcieg5.port0"],
-        26: ["3b", "pxp3.pcieg4.port3"],
-        27: ["3c", "pxp3.pcieg5.port1"],
-        28: ["3d", "pxp3.pcieg4.port2"],
-        29: ["3e", "pxp3.pcieg5.port2"],
-        30: ["3f", "pxp3.pcieg4.port1"],
-        31: ["3g", "pxp3.pcieg5.port3"],
-        32: ["3h", "pxp3.pcieg4.port0"],
-        33: ["4a", "pxp4.pcieg5.port0"],
-        34: ["4b", "pxp4.pcieg4.port3"],
-        35: ["4c", "pxp4.pcieg5.port1"],
-        36: ["4d", "pxp4.pcieg4.port2"],
-        37: ["4e", "pxp4.pcieg5.port2"],
-        38: ["4f", "pxp4.pcieg4.port1"],
-        39: ["4g", "pxp4.pcieg5.port3"],
-        40: ["4h", "pxp4.pcieg4.port0"],
-        41: ["5a", "pxp5.pcieg5.port0"],
-        42: ["5b", "pxp5.pcieg4.port3"],
-        43: ["5c", "pxp5.pcieg5.port1"],
-        44: ["5d", "pxp5.pcieg4.port2"],
-        45: ["5e", "pxp5.pcieg5.port2"],
-        46: ["5f", "pxp5.pcieg4.port1"],
-        47: ["5g", "pxp5.pcieg5.port3"],
-        48: ["5h", "pxp5.pcieg4.port0"]
+        0:  ["dmi", "dmi"],
+        1:  ["0e", "pxp0.pcieg5.port2"],
+        2:  ["0f", "pxp0.pcieg4.port1"],
+        3:  ["0g", "pxp0.pcieg5.port3"],
+        4:  ["0h", "pxp0.pcieg4.port0"],
+        5:  ["1a", "pxp1.pcieg5.port0"],
+        6:  ["1b", "pxp1.pcieg4.port3"],
+        7:  ["1c", "pxp1.pcieg5.port1"],
+        8:  ["1d", "pxp1.pcieg4.port2"],
+        9:  ["1e", "pxp1.pcieg5.port2"],
+        10: ["1f", "pxp1.pcieg4.port1"],
+        11: ["1g", "pxp1.pcieg5.port3"],
+        12: ["1h", "pxp1.pcieg4.port0"],
+        13: ["2a", "pxp2.pcieg5.port0"],
+        14: ["2b", "pxp2.pcieg4.port3"],
+        15: ["2c", "pxp2.pcieg5.port1"],
+        16: ["2d", "pxp2.pcieg4.port2"],
+        17: ["2e", "pxp2.pcieg5.port2"],
+        18: ["2f", "pxp2.pcieg4.port1"],
+        19: ["2g", "pxp2.pcieg5.port3"],
+        20: ["2h", "pxp2.pcieg4.port0"],
+        21: ["3a", "pxp3.pcieg5.port0"],
+        22: ["3b", "pxp3.pcieg4.port3"],
+        23: ["3c", "pxp3.pcieg5.port1"],
+        24: ["3d", "pxp3.pcieg4.port2"],
+        25: ["3e", "pxp3.pcieg5.port2"],
+        26: ["3f", "pxp3.pcieg4.port1"],
+        27: ["3g", "pxp3.pcieg5.port3"],
+        28: ["3h", "pxp3.pcieg4.port0"],
+        29: ["4a", "pxp4.pcieg5.port0"],
+        30: ["4b", "pxp4.pcieg4.port3"],
+        31: ["4c", "pxp4.pcieg5.port1"],
+        32: ["4d", "pxp4.pcieg4.port2"],
+        33: ["4e", "pxp4.pcieg5.port2"],
+        34: ["4f", "pxp4.pcieg4.port1"],
+        35: ["4g", "pxp4.pcieg5.port3"],
+        36: ["4h", "pxp4.pcieg4.port0"],
+        37: ["5a", "pxp5.pcieg5.port0"],
+        38: ["5b", "pxp5.pcieg4.port3"],
+        39: ["5c", "pxp5.pcieg5.port1"],
+        40: ["5d", "pxp5.pcieg4.port2"],
+        41: ["5e", "pxp5.pcieg5.port2"],
+        42: ["5f", "pxp5.pcieg4.port1"],
+        43: ["5g", "pxp5.pcieg5.port3"],
+        44: ["5h", "pxp5.pcieg4.port0"]
     }
 
 
@@ -168,7 +164,7 @@ class Loc:
     # PCie设备信息
     pcie_os_bdf = "98:00.0"
     pcie_root_bdf = "97:01:00"
-    pcie_dev_name = "PCIe Card3"
+    pcie_dev_name = "PCIe Card 6 \(9560-8i\)"
 
     # DCPMM
     dsocket = 0
@@ -257,7 +253,6 @@ class Cmd:
     # break
     smm_en_break = "itp.cv.smmentrybreak={}"
     smm_ex_break = "itp.cv.smmexitbreak={}"
-
 
 
 # 不同RAS功能的BIOS设置

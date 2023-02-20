@@ -86,6 +86,7 @@ def Testcase_SystemInfoUefi_002():
             assert SetUpLib.boot_with_hotkey(key[0], key[1]), f"{key_name} boot fail"
             save_path = os.path.join(Env.LOG_DIR, var.get("current_test"))
             hotkey_image = PlatMisc.screen_crop(Msg.CURSOR_HOTKEY, name=f"TC1400_{key_name}", path=save_path)
+            # Check hotkey of KVM: DEL.bmp / F6.bmp / F11.bmp / F12.bmp
             hotkey_resource = str(PlatMisc.root_path() / f"Resource/Logo/{key_name}.bmp")
             assert MiscLib.compare_images(hotkey_image, hotkey_resource)
         return core.Status.Pass

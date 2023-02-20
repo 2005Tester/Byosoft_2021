@@ -37,7 +37,7 @@ def _pcie_iio_port_test(option, option_exist=True, value_read=None, value_set=No
         assert SetUpLib.enter_menu(socket_option, key=Key.UP)
         cpu_ports = SetUpLib.get_all_options()
         for cpu_port in cpu_ports:
-            if not re.search("Port [0-9a-fA-F]{2}", cpu_port):
+            if not re.search("Port \w{2}", cpu_port):
                 continue
             assert SetUpLib.enter_menu(cpu_port, key=Key.UP)
             if option_exist:

@@ -173,8 +173,6 @@ def _update_bios(env, update_mode, bios_mode):
                 logging.info('BIOS 刷新成功')
             BmcLib.power_reset()
             time.sleep(200)
-            BmcLib.enable_serial_only()
-            time.sleep(5)
     elif env.lower() == 'dos':
         if update_mode.lower() == 'normal':
             assert SetUpLib.boot_to_boot_menu()
@@ -232,8 +230,6 @@ def _update_bios(env, update_mode, bios_mode):
             time.sleep(3)
             BmcLib.power_reset()
             time.sleep(200)
-            BmcLib.enable_serial_only()
-            time.sleep(3)
     elif env.lower() == 'shell':
         if update_mode.lower() == 'normal':
             assert SetUpLib.boot_to_boot_menu()
@@ -251,26 +247,22 @@ def _update_bios(env, update_mode, bios_mode):
             SetUpLib.send_data_enter('cd {}'.format(SutConfig.Env.BIOS_FILE))
             time.sleep(2)
             if bios_mode.lower() == 'latest':
-                SetUpLib.send_data(f'{SutConfig.Upd.SHELL_FLASH_CMD_LATEST}')
-                time.sleep(1)
-                SetUpLib.send_key(Key.ENTER)
-                if SetUpLib.wait_message(SutConfig.Upd.PASSWORD_MSG, 3):
-                    SetUpLib.send_data_enter(SutConfig.Upd.PASSWORDS[0])
+                shell_cmd = SutConfig.Upd.SHELL_FLASH_CMD_LATEST
             elif bios_mode.lower() == 'previous':
-                SetUpLib.send_data(f'{SutConfig.Upd.SHELL_FLASH_CMD_PREVIOUS}')
-                time.sleep(1)
-                SetUpLib.send_key(Key.ENTER)
-                if SetUpLib.wait_message(SutConfig.Upd.PASSWORD_MSG, 3):
-                    SetUpLib.send_data_enter(SutConfig.Upd.PASSWORDS[0])
+                shell_cmd = SutConfig.Upd.SHELL_FLASH_CMD_PREVIOUS
             elif bios_mode.lower() == 'constant':
-                SetUpLib.send_data(f'{SutConfig.Upd.SHELL_FLASH_CMD_CONSTANT}')
-                time.sleep(1)
-                SetUpLib.send_key(Key.ENTER)
-                if SetUpLib.wait_message(SutConfig.Upd.PASSWORD_MSG, 3):
-                    SetUpLib.send_data_enter(SutConfig.Upd.PASSWORDS[0])
+                shell_cmd = SutConfig.Upd.SHELL_FLASH_CMD_CONSTANT
             else:
                 stylelog.fail('bios_mode有误')
                 return
+            SetUpLib.send_data_enter(shell_cmd)
+            if SetUpLib.wait_message(SutConfig.Upd.PASSWORD_MSG, 3):
+                SetUpLib.send_data_enter('1111111111')
+                assert SetUpLib.wait_message(SutConfig.Upd.WRONG_PSW_MSG, 5), '输入错误密码没有提示密码错误'
+                time.sleep(2)
+                SetUpLib.send_data_enter(shell_cmd)
+                assert SetUpLib.wait_message(SutConfig.Upd.PASSWORD_MSG, 3)
+                SetUpLib.send_data_enter(SutConfig.Upd.PASSWORDS[0])
             if SetUpLib.wait_message(SutConfig.Upd.SHELL_MSG_NOR, 300):
                 logging.info('BIOS 更新成功')
 
@@ -293,65 +285,52 @@ def _update_bios(env, update_mode, bios_mode):
             SetUpLib.send_data_enter('cd {}'.format(SutConfig.Env.BIOS_FILE))
             time.sleep(2)
             if bios_mode.lower() == 'latest':
-                SetUpLib.send_data(f'{SutConfig.Upd.SHELL_FLASH_CMD_LATEST_ALL}')
-                time.sleep(1)
-                SetUpLib.send_key(Key.ENTER)
-                if SetUpLib.wait_message(SutConfig.Upd.PASSWORD_MSG, 3):
-                    SetUpLib.send_data_enter(SutConfig.Upd.PASSWORDS[0])
+                shell_cmd = SutConfig.Upd.SHELL_FLASH_CMD_LATEST_ALL
             elif bios_mode.lower() == 'previous':
-                SetUpLib.send_data(f'{SutConfig.Upd.SHELL_FLASH_CMD_PREVIOUS_ALL}')
-                time.sleep(1)
-                SetUpLib.send_key(Key.ENTER)
-                if SetUpLib.wait_message(SutConfig.Upd.PASSWORD_MSG, 3):
-                    SetUpLib.send_data_enter(SutConfig.Upd.PASSWORDS[0])
+                shell_cmd = SutConfig.Upd.SHELL_FLASH_CMD_PREVIOUS_ALL
             elif bios_mode.lower() == 'constant':
-                SetUpLib.send_data(f'{SutConfig.Upd.SHELL_FLASH_CMD_CONSTANT_ALL}')
-                time.sleep(1)
-                SetUpLib.send_key(Key.ENTER)
-                if SetUpLib.wait_message(SutConfig.Upd.PASSWORD_MSG, 3):
-                    SetUpLib.send_data_enter(SutConfig.Upd.PASSWORDS[0])
+                shell_cmd = SutConfig.Upd.SHELL_FLASH_CMD_CONSTANT_ALL
             else:
                 stylelog.fail('bios_mode有误')
                 return
+            SetUpLib.send_data_enter(shell_cmd)
+            if SetUpLib.wait_message(SutConfig.Upd.PASSWORD_MSG, 3):
+                SetUpLib.send_data_enter('1111111111')
+                assert SetUpLib.wait_message(SutConfig.Upd.WRONG_PSW_MSG, 5), '输入错误密码没有提示密码错误'
+                time.sleep(2)
+                SetUpLib.send_data_enter(shell_cmd)
+                assert SetUpLib.wait_message(SutConfig.Upd.PASSWORD_MSG, 3)
+                SetUpLib.send_data_enter(SutConfig.Upd.PASSWORDS[0])
             if SetUpLib.wait_message(SutConfig.Upd.SHELL_MSG_ALL, 300):
                 logging.info("Update BIOS in Shell successed.")
             BmcLib.power_reset()
             time.sleep(200)
-            BmcLib.enable_serial_only()
-            time.sleep(5)
     elif env.lower() == 'linux':
         if update_mode.lower() == 'normal':
             assert SetUpLib.boot_os_from_bm()
             _mount_usb_insmod()
             if bios_mode.lower() == 'latest':
-                if SshLib.interaction(Sut.OS_SSH,
-                                      [f'{SutConfig.Upd.LINUX_FLASH_CMD_LATEST}\n', f'{SutConfig.Upd.PASSWORDS[0]}\n'],
-                                      [f'{SutConfig.Upd.PASSWORD_MSG}|{SutConfig.Upd.START_UPDATE_MSG}',
-                                       f'{SutConfig.Upd.LINUX_MSG_NOR}|未找到命令'], timeout=300):
-                    logging.info('BIOS更新成功')
-                else:
-                    stylelog.fail('BIOS更新可能失败')
+                linux_cmd = f'{SutConfig.Upd.LINUX_FLASH_CMD_LATEST}\n'
             elif bios_mode.lower() == 'previous':
-                if SshLib.interaction(Sut.OS_SSH,
-                                      [f'{SutConfig.Upd.LINUX_FLASH_CMD_PREVIOUS}\n',
-                                       f'{SutConfig.Upd.PASSWORDS[0]}\n'],
-                                      [f'{SutConfig.Upd.PASSWORD_MSG}|{SutConfig.Upd.START_UPDATE_MSG}',
-                                       f'{SutConfig.Upd.LINUX_MSG_NOR}|未找到命令'], timeout=300):
-                    logging.info('BIOS更新成功')
-                else:
-                    stylelog.fail('BIOS更新可能失败')
+                linux_cmd = f'{SutConfig.Upd.LINUX_FLASH_CMD_PREVIOUS}\n'
             elif bios_mode.lower() == 'constant':
-                if SshLib.interaction(Sut.OS_SSH,
-                                      [f'{SutConfig.Upd.LINUX_FLASH_CMD_CONSTANT}\n',
-                                       f'{SutConfig.Upd.PASSWORDS[0]}\n'],
-                                      [f'{SutConfig.Upd.PASSWORD_MSG}|{SutConfig.Upd.START_UPDATE_MSG}',
-                                       f'{SutConfig.Upd.LINUX_MSG_NOR}|未找到命令'], timeout=300):
-                    logging.info('BIOS更新成功')
-                else:
-                    stylelog.fail('BIOS更新可能失败')
+                linux_cmd = f'{SutConfig.Upd.LINUX_FLASH_CMD_CONSTANT}\n'
             else:
                 stylelog.fail('bios_mode有误')
                 return
+            result = SshLib.invoke_shell(Sut.OS_SSH, linux_cmd, 300, f'{SutConfig.Upd.PASSWORD_MSG}|{SutConfig.Upd.LINUX_MSG_NOR}')
+            if re.search(SutConfig.Upd.PASSWORD_MSG, result):
+                assert SshLib.interaction(Sut.OS_SSH, [linux_cmd, '111111\n'],
+                                          [SutConfig.Upd.PASSWORD_MSG, SutConfig.Upd.WRONG_PSW_MSG]), '没有提示密码错误'
+                logging.info('刷新BIOS时要求输入BIOS密码,输入错误密码，提示密码错误')
+                assert SshLib.interaction(Sut.OS_SSH, [linux_cmd, f'{SutConfig.Upd.PASSWORDS[0]}\n'],
+                                          [SutConfig.Upd.PASSWORD_MSG, SutConfig.Upd.LINUX_MSG_NOR])
+                logging.info('BIOS更新成功')
+            elif re.search(SutConfig.Upd.LINUX_MSG_NOR,result):
+                logging.info('BIOS更新成功')
+            else:
+                stylelog.fail('BIOS更新失败')
+                logging.info(result)
             time.sleep(3)
             BmcLib.power_reset()
             time.sleep(5)
@@ -359,40 +338,31 @@ def _update_bios(env, update_mode, bios_mode):
             assert SetUpLib.boot_os_from_bm()
             _mount_usb_insmod()
             if bios_mode.lower() == 'latest':
-                if SshLib.interaction(Sut.OS_SSH,
-                                      [f'{SutConfig.Upd.LINUX_FLASH_CMD_LATEST_ALL}\n',
-                                       f'{SutConfig.Upd.PASSWORDS[0]}\n'],
-                                      [f'{SutConfig.Upd.PASSWORD_MSG}|{SutConfig.Upd.START_UPDATE_MSG}',
-                                       f'{SutConfig.Upd.LINUX_MSG_ALL}|未找到命令'], timeout=300):
-                    logging.info('BIOS更新成功')
-                else:
-                    stylelog.fail('BIOS更新可能失败')
+                linux_cmd = f'{SutConfig.Upd.LINUX_FLASH_CMD_LATEST_ALL}\n'
             elif bios_mode.lower() == 'previous':
-                if SshLib.interaction(Sut.OS_SSH,
-                                      [f'{SutConfig.Upd.LINUX_FLASH_CMD_PREVIOUS_ALL}\n',
-                                       f'{SutConfig.Upd.PASSWORDS[0]}\n'],
-                                      [f'{SutConfig.Upd.PASSWORD_MSG}|{SutConfig.Upd.START_UPDATE_MSG}',
-                                       f'{SutConfig.Upd.LINUX_MSG_ALL}|未找到命令'], timeout=300):
-                    logging.info('BIOS更新成功')
-                else:
-                    stylelog.fail('BIOS更新可能失败')
+                linux_cmd = f'{SutConfig.Upd.LINUX_FLASH_CMD_PREVIOUS_ALL}\n'
             elif bios_mode.lower() == 'constant':
-                if SshLib.interaction(Sut.OS_SSH,
-                                      [f'{SutConfig.Upd.LINUX_FLASH_CMD_CONSTANT_ALL}\n',
-                                       f'{SutConfig.Upd.PASSWORDS[0]}\n'],
-                                      [f'{SutConfig.Upd.PASSWORD_MSG}|{SutConfig.Upd.START_UPDATE_MSG}',
-                                       f'{SutConfig.Upd.LINUX_MSG_ALL}|未找到命令'], timeout=300):
-                    logging.info('BIOS更新成功')
-                else:
-                    stylelog.fail('BIOS更新可能失败')
+                linux_cmd = f'{SutConfig.Upd.LINUX_FLASH_CMD_CONSTANT_ALL}\n',
             else:
                 stylelog.fail('bios_mode有误')
                 return
+            result = SshLib.invoke_shell(Sut.OS_SSH, linux_cmd, 300,
+                                         f'{SutConfig.Upd.PASSWORD_MSG}|{SutConfig.Upd.LINUX_MSG_ALL}')
+            if re.search(SutConfig.Upd.PASSWORD_MSG, result):
+                assert SshLib.interaction(Sut.OS_SSH, [linux_cmd, '111111\n'],
+                                          [SutConfig.Upd.PASSWORD_MSG, SutConfig.Upd.WRONG_PSW_MSG]), '没有提示密码错误'
+                logging.info('刷新BIOS时要求输入BIOS密码,输入错误密码，提示密码错误')
+                assert SshLib.interaction(Sut.OS_SSH, [linux_cmd, f'{SutConfig.Upd.PASSWORDS[0]}\n'],
+                                          [SutConfig.Upd.PASSWORD_MSG, SutConfig.Upd.LINUX_MSG_ALL])
+                logging.info('BIOS更新成功')
+            elif re.search(SutConfig.Upd.LINUX_MSG_ALL, result):
+                logging.info('BIOS更新成功')
+            else:
+                stylelog.fail('BIOS更新失败')
+                logging.info(result)
             time.sleep(3)
             BmcLib.power_reset()
             time.sleep(200)
-            BmcLib.enable_serial_only()
-            time.sleep(5)
     elif env.lower() == 'windows':
         if update_mode.lower() == 'normal':
             assert SetUpLib.boot_os_from_bm('windows')
@@ -434,8 +404,6 @@ def _update_bios(env, update_mode, bios_mode):
             logging.info('BIOS更新成功')
             BmcLib.power_reset()
             time.sleep(200)
-            BmcLib.enable_serial_only()
-            time.sleep(5)
     return True
 
 
@@ -640,7 +608,6 @@ def setup_upgrade_normal(bios_mode, change_part):
         assert _set_psw_option()
     SetUpLib.send_keys(Key.SAVE_RESET)
     time.sleep(3)
-    BmcLib.enable_serial_only()
     SetUpLib.clean_buffer()
     assert _is_reserve_update(updated_options, changed_options, count)
     return True
@@ -661,7 +628,6 @@ def setup_upgrade_all(bios_mode, change_part):
     time.sleep(4)
     SetUpLib.send_keys(Key.SAVE_RESET)
     time.sleep(3)
-    BmcLib.enable_serial_only()
     SetUpLib.clean_buffer()
     assert _is_all_update(updated_options, default_options, count, num)
     return True
@@ -680,7 +646,6 @@ def setup_downgrade_normal(bios_mode, change_part):
         assert _set_psw_option()
     SetUpLib.send_keys(Key.SAVE_RESET)
     time.sleep(3)
-    BmcLib.enable_serial_only()
     SetUpLib.clean_buffer()
     assert _is_reserve_update(updated_options, changed_options, count)
     return True
@@ -701,7 +666,6 @@ def setup_downgrade_all(bios_mode, change_part):
     time.sleep(4)
     SetUpLib.send_keys(Key.SAVE_RESET)
     time.sleep(3)
-    BmcLib.enable_serial_only()
     SetUpLib.clean_buffer()
     assert _is_all_update(updated_options, default_options, count, num)
     return True
@@ -721,7 +685,6 @@ def dos_upgrade_normal(bios_mode, change_part):
         assert _set_psw_option()
     SetUpLib.send_keys(Key.SAVE_RESET)
     time.sleep(3)
-    BmcLib.enable_serial_only()
     SetUpLib.clean_buffer()
     assert _is_reserve_update(updated_options, changed_options, count)
     return True
@@ -742,7 +705,6 @@ def dos_upgrade_all(bios_mode, change_part):
     time.sleep(4)
     SetUpLib.send_keys(Key.SAVE_RESET)
     time.sleep(3)
-    BmcLib.enable_serial_only()
     SetUpLib.clean_buffer()
     assert _is_all_update(updated_options, default_options, count, num)
     return True
@@ -765,7 +727,6 @@ def dos_downgrade_normal(bios_mode, change_part):
         assert _set_psw_option()
     SetUpLib.send_keys(Key.SAVE_RESET)
     time.sleep(3)
-    BmcLib.enable_serial_only()
     SetUpLib.clean_buffer()
     assert _is_reserve_update(updated_options, changed_options, count)
     return True
@@ -787,7 +748,6 @@ def dos_downgrade_all(bios_mode, change_part):
     time.sleep(4)
     SetUpLib.send_keys(Key.SAVE_RESET)
     time.sleep(3)
-    BmcLib.enable_serial_only()
     SetUpLib.clean_buffer()
     assert _is_all_update(updated_options, default_options, count, num)
     return True
@@ -808,7 +768,6 @@ def shell_upgrade_normal(bios_mode, change_part):
         assert _set_psw_option()
     SetUpLib.send_keys(Key.SAVE_RESET)
     time.sleep(3)
-    BmcLib.enable_serial_only()
     SetUpLib.clean_buffer()
     assert _is_reserve_update(updated_options, changed_options, count)
     return True
@@ -830,7 +789,6 @@ def shell_upgrade_all(bios_mode, change_part):
     time.sleep(4)
     SetUpLib.send_keys(Key.SAVE_RESET)
     time.sleep(3)
-    BmcLib.enable_serial_only()
     SetUpLib.clean_buffer()
     assert _is_all_update(updated_options, default_options, count, num)
     return True
@@ -850,7 +808,6 @@ def shell_downgrade_normal(bios_mode, change_part):
         assert _set_psw_option()
     SetUpLib.send_keys(Key.SAVE_RESET)
     time.sleep(3)
-    BmcLib.enable_serial_only()
     SetUpLib.clean_buffer()
     assert _is_reserve_update(updated_options, changed_options, count)
     return True
@@ -874,7 +831,6 @@ def shell_downgrade_all(bios_mode, change_part):
     time.sleep(4)
     SetUpLib.send_keys(Key.SAVE_RESET)
     time.sleep(3)
-    BmcLib.enable_serial_only()
     SetUpLib.clean_buffer()
     assert _is_all_update(updated_options, default_options, count, num)
     return True
@@ -891,7 +847,6 @@ def linux_upgrade_normal(bios_mode, change_part):
         assert _set_psw_option()
     SetUpLib.send_keys(Key.SAVE_RESET)
     time.sleep(3)
-    BmcLib.enable_serial_only()
     SetUpLib.clean_buffer()
     assert _is_reserve_update(updated_options, changed_options, count)
     return True
@@ -909,7 +864,6 @@ def linux_upgrade_all(bios_mode, change_part):
     time.sleep(4)
     SetUpLib.send_keys(Key.SAVE_RESET)
     time.sleep(3)
-    BmcLib.enable_serial_only()
     SetUpLib.clean_buffer()
     assert _is_all_update(updated_options, default_options, count, num)
     return True
@@ -926,7 +880,6 @@ def linux_downgrade_normal(bios_mode, change_part):
         assert _set_psw_option()
     SetUpLib.send_keys(Key.SAVE_RESET)
     time.sleep(3)
-    BmcLib.enable_serial_only()
     SetUpLib.clean_buffer()
     assert _is_reserve_update(updated_options, changed_options, count)
     return True
@@ -944,7 +897,6 @@ def linux_downgrade_all(bios_mode, change_part):
     time.sleep(4)
     SetUpLib.send_keys(Key.SAVE_RESET)
     time.sleep(3)
-    BmcLib.enable_serial_only()
     SetUpLib.clean_buffer()
     assert _is_all_update(updated_options, default_options, count, num)
     return True
@@ -961,7 +913,6 @@ def windows_upgrade_normal(bios_mode, change_part):
         assert _set_psw_option()
     SetUpLib.send_keys(Key.SAVE_RESET)
     time.sleep(3)
-    BmcLib.enable_serial_only()
     SetUpLib.clean_buffer()
     assert _is_reserve_update(updated_options, changed_options, count)
     return True
@@ -979,7 +930,6 @@ def windows_upgrade_all(bios_mode, change_part):
     time.sleep(4)
     SetUpLib.send_keys(Key.SAVE_RESET)
     time.sleep(3)
-    BmcLib.enable_serial_only()
     SetUpLib.clean_buffer()
     assert _is_all_update(updated_options, default_options, count, num)
     return True
@@ -996,7 +946,6 @@ def windows_downgrade_normal(bios_mode, change_part):
         assert _set_psw_option()
     SetUpLib.send_keys(Key.SAVE_RESET)
     time.sleep(3)
-    BmcLib.enable_serial_only()
     SetUpLib.clean_buffer()
     assert _is_reserve_update(updated_options, changed_options, count)
     return True
@@ -1014,7 +963,6 @@ def windows_downgrade_all(bios_mode, change_part):
     time.sleep(4)
     SetUpLib.send_keys(Key.SAVE_RESET)
     time.sleep(3)
-    BmcLib.enable_serial_only()
     SetUpLib.clean_buffer()
     assert _is_all_update(updated_options, default_options, count, num)
     return True

@@ -30,6 +30,7 @@ from Inspur7500.BaseLib import Report
 from Inspur7500.BaseLib import SetUpLib
 from Inspur7500.BaseLib import PwdLib
 from Inspur7500.BaseLib import SshLib
+from Inspur7500.BaseLib import SolLib
 
 
 

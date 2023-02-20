@@ -1,4 +1,5 @@
 import os
+from batf import var
 from batf.SutInit import Sut
 from SPR4P import Collecter
 from SPR4P.BaseLib import BmcLib
@@ -18,6 +19,7 @@ def global_config():
     BmcLib.debug_message(enable=False)
     Sut.UNITOOL.set_tool_name("uniCfg")
     Sut.UNITOOL_LEGACY_OS.set_tool_name("uniCfg")
+    var.set("run_type", "Debug")
 
 
 # Define test scope for daily test

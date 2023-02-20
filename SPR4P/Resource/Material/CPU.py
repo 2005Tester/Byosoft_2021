@@ -155,3 +155,20 @@ class Q17J(SPR):
     Max_MemFreq_2DPC = 4400  # MHz
     Max_MemFreq_1DPC = 4800  # MHz
     TDP = 270
+
+
+class Q23W(SPR):
+    Name = "Intel(R) Xeon(R)"
+    BaseFreq = 2.9  # GHz
+    TurboFreq = 3.2  # GHz
+    Cores = 16
+    CPUID = "806F8"
+    Stepping = "E5"
+    Type = "8444H"
+    Level = "Platinum"
+    L1_Cache = 1280  # KB
+    L2_Cache = 32768  # KB
+    L3_Cache = 45 * 1024  # KB
+    Max_MemFreq_2DPC = 4400  # MHz
+    Max_MemFreq_1DPC = 4800  # MHz
+    TDP = 270

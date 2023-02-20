@@ -908,13 +908,10 @@ def Testcase_DiffDefaultValue_008():
     Remark:
     """
     try:
-        new_path_local = Path(Env.BIOS_PATH) / Env.BRANCH_LATEST
-        assert new_path_local.exists(), f"BIOS hpm path not exists: {new_path_local}"
-        new_hpm_file = list(new_path_local.glob("*.hpm"))[0]
-
+        hpm_file = PlatMisc.get_latest_hpm_bios()
         assert SetUpLib.boot_to_default_os()
         assert Sut.UNITOOL.write(**BiosCfg.HPM_KEEP)
-        assert Update.update_bios_hpm(new_hpm_file)
+        assert Update.update_bios_hpm(hpm_file)
         assert SetUpLib.boot_to_default_os()
         assert Sut.UNITOOL.check(**BiosCfg.HPM_KEEP)
         return core.Status.Pass
@@ -1074,9 +1071,7 @@ def Testcase_LoadCustomDefaults_004():
     Remark:
     """
     try:
-        new_path_local = Path(Env.BIOS_PATH) / Env.BRANCH_LATEST
-        assert new_path_local.exists(), f"BIOS hpm path not exists: {new_path_local}"
-        new_hpm_file = list(new_path_local.glob("*.hpm"))[0]
+        new_hpm_file = PlatMisc.get_latest_hpm_bios()
 
         assert SetUpLib.boot_to_default_os()
         assert Sut.UNITOOL.write(**BiosCfg.HPM_KEEP)
@@ -2139,26 +2134,6 @@ def Testcase_MainDisplay_004():
 #         BmcLib.clear_cmos()
 
 
-# @core.test_case(("1655", "[TC1655] Testcase_HelpInfo_001", "硬盘信息显示测试"))
-# def Testcase_HelpInfo_001():
-#     """
-#     Name:       硬盘信息显示测试
-#     Condition:  
-#     Steps:      1、启动进入Setup菜单，在PCH Configuration页面下查看硬盘在位信息显示是否包含容量以及温度，在位信息是否正确，有结果A；
-#                 2、遍历所有语言模式。
-#     Result:     A：在位信息与背板Port口一一对应，不显示硬盘的容量以及温度信息。
-#     Remark:     
-#     """
-#     try:
-#         
-#         return core.Status.Pass
-#     except Exception as e:
-#         logging.error(e)
-#         return core.Status.Fail
-#     finally:
-#         BmcLib.clear_cmos()
-
-
 @core.test_case(("1657", "[TC1657] Testcase_HelpInfo_003", "Setup启动模式信息显示测试"))
 def Testcase_HelpInfo_003():
     """
@@ -2251,7 +2226,7 @@ def Testcase_HelpInfoUefi_001():
     """
     def verify_pxe(refresh=False):
         try:
-            boot_dict = SetUpLib.get_all_options(refresh)
+            boot_dict = SetUpLib.get_all_options(refresh=refresh)
             boot_list = list(map(str, boot_dict.keys()))
             for pxe_info in boot_list:
                 if "PXE" in pxe_info:

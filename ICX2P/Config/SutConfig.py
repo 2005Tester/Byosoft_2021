@@ -45,8 +45,8 @@ class Env(_Env):
     LATEST_BRANCH = "master"
 
     # BIOS Vcs branch for release test
-    RELEASE_BRANCH = "2288V6_038"
-    PREVIOUS_BRANCH = "2288V6_037"
+    RELEASE_BRANCH = "2288V6_057"
+    PREVIOUS_BRANCH = "2288V6_056"
 
     # Redfish configuration
     REDFISH_API = {

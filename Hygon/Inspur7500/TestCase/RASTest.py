@@ -12,7 +12,7 @@ def get_eth_bdf():
     onboard_bdf = {}
     result = SshLib.execute_command_limit(Sut.OS_SSH, 'lspci | grep -i eth')[0]
     for i in result.split('\n'):
-        if re.search('wangxun', i, re.I):
+        if re.search('wangxun|8088', i, re.I):
             onboard_bdf[re.findall('(\w{2}:\w{2}.\w+) ', i)[0][:6]] = []
             break
 
@@ -89,7 +89,7 @@ def mem_ras_001(oem=False):
             5/6.BMC不上报
             7.BMC上报'不可纠正错误'
             9.BMC上报1次，3次
-            10.BMC闪报1次，2次
+            10.BMC上报1次，2次
             12.BMC上报'不可纠正错误'
     """
     try:
@@ -101,7 +101,10 @@ def mem_ras_001(oem=False):
         SetUpLib.send_keys(Key.CONTROL_F11)
         assert SetUpLib.enter_menu_change_value(Key.DOWN, SutConfig.Ras.SET_MEM_THRESHOLD_10, 18,save=True)
         assert SetUpLib.boot_os_from_bm()
-        # 单比特注入.....................................-
+        if re.search('CPU Not Authed', SshLib.execute_command_limit(Sut.OS_SSH, './HygonSecureAuthTool -c')[0], re.I):
+            SshLib.execute_command_limit(Sut.OS_SSH, './HygonSecureAuthTool -u -d AuthSToken')
+
+        # 单比特注入.....................................
         logging.info('单比特注入....................')
         BmcLib.interaction(f'{SutConfig.Env.IPMITOOL} sel clear', 'Clearing SEL')
         SshLib.execute_command_limit(Sut.OS_SSH, './inject_mem.sh 1 0x3ff00 0 10')
@@ -552,120 +555,6 @@ def mem_ras_005():
     """
     Name:   内存漏斗测试
 
-    Steps:  1.SetUp下打开调试模式，设置内存错误数量为10，漏斗时间为2，漏斗数量为5
-            2.进入系统后等待2分钟，单比特注入10次，查看BMC上报结果
-            3.重新启动到系统等待两分钟，单比特注入5次，2分钟后单比特注入5次，查看BMC上报结果
-            4.再单比特注入5次，查看BMC上报结果
-
-    Result: 2.BMC上报一次
-            3.BMC不上报
-            4.BMC上报一次
-
-    """
-    try:
-        count = 0
-        wrong_msg = []
-        assert SetUpLib.boot_to_setup()
-        time.sleep(1)
-        SetUpLib.send_keys(Key.CONTROL_F11)
-        if not SetUpLib.enter_menu_change_value(Key.DOWN, SutConfig.Ras.SET_DEBUG, 18):
-            return core.Status.Skip
-        assert SetUpLib.enter_menu_change_value(Key.DOWN, SutConfig.Ras.SET_LEAKY_BUCKET, 18,save=True)
-        assert SetUpLib.boot_with_hotkey(Key.F11, SutConfig.Msg.ENTER_BOOTMENU, 300, SutConfig.Msg.POST_MESSAGE)
-        if not SetUpLib.select_boot_option(Key.DOWN, SutConfig.Msg.LINUX_OS, 30, ''):
-            return
-        if SetUpLib.wait_message('EndLegacyUsb\(\)'):
-            logging.info('开始计时,倒计时2分钟')
-            time.sleep(125)
-        # datas=''
-        # start=time.time()
-        # while True:
-        #     data=SetUpLib.get_data(1)
-        #     datas+=data
-        #     if datas.count('ByoMcePeriodicSmiCallback')==4:
-        #         break
-        #     now=time.time()
-        #     if now-start>300:
-        #         break
-        # now=time.time()
-        # if now-start>300:
-        #     stylelog.fail('5分钟内没有找到ByoMcePeriodicSmiCallback,测试失败')
-        #     return
-        BmcLib.interaction(f'{SutConfig.Env.IPMITOOL} sel clear', 'Clearing SEL')
-        SshLib.execute_command_limit(Sut.OS_SSH, './inject_mem.sh 1 0x3ff00 0 10')
-        time.sleep(5)
-        output = BmcLib.output(f'{SutConfig.Env.IPMITOOL} sel list')
-        if output.count('Correctable ECC') == 1:
-            logging.info('2分钟内注入10个错误，BMC上报一个')
-        else:
-            stylelog.fail('2分钟内注入10个错误，BMC上报有误')
-            stylelog.fail(output)
-            wrong_msg.append('2分钟内注入10个错误，BMC上报有误')
-            wrong_msg.append(output)
-            count += 1
-        assert SetUpLib.boot_with_hotkey(Key.F11, SutConfig.Msg.ENTER_BOOTMENU, 300, SutConfig.Msg.POST_MESSAGE)
-        if not SetUpLib.select_boot_option(Key.DOWN, SutConfig.Msg.LINUX_OS, 30, ''):
-            return
-        if SetUpLib.wait_message('EndLegacyUsb\(\)'):
-            logging.info('开始计时,倒计时2分钟')
-            time.sleep(125)
-        # datas = ''
-        # start = time.time()
-        # while True:
-        #     data = SetUpLib.get_data(1)
-        #     datas += data
-        #     if datas.count('ByoMcePeriodicSmiCallback') == 4:
-        #         break
-        #     now = time.time()
-        #     if now - start > 300:
-        #         break
-        # now = time.time()
-        # if now - start > 300:
-        #     stylelog.fail('5分钟内没有找到ByoMcePeriodicSmiCallback,测试失败')
-        #     return
-        BmcLib.interaction(f'{SutConfig.Env.IPMITOOL} sel clear', 'Clearing SEL')
-        SshLib.execute_command_limit(Sut.OS_SSH, './inject_mem.sh 1 0x3ff00 1 5')
-        logging.info('注入5次错误后，等待2分钟')
-        time.sleep(120)
-        SshLib.execute_command_limit(Sut.OS_SSH, './inject_mem.sh 1 0x3ff00 1 5')
-        time.sleep(5)
-        output = BmcLib.output(f'{SutConfig.Env.IPMITOOL} sel list')
-        if output.count('Correctable ECC') == 0 and len(output.split('\n')) == 2:
-            logging.info('先注入5个错误，2分钟后再注入5个错误，BMC没有上报')
-        else:
-            stylelog.fail('先注入5个错误，2分钟后再注入5个错误，BMC上报')
-            stylelog.fail(output)
-            wrong_msg.append('先注入5个错误，2分钟后再注入5个错误，BMC上报')
-            wrong_msg.append(output)
-            count += 1
-        SshLib.execute_command_limit(Sut.OS_SSH, './inject_mem.sh 1 0x3ff00 1 5')
-        time.sleep(5)
-        output = BmcLib.output(f'{SutConfig.Env.IPMITOOL} sel list')
-        if output.count('Correctable ECC') == 1:
-            logging.info('先注入5个错误，2分钟内再注入5个错误，BMC上报一个错误')
-        else:
-            stylelog.fail('先注入5个错误，2分钟内再注入5个错误，BMC上报有误')
-            stylelog.fail(output)
-            wrong_msg.append('先注入5个错误，2分钟内再注入5个错误，BMC上报有误')
-            wrong_msg.append(output)
-            count += 1
-        BmcLib.interaction(f'{SutConfig.Env.IPMITOOL} sel clear', 'Clearing SEL')
-        if count == 0:
-            return True
-        else:
-            for i in wrong_msg:
-                stylelog.fail(i)
-            return
-    except Exception as e:
-        logging.error(e)
-        return core.Status.Fail
-
-
-@core.test_case(('1005', '[TC1005]内存漏斗测试', '内存漏斗测试'))
-def mem_ras_005_():
-    """
-    Name:   内存漏斗测试
-
     Steps:  1.SetUp下设置内存错误数量为10，漏斗时间为1分钟，漏斗数量为5
             2.进入系统注错10次(初始时间为注错10次后的时间)
             3.等待30秒,注错10次,查看BMC上报结果(初始时间更新为注错10次后的时间,与step2的初始时间相差了大约30+10*5=80秒,80秒小于2分钟,期望结果会上报)
@@ -814,35 +703,6 @@ def mem_ras_005_():
 @core.test_case(('1006', '[TC1006]内存漏斗设为0测试', '内存漏斗设为0测试'))
 def mem_ras_006():
     """
-    Name:   内存漏斗设为0测试
-
-    Steps:  1.SetUp打开调试模式，漏斗时间设为0
-            2.进入系统查看串口打印
-
-    Result: 2.BIOS串口不打印'ByoMcePeriodicSmiCallback'
-    """
-    try:
-        assert SetUpLib.boot_to_setup()
-        time.sleep(1)
-        SetUpLib.send_keys(Key.CONTROL_F11)
-        if not SetUpLib.enter_menu_change_value(Key.DOWN, SutConfig.Ras.SET_DEBUG, 18):
-            return core.Status.Skip
-        assert SetUpLib.enter_menu_change_value(Key.DOWN, SutConfig.Ras.SET_LEAKY_BUCKET_0, 18,save=True)
-        assert SetUpLib.boot_os_from_bm()
-        if not SetUpLib.wait_message('ByoMcePeriodicSmiCallback', 60):
-            logging.info('漏斗时间设为0，串口中不打印ByoMcePeriodicSmiCallback')
-            return True
-        else:
-            stylelog.fail('漏斗时间设为0，串口中仍然打印ByoMcePeriodicSmiCallback')
-            return
-    except Exception as e:
-        logging.error(e)
-        return core.Status.Fail
-
-
-@core.test_case(('1006', '[TC1006]内存漏斗设为0测试', '内存漏斗设为0测试'))
-def mem_ras_006_():
-    """
         Name:   内存漏斗设为0测试
 
         Steps:  1.SetUp下设置内存错误数量为10，漏斗时间为1，漏斗数量为5,再将漏斗时间设为0
@@ -908,28 +768,78 @@ def mem_ras_007():
         assert SetUpLib.boot_os_from_bm()
         du_list = []
         BmcLib.interaction(f'{SutConfig.Env.IPMITOOL} sel clear', 'Clearing SEL')
-        data = SshLib.execute_command_limit(Sut.OS_SSH, './DramErrorInjector_v1.6 -S')[0]
+        type = 'old' if SshLib.execute_command_limit(Sut.OS_SSH, './inject_mem.sh -h | grep "5 parameter"')[
+            0] else 'new'
+        S_cmd = './DramErrorInjector_v1.6 -S' if type == 'old' else './DramErrorInjector -S'
+        data = SshLib.execute_command_limit(Sut.OS_SSH, f'{S_cmd}')[0]
         time.sleep(2)
         for i in re.findall('Die : (\w+) \| UMC : (\w+) \x1B\[0;32m\[Detected\]\x1B\[0m', data):
-            du_list.append(i[0] + i[1])
-        for key, value in SutConfig.Ras.RAS_DICT.items():
-            if value in du_list:
-                BmcLib.interaction(f'{SutConfig.Env.IPMITOOL} sel clear', 'Clearing SEL')
-                SshLib.execute_command_limit(Sut.OS_SSH, f'timeout 20 ./inject_mem.sh 1 {value[0]} {value[1]} 0 1')
-                time.sleep(5)
-                output = BmcLib.output(f'{SutConfig.Env.IPMITOOL} sel list')
-                sel = get_sel_num(output, 'Correctable ECC')
-                if sel:
-                    if get_data3(random.choice(sel)) == key:
-                        logging.info(f'内存持续注入d:{value[0]},u:{value[1]},BMC上报,且内存丝印上报正确')
-                else:
-                    stylelog.fail(f'内存持续注入d:{value[0]},u:{value[1]},BMC没有上报')
-                    stylelog.fail(output)
-                    wrong_msg.append(f'内存持续注入d:{value[0]},u:{value[1]},BMC没有上报')
-                    wrong_msg.append(output)
-                    count += 1
-                time.sleep(2)
-                assert SetUpLib.boot_os_from_bm()
+            du_list.append(i[0] + ' ' + i[1])
+        all_mem_list = \
+            SshLib.execute_command_limit(Sut.OS_SSH, "dmidecode -t 17 | grep -i 'Total Width'")[
+                0].splitlines()
+        if type == 'new':
+            for key, value in SutConfig.Ras.RAS_DICT.items():
+                if value[0][0:3] in du_list:
+                    BmcLib.interaction(f'{SutConfig.Env.IPMITOOL} sel clear', 'Clearing SEL')
+                    die, umc, dimm = value[0].split(' ')
+                    SshLib.execute_command_limit(Sut.OS_SSH, f'./inject_mem.sh 1 {die} {umc} {int(dimm) + 1} 0 10')
+                    time.sleep(5)
+                    output = BmcLib.output(f'{SutConfig.Env.IPMITOOL} sel list')
+                    sel = get_sel_num(output, 'Correctable ECC')
+                    if sel:
+                        event_data = get_data3(random.choice(sel))
+                        if re.search('Unknown', all_mem_list[value[1]]):
+                            all_event_data = []
+                            for m, n in SutConfig.Ras.RAS_DICT.items():
+                                if n[0][0:3] == value[0][0:3]:
+                                    all_event_data.append(m)
+                            if event_data in all_event_data:
+                                logging.info(f'内存持续注入die:{die},umc:{umc},dimm:{dimm},BMC上报,且内存丝印上报正确')
+                            else:
+                                stylelog.fail(f'内存持续注入die:{die},umc:{umc},dimm:{dimm},BMC上报,内存丝印上报错误')
+                                wrong_msg.append(f'内存持续注入die:{die},umc:{umc},dimm:{dimm},BMC上报,内存丝印上报错误')
+                                count += 1
+                        else:
+                            if event_data == key:
+                                logging.info(f'内存持续注入die:{die},umc:{umc},dimm:{dimm},BMC上报,且内存丝印上报正确')
+                            else:
+                                stylelog.fail(f'内存持续注入die:{die},umc:{umc},dimm:{dimm},BMC上报,内存丝印上报错误')
+                                wrong_msg.append(f'内存持续注入die:{die},umc:{umc},dimm:{dimm},BMC上报,内存丝印上报错误')
+                                count += 1
+                    else:
+                        stylelog.fail(f'内存持续注入die:{die},umc:{umc},dimm:{dimm},BMC没有上报')
+                        stylelog.fail(output)
+                        wrong_msg.append(f'内存持续注入die:{die},umc:{umc},dimm:{dimm},BMC没有上报')
+                        wrong_msg.append(output)
+                        count += 1
+                    time.sleep(2)
+                    if value[1] % 2 != 0:
+                        assert SetUpLib.boot_os_from_bm()
+        else:
+            for key, value in SutConfig.Ras.RAS_DICT.items():
+                if value[0][0:3] in du_list and value[1] % 2 != 0:
+                    die, umc, dimm = value[0].split(' ')
+                    BmcLib.interaction(f'{SutConfig.Env.IPMITOOL} sel clear', 'Clearing SEL')
+                    SshLib.execute_command_limit(Sut.OS_SSH,
+                                                 f'timeout 20 ./inject_mem.sh 1 {die} {umc} 0 1')
+                    time.sleep(5)
+                    output = BmcLib.output(f'{SutConfig.Env.IPMITOOL} sel list')
+                    sel = get_sel_num(output, 'Correctable ECC')
+                    if sel:
+                        if get_data3(random.choice(sel)) == key:
+                            logging.info(f'内存持续注入die:{die},umc:{umc},BMC上报,且内存丝印上报正确')
+                        else:
+                            stylelog.fail(f'内存持续注入die:{die},umc:{umc},BMC上报,内存丝印上报错误')
+                            count += 1
+                    else:
+                        stylelog.fail(f'内存持续注入die:{die},umc:{umc},BMC没有上报')
+                        stylelog.fail(output)
+                        wrong_msg.append(f'内存持续注入die:{die},umc:{umc},BMC没有上报')
+                        wrong_msg.append(output)
+                        count += 1
+                    time.sleep(2)
+                    assert SetUpLib.boot_os_from_bm()
         if count == 0:
             return True
         else:

@@ -1,6 +1,8 @@
 # dmidecode 3.3
 Getting SMBIOS data from sysfs.
-SMBIOS 3.2.0 present.
+SMBIOS 3.6.0 present.
+# SMBIOS implementations newer than version 3.3.0 are not
+# fully supported by this version of dmidecode.
 
 Handle 0x0011, DMI type 4, 50 bytes
 Processor Information
@@ -8,8 +10,8 @@ Processor Information
 	Type: Central Processor
 	Family: Xeon
 	Manufacturer: Intel(R) Corporation
-	ID: F6 06 08 00 FF FB EB BF
-	Signature: Type 0, Family 6, Model 143, Stepping 6
+	ID: F8 06 08 00 FF FB EB BF
+	Signature: Type 0, Family 6, Model 143, Stepping 8
 	Flags:
 		FPU (Floating-point unit on-chip)
 		VME (Virtual mode extension)
@@ -49,7 +51,7 @@ Processor Information
 	L1 Cache Handle: 0x000E
 	L2 Cache Handle: 0x000F
 	L3 Cache Handle: 0x0010
-	Serial Number: 5DDEF81F3F9264AB
+	Serial Number: 3F77D67EFB2BFF33
 	Asset Tag: UNKNOWN
 	Part Number: Not Specified
 	Core Count: 16
@@ -69,8 +71,8 @@ Processor Information
 	Type: Central Processor
 	Family: Xeon
 	Manufacturer: Intel(R) Corporation
-	ID: F6 06 08 00 FF FB EB BF
-	Signature: Type 0, Family 6, Model 143, Stepping 6
+	ID: F8 06 08 00 FF FB EB BF
+	Signature: Type 0, Family 6, Model 143, Stepping 8
 	Flags:
 		FPU (Floating-point unit on-chip)
 		VME (Virtual mode extension)
@@ -110,7 +112,7 @@ Processor Information
 	L1 Cache Handle: 0x0012
 	L2 Cache Handle: 0x0013
 	L3 Cache Handle: 0x0014
-	Serial Number: 5DDCF51F2784026E
+	Serial Number: 53DAB22AE37486F8
 	Asset Tag: UNKNOWN
 	Part Number: Not Specified
 	Core Count: 16
@@ -124,125 +126,47 @@ Processor Information
 		Enhanced Virtualization
 		Power/Performance Control
 
-Handle 0x0019, DMI type 4, 50 bytes
+Handle 0x0016, DMI type 4, 50 bytes
 Processor Information
 	Socket Designation: CPU03
 	Type: Central Processor
-	Family: Xeon
-	Manufacturer: Intel(R) Corporation
-	ID: F6 06 08 00 FF FB EB BF
-	Signature: Type 0, Family 6, Model 143, Stepping 6
-	Flags:
-		FPU (Floating-point unit on-chip)
-		VME (Virtual mode extension)
-		DE (Debugging extension)
-		PSE (Page size extension)
-		TSC (Time stamp counter)
-		MSR (Model specific registers)
-		PAE (Physical address extension)
-		MCE (Machine check exception)
-		CX8 (CMPXCHG8 instruction supported)
-		APIC (On-chip APIC hardware supported)
-		SEP (Fast system call)
-		MTRR (Memory type range registers)
-		PGE (Page global enable)
-		MCA (Machine check architecture)
-		CMOV (Conditional move instruction supported)
-		PAT (Page attribute table)
-		PSE-36 (36-bit page size extension)
-		CLFSH (CLFLUSH instruction supported)
-		DS (Debug store)
-		ACPI (ACPI supported)
-		MMX (MMX technology supported)
-		FXSR (FXSAVE and FXSTOR instructions supported)
-		SSE (Streaming SIMD extensions)
-		SSE2 (Streaming SIMD extensions 2)
-		SS (Self-snoop)
-		HTT (Multi-threading)
-		TM (Thermal monitor supported)
-		PBE (Pending break enabled)
-	Version: Intel(R) Xeon(R) Platinum 8444H
-	Voltage: 1.6 V
-	External Clock: 100 MHz
-	Max Speed: 4000 MHz
-	Current Speed: 2900 MHz
-	Status: Populated, Enabled
+	Family: <OUT OF SPEC>
+	Manufacturer: Not Specified
+	ID: 00 00 00 00 00 00 00 00
+	Version: Not Specified
+	Voltage: Unknown
+	External Clock: Unknown
+	Max Speed: Unknown
+	Current Speed: Unknown
+	Status: Unpopulated
 	Upgrade: <OUT OF SPEC>
-	L1 Cache Handle: 0x0016
-	L2 Cache Handle: 0x0017
-	L3 Cache Handle: 0x0018
-	Serial Number: 5DE50A2033302E78
-	Asset Tag: UNKNOWN
+	L1 Cache Handle: Not Provided
+	L2 Cache Handle: Not Provided
+	L3 Cache Handle: Not Provided
+	Serial Number: Not Specified
+	Asset Tag: Not Specified
 	Part Number: Not Specified
-	Core Count: 16
-	Core Enabled: 16
-	Thread Count: 32
-	Characteristics:
-		64-bit capable
-		Multi-Core
-		Hardware Thread
-		Execute Protection
-		Enhanced Virtualization
-		Power/Performance Control
+	Characteristics: None
 
-Handle 0x001D, DMI type 4, 50 bytes
+Handle 0x0017, DMI type 4, 50 bytes
 Processor Information
 	Socket Designation: CPU04
 	Type: Central Processor
-	Family: Xeon
-	Manufacturer: Intel(R) Corporation
-	ID: F6 06 08 00 FF FB EB BF
-	Signature: Type 0, Family 6, Model 143, Stepping 6
-	Flags:
-		FPU (Floating-point unit on-chip)
-		VME (Virtual mode extension)
-		DE (Debugging extension)
-		PSE (Page size extension)
-		TSC (Time stamp counter)
-		MSR (Model specific registers)
-		PAE (Physical address extension)
-		MCE (Machine check exception)
-		CX8 (CMPXCHG8 instruction supported)
-		APIC (On-chip APIC hardware supported)
-		SEP (Fast system call)
-		MTRR (Memory type range registers)
-		PGE (Page global enable)
-		MCA (Machine check architecture)
-		CMOV (Conditional move instruction supported)
-		PAT (Page attribute table)
-		PSE-36 (36-bit page size extension)
-		CLFSH (CLFLUSH instruction supported)
-		DS (Debug store)
-		ACPI (ACPI supported)
-		MMX (MMX technology supported)
-		FXSR (FXSAVE and FXSTOR instructions supported)
-		SSE (Streaming SIMD extensions)
-		SSE2 (Streaming SIMD extensions 2)
-		SS (Self-snoop)
-		HTT (Multi-threading)
-		TM (Thermal monitor supported)
-		PBE (Pending break enabled)
-	Version: Intel(R) Xeon(R) Platinum 8444H
-	Voltage: 1.6 V
-	External Clock: 100 MHz
-	Max Speed: 4000 MHz
-	Current Speed: 2900 MHz
-	Status: Populated, Enabled
+	Family: <OUT OF SPEC>
+	Manufacturer: Not Specified
+	ID: 00 00 00 00 00 00 00 00
+	Version: Not Specified
+	Voltage: Unknown
+	External Clock: Unknown
+	Max Speed: Unknown
+	Current Speed: Unknown
+	Status: Unpopulated
 	Upgrade: <OUT OF SPEC>
-	L1 Cache Handle: 0x001A
-	L2 Cache Handle: 0x001B
-	L3 Cache Handle: 0x001C
-	Serial Number: 5DEB05201505403A
-	Asset Tag: UNKNOWN
+	L1 Cache Handle: Not Provided
+	L2 Cache Handle: Not Provided
+	L3 Cache Handle: Not Provided
+	Serial Number: Not Specified
+	Asset Tag: Not Specified
 	Part Number: Not Specified
-	Core Count: 16
-	Core Enabled: 16
-	Thread Count: 32
-	Characteristics:
-		64-bit capable
-		Multi-Core
-		Hardware Thread
-		Execute Protection
-		Enhanced Virtualization
-		Power/Performance Control
+	Characteristics: None
 

@@ -579,7 +579,7 @@ def get_option_help(option: str, key=Key.DOWN, counts: int = 40) -> str:
 
 def get_all_options(key=Key.UP, counts: int = 40, span=None, refresh=False) -> dict:
     """获取当前页面的所有选项和Value，返回键值对字典"""
-    delay = 0.95 if refresh else 0.5
+    delay = 0.8 if refresh else 0.5
     return Sut.BIOS_COM.get_all_options(key=key, counts=counts, span=span, refresh=refresh, delay=delay)
 
 

@@ -3,6 +3,8 @@ import re
 import logging
 import os
 import time
+from io import BytesIO
+from Inspur7500.BaseLib import SetUpLib
 from batf.Common.LogAnalyzer import LogAnalyzer
 import paramiko
 from Inspur7500.Config import SutConfig
@@ -40,19 +42,43 @@ def execute_command_limit(ssh, command, delay=290, decoding=''):
             break
         if spent_time > delay:
             break
-    logging.debug(cmd_result)
+    logging.debug(cmd_result[0])
+    logging.debug(cmd_result[1])
     return cmd_result
 
 
-def invoke_shell(ssh, command, timeout=5):
+def invoke_shell(ssh, command, timeout=5, expect=None):
+    last = b''
+    buffer = BytesIO()
+    sign = ''
     if ssh.login():
         logging.info("Sending: {0}".format(command))
         op = ssh.ssh_client.invoke_shell(width=160, height=80)
         if not re.search('\n', command):
-            command = command + '\n'
-        op.sendall(command)
-        time.sleep(timeout)
-        return op.recv(1024)
+            command = command + '\x0d'
+        op.send(command)
+        # time.sleep(1)
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            if op.recv_ready():
+                data = op.recv(1024)
+                buffer.write(data)
+                last2data = last + data
+                if not sign:
+                    if re.search(f'\r\n*(.+){SetUpLib.regex_char_handle(command[:-1])}',
+                                 last2data.decode(encoding="utf-8", errors="ignore")):
+                        sign = re.findall(f'\r\n*(.+){SetUpLib.regex_char_handle(command[:-1])}',
+                                          last2data.decode(encoding="utf-8", errors="ignore"))[0]
+                if expect and re.search(expect, last2data.decode(encoding="utf-8", errors="ignore")):
+                    break
+                last = data
+                if sign and buffer.getvalue().decode(encoding='utf-8', errors='ignore').count(sign) == 2:
+                    break
+            else:
+                time.sleep(0.01)
+        all_buffer = buffer.getvalue().decode(encoding='utf-8', errors='ignore')
+        logging.debug(all_buffer)
+        return all_buffer
     else:
         logging.info("SshLib: login failed.")
         return

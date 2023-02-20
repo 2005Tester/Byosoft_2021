@@ -3,7 +3,7 @@ from SPR4P.BaseLib import *
 
 ####################################
 # BootOS Test Case
-# TC 2100-2106
+# TC 2100-2110
 ####################################
 
 
@@ -170,7 +170,7 @@ def Testcase_PxeBootLegacy_003():
         BmcWeb.BMC_WEB.set_boot_overwrite('No Override', once=False)
 
 
-@core.test_case(("2017", "[TC2017] Testcase_PxeBootUefi_006", "【UEFI】反复修改网卡MAC PXE启动测试"))
+@core.test_case(("2107", "Testcase_PxeBootUefi_006", "【UEFI】反复修改网卡MAC PXE启动测试"))
 def Testcase_PxeBootUefi_006():
     """
     Name:       【UEFI】反复修改网卡MAC PXE启动测试
@@ -211,7 +211,8 @@ def Testcase_PxeBootUefi_006():
     finally:
         BmcLib.clear_cmos()
 
-@core.test_case(("2018", "[TC2018] 连接PXE环境检测", "连接PXE环境检测"))
+
+@core.test_case(("2108", "连接PXE环境检测", "连接PXE环境检测"))
 def Testcase_Connect_PXE():
     """
     Name:       连接PXE环境检测
@@ -238,7 +239,7 @@ def Testcase_Connect_PXE():
         BmcLib.clear_cmos()
 
 
-@core.test_case(("2019", "[TC2019] redfish修改检测", "redfish修改检测"))
+@core.test_case(("2109", "redfish修改检测", "redfish修改检测"))
 def Testcase_Redfish_Check_PxeTimeOutControl():
     """
     Name:       redfish修改检测
@@ -261,7 +262,8 @@ def Testcase_Redfish_Check_PxeTimeOutControl():
     finally:
         BmcLib.clear_cmos()
 
-@core.test_case(("2020", "[TC2020] PXE boot 异常退出后检查网口", "PXE boot 异常退出后检查网口"))
+
+@core.test_case(("2110", "PXE boot 异常退出后检查网口", "PXE boot 异常退出后检查网口"))
 def Testcase_Check_PxePort():
     """
     Name:       PXE boot 异常退出后检查网口

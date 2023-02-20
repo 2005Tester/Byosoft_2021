@@ -7,7 +7,7 @@
 #  means without the express written consent of Byosoft Corporation.
 
 # -*- encoding=utf8 -*-
-from SPR4P.Resource.Material.CPU import Q17J as CPU
+from SPR4P.Resource.Material.CPU import Q23W as CPU
 from SPR4P.Resource.Material.DIMM import Samsung_64G_2Rx4_4800 as DIMM
 from SPR4P.Resource.Material.External import HDDBP8 as HDDBP
 from SPR4P.Resource.Material.External import TPM_NTZ_2P0 as TPM
@@ -85,7 +85,7 @@ class Sys:
     DIMM_TYPE: str = DIMM.Type                  # DIMM Type (RDIMM)
 
     # CPU安装位置
-    CPU_POP = [0, 1, 2, 3]
+    CPU_POP = [0, 1]
 
     # DIMM 安装位置 ("{socket}{channel}{dimm}")
     DIMM_POP = ["000", "010", "040", "050", "100", "110", "140", "150"]

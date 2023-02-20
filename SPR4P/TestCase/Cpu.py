@@ -1154,7 +1154,7 @@ def Testcase_CpuCompa_005():
                 B：OS下查询微码版本和BIOS查询一致。
     Remark:     1、微码版本确认，如没有问题单跟踪修改，默认保持和上一个BIOS版本中的微码一致。
     """
-    microcode_bios = f'{Msg.MICRO_CODE}\s+{PlatMisc.match_config_version().MicroCode}'
+    microcode_bios = f'{Msg.MICRO_CODE}\s+{PlatMisc.config_ver().MicroCode}'
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.enter_menu(Msg.PATH_PER_CPU_INFO, Key.UP, 20, Msg.PROC_INFO)
@@ -1164,7 +1164,7 @@ def Testcase_CpuCompa_005():
         _res = SshLib.execute_command(Sut.OS_SSH, r'cat /sys/devices/system/cpu/cpu0/microcode/version')
         assert '0x' in _res, "command return error"
         microcode_os = _res.strip('\n').replace('0x', '', 1)
-        assert microcode_os == PlatMisc.match_config_version().MicroCode.lower(), "Microcode in os doesn't match with BIOS setup"
+        assert microcode_os == PlatMisc.config_ver().MicroCode.lower(), "Microcode in os doesn't match with BIOS setup"
         logging.info("The microcode_version in OS is the same as that in BIOS")
         return core.Status.Pass
     except Exception as e:

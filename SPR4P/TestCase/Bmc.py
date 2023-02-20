@@ -7,58 +7,83 @@ from SPR4P.BaseLib import *
 ####################################
 
 
-# @core.test_case(("1700", "[TC1700] Testcase_ReportPcieBdfToBmc_001", "PCIe设备BDF信息上报BMC"))
-# def Testcase_ReportPcieBdfToBmc_001():
-#     """
-#     Name:       PCIe设备BDF信息上报BMC
-#     Condition:  1、接PCIe卡；
-#                 2、开启BT通道。
-#     Steps:      1、启动进OS，检查串口日志中PCIe设备BDF信息，有结果A；
-#                 2、BMC Web侧检查PCIe设备所属CPU和SLOT信息是否正确，有结果B；
-#                 3、BT通道搜索“58 C6”检查PCIe上报BDF信息，有结果C。
-#     Result:     A：串口打印BDF信息正确；
-#                 B：Web界面显示信息正确；
-#                 C：BT通道上报BDF信息正确。
-#     Remark:     1、BMC命令行输入以下指令打开BT通道：
-#                 maint_debug_cli
-#                 attach ipmi
-#                 trace ch=bt
-#                 2、串口搜索关键字“RootBusBDF”。
-#     """
-#     try:
-#         
-#         return core.Status.Pass
-#     except Exception as e:
-#         logging.error(e)
-#         return core.Status.Fail
-#     finally:
-#         BmcLib.clear_cmos()
+@core.test_case(("1700", "[TC1700] Testcase_ReportPcieBdfToBmc_001", "PCIe设备BDF信息上报BMC"))
+def Testcase_ReportPcieBdfToBmc_001():
+    """
+    Name:       PCIe设备BDF信息上报BMC
+    Condition:  1、接PCIe卡；
+                2、开启BT通道。
+    Steps:      1、启动进OS，检查串口日志中PCIe设备BDF信息，有结果A；
+                2、BMC Web侧检查PCIe设备所属CPU和SLOT信息是否正确，有结果B；
+                3、BT通道搜索“58 C6”检查PCIe上报BDF信息，有结果C。
+    Result:     A：串口打印BDF信息正确；
+                B：Web界面显示信息正确；
+                C：BT通道上报BDF信息正确。
+    Remark:     1、BMC命令行输入以下指令打开BT通道：
+                maint_debug_cli
+                attach ipmi
+                trace ch=bt
+                2、串口搜索关键字“RootBusBDF”。
+    """
+    str_flg = []
+    pcie_bdf = (lambda z: dict([(x, y) for y, x in z.items()]))(SutConfig.Sys.PCIE_SLOT)
+    for key, value in pcie_bdf.items():
+        for i in value.split('.'):
+            if len(i) > 2:
+                str_flg.append(''.join(i.replace(':', ' ')))
+        '''
+        bios only upload func0 bdf to bt channel.
+        '''
+    str_flg_func0 = [str(j) + ' 00' for j in str_flg]
+    flag = ['58 c6'] + str_flg_func0
+    try:
+        assert BmcLib.force_reset()
+        assert BmcLib.read_bt_data(flag, timeout=SutConfig.Env.BOOT_DELAY)
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+        return core.Status.Fail
+    # finally:
+    #     BmcLib.clear_cmos()
 
 
-# @core.test_case(("1701", "[TC1701] Testcase_ReportPcieBdfToBmc_002", "PCIe设备BDF信息上报BMC_设备不在位"))
-# def Testcase_ReportPcieBdfToBmc_002():
-#     """
-#     Name:       PCIe设备BDF信息上报BMC_设备不在位
-#     Condition:  1、不接PCIe卡；
-#                 2、开启BT通道。
-#     Steps:      1、启动进OS，检查串口日志中PCIe设备BDF信息，有结果A；
-#                 2、BMC Web侧检查PCIe设备所属CPU和SLOT信息是否正确，有结果B；
-#                 3、BT通道搜索“58 C6”检查PCIe上报BDF信息，有结果C。
-#     Result:     A：未接设备时BDF为FF，若未接任何Pcie设备，不打印BDF分配表；
-#                 B：Web界面对应SLOT不显示设备信息；
-#                 C：BT通道对应SLOT的BDF为FF。
-#     Remark:     1、BMC命令行输入以下指令打开BT通道：
-#                 maint_debug_cli
-#                 attach ipmi
-#                 trace ch=bt
-#                 2、串口搜索关键字“RootBusBDF”。
-#     """
-#     try:
-#         
-#         return core.Status.Pass
-#     except Exception as e:
-#         logging.error(e)
-#         return core.Status.Fail
+@core.test_case(("1701", "[TC1701] Testcase_ReportPcieBdfToBmc_002", "PCIe设备BDF信息上报BMC_设备不在位"))
+def Testcase_ReportPcieBdfToBmc_002():
+    """
+    Name:       PCIe设备BDF信息上报BMC_设备不在位
+    Condition:  1、不接PCIe卡；
+                2、开启BT通道。
+    Steps:      1、启动进OS，检查串口日志中PCIe设备BDF信息，有结果A；
+                2、BMC Web侧检查PCIe设备所属CPU和SLOT信息是否正确，有结果B；
+                3、BT通道搜索“58 C6”检查PCIe上报BDF信息，有结果C。
+    Result:     A：未接设备时BDF为FF，若未接任何Pcie设备，不打印BDF分配表；
+                B：Web界面对应SLOT不显示设备信息；
+                C：BT通道对应SLOT的BDF为FF。
+    Remark:     1、BMC命令行输入以下指令打开BT通道：
+                maint_debug_cli
+                attach ipmi
+                trace ch=bt
+                2、串口搜索关键字“RootBusBDF”。
+    """
+    str_flg = []
+    pcie_bdf = (lambda z: dict([(x, y) for y, x in z.items()]))(SutConfig.Sys.PCIE_SLOT)
+    for key, value in pcie_bdf.items():
+        for i in value.split('.'):
+            if len(i) > 2:
+                str_flg.append(''.join(i.replace(':', ' ')))
+        '''
+        bios only upload func0 bdf to bt channel.
+        '''
+    str_flg_func0 = [str(j) + ' 00' for j in str_flg]
+    flag = ['58 c6'] + str_flg_func0
+    try:
+        assert BmcLib.force_reset()
+        assert not BmcLib.read_bt_data(flag, timeout=SutConfig.Env.BOOT_DELAY), \
+            'devices should be removed before run the test'
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+        return core.Status.Fail
 #     finally:
 #         BmcLib.clear_cmos()
 
@@ -122,7 +147,7 @@ def Testcase_ReportSmbiosToBmc_001():
                 attach ipmi
                 trace ch=bt
     """
-    flag = "92 14 E3 00 04 00"
+    flag = ["92 14 E3 00 04 00"]
     try:
         assert BmcLib.force_reset()
         assert BmcLib.read_bt_data(flag, timeout=SutConfig.Env.BOOT_DELAY)
@@ -1219,25 +1244,27 @@ def Testcase_BmcSetBootOptionLegacy_023():
 #         BmcLib.clear_cmos()
 
 
-# @core.test_case(("1747", "[TC1747] Testcase_BmcLogin_001", "BMC用户名设置菜单检查"))
-# def Testcase_BmcLogin_001():
-#     """
-#     Name:       BMC用户名设置菜单检查
-#     Condition:  
-#     Steps:      1、启动进Setup菜单，BMC配置界面查看是否存在BMC用户名设置选项及默认值，有结果A；
-#                 2、查看BMC用户名帮助信息，检查用户名设置要求是否正确，有结果B；
-#     Result:     A：存在BMC用户名设置选项，默认值为Administrator；
-#                 B：BMC用户名设置要求与BMC要求保持一致。
-#     Remark:     1、用户名以及密码修改规则参考右侧Help信息
-#     """
-#     try:
-#         
-#         return core.Status.Pass
-#     except Exception as e:
-#         logging.error(e)
-#         return core.Status.Fail
-#     finally:
-#         BmcLib.clear_cmos()
+@core.test_case(("1747", "[TC1747] Testcase_BmcLogin_001", "BMC用户名设置菜单检查"))
+def Testcase_BmcLogin_001():
+    """
+    Name:       BMC用户名设置菜单检查
+    Condition:
+    Steps:      1、启动进Setup菜单，BMC配置界面查看是否存在BMC用户名设置选项及默认值，有结果A；
+                2、查看BMC用户名帮助信息，检查用户名设置要求是否正确，有结果B；
+    Result:     A：存在BMC用户名设置选项，默认值为Administrator；
+                B：BMC用户名设置要求与BMC要求保持一致。
+    Remark:     1、用户名以及密码修改规则参考右侧Help信息
+    """
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu([Msg.BMC_CONFIG, Msg.BMC_CONFIG], Key.DOWN, 12)
+        assert SetUpLib.get_option_value('BMC User Name', integer=None) == 'Administrator'
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+        return core.Status.Fail
+    # finally:
+    #     BmcLib.clear_cmos()
 
 
 # @core.test_case(("1748", "[TC1748] Testcase_BmcLogin_002", "设置合法BMC用户名"))
@@ -2454,44 +2481,48 @@ def Testcase_PchTypeReport_001():
 #         BmcLib.clear_cmos()
 
 
-# @core.test_case(("1800", "[TC1800] Testcase_BmcUserId2_001", "默认场景下串口修改BMC用户权限"))
-# def Testcase_BmcUserId2_001():
-#     """
-#     Name:       默认场景下串口修改BMC用户权限
-#     Condition:  1、串口已连接；
-#                 2、BMC默认用户。
-#     Steps:      1、启动进入BIOS Setup菜单下的BMC设置界面，通过串口修改BMC用户权限，有结果A。
-#     Result:     A：选项置灰，无法设置。
-#     Remark:     
-#     """
-#     try:
-#         
-#         return core.Status.Pass
-#     except Exception as e:
-#         logging.error(e)
-#         return core.Status.Fail
-#     finally:
-#         BmcLib.clear_cmos()
+@core.test_case(("1800", "[TC1800] Testcase_BmcUserId2_001", "默认场景下串口修改BMC用户权限"))
+def Testcase_BmcUserId2_001():
+    """
+    Name:       默认场景下串口修改BMC用户权限
+    Condition:  1、串口已连接；
+                2、BMC默认用户。
+    Steps:      1、启动进入BIOS Setup菜单下的BMC设置界面，通过串口修改BMC用户权限，有结果A。
+    Result:     A：选项置灰，无法设置。
+    Remark:
+    """
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Msg.PATH_WDT_CONFIG, Key.DOWN)
+        assert not SetUpLib.locate_option(['BMC User Rights'], Key.DOWN), '选项未置灰，可设置'
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+        return core.Status.Fail
+    finally:
+        BmcLib.clear_cmos()
 
 
-# @core.test_case(("1801", "[TC1801] Testcase_BmcUserId2_002", "默认场景下串口修改BMC用户开关"))
-# def Testcase_BmcUserId2_002():
-#     """
-#     Name:       默认场景下串口修改BMC用户开关
-#     Condition:  1、串口已连接；
-#                 2、BMC默认用户。
-#     Steps:      1、启动进入BIOS Setup菜单下的BMC设置界面，通过串口修改BMC用户开关，有结果A。
-#     Result:     A：选项置灰，无法设置。
-#     Remark:     
-#     """
-#     try:
-#         
-#         return core.Status.Pass
-#     except Exception as e:
-#         logging.error(e)
-#         return core.Status.Fail
-#     finally:
-#         BmcLib.clear_cmos()
+@core.test_case(("1801", "[TC1801] Testcase_BmcUserId2_002", "默认场景下串口修改BMC用户开关"))
+def Testcase_BmcUserId2_002():
+    """
+    Name:       默认场景下串口修改BMC用户开关
+    Condition:  1、串口已连接；
+                2、BMC默认用户。
+    Steps:      1、启动进入BIOS Setup菜单下的BMC设置界面，通过串口修改BMC用户开关，有结果A。
+    Result:     A：选项置灰，无法设置。
+    Remark:
+    """
+    try:
+        assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
+        assert SetUpLib.enter_menu(Msg.PATH_WDT_CONFIG, Key.DOWN)
+        assert not SetUpLib.locate_option(['BMC User Status'], Key.DOWN), '选项未置灰，可设置'
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+        return core.Status.Fail
+    # finally:
+    #     BmcLib.clear_cmos()
 
 
 @core.test_case(("1802", "[TC1802] Testcase_WakeOnline_001", "Wake On Line设置菜单检查"))

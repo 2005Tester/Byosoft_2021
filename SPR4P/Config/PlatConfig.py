@@ -80,6 +80,11 @@ class Attr:
     PXE_EN = "SlotPxeEnable"
     HW_PREFETCHER = "MlcStreamerPrefetcherEnable"
     VMD = "SystemVMDConfigEnable"
+    MIRROR_MODE = "MirrorMode"
+
+    # Redfish 变量
+    WDT_POST_REDFISH = "BMCWDTTimeout"
+    WDT_EN_REDFISH = "BMCWDTEnable"
 
     # BMC配置相关
     BMC_WDT_POST = "SvrMngmntFrb2Enable"
@@ -115,6 +120,7 @@ class Msg:
     F12_PRESSED = 'F12 is pressed, go to PXE boot.'
     F11_PRESSED = 'F11 is pressed, go to Boot Manager.'
     DEL_PRESSED = 'Del is pressed, go to Front Page'
+    IPMI_SP_BOOT = "Get ipmi command. Go to SP boot"
 
     # Hotkey Confirm
     DEL_CONFIRM = "Enter Current Password"
@@ -324,7 +330,7 @@ class Msg:
     # SR-IOV Setup Settings
     SRIOV_MENU = "SR-IOV Setup Settings"
     SRIOV_GLOBAL = "PCIe SR-IOV"
-    SRIOV_PORT = r"CPU\d Port (?:DMI|[0-9A-F]{2})"
+    SRIOV_PORT = r"CPU\d Port (?:DMI|\w{2})"
 
     # VT-d Configuration
     OPT_OUT_MITIGATION = "Opt-Out Illegal MSI Mitigation"
@@ -535,7 +541,7 @@ class BiosCfg:
         Attr.C6: 1,
         Attr.RMT: 1,
         Attr.CPU_CORES: 4,
-        Attr.WDT_POST: 0xf,
+        Attr.WDT_POST: 19,
     }
 
     ADDDC_DIS = {Attr.ADDDC_EN: 0}
@@ -553,3 +559,23 @@ class BiosCfg:
     VMD_EN = {Attr.VMD: 1}
     VMD_DIS = {Attr.VMD: 0}
 
+
+class RedfishCfg:
+    HPM_KEEP = {  # HPM Upgrade/Downgrade keep BIOS Setting unchanged setting
+        Attr.ADDDC_EN: Msg.DISABLE,
+        Attr.PPR_TYPE: "PPR Disabled",
+        Attr.USB_BOOT: Msg.DISABLE,
+        Attr.CDN: Msg.DISABLE,
+        Attr.CR_POST: Msg.DISABLE,
+        Attr.KTI_L0P: Msg.DISABLE,
+        Attr.WHEA_EN: Msg.DISABLE,
+        Attr.SYS_ERR_EN: Msg.DISABLE,
+        Attr.EIST: Msg.DISABLE,
+        Attr.C6: Msg.ENABLE,
+        Attr.RMT: Msg.ENABLE,
+        Attr.CPU_CORES: "4",
+        Attr.WDT_EN_REDFISH: Msg.ENABLE,
+        Attr.WDT_POST_REDFISH: 0x19,
+    }
+
+    DEP_MAIN_SUB = {Attr.ADDDC_EN: Msg.DISABLE, Attr.MIRROR_MODE: "Partial Mirror Mode"}

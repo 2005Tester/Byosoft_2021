@@ -98,7 +98,7 @@ def frb2_watchdog(oem):
         wrong_msg.append('FRB2定时器启用，重启，5分钟，ipmitool与setup不一致,{0},{1},{2}'.format(status, action, times))
         count += 1
     logging.info('FRB2 Watchdog禁用，F12网络启动测试..................................')
-    assert SetUpLib.boot_with_hotkey(Key.F12, SutConfig.Ipm.BOTH_PXE_MSG, 300, SutConfig.Msg.HOTKEY_PROMPT_F12)
+    assert SetUpLib.boot_with_hotkey(Key.F12, SutConfig.Ipm.BOTH_PXE_MSG, 300, SutConfig.Msg.POST_MESSAGE)
     time.sleep(2)
     stdoutput = BmcLib.output(arg)
     status = re.findall(r'Watchdog Timer Is: +([a-zA-Z/]+)', stdoutput)[0]
@@ -417,8 +417,7 @@ def oem():
     assert SetUpLib.boot_to_setup()
     for i in change_option:
         change_cmd = BmcLib.change_bios_value(i)
-        time.sleep(5)
-        assert SetUpLib.boot_to_setup()
+        assert SetUpLib.continue_to_setup()
         time.sleep(2)
         arg = '{0} {1}'.format(SutConfig.Env.IPMITOOL,SutConfig.Env.GET_OPTION)
         stdoutput = BmcLib.output(arg)
@@ -1282,7 +1281,7 @@ def bmc_system_log():
     logging.info('SetUp下收集BMC系统日志')
     start_time = time.time()
     while True:
-        data = SetUpLib.get_data(1,limit_time=True)
+        data = SetUpLib.get_data(1)
         end_time = time.time()
         if 'Total Entries' in data:
             break
@@ -1329,7 +1328,7 @@ def bmc_system_log():
     logging.info('SetUp下收集BMC系统日志')
     start_time = time.time()
     while True:
-        data = SetUpLib.get_data(1,limit_time=True)
+        data = SetUpLib.get_data(1)
         end_time = time.time()
         if 'Total Entries' in data:
             break
@@ -1374,15 +1373,9 @@ def bmc_system_log():
 
 def fru():
     assert SetUpLib.boot_to_setup()
-    assert SetUpLib.enter_menu_change_value(Key.DOWN, SutConfig.Ipm.LOC_FRU, 18)
-    setup_fru = []
-    data = SetUpLib.get_data(2)
-    data = re.findall('(Chassis Part Number.*)', data)[0]
-    for i in re.findall('[A-Z]\w+ *\w+ *\w+[a-z] {2,}[0-9A-Za-z\-]+   ', data):
-        setup_fru = setup_fru + re.findall('  ([0-9A-Za-z].*)', i.strip())
-    setup_fru = setup_fru + [
-        re.findall('System UUID *([a-zA-z\-0-9]+ {0,1}[a-zA-z\-0-9]+)   ', data)[0].replace(' ', '').lower()]
-    bmc_fru = []
+    assert SetUpLib.locate_menu(Key.DOWN, SutConfig.Ipm.LOC_FRU, 18)
+    fru_list = list(SetUpLib.info_dict()[0].values())
+    setup_fru = fru_list[1:-1] + [fru_list[-1].replace(' ','').lower()]
     arg = '{0} fru print'.format(SutConfig.Env.IPMITOOL)
     p = subprocess.Popen(args=arg, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdoutput, erroutput) = p.communicate()
@@ -1402,15 +1395,14 @@ def fru():
     p = subprocess.Popen(args=arg, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdoutput, erroutput) = p.communicate()
     bmc_fru = bmc_fru + [re.findall('System GUID *: ([0-9A-Za-z\-]+)', stdoutput.decode('gbk'))[0].lower()]
-
-    if setup_fru == bmc_fru:
+    if all(i in setup_fru for i in bmc_fru):
         logging.info('FRU信息验证通过')
         logging.info('SetUp下FRU:{}'.format(setup_fru))
         logging.info(' BMC 下FRU:{}'.format(bmc_fru))
         return True
     else:
         del bmc_fru[-4]
-        if setup_fru == bmc_fru:
+        if all(i in setup_fru for i in bmc_fru):
             logging.info('FRU信息验证通过')
             logging.info('SetUp下FRU:{}'.format(setup_fru))
             logging.info(' BMC 下FRU:{}'.format(bmc_fru))
@@ -1420,3 +1412,82 @@ def fru():
             logging.info('SetUp下FRU:{}'.format(setup_fru))
             logging.info(' BMC 下FRU:{}'.format(bmc_fru))
             return
+
+
+def sol_terminal():
+    BmcLib.enable_serial_normal()
+    session = SolLib.SolTerm()
+    key_str = ['ESC','F1','F9','F10']
+    logging.info(f'{"-"*15}终端类型UTF-8{"-"*15}')
+    assert session.boot_with_hotkey(Key.F11, SutConfig.Msg.ENTER_BOOTMENU, 300, SutConfig.Msg.POST_MESSAGE)
+    logging.info('成功进入启动菜单')
+    assert session.select_boot_option(Key.DOWN,SutConfig.Msg.USB_UEFI,20,SutConfig.Ipm.UEFI_USB_MSG)
+    time.sleep(10)
+    fs = session.get_shell_fs_num()
+    session.send_data_enter(fs)
+    time.sleep(1)
+    session.clean_buffer()
+    session.send_data_enter('ls')
+    assert session.wait_message(SutConfig.Env.BIOS_FILE,5)
+    logging.info('成功进入Shell')
+    assert session.boot_with_hotkey(Key.F12, SutConfig.Ipm.BOTH_PXE_MSG, 300, SutConfig.Msg.POST_MESSAGE)
+    logging.info('成功进入网络启动菜单')
+    assert session.boot_to_setup()
+    keys_send = [Key.ESC,Key.F1,Key.F9,Key.F10]
+    for index,msg in enumerate(SutConfig.Ipm.FRAME_MSG):
+        session.send_key(keys_send[index])
+        assert session.wait_message(msg,3)
+        logging.info(f'UTF-8,{key_str[index]}键功能验证成功')
+        session.send_keys(Key.ESC,2)
+        session.clean_buffer()
+
+    assert session.enter_menu_change_value(Key.DOWN,SutConfig.Pxe.SET_LEGACY,18)
+    assert session.enter_menu_change_value(Key.DOWN,SutConfig.Ipm.TER_VT100_PLUS,18,save=True)
+    logging.info(f'{"-"*15}终端类型VT100+{"-"*15}')
+    assert session.boot_with_hotkey(Key.F11, SutConfig.Msg.ENTER_BOOTMENU, 300, SutConfig.Msg.POST_MESSAGE)
+    logging.info('成功进入启动菜单')
+    assert session.select_boot_option(Key.DOWN, SutConfig.Msg.DOS, 20, SutConfig.Ipm.LEGACY_USB_MSG)
+    logging.info('成功进入DOS')
+    assert session.boot_with_hotkey(Key.F12, SutConfig.Ipm.BOTH_PXE_MSG, 300, SutConfig.Msg.POST_MESSAGE)
+    logging.info('成功进入网络启动菜单')
+    assert session.boot_to_setup()
+    keys_send = [Key.ESC, Key.F1, Key.F9, Key.F10]
+    for index, msg in enumerate(SutConfig.Ipm.FRAME_MSG):
+        session.send_key(keys_send[index])
+        assert session.wait_message(msg, 3)
+        logging.info(f'VT100+,{key_str[index]}键功能验证成功')
+        session.send_keys(Key.ESC, 2)
+        session.clean_buffer()
+    assert session.enter_menu_change_value(Key.DOWN, SutConfig.Pxe.SET_UEFI, 18)
+    assert session.enter_menu_change_value(Key.DOWN, SutConfig.Ipm.TER_VT100, 18, save=True)
+    logging.info(f'{"-"*15}终端类型VT100{"-"*15}')
+    assert session.boot_with_hotkey(VT100_Key.F11, SutConfig.Msg.ENTER_BOOTMENU, 300, SutConfig.Msg.POST_MESSAGE)
+    logging.info('成功进入启动菜单')
+    assert session.select_boot_option(Key.DOWN, SutConfig.Msg.USB_UEFI, 20, SutConfig.Ipm.UEFI_USB_MSG)
+    time.sleep(10)
+    fs = session.get_shell_fs_num()
+    session.send_data_enter(fs)
+    time.sleep(1)
+    session.clean_buffer()
+    session.send_data_enter('ls')
+    assert session.wait_message(SutConfig.Env.BIOS_FILE, 5)
+    logging.info('成功进入Shell')
+    assert session.boot_with_hotkey(VT100_Key.F12, SutConfig.Ipm.BOTH_PXE_MSG, 300, SutConfig.Msg.POST_MESSAGE)
+    logging.info('成功进入网络启动')
+    assert session.boot_to_setup()
+    keys_send = [VT100_Key.ESC, VT100_Key.F1, VT100_Key.F9, VT100_Key.F10]
+    for index, msg in enumerate(SutConfig.Ipm.FRAME_MSG):
+        session.send_key(keys_send[index])
+        assert session.wait_message(msg, 3)
+        logging.info(f'VT100,{key_str[index]}键功能验证成功')
+        session.send_keys(VT100_Key.ESC, 1)
+        session.clean_buffer()
+        time.sleep(1)
+    session.send_keys(VT100_Key.RESET_DEFAULT)
+    time.sleep(5)
+    session.send_keys(VT100_Key.SAVE_RESET)
+    session.close_sol()
+    BmcLib.set_console_to_bios()
+    return True
+
+

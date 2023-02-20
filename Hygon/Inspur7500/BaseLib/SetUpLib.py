@@ -12,13 +12,15 @@ from Inspur7500.Config import SutConfig
 import re
 
 
-# Send a sirngle key, e.g. ENTER, DOWN, UP
+# Send a single key, e.g. ENTER, DOWN, UP
 def send_key(key):
+    """发送单个按键,e.g. ENTER,ESC,DOWN"""
     Sut.BIOS_COM.send_keys(key)
 
 
 # send keys with default delay = 1s, e.g. [F10, Y]
 def send_keys(keys, delay=1):
+    """连续发送按键，按键之间间隔delay秒, e.g. [F10, Y]"""
     for key in keys:
         time.sleep(delay)
         Sut.BIOS_COM.send_keys(key)
@@ -26,12 +28,14 @@ def send_keys(keys, delay=1):
 
 # send data to BIOS serial port向串口发送数据
 def send_data(data):
+    """向串口发送数据"""
     SerialLib.send_data(Sut.BIOS_COM, data)
     time.sleep(1)
 
 
 # send a string and enter to BIOS serial port
 def send_data_enter(data):
+    """向串口发送数据后,等待2秒,按回车"""
     SerialLib.send_data(Sut.BIOS_COM, data)
     time.sleep(2)
     send_key(Key.ENTER)
@@ -39,6 +43,7 @@ def send_data_enter(data):
 
 # 清除缓存数据
 def clean_buffer(timeout=2):
+    """清除缓存数据"""
     time.sleep(0.5)
     Sut.BIOS_COM.session.timeout = 0.1
     t_start = time.time()
@@ -54,6 +59,7 @@ def clean_buffer(timeout=2):
 
 
 def default_save():
+    """F9恢复默认值,F10保存"""
     time.sleep(1)
     send_keys(Key.RESET_DEFAULT)
     time.sleep(15)
@@ -71,6 +77,7 @@ def write_datalog(data):
 # verify information like CPU, memory in one setup page, option name is highlighted
 # infos: list e.g. ['BIOS Revision\s+5.[0-9]{2}']
 def verify_info(info_list, trycounts):
+    """验证串口数据中是否存在指定字符串"""
     data = get_data(2)
     for i in info_list[:]:
         if re.search(i, data):
@@ -99,6 +106,7 @@ def verify_options(key, options, trycounts):
 
 # Enter setup menu
 def enter_menu(key, option_path, try_counts, confirm_msg=None, timeout=5):
+    """按照给定的路径,进入到指定的菜单"""
     if type(option_path) == str:
         option_path = [option_path]
     logging.info("Go to setup menu:{0}".format(option_path))
@@ -121,6 +129,7 @@ def enter_menu(key, option_path, try_counts, confirm_msg=None, timeout=5):
 
 
 def option(strs, high_pat=(1, 37, 47), high_pat_end=(1, 30, 47)):
+    """传入SetUp下串口数据,返回高亮的选项名、选项值(没有值则返回'')、帮助信息"""
     high_pat = '\x1b\[{}m\x1b\[{}m\x1b\[{}m\x1b'.format(*high_pat)
     high_pat_end = '\x1b\[{}m\x1b\[{}m\x1b\[{}m'.format(*high_pat_end)
 
@@ -157,6 +166,7 @@ help_msg = ''
 
 
 def locate_option(key, setupoption, try_counts, delay=1, exact=True):
+    """定位到SetUp选项或菜单"""
     data_before = ''
     name = setupoption[0]
     value = setupoption[1] if len(setupoption) == 2 else ''
@@ -186,11 +196,11 @@ def locate_option(key, setupoption, try_counts, delay=1, exact=True):
 
 
 def boot_to_setup():
+    """启动到SetUp"""
     logging.info("SetUpLib: Boot to setup main page")
     if not BmcLib.init_sut():
         logging.info("SetUpLib: Rebooting SUT Failed.")
         return
-    logging.info("SetUpLib: Booting to setup")
     try_counts = 3
     while try_counts:
         BmcLib.enable_serial_normal()
@@ -206,6 +216,14 @@ def boot_to_setup():
 
 
 def boot_to_boot_menu(data_save=False, reset=True, try_counts=2):
+    """
+    启动到F11启动菜单
+    :param data_save:   -True 返回启动菜单的数据
+                        -False 只启动到启动菜单,不保存数据
+    :param reset:       -True 发送重启命令
+                        -False 不发送重启命令
+    :param try_counts:  重试次数(如果reset为False则不会重试)
+    """
     if try_counts > 0:
         scroll = '(?:\x1b\[\d+;\d+H█)|(?:\x1b\[\d+;\d+H\*)'
         logging.info("SetUpLib: Boot to boot menu")
@@ -258,8 +276,9 @@ def boot_to_boot_menu(data_save=False, reset=True, try_counts=2):
 
 
 def continue_to_setup():
+    """不发送重启命令,继续启动到SetUp"""
     logging.info("SetUpLib: Continue boot to setup main page")
-    if not boot_with_hotkey_only(Key.DEL, SutConfig.Msg.PAGE_MAIN, 300):
+    if not boot_with_hotkey_only(Key.DEL, SutConfig.Msg.PAGE_MAIN, 400, SutConfig.Msg.POST_MESSAGE):
         logging.info("SetUpLib: Boot to setup failed.")
         return
     logging.info("SetUpLib: Boot to setup main page successfully")
@@ -269,6 +288,15 @@ def continue_to_setup():
 # boot to setup,boot menu,pxe without reset
 def boot_with_hotkey_only(key, msg, timeout=250, hotkey_prompt="Press Del go to Setup Utilityasda",
                           pw_prompt=SutConfig.Psw.LOGIN_SETUP_PSW_PROMPT, password=PwdLib.PW.DEFAULT_PW):
+    """
+    按下指定热键, 等待串口关键字, 验证是否能进入指定页面
+    :param key:             热键
+    :param msg:             确认按键是否成功
+    :param timeout:         超时时间
+    :param hotkey_prompt:   按键时机
+    :param pw_prompt:       确认是否输入密码
+    :param password:        BIOS密码
+    """
     setup_pw_msg = SutConfig.Psw.LOGIN_SETUP_PSW_PROMPT
     setup_pw = PwdLib.PW.DEFAULT_PW
     count = 0
@@ -328,6 +356,13 @@ def boot_with_hotkey_only(key, msg, timeout=250, hotkey_prompt="Press Del go to 
 
 # reset and boot to setup,boot menu,pxe
 def boot_with_hotkey(key, msg, timeout, hotkey_prompt):
+    """
+    发送重启命令, 按下指定热键, 等待串口关键字, 验证是否能进入指定页面
+    :param key:             热键
+    :param msg:             确认按键是否成功
+    :param timeout:         超时时间
+    :param hotkey_prompt:   按键时机
+    """
     if not BmcLib.init_sut():
         return
     try_counts = 3
@@ -347,6 +382,7 @@ def boot_with_hotkey(key, msg, timeout, hotkey_prompt):
 
 
 def boot_to_page(page_name):
+    """移动到指定页面"""
     logging.info("SetUpLib: Move to specified setup page")
     if page_name == SutConfig.Msg.PAGE_ALL[0]:
         ES = "(\x1B[@-_][0-?]*[ -/]*[@-~]){1,7}"
@@ -395,25 +431,9 @@ def verify_supported_values(values):
     return True
 
 
-def boot_os_centos_legacy(change_boot_mode=True):
-    if change_boot_mode:
-        assert boot_to_setup()
-        assert boot_to_page(SutConfig.Msg.PAGE_BOOT)
-        assert select_option_value(Key.DOWN, [SutConfig.Msg.BOOT_MODE], Key.DOWN, "Legacy", 6)
-        send_keys(Key.SAVE_RESET)
-        time.sleep(5)
-    if not boot_with_hotkey(Key.F11, SutConfig.Msg.ENTER_BOOTMENU, 300, SutConfig.Msg.POST_MESSAGE):
-        return
-    if not select_boot_option(Key.DOWN, SutConfig.Msg.CENT_OS_Legacy, 12, 'CentOS'):
-        return
-    if not BmcLib.ping_sut():
-        return
-    logging.info("OS Boot Successed.")
-    return True
-
-
 # Boot to kylin os from boot manager
 def boot_os_from_bm(os_type="linux"):
+    """启动到指定系统"""
     if not boot_with_hotkey(Key.F11, SutConfig.Msg.ENTER_BOOTMENU, 300, SutConfig.Msg.POST_MESSAGE):
         return
     if os_type.lower() == "linux":
@@ -450,6 +470,7 @@ def boot_os_from_bm(os_type="linux"):
 
 # Boot to Internal Shell
 def boot_to_shell():
+    """启动到Shell"""
     try:
         assert boot_to_boot_menu()
         assert select_boot_option(Key.DOWN, SutConfig.Msg.USB_UEFI, 12,
@@ -487,27 +508,12 @@ def get_option_value(option_patten, key, try_counts):
     return Sut.BIOS_COM.get_option_value(option_patten, value_patten, key, try_counts)
 
 
-# Boot to BIOS configuration reset default by F9
-def reset_default():
-    logging.info("Reset BIOS to dafault by F9")
-    if not boot_to_setup():
-        return
-    send_keys(Key.RESET_DEFAULT)
-    assert BmcLib.enable_console_direction(), 'console enabled -> fail'
-    logging.info('Enable console direction successfully,')
-    send_keys(Key.SAVE_RESET)
-    if not BmcLib.ping_sut():
-        logging.info("Reset dafault by F9:Fail")
-        return
-    logging.info("Reset dafault by F9:Pass")
-    return True
-
-
 # judge whether find msg
 # delay:time of collect data and judgement
 # cleanup:if clean up, judge in data useless data have been cleaned
 # readline:if readline,if readline,collect data by row
 def wait_message(msg, delay=250, pw_prompt=None, pw=None, cleanup=True, readline=False):
+    """判断串口中是否存在指定数据"""
     # return SerialLib.is_msg_present_clean(Sut.BIOS_COM,msg,delay,cleanup=cleanup)
     logging.debug("Waiting for:\"{0}\"".format(msg))
     start_time = time.time()
@@ -562,6 +568,7 @@ def wait_message(msg, delay=250, pw_prompt=None, pw=None, cleanup=True, readline
 
 # send key ENTER ,then judge whether find msg
 def wait_message_enter(msg, delay=250, pw_prompt=None, pw=None, cleanup=True, readline=True):
+    """按下ENTER,判断指定数据是否出现"""
     clean_buffer()
     logging.debug("Waiting for:\"{0}\"".format(msg))
     start_time = time.time()
@@ -598,6 +605,7 @@ def wait_message_enter(msg, delay=250, pw_prompt=None, pw=None, cleanup=True, re
 
 # 读取缓存数据
 def read_full_buffer(timeout=2):
+    """读取缓存数据"""
     start_time = time.time()
     buffer = BytesIO()
     while True:
@@ -617,8 +625,16 @@ def read_full_buffer(timeout=2):
 # delay:接收数据的时间
 # key:如果不为None，则会先执行按键然后接收数据
 # cleanup:是否清洗数据
-# limit_time: True:强制接收delay秒内所有数据;False:限定时间内如果没有新的数据则停止接收
+# scroll: True:如果数据中存在滚动条则会翻页收集下一页面的数据;False:不会翻页
 def get_data(delay=10, key=None, cleanup=True, scroll=False):
+    """
+    返回限定时间内串口中所有数据
+    :param delay:   接收数据的时间
+    :param key:     如果不为None，则会先执行按键然后接收数据
+    :param cleanup: 是否清洗数据
+    :param scroll:  -True 如果数据中存在滚动条则会翻页收集下一页面的数据
+                    -False 不会翻页
+    """
     keep_scroll = '(?:\x1b\[\d+;\d+H█\x1b\[\d+;\d+H░)|(?:\x1b\[\d+;\d+H\*\x1b\[\d+;\d+H\+)'
     if key is not None:
         send_key(key)
@@ -634,23 +650,9 @@ def get_data(delay=10, key=None, cleanup=True, scroll=False):
     return data
 
 
-# close serial session
-def close_session():
-    return Sut.BIOS_COM.close_session()
-
-
-# open serial session
-def open_session():
-    return Sut.BIOS_COM.open_session()
-
-
-# Match a list of strings from serial port
-def wait_strings(msg_list, delay=10):
-    return Sut.BIOS_COM.wait_messages(msg_list, delay)
-
-
 # used to navigate to setup top page,
 def back_to_setup_toppage(msg='Setup Configuration|配置确认'):
+    """返回到BIOS Setup的最上层页面"""
     try:
         try_counts = 10
         while try_counts:
@@ -671,6 +673,7 @@ def back_to_setup_toppage(msg='Setup Configuration|配置确认'):
 # select a boot option in boot manager
 # optionname: string, name of setup option
 def select_boot_option(key, optionname, try_counts, confirm_msg, first_option=None):
+    """定位启动菜单中指定启动项并启动"""
     counts = try_counts
     es = "(\x1B[@-_][0-?]*[ -/]*[@-~]){1,2}"
     patten = es + f'(?:{optionname})' + es + r"\x1B\[44m"
@@ -709,55 +712,6 @@ def select_boot_option(key, optionname, try_counts, confirm_msg, first_option=No
     logging.info("Boot option NOT found: {0}".format(optionname))
 
 
-# select a value of setup option to change and save,
-def select_option_value(key_optionname, optionname, key_value, value, try_counts):
-    """
-    key_optionname: send key to locate option that waiting to be changed
-    optionname: ['name','value'] e.g. ["Boot Type", "<UEFI Boot Type>"]
-    key_value: send key to find the value ready to be written
-    value: the modified value of the option, e.g 'Enabled'
-    trycounts: the counts to send keys
-    """
-    es = "(\x1B[@-_][0-?]*[ -/]*[@-~]){1,2}"
-    patten = es + value + es + r"\x1B\[44m"
-    if key_optionname == Key.DOWN:
-        key = Key.UP
-    elif key_optionname == Key.UP:
-        key = Key.DOWN
-    else:
-        key = Key.DOWN
-    if not locate_option(key_optionname, optionname, try_counts):
-        if not locate_option(key, optionname, try_counts + 1):
-            time.sleep(1)
-            send_key(Key.ENTER)
-        else:
-            time.sleep(1)
-            send_key(Key.ENTER)
-    else:
-        time.sleep(1)
-        send_key(Key.ENTER)
-    # assert locate_option(key_optionname, optionname, try_counts), 'locate option -> fail'
-    # send_key(Key.ENTER)
-    counts = try_counts
-    while counts:
-        time.sleep(2)
-        if wait_message(patten, 2, cleanup=False):
-            logging.info("value found: {0}".format(value))
-            send_key(Key.ENTER)
-            return True
-        send_key(key_value)
-        counts -= 1
-    while try_counts:
-        time.sleep(2)
-        if wait_message(patten, 2, cleanup=False):
-            logging.info("value found: {0}".format(value))
-            send_key(Key.ENTER)
-            return True
-        send_key(Key.UP)
-        try_counts -= 1
-    logging.info("Value NOT found: {0}".format(value))
-
-
 SEP = "(?:\x1b\[\d+;\d+H){1}"  # value separator
 HLP = "(?:\x1b\[\d+m){3}"  # value hightlight ending flag, last appeared valid
 # VALR = "(\w[\w -/]*\w)"  # bios value name ruler
@@ -766,15 +720,28 @@ VALR = "(\w[\w -:/]*[\w\)+]*)"  # bios value name ruler
 
 # get values of setup option,return a list of values
 def get_value_list():
+    """返回选项的所有值"""
     all_patten = re.compile(f"{SEP}{VALR}")
+    high_patten = re.compile(f"{SEP}{VALR}{HLP}")
     Sut.BIOS_COM.session.flushInput()
     Sut.BIOS_COM.send_keys_with_delay(Key.ENTER)
     tmpdata = Sut.BIOS_COM.session.readline().decode('utf-8', errors='ignore')
-    # tmpdata = Sut.BIOS_COM.receive_data(Sut.BIOS_COM.session.in_waiting)+get_data(1,readline=False,cleanup=False)
+    val_list = all_patten.findall(tmpdata)
+    if re.search('▼', tmpdata):
+        send_keys([Key.DOWN] * (len(val_list) - 1), 1)
+        try_counts = 20
+        while try_counts:
+            Sut.BIOS_COM.session.flushInput()
+            time.sleep(1)
+            send_key(Key.DOWN)
+            data = Sut.BIOS_COM.session.readline().decode('utf-8', errors='ignore')
+            val_list += high_patten.findall(data)
+            if not re.search('▼', data):
+                break
+            try_counts -= 1
     Sut.BIOS_COM.send_keys_with_delay(Key.ENTER)
     write_datalog(tmpdata)
-    val_list = all_patten.findall(tmpdata)
-    if not val_list:
+    if (not val_list) or (not high_patten.search(tmpdata)):
         logging.error("Fail to match values list")
         return
     logging.info("Current option values: {}".format(val_list))
@@ -784,10 +751,11 @@ def get_value_list():
 # locate a value of setup option
 # value_str:name of value(without re),type str
 def locate_value(value_str):
+    """修改选项的值"""
     all_patten = re.compile(f"{SEP}{VALR}")
     Sut.BIOS_COM.session.flushInput()
     Sut.BIOS_COM.send_keys_with_delay(Key.ENTER)
-    tmpdata = Sut.BIOS_COM.receive_data(Sut.BIOS_COM.session.in_waiting)
+    tmpdata = Sut.BIOS_COM.session.readline().decode('utf-8', errors='ignore')
     write_datalog(tmpdata)
     Sut.BIOS_COM.write_data2log(tmpdata)
     val_list = all_patten.findall(tmpdata)
@@ -839,8 +807,9 @@ def locate_value(value_str):
 # key_optionname:UP,DOWN
 # optionname:name of option(re)
 # try_counts:try counts
-# value_str:name of value(withour re)
+# value_str:name of value(without re)
 def change_option_value(key_optionname, optionname, try_counts, value_str, delay=1):
+    """定位到指定选项，修改选项的值"""
     if key_optionname == Key.DOWN:
         key = Key.UP
     elif key_optionname == Key.UP:
@@ -864,6 +833,7 @@ def change_option_value(key_optionname, optionname, try_counts, value_str, delay
 
 
 def locate_menu(key, option_path, try_counts):
+    """定位到指定菜单"""
     if type(option_path) == str:
         option_path = [option_path]
     logging.info("Go to setup menu:{0}".format(option_path))
@@ -890,6 +860,7 @@ def locate_menu(key, option_path, try_counts):
 #            if dict(e.g.{option:value}), it will go to option and change value
 # try_counts:as big as possible
 def enter_menu_change_value(key, option_path, try_counts, save=False):
+    """批量修改选项的值"""
     if type(option_path) == str:
         option_path = [option_path]
     for index, option in enumerate(option_path):
@@ -964,6 +935,7 @@ def enter_menu_change_value(key, option_path, try_counts, save=False):
 
 # similar to function enter_menu_change_value,the only difference is if not locate_option it can continue
 def enter_menu_change_value_ignore(key, option_path, try_counts):
+    """批量修改选项的值,如果某一选项没有修改成功不会停止"""
     if type(option_path) == str:
         option_path = [option_path]
     for index, option in enumerate(option_path):
@@ -1029,6 +1001,7 @@ def enter_menu_change_value_ignore(key, option_path, try_counts):
 
 
 def enable_legacy_boot():
+    """修改启动模式为Legacy"""
     BmcLib.change_bios_value(['BootMode:Legacy'])
     # assert boot_to_setup()
     # assert enter_menu_change_value(Key.DOWN,SutConfig.Sup.BOOT_LEGACY,18)
@@ -1039,6 +1012,7 @@ def enable_legacy_boot():
 
 
 def disable_legacy_boot():
+    """修改启动模式为UEFI"""
     BmcLib.change_bios_value(['BootMode:UEFI'])
     # assert boot_to_setup()
     # assert enter_menu_change_value(Key.DOWN,SutConfig.Sup.BOOT_UEFI,18)
@@ -1054,6 +1028,7 @@ def regex_char_handle(strs):
 
 
 def get_shell_fs_num():
+    """获取Shell下U盘的FS"""
     send_data('Map')
     time.sleep(1)
     send_key(Key.ENTER)
@@ -1077,6 +1052,7 @@ def get_shell_fs_num():
 
 
 def get_linux_usb_dev():
+    """获取系统下U盘的分区"""
     mount_path = SutConfig.Env.LINUX_USB_DEVICE
     disk_list = SshLib.execute_command_limit(Sut.OS_SSH, 'fdisk -l')[0]
     path = re.findall('(/dev/\w+)\s+\*\s+\d+ ', disk_list)
@@ -1096,6 +1072,7 @@ def get_linux_usb_dev():
 
 
 def check_grey_out_option(options, option_path, all_path=False):
+    """检查某个选项在Setup界面下是否被置灰"""
     assert boot_to_page(SutConfig.Msg.PAGE_MAIN)
     datas = ''
     if all_path:
@@ -1298,6 +1275,7 @@ def info_dict():
 
 
 def change_date_time(datetuple, save=False):
+    """SetUp下修改日期时间"""
     year, month, day, hour, minute, second = datetuple
     send_keys([Key.DOWN, Key.RIGHT, Key.RIGHT, Key.ENTER])
     time.sleep(1)
@@ -1318,8 +1296,9 @@ def change_date_time(datetuple, save=False):
     send_key(Key.ESC)
     clean_buffer()
     send_key(Key.ENTER)
-    data = re.findall(r'\[([0-9]{2})/ +System Date.*([0-9]{2})/([0-9]{4})]\s*\[(\d+):\s*System Time.*([0-9]{2}):',
-                      get_data(2))
+    data = re.findall(
+        r'\[([0-9]{2})/ +(?:RTC|System) Date.*([0-9]{2})/([0-9]{4})]\s*\[(\d+):\s*(?:RTC|System) Time.*([0-9]{2}):\s*(?:RTC|System) Time.*([0-9]{2})\]',
+        get_data(2))
     if data:
         data = data[0]
         if data[0] == month and data[1] == day and data[2] == year and data[3] == hour and data[4] == minute:

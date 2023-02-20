@@ -8,28 +8,37 @@ from SPR4P.BaseLib import *
 ####################################
 
 
-# @core.test_case(("2600", "[TC2600] Testcase_EquipmentMode_003", "Web升级不清除装备标志位"))
-# def Testcase_EquipmentMode_003():
-#     """
-#     Name:       Web升级不清除装备标志位
-#     Condition:  1、已升级装备BIOS版本软件包；
-#                 2、装备包已上传至OS；
-#                 3、开启全打印开关。
-#                 4、使用装备BMC、BIOS版本。
-#     Steps:      1、OS装备路径下执行装备脚本Equipment_config.sh，脚本执行完成后执行命令 echo $? 检查脚本执行情况，有结果A；
-#                 2、Web升级装备版本，重启系统串口日志检查装备标志位是否被清零，能否进入装备模式，有结果B；
-#     Result:     A：echo $？结果为0，脚本执行成功；
-#                 B：EquipMentModeFlag值为1，能进入装备模式。
-#     Remark:     1、BIOS版本格式a.b.c，其中a为2表示上网版本，1表示装备版本；BMC版本格式a.b.c.d，其中d为奇数表示上网版本，偶数表示装备版本；
-#     """
-#     try:
-#         
-#         return core.Status.Pass
-#     except Exception as e:
-#         logging.error(e)
-#         return core.Status.Fail
-#     finally:
-#         BmcLib.clear_cmos()
+@core.test_case(("2600", "[TC2600] Testcase_EquipmentMode_003", "Web升级不清除装备标志位"))
+def Testcase_EquipmentMode_003():
+    """
+    Name:       Web升级不清除装备标志位
+    Condition:  1、已升级装备BIOS版本软件包；
+                2、装备包已上传至OS；
+                3、开启全打印开关。
+                4、使用装备BMC、BIOS版本。
+    Steps:      1、OS装备路径下执行装备脚本Equipment_config.sh，脚本执行完成后执行命令 echo $? 检查脚本执行情况，有结果A；
+                2、Web升级装备版本，重启系统串口日志检查装备标志位是否被清零，能否进入装备模式，有结果B；
+    Result:     A：echo $？结果为0，脚本执行成功；
+                B：EquipMentModeFlag值为1，能进入装备模式。
+    Remark:     1、BIOS版本格式a.b.c，其中a为2表示上网版本，1表示装备版本；BMC版本格式a.b.c.d，其中d为奇数表示上网版本，偶数表示装备版本；
+    """
+    try:
+        hpm_file = PlatMisc.get_latest_hpm_bios()
+
+        assert SetUpLib.boot_to_default_os(delay=10)
+        assert Sut.UNITOOL.write(**BiosCfg.EQUIP_FLAG)
+
+        assert BmcLib.debug_message(enable=True)
+        assert Update.update_bios_hpm(hpm_file)
+        assert SetUpLib.wait_boot_msgs(Msg.EQUIP_FLAG.format(1), timeout=Env.BOOT_RMT)
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+        return core.Status.Fail
+    finally:
+        BmcLib.clear_cmos()
+        BmcLib.debug_message(enable=False)
+        Update.flash_bios_bin_and_init()
 
 
 @core.test_case(("2601", "[TC2601] Testcase_EquipmentTools_001", "uniCfg定制BIOS变量"))
@@ -164,28 +173,28 @@ def Testcase_EquipmentTools_007():
     try:
         origin_logo = PlatMisc.save_logo(path=Env.LOG_DIR, name="origin_logo")
         assert origin_logo, "fail to get origin_logo"
-
         assert SetUpLib.boot_to_default_os(reset=False, delay=15)
+        # Step 1
         backup_logo = "logo_backup.bmp"
-        assert PlatMisc.uni_command(f"-getlogo {backup_logo}")  # backup logo
-        assert PlatMisc.unilogo_update(name="CustomLogo.bmp")
-
+        if PlatMisc.config_ver().LogoSrc:
+            assert PlatMisc.uni_command(f"-getlogo {backup_logo}")
+            back_logo = SshLib.sftp_download_file(Sut.OS_SFTP, f"{Env.UNI_PATH}/{backup_logo}", var.get('log_dir'))
+            assert MiscLib.images_similar(origin_logo, back_logo)
+        # Step 2
+        custom_logo = PlatMisc.root_path()/"Resource/Logo/CustomLogo.bmp"
+        assert PlatMisc.unilogo_update(custom_logo)
+        # Step 3
         modify_logo = PlatMisc.save_logo(path=Env.LOG_DIR, name="modify_logo")
         assert modify_logo, "fail to get modify_logo"
         assert not MiscLib.compare_images(modify_logo, origin_logo), "Modify logo should be different with origin logo"
-
-        assert SetUpLib.boot_to_default_os(reset=False, delay=15)
-        assert PlatMisc.uni_command(f"-setlogo {backup_logo}")  # restore logo
-
-        restore_logo = PlatMisc.save_logo(path=Env.LOG_DIR, name="restore_logo")
-        assert restore_logo, "fail to get restore_logo"
-        assert MiscLib.compare_images(restore_logo, origin_logo), "Restore logo should be same with origin logo"
         return core.Status.Pass
     except Exception as e:
         logging.error(e)
         return core.Status.Fail
     finally:
-        PlatMisc.unilogo_update(name="Logo.bmp")
+        if not MiscLib.ping_sut(Env.OS_IP, 10):
+            SetUpLib.boot_to_default_os()
+        PlatMisc.unilogo_update(PlatMisc.config_ver().LogoSrc)
 
 
 @core.test_case(("2606", "[TC2606] Testcase_EquipmentTools_008", "uniCfg定制Logo长时间测试"))
@@ -204,7 +213,8 @@ def Testcase_EquipmentTools_008():
     origin_logo = PlatMisc.save_logo(path=SutConfig.Env.LOG_DIR, name="origin_logo")
     try:
         assert SetUpLib.boot_to_default_os()
-        assert PlatMisc.unilogo_update(name="CustomLogo.bmp")
+        custom_logo = PlatMisc.root_path() / "Resource/Logo/CustomLogo.bmp"
+        assert PlatMisc.unilogo_update(custom_logo)
         # 重复3次,重启并检查logo修改结果
         for i in range(1, 4):
             modify_logo = PlatMisc.save_logo(path=SutConfig.Env.LOG_DIR, name="modify_logo")
@@ -217,7 +227,7 @@ def Testcase_EquipmentTools_008():
         return core.Status.Fail
     finally:
         MiscLib.ping_sut(SutConfig.Env.OS_IP, SutConfig.Env.BOOT_DELAY)
-        PlatMisc.unilogo_update(name="Logo.bmp")
+        PlatMisc.unilogo_update(PlatMisc.config_ver().LogoSrc)
 
 
 @core.test_case(("2607", "[TC2607] Testcase_EquipmentTools_009", "uniPwd定制合法密码"))
@@ -755,16 +765,3 @@ def Testcase_Vddio_003():
         return core.Status.Fail
     finally:
         BmcLib.clear_cmos()
-
-
-# @core.test_case(("2631", "[TC2631] 装备模式:BIOS资源分配 ", "装备模式:BIOS资源分配"))
-# def Testcase_Vddio_004():
-#     try:
-#         assert BmcLib.debug_message(enable=True)
-#         return core.Status.Pass
-#     except Exception as e:
-#         logging.error(e)
-#         return core.Status.Fail
-#     finally:
-#         BmcLib.debug_message(enable=False)
-#         BmcLib.clear_cmos()

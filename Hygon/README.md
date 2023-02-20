@@ -45,4 +45,31 @@ Execution: Release, daily, weekly，比如release参数，就表示执行AllTest
 |  HddPasswordTest | 801~900 |
 |  RedFish | 901~950 |
 |  RAS | 1001~1050 |
+|  ByoCfg | 2001~2300 |
 |  SecureBoot | 3001~3500 |
+
+
+### InspurStorage
+| Module | ID Range |
+| ------ | ------ |
+| UpdateBIOS | 001~100 |
+| Smbios | 101~200 |
+| PCIE | 251~300 |
+| CPU | 301~400 |
+| Boot | 401~500 |
+| CheckMsg | 501~600 |
+| SetUpPassword | 701~800 |
+
+### ByoTool
+| Module | ID Range |
+| ------ | ------ |
+| ByoFlash | 0001~0300 |
+| ByoDmi | 1001~1300 |
+| ByoCfg | 2001~2300 |
+| SecureBoot | 3001~3500 |
+| SetUpPsw | 4001~4100 |
+| HddPsw | 5001~5100 |
+| TPM | 5301~5400 |
+| PXE | 5401~5500 |
+
+

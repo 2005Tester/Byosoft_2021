@@ -1317,28 +1317,41 @@ def Testcase_SpBootUefi_001():
         BmcLib.clear_cmos()
 
 
-# @core.test_case(("1550", "[TC1550] Testcase_SpBootUefi_002", "【UEFI】SP启动功能测试_IPMI"))
-# def Testcase_SpBootUefi_002():
-#     """
-#     Name:       【UEFI】SP启动功能测试_IPMI
-#     Condition:  1、UEFI模式；
-#                 2、SP已部署。
-#     Steps:      1、启动进Setup菜单，关闭SP Boot开关，IPMI发送SP启动标志位，F10保存重启检查SP启动情况，有结果A；
-#                 2、启动进Setup菜单，打开SP Boot开关，IPMI发送SP启动标志位，F10保存重启检查SP启动情况，有结果B；
-#     Result:     A：SP启动失败；
-#                 B：SP启动成功。
-#     Remark:     IPMI设置SPStartFlag属性：ipmitool -I lanplus -H 192.168.49.19 -U Administrator -P Admin@9000 raw 0x30 0x93 0xdb 0x07 0x00 0x35 0x80 0x00 0x01 0x00 0x00 0x00 0xff 0xff 0x00 0x01 0x00 0x02 0x00 0x00 0x01 0x01
-#                 IPMI查询SPStartFlag属性：
-#                 ipmitool -I lanplus -H 192.168.49.19 -U Administrator -P Admin@9000 raw 0x30 0x93 0xdb 0x07 0x00 0x36 0x80 0x00 0x01 0xff 0x00 0x00 0xff 0xff 0x00 0x01 0x00 0x02 0x00
-#     """
-#     try:
-#         
-#         return core.Status.Pass
-#     except Exception as e:
-#         logging.error(e)
-#         return core.Status.Fail
-#     finally:
-#         BmcLib.clear_cmos()
+@core.test_case(("1550", "[TC1550] Testcase_SpBootUefi_002", "【UEFI】SP启动功能测试_IPMI"))
+def Testcase_SpBootUefi_002():
+    """
+    Name:       【UEFI】SP启动功能测试_IPMI
+    Condition:  1、UEFI模式；
+                2、SP已部署。
+    Steps:      1、启动进Setup菜单，关闭SP Boot开关，IPMI发送SP启动标志位，F10保存重启检查SP启动情况，有结果A；
+                2、启动进Setup菜单，打开SP Boot开关，IPMI发送SP启动标志位，F10保存重启检查SP启动情况，有结果B；
+    Result:     A：SP启动失败；
+                B：SP启动成功。
+    Remark:     IPMI设置SPStartFlag属性：ipmitool -I lanplus -H 192.168.49.19 -U Administrator -P Admin@9000 raw 0x30 0x93 0xdb 0x07 0x00 0x35 0x80 0x00 0x01 0x00 0x00 0x00 0xff 0xff 0x00 0x01 0x00 0x02 0x00 0x00 0x01 0x01
+                IPMI查询SPStartFlag属性：
+                ipmitool -I lanplus -H 192.168.49.19 -U Administrator -P Admin@9000 raw 0x30 0x93 0xdb 0x07 0x00 0x36 0x80 0x00 0x01 0xff 0x00 0x00 0xff 0xff 0x00 0x01 0x00 0x02 0x00
+    """
+    try:
+        set_sp_boot = "raw 0x30 0x93 0xdb 0x07 0x00 0x35 0x80 0x00 0x01 0x00 0x00 0x00 0xff 0xff 0x00 0x01 0x00 0x02 0x00 0x00 0x01 0x01"
+
+        assert SetUpLib.boot_to_page(Msg.PAGE_BOOT)
+        assert SetUpLib.set_option_value(Msg.SP_BOOT, Msg.DISABLE, save=True)
+        assert BmcLib.ipmitool(set_sp_boot)
+        assert SetUpLib.wait_boot_msgs(Msg.IPMI_SP_BOOT)
+        assert not PlatMisc.is_sp_boot_success()
+        assert MiscLib.ping_sut(Env.OS_IP, timeout=10)
+
+        assert SetUpLib.boot_to_page(Msg.PAGE_BOOT)
+        assert SetUpLib.set_option_value(Msg.SP_BOOT, Msg.ENABLE, save=True)
+        assert BmcLib.ipmitool(set_sp_boot)
+        assert SetUpLib.wait_boot_msgs(Msg.IPMI_SP_BOOT)
+        assert PlatMisc.is_sp_boot_success()
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+        return core.Status.Fail
+    finally:
+        BmcLib.clear_cmos()
 
 
 # @core.test_case(("1551", "[TC1551] Testcase_SpBootUefi_005", "【UEFI】IPMI命令设置SP启动后不响应热键测试"))

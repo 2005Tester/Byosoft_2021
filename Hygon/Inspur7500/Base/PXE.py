@@ -80,6 +80,7 @@ def pxe_retry(oem):
     else:
         assert SetUpLib.boot_to_setup()
         assert SetUpLib.enter_menu_change_value(Key.DOWN, SutConfig.Pxe.OPEN_PXE_RETRY, 18, save=True)
+    SetUpLib.clean_buffer()
     assert SetUpLib.boot_with_hotkey(Key.F12, SutConfig.Ipm.UEFI_PXE_MSG, 200, SutConfig.Msg.POST_MESSAGE)
     counts = 0
     while True:

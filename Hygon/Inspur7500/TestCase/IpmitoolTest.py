@@ -950,10 +950,10 @@ def bmc_user():
         return core.Status.Fail
 
 
-@core.test_case(('546', '[TC546]SOL', '板载SOL'))
+@core.test_case(('546', '[TC546]Ipmi change SOL', 'Ipmi命令打开关闭SOL'))
 def sol():
     """
-    Name:   板载SOL
+    Name:   Ipmi命令打开关闭SOL
 
     Steps:  1.SetUp下关闭SOL，Ipmi验证
             2.Ipmi打开SOL，SetUp下验证
@@ -1005,3 +1005,27 @@ def fru():
     except Exception as e:
         logging.error(e)
         return core.Status.Fail
+
+
+@core.test_case(('549','[TC549]SOL Terminal Test','SOL终端测试'))
+def sol_terminal():
+    """
+    Name:   SOL终端测试
+
+    Steps:  遍历UTF-8,VT100+,VT100
+            1.打开SOL
+            2.SOL进入F11启动菜单,Shell,DOS,F12网络启动,SetUp
+            3.验证ESC,F1,F9,F10功能键
+
+    Result: 1.SOL打开成功
+            2.成功进入F11启动菜单,Shell,DOS,F12网络启动,SetUp
+            3.ESC,F1,F9,F10功能键正常
+    """
+    try:
+        assert Ipmitool.sol_terminal()
+        return core.Status.Pass
+    except Exception as e:
+        logging.error(e)
+        return core.Status.Fail
+    finally:
+        BmcLib.change_bios_value(['BootMode:UEFI'])

@@ -4,6 +4,11 @@ from Inspur7500.Config import *
 from Inspur7500.BaseLib import *
 
 
+'''
+ByoCfg  case  编号:2001~2300
+'''
+
+
 def get_shell_dump():
     time.sleep(1)
     SetUpLib.send_key(Key.ENTER)
@@ -59,7 +64,7 @@ def get_cfg_setup(optionvalue, dump):
     dump_all = ''.join(dump)
     for i in optionvalue:
         for j in dump:
-            if j.replace(' ', '').endswith(re.findall('(?:\[|<).*(?:\]|>)(.*)', i)[0]) and '~' not in j:
+            if j.replace(' ', '').endswith(re.findall('(?:\[|<).*(?:\]|>)(.*)', i)[0]) and '~' not in j and (not j.startswith(';')):
                 if re.findall('(?:\[|<).*(?:\]|>)(.*)', i)[0] == re.findall('\)*.*\) (.*)', j)[0].replace(' ', ''):
 
                     option_name = re.findall('\)*.*\) (.*)', j)[0]
@@ -75,7 +80,7 @@ def get_cfg_setup(optionvalue, dump):
                     if not re.search('Cbs\w+ = 0x', j, re.I):
                         current_value[option_name] = re.findall(' = (.*);', j)[0]
 
-            if j.replace(' ', '').endswith(re.findall('(?:\[|<).*(?:\]|>)(.*)', i)[0]) and '~' in j:
+            if j.replace(' ', '').endswith(re.findall('(?:\[|<).*(?:\]|>)(.*)', i)[0]) and '~' in j and (not j.startswith(';')):
                 if re.findall('(?:\[|<).*(?:\]|>)(.*)', i)[0] == re.findall('\)*.*\) (.*)', j)[0].replace(' ', ''):
                     option_name = re.findall('\)*.*\) (.*)', j)[0]
                     if dump_all.count(f') {option_name}') > 1:
@@ -779,6 +784,7 @@ def byocfg_tool_2101():
     try:
         count = 0
         assert SetUpLib.boot_os_from_bm()
+        linux_mount_usb()
         if re.search(SutConfig.Tool.LINUX_BYOCFG_VERSION_CONFIRM_MSG,
                      SshLib.execute_command_limit(Sut.OS_SSH, SutConfig.Tool.LINUX_BYOCFG_VERSION_CMD)[0]):
             logging.info('Linux下工具版本验证成功')
@@ -821,6 +827,7 @@ def byocfg_tool_2102():
         assert SetUpLib.boot_to_setup()
         option_value = SetUpLib.get_all_option_value()
         assert SetUpLib.boot_os_from_bm()
+        linux_mount_usb()
         dump = SshLib.execute_command_limit(Sut.OS_SSH, SutConfig.Tool.LINUX_BYOCFG_DUMP)[0].split('BootOrder = ')[
             0].splitlines()
         option_name_value_byocfg, option_name_value_setup, current_value, current_value_spcial = get_cfg_setup(
@@ -931,6 +938,7 @@ def byocfg_tool_2103():
         count = 0
         wrong_msg = []
         assert SetUpLib.boot_os_from_bm()
+        linux_mount_usb()
         dump = SshLib.execute_command_limit(Sut.OS_SSH, SutConfig.Tool.LINUX_BYOCFG_DUMP)[0].splitlines()
         dump = sorted(list(
             set(dump) - set([i for i in dump for j in SutConfig.Tool.REMOVE_OPTIONS if i.endswith(j)])),

@@ -70,7 +70,7 @@ def Onboard_Ethernet_Controller(oem):
     else:
         assert SetUpLib.boot_to_setup()
         assert SetUpLib.enter_menu_change_value(Key.DOWN, SutConfig.Sup.CLOSE_LAN, 18, save=True)
-    datas = SetUpLib.boot_to_boot_menu(True)
+    datas = SetUpLib.boot_to_boot_menu(True,reset=False)
     if re.search(SutConfig.Msg.PXE_PORT1, datas):
         stylelog.fail('关闭板载网卡配置失败')
         return
@@ -311,7 +311,7 @@ def HDD_bind():
     assert SetUpLib.boot_to_setup()
     assert SetUpLib.enter_menu_change_value(Key.DOWN, SutConfig.Sup.HDD_BIND1, 10, save=True)
     assert SetUpLib.boot_to_boot_menu()
-    if SetUpLib.select_boot_option(Key.DOWN, SutConfig.Sup.HDD_BIND_NAME_2_OS[0], 30, SutConfig.Sup.HDD_BIND_PROMPT):
+    if SetUpLib.select_boot_option(Key.DOWN, SutConfig.Sup.HDD_BIND_NAME_2_OS, 30, SutConfig.Sup.HDD_BIND_PROMPT):
         logging.info('硬盘绑定打开，无法进入绑定外的硬盘')
     else:
         stylelog.fail('绑定硬盘，但仍可以进入绑定外的硬盘')
@@ -334,7 +334,7 @@ def HDD_bind():
         return
     time.sleep(1)
     assert SetUpLib.boot_to_boot_menu()
-    assert SetUpLib.select_boot_option(Key.DOWN, SutConfig.Sup.HDD_BIND_NAME_2_OS[0], 30, '')
+    assert SetUpLib.select_boot_option(Key.DOWN, SutConfig.Sup.HDD_BIND_NAME_2_OS, 30, '')
     if not SetUpLib.wait_message(SutConfig.Sup.HDD_BIND_PROMPT, 10):
         logging.info('成功进入绑定的硬盘')
     else:
@@ -406,7 +406,7 @@ def quiet_boot(oem):
     datas = []
     while time.time() - start_time < 200:
         datas.append(SetUpLib.get_data(1))
-        if re.search(SutConfig.Msg.POST_MESSAGE,''.join(datas)):
+        if re.search('Press Key in',''.join(datas)):
             datas.append(SetUpLib.get_data(2))
             break
     SetUpLib.send_key(Key.DEL)
@@ -1068,7 +1068,6 @@ def check_default_bios():
     if SetUpLib.wait_message(SutConfig.Upd.SETUP_MSG, 300):
         logging.info('BIOS 刷新成功')
     time.sleep(200)
-    BmcLib.enable_serial_only()
     assert SetUpLib.boot_to_setup()
     for i in SetUpLib.get_all_option_value():
         if not re.search('password', i.lower()) and i not in SutConfig.Upd.BMC_LINK_OPTION:

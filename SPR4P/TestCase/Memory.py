@@ -450,11 +450,11 @@ def Testcase_MemRefresh_001():
     try:
         assert SetUpLib.boot_to_page(Msg.PAGE_ADVANCED)
         assert SetUpLib.load_default_in_setup(save=False)
-        assert SetUpLib.enter_menu(Msg.PATH_MEM_CONFIG, Key.DOWN, 15)
+        assert SetUpLib.enter_menu(Msg.PATH_MEM_CONFIG, Key.DOWN)
         if SutConfig.Env.MAX_CPU_CNT == 4:
-            assert SetUpLib.get_option_value(Msg.MEM_REFRESH, Key.UP, 15) == Msg.VAL_MEM_REF[0]
+            assert SetUpLib.get_option_value(Msg.MEM_REFRESH, Key.UP) == Msg.VAL_MEM_REF[0]
         else:
-            assert SetUpLib.get_option_value(Msg.MEM_REFRESH, Key.UP, 15) == Msg.VAL_MEM_REF[1]
+            assert SetUpLib.get_option_value(Msg.MEM_REFRESH, Key.UP) == Msg.VAL_MEM_REF[1]
         return core.Status.Pass
     except Exception as e:
         logging.error(e)

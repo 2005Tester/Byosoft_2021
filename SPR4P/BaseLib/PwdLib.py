@@ -308,7 +308,7 @@ def set_admin_password(new_pw, old_pw, result, save, expect=None, confirm_pw=Non
 
 def set_admin_pw_and_verify(new, old):
     """设置密码并重启验证"""
-    assert SetUpLib.locate_option(Msg.SET_ADMIN_PW, Key.DOWN, 20)
+    assert SetUpLib.locate_option(Msg.SET_ADMIN_PW)
     assert set_admin_password(new, old, result=True, save=True)
     assert continue_to_setup_with_pw(new, old, to_admin=True)
     return True

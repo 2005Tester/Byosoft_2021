@@ -1,10 +1,12 @@
 # dmidecode 3.3
 Getting SMBIOS data from sysfs.
-SMBIOS 3.2.0 present.
+SMBIOS 3.6.0 present.
+# SMBIOS implementations newer than version 3.3.0 are not
+# fully supported by this version of dmidecode.
 
-Handle 0x001F, DMI type 17, 92 bytes
+Handle 0x0019, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: 80 bits
 	Data Width: 64 bits
@@ -37,9 +39,9 @@ Memory Device
 	Cache Size: None
 	Logical Size: None
 
-Handle 0x0020, DMI type 17, 92 bytes
+Handle 0x001A, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -51,9 +53,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0021, DMI type 17, 92 bytes
+Handle 0x001B, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: 80 bits
 	Data Width: 64 bits
@@ -86,9 +88,9 @@ Memory Device
 	Cache Size: None
 	Logical Size: None
 
-Handle 0x0022, DMI type 17, 92 bytes
+Handle 0x001C, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -100,9 +102,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0023, DMI type 17, 92 bytes
+Handle 0x001D, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -114,9 +116,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0024, DMI type 17, 92 bytes
+Handle 0x001E, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -128,9 +130,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0025, DMI type 17, 92 bytes
+Handle 0x001F, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -142,9 +144,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0026, DMI type 17, 92 bytes
+Handle 0x0020, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -156,9 +158,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0027, DMI type 17, 92 bytes
+Handle 0x0021, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: 80 bits
 	Data Width: 64 bits
@@ -171,7 +173,7 @@ Memory Device
 	Type Detail: Synchronous Registered (Buffered)
 	Speed: 4800 MT/s
 	Manufacturer: Samsung
-	Serial Number: 0246FA18
+	Serial Number: 0246F801
 	Asset Tag: 2150 
 	Part Number: M321R8GA0BB0-CQKDG  
 	Rank: 2
@@ -191,9 +193,9 @@ Memory Device
 	Cache Size: None
 	Logical Size: None
 
-Handle 0x0028, DMI type 17, 92 bytes
+Handle 0x0022, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -205,9 +207,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0029, DMI type 17, 92 bytes
+Handle 0x0023, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: 80 bits
 	Data Width: 64 bits
@@ -216,6 +218,111 @@ Memory Device
 	Set: None
 	Locator: DIMM050(F)
 	Bank Locator: _Node1_Channel5_Dimm0
+	Type: <OUT OF SPEC>
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 4800 MT/s
+	Manufacturer: Samsung
+	Serial Number: 0246F7F9
+	Asset Tag: 2150 
+	Part Number: M321R8GA0BB0-CQKDG  
+	Rank: 2
+	Configured Memory Speed: 4800 MT/s
+	Minimum Voltage: 1.1 V
+	Maximum Voltage: 1.1 V
+	Configured Voltage: 1.1 V
+	Memory Technology: DRAM
+	Memory Operating Mode Capability: Volatile memory
+	Firmware Version: 0000 
+	Module Manufacturer ID: Bank 1, Hex 0xCE
+	Module Product ID: 0xCE00
+	Memory Subsystem Controller Manufacturer ID: Unknown
+	Memory Subsystem Controller Product ID: Unknown
+	Non-Volatile Size: None
+	Volatile Size: 64 GB
+	Cache Size: None
+	Logical Size: None
+
+Handle 0x0024, DMI type 17, 92 bytes
+Memory Device
+	Array Handle: 0x0018
+	Error Information Handle: Not Provided
+	Total Width: Unknown
+	Data Width: Unknown
+	Size: No Module Installed
+	Form Factor: DIMM
+	Set: None
+	Locator: DIMM051(N)
+	Bank Locator: _Node1_Channel5_Dimm1
+	Type: Unknown
+	Type Detail: Unknown Synchronous
+
+Handle 0x0025, DMI type 17, 92 bytes
+Memory Device
+	Array Handle: 0x0018
+	Error Information Handle: Not Provided
+	Total Width: Unknown
+	Data Width: Unknown
+	Size: No Module Installed
+	Form Factor: DIMM
+	Set: None
+	Locator: DIMM060(G)
+	Bank Locator: _Node1_Channel6_Dimm0
+	Type: Unknown
+	Type Detail: Unknown Synchronous
+
+Handle 0x0026, DMI type 17, 92 bytes
+Memory Device
+	Array Handle: 0x0018
+	Error Information Handle: Not Provided
+	Total Width: Unknown
+	Data Width: Unknown
+	Size: No Module Installed
+	Form Factor: DIMM
+	Set: None
+	Locator: DIMM061(O)
+	Bank Locator: _Node1_Channel6_Dimm1
+	Type: Unknown
+	Type Detail: Unknown Synchronous
+
+Handle 0x0027, DMI type 17, 92 bytes
+Memory Device
+	Array Handle: 0x0018
+	Error Information Handle: Not Provided
+	Total Width: Unknown
+	Data Width: Unknown
+	Size: No Module Installed
+	Form Factor: DIMM
+	Set: None
+	Locator: DIMM070(H)
+	Bank Locator: _Node1_Channel7_Dimm0
+	Type: Unknown
+	Type Detail: Unknown Synchronous
+
+Handle 0x0028, DMI type 17, 92 bytes
+Memory Device
+	Array Handle: 0x0018
+	Error Information Handle: Not Provided
+	Total Width: Unknown
+	Data Width: Unknown
+	Size: No Module Installed
+	Form Factor: DIMM
+	Set: None
+	Locator: DIMM071(P)
+	Bank Locator: _Node1_Channel7_Dimm1
+	Type: Unknown
+	Type Detail: Unknown Synchronous
+
+Handle 0x0029, DMI type 17, 92 bytes
+Memory Device
+	Array Handle: 0x0018
+	Error Information Handle: Not Provided
+	Total Width: 80 bits
+	Data Width: 64 bits
+	Size: 64 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: DIMM100(A)
+	Bank Locator: _Node2_Channel0_Dimm0
 	Type: <OUT OF SPEC>
 	Type Detail: Synchronous Registered (Buffered)
 	Speed: 4800 MT/s
@@ -242,112 +349,7 @@ Memory Device
 
 Handle 0x002A, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
-	Error Information Handle: Not Provided
-	Total Width: Unknown
-	Data Width: Unknown
-	Size: No Module Installed
-	Form Factor: DIMM
-	Set: None
-	Locator: DIMM051(N)
-	Bank Locator: _Node1_Channel5_Dimm1
-	Type: Unknown
-	Type Detail: Unknown Synchronous
-
-Handle 0x002B, DMI type 17, 92 bytes
-Memory Device
-	Array Handle: 0x001E
-	Error Information Handle: Not Provided
-	Total Width: Unknown
-	Data Width: Unknown
-	Size: No Module Installed
-	Form Factor: DIMM
-	Set: None
-	Locator: DIMM060(G)
-	Bank Locator: _Node1_Channel6_Dimm0
-	Type: Unknown
-	Type Detail: Unknown Synchronous
-
-Handle 0x002C, DMI type 17, 92 bytes
-Memory Device
-	Array Handle: 0x001E
-	Error Information Handle: Not Provided
-	Total Width: Unknown
-	Data Width: Unknown
-	Size: No Module Installed
-	Form Factor: DIMM
-	Set: None
-	Locator: DIMM061(O)
-	Bank Locator: _Node1_Channel6_Dimm1
-	Type: Unknown
-	Type Detail: Unknown Synchronous
-
-Handle 0x002D, DMI type 17, 92 bytes
-Memory Device
-	Array Handle: 0x001E
-	Error Information Handle: Not Provided
-	Total Width: Unknown
-	Data Width: Unknown
-	Size: No Module Installed
-	Form Factor: DIMM
-	Set: None
-	Locator: DIMM070(H)
-	Bank Locator: _Node1_Channel7_Dimm0
-	Type: Unknown
-	Type Detail: Unknown Synchronous
-
-Handle 0x002E, DMI type 17, 92 bytes
-Memory Device
-	Array Handle: 0x001E
-	Error Information Handle: Not Provided
-	Total Width: Unknown
-	Data Width: Unknown
-	Size: No Module Installed
-	Form Factor: DIMM
-	Set: None
-	Locator: DIMM071(P)
-	Bank Locator: _Node1_Channel7_Dimm1
-	Type: Unknown
-	Type Detail: Unknown Synchronous
-
-Handle 0x002F, DMI type 17, 92 bytes
-Memory Device
-	Array Handle: 0x001E
-	Error Information Handle: Not Provided
-	Total Width: 80 bits
-	Data Width: 64 bits
-	Size: 64 GB
-	Form Factor: DIMM
-	Set: None
-	Locator: DIMM100(A)
-	Bank Locator: _Node2_Channel0_Dimm0
-	Type: <OUT OF SPEC>
-	Type Detail: Synchronous Registered (Buffered)
-	Speed: 4800 MT/s
-	Manufacturer: Samsung
-	Serial Number: 0246F7F9
-	Asset Tag: 2150 
-	Part Number: M321R8GA0BB0-CQKDG  
-	Rank: 2
-	Configured Memory Speed: 4800 MT/s
-	Minimum Voltage: 1.1 V
-	Maximum Voltage: 1.1 V
-	Configured Voltage: 1.1 V
-	Memory Technology: DRAM
-	Memory Operating Mode Capability: Volatile memory
-	Firmware Version: 0000 
-	Module Manufacturer ID: Bank 1, Hex 0xCE
-	Module Product ID: 0xCE00
-	Memory Subsystem Controller Manufacturer ID: Unknown
-	Memory Subsystem Controller Product ID: Unknown
-	Non-Volatile Size: None
-	Volatile Size: 64 GB
-	Cache Size: None
-	Logical Size: None
-
-Handle 0x0030, DMI type 17, 92 bytes
-Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -359,9 +361,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0031, DMI type 17, 92 bytes
+Handle 0x002B, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: 80 bits
 	Data Width: 64 bits
@@ -374,7 +376,7 @@ Memory Device
 	Type Detail: Synchronous Registered (Buffered)
 	Speed: 4800 MT/s
 	Manufacturer: Samsung
-	Serial Number: 0246F801
+	Serial Number: 0246FA18
 	Asset Tag: 2150 
 	Part Number: M321R8GA0BB0-CQKDG  
 	Rank: 2
@@ -394,9 +396,9 @@ Memory Device
 	Cache Size: None
 	Logical Size: None
 
-Handle 0x0032, DMI type 17, 92 bytes
+Handle 0x002C, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -408,9 +410,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0033, DMI type 17, 92 bytes
+Handle 0x002D, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -422,9 +424,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0034, DMI type 17, 92 bytes
+Handle 0x002E, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -436,9 +438,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0035, DMI type 17, 92 bytes
+Handle 0x002F, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -450,9 +452,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0036, DMI type 17, 92 bytes
+Handle 0x0030, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -464,9 +466,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0037, DMI type 17, 92 bytes
+Handle 0x0031, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: 80 bits
 	Data Width: 64 bits
@@ -499,9 +501,9 @@ Memory Device
 	Cache Size: None
 	Logical Size: None
 
-Handle 0x0038, DMI type 17, 92 bytes
+Handle 0x0032, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -513,9 +515,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0039, DMI type 17, 92 bytes
+Handle 0x0033, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: 80 bits
 	Data Width: 64 bits
@@ -548,9 +550,9 @@ Memory Device
 	Cache Size: None
 	Logical Size: None
 
-Handle 0x003A, DMI type 17, 92 bytes
+Handle 0x0034, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -562,9 +564,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x003B, DMI type 17, 92 bytes
+Handle 0x0035, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -576,9 +578,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x003C, DMI type 17, 92 bytes
+Handle 0x0036, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -590,9 +592,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x003D, DMI type 17, 92 bytes
+Handle 0x0037, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -604,9 +606,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x003E, DMI type 17, 92 bytes
+Handle 0x0038, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -618,9 +620,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x003F, DMI type 17, 92 bytes
+Handle 0x0039, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -632,9 +634,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0040, DMI type 17, 92 bytes
+Handle 0x003A, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -646,9 +648,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0041, DMI type 17, 92 bytes
+Handle 0x003B, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -660,9 +662,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0042, DMI type 17, 92 bytes
+Handle 0x003C, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -674,9 +676,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0043, DMI type 17, 92 bytes
+Handle 0x003D, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -688,9 +690,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0044, DMI type 17, 92 bytes
+Handle 0x003E, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -702,9 +704,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0045, DMI type 17, 92 bytes
+Handle 0x003F, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -716,9 +718,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0046, DMI type 17, 92 bytes
+Handle 0x0040, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -730,9 +732,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0047, DMI type 17, 92 bytes
+Handle 0x0041, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -744,9 +746,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0048, DMI type 17, 92 bytes
+Handle 0x0042, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -758,9 +760,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0049, DMI type 17, 92 bytes
+Handle 0x0043, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -772,9 +774,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x004A, DMI type 17, 92 bytes
+Handle 0x0044, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -786,9 +788,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x004B, DMI type 17, 92 bytes
+Handle 0x0045, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -800,9 +802,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x004C, DMI type 17, 92 bytes
+Handle 0x0046, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -814,9 +816,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x004D, DMI type 17, 92 bytes
+Handle 0x0047, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -828,9 +830,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x004E, DMI type 17, 92 bytes
+Handle 0x0048, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -842,9 +844,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x004F, DMI type 17, 92 bytes
+Handle 0x0049, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -856,9 +858,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0050, DMI type 17, 92 bytes
+Handle 0x004A, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -870,9 +872,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0051, DMI type 17, 92 bytes
+Handle 0x004B, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -884,9 +886,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0052, DMI type 17, 92 bytes
+Handle 0x004C, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -898,9 +900,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0053, DMI type 17, 92 bytes
+Handle 0x004D, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -912,9 +914,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0054, DMI type 17, 92 bytes
+Handle 0x004E, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -926,9 +928,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0055, DMI type 17, 92 bytes
+Handle 0x004F, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -940,9 +942,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0056, DMI type 17, 92 bytes
+Handle 0x0050, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -954,9 +956,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0057, DMI type 17, 92 bytes
+Handle 0x0051, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -968,9 +970,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0058, DMI type 17, 92 bytes
+Handle 0x0052, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -982,9 +984,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x0059, DMI type 17, 92 bytes
+Handle 0x0053, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -996,9 +998,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x005A, DMI type 17, 92 bytes
+Handle 0x0054, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -1010,9 +1012,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x005B, DMI type 17, 92 bytes
+Handle 0x0055, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -1024,9 +1026,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x005C, DMI type 17, 92 bytes
+Handle 0x0056, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -1038,9 +1040,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x005D, DMI type 17, 92 bytes
+Handle 0x0057, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown
@@ -1052,9 +1054,9 @@ Memory Device
 	Type: Unknown
 	Type Detail: Unknown Synchronous
 
-Handle 0x005E, DMI type 17, 92 bytes
+Handle 0x0058, DMI type 17, 92 bytes
 Memory Device
-	Array Handle: 0x001E
+	Array Handle: 0x0018
 	Error Information Handle: Not Provided
 	Total Width: Unknown
 	Data Width: Unknown

@@ -153,10 +153,10 @@ class ReportGenerator:
                     testresult['description'] = value[1]
                     testresult['spendTime'] = value[3][index]
                     testresult['status'] = value[2][index]
-                    testresult['log'] = [i.replace(' ','&nbsp;') for i in self.all_log[value[4][index][0]:value[4][index][1]]]
+                    testresult['log'] = [i.replace('  ','&nbsp;&nbsp;') for i in self.all_log[value[4][index][0]:value[4][index][1]]]
                     alltcresult.append(testresult)
         try:
-            alltcresult.sort(key=lambda x: re.findall('\d+-\d+-\d+&nbsp;\d+:\d+:\d+', x['log'][0])[0])
+            alltcresult.sort(key=lambda x: re.findall('\d+-\d+-\d+ \d+:\d+:\d+', x['log'][0])[0])
         except:
             pass
         return alltcresult

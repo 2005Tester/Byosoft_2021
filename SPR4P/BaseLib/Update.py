@@ -66,19 +66,18 @@ def flash_hpm(hpm_name="bios.hpm"):
 
 
 # flash hpm bios from a specific directory
-def update_bios_hpm(hpm_file):
-    hpm_path, hpm_name = os.path.split(hpm_file)
-    if not upload_bios_image(src_file=hpm_file, dst_file=f"/tmp/{hpm_name}"):
-        return
-    if not flash_hpm(hpm_name):
-        return
-    if not BmcLib.power_on():
-        return
-    if not SerialLib.is_msg_present(Sut.BIOS_COM, Msg.LOGO_SHOW, delay=900):
-        return
-    logging.info("HPM BIOS update successfully.")
-    logging.info("HPM image: {0}".format(hpm_file))
-    return True
+def update_bios_hpm(hpm_file, power_on=True):
+    try:
+        hpm_path, hpm_name = os.path.split(hpm_file)
+        assert upload_bios_image(src_file=hpm_file, dst_file=f"/tmp/{hpm_name}")
+        assert flash_hpm(hpm_name)
+        if power_on:
+            assert BmcLib.power_on()
+            assert SerialLib.is_msg_present(Sut.BIOS_COM, Msg.LOGO_SHOW, delay=SutConfig.Env.BOOT_DELAY)
+        logging.info(f"Update HPM BIOS success:\n{hpm_file}")
+        return True
+    except Exception as e:
+        logging.error(e)
 
 
 def flash_bios_bin_and_init(img=None):

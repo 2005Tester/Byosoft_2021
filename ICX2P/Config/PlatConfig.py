@@ -177,8 +177,8 @@ class Msg:
     # Firmware version info
     ME_VERSION = '0F:4.4.4.56'
     RC_VERSION = '0.4.2.0010'
-    BIOS_REVISION = '0.53'
-    BIOS_DATE = '11/25/2022'
+    BIOS_REVISION = '0.57'
+    BIOS_DATE = '02/06/2023'
     BMC_VERSION = '3.03.07.10'
     CPU_TYPE = 'Ice Lake'
     TOTAL_MEMORY = '{0}MB'.format(SutConfig.SysCfg.MEM_SIZE * 1024)

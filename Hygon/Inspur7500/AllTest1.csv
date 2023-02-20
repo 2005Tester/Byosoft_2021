@@ -41,6 +41,7 @@ IpmitoolTest.oem(),,Yes,,Yes
 IpmitoolTest.bmc_user(),,Yes,,Yes
 IpmitoolTest.fru(),,Yes,,Yes
 IpmitoolTest.sol(),,Yes,,Yes
+IpmitoolTest.sol_terminal(),,Yes,,Yes
 SetUpTest.link_relation(oem=False),,Yes,Yes,Yes
 SetUpTest.option_rom(oem=False),,Yes,Yes,Yes
 SetUpTest.Interface_information(),,Yes,,Yes
@@ -149,8 +150,8 @@ RASTest.mem_ras_001(oem=False),,,Yes,
 RASTest.mem_ras_002(oem=False),,,Yes,
 RASTest.mem_ras_003(oem=False),,,Yes,
 RASTest.mem_ras_004(oem=False),,,Yes,
-RASTest.mem_ras_005_(),,,,
-RASTest.mem_ras_006_(),,,,
+RASTest.mem_ras_005(),,,,
+RASTest.mem_ras_006(),,,,
 RASTest.mem_ras_007(),,,,
 RASTest.mem_ras_008(),,,,
 RASTest.pcie_ras_001(),,,,
